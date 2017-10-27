@@ -1,0 +1,31 @@
+---
+kind: Deployment
+apiVersion: apps/v1beta1
+metadata:
+  name: notebook-generator-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: notebook-generator
+    spec:
+      containers:
+      - name: notebook-generator-container
+        image: gcr.io/notebook-generator/notebook-generator
+        env:
+        - name: DOWNLOAD
+          value: {notebook_url}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: notebook-generator-service
+spec:
+  selector:
+    app: notebook-generator
+  ports:
+  - protocol: TCP
+    port: 8888
+    targetPort: 8888
+  type: LoadBalancer
