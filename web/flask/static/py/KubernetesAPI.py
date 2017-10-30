@@ -17,7 +17,7 @@
 ########## 1. Load libraries
 #############################################
 ##### 1. Python modules #####
-from kubernetes import client, config
+from kubernetes import client, config, watch
 config.load_kube_config()
 
 #################################################################
@@ -92,3 +92,25 @@ def GenerateService():
 
 	# Create Service
 	api_instance.create_namespaced_service(namespace="default", body=service)
+
+#############################################
+########## 2. Watch Service
+#############################################
+
+def WatchService():
+
+	# Create API Instance
+	api_instance = client.CoreV1Api()
+
+	# Run a Watch
+	w = watch.Watch()
+	for event in w.stream(api_instance.list_service_for_all_namespaces):
+		if event['type'] == 'MODIFIED' and event['raw_object']['metadata']['name'] and len(event['raw_object']['status']['loadBalancer']['ingress']) > 0:
+			ip = event['raw_object']['status']['loadBalancer']['ingress'][0]['ip']
+			break
+
+	# Get URL
+	url = 'http://'+ip+':8888'
+
+	# Return IP
+	return url

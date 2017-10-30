@@ -13,6 +13,9 @@ RUN pip3 install pandas
 RUN pip3 install jupyter
 
 RUN mkdir jupyter
+COPY scripts jupyter
 COPY start-notebook.sh /usr/local/bin
+RUN export JUPYTER_PATH=/jupyter/scripts:$JUPYTER_PATH
+
 RUN chmod 777 /usr/local/bin/start-notebook.sh
 ENTRYPOINT /usr/local/bin/start-notebook.sh
