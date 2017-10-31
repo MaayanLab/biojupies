@@ -37,4 +37,4 @@ def fetch_dataset(dataset_accession, platform=None):
     sample_metadata_dataframe['platform'] = platform
 
     # Return
-    return rawcount_dataframe, sample_metadata_dataframe, platform
+    return rawcount_dataframe, sample_metadata_dataframe

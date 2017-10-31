@@ -39,7 +39,7 @@ def GenerateNotebook(acc):
 
 	# Fetch Data
 	notebook['cells'].append(nbf.v4.new_code_cell('# Get Dataset\nrawcount_dataframe, sample_metadata_dataframe = archs4.fetch_dataset("{acc}")\nrawcount_dataframe.head()'.format(**locals())))
-	notebook['cells'].append(nbf.v4.new_code_cell('# Show Metadata\sample_metadata_dataframe'.format(**locals())))
+	notebook['cells'].append(nbf.v4.new_code_cell('# Show Metadata\nsample_metadata_dataframe'.format(**locals())))
 
 	# Get string
 	notebook_string = nbf.writes(notebook)
