@@ -5,9 +5,11 @@ import urllib.request
 import gzip
 import json
 import pandas as pd
+import numpy as np
+import scipy.stats as ss
 
 #######################################################
-########## 2. Function ################################
+########## 2. Fetch Dataset ###########################
 #######################################################
 
 def fetch_dataset(dataset_accession, platform=None):
@@ -38,3 +40,16 @@ def fetch_dataset(dataset_accession, platform=None):
 
     # Return
     return rawcount_dataframe, sample_metadata_dataframe
+
+#######################################################
+########## 3. Normalize Dataset #######################
+#######################################################
+
+def normalize_dataset(rawcount_dataframe, method='zscore'):
+
+    # Z-score
+    if method == 'zscore':
+        norm_dataframe = (rawcount_dataframe/rawcount_dataframe.apply(np.sum, 0)).apply(ss.zscore, 1).dropna()
+
+    # Return
+    return norm_dataframe

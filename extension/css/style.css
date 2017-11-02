@@ -1,0 +1,24 @@
+.notebook-generator-link {
+	border: 1px solid black;
+	display: table;
+    padding: 3px 5px;
+    border-radius: 3px;
+	color: black !important;
+	text-decoration: none !important;
+	margin-top: 5px;
+}
+
+	.notebook-generator-link img {
+		height: 30px;
+		display: table-cell;
+		vertical-align: middle;
+		margin-right: 5px;
+		padding: 3px;
+	}
+
+	.notebook-generator-link span {
+		display: table-cell;
+		vertical-align: middle;
+		color: black !important;
+		text-decoration: none !important;
+	}

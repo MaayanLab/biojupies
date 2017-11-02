@@ -18,7 +18,7 @@
 #############################################
 ##### 1. Python modules #####
 from kubernetes import client, config, watch
-config.load_kube_config()
+# config.load_kube_config()
 
 #################################################################
 #################################################################
@@ -30,7 +30,7 @@ config.load_kube_config()
 ########## 1. Generate Deployment
 #############################################
 
-def GenerateDeployment(notebook_url):
+def GenerateDeployment(notebook_url, acc):
 
 	# Load Extension
 	extension = client.ExtensionsV1beta1Api()
@@ -41,7 +41,7 @@ def GenerateDeployment(notebook_url):
 	# Fill Required Fields (apiVersion, kind, metadata)
 	deployment.api_version = "extensions/v1beta1"
 	deployment.kind = "Deployment"
-	deployment.metadata = client.V1ObjectMeta(name="notebook-generator-deployment")
+	deployment.metadata = client.V1ObjectMeta(name="notebook-generator-deployment-{acc}".format(**locals()))
 
 	# Add Spec
 	deployment.spec = client.ExtensionsV1beta1DeploymentSpec()
@@ -49,7 +49,7 @@ def GenerateDeployment(notebook_url):
 
 	# Add Pod Template
 	deployment.spec.template = client.V1PodTemplateSpec()
-	deployment.spec.template.metadata = client.V1ObjectMeta(labels={"app": "notebook-generator"})
+	deployment.spec.template.metadata = client.V1ObjectMeta(labels={"app": "notebook-generator-{acc}".format(**locals())})
 	deployment.spec.template.spec = client.V1PodSpec()
 
 	# Add Container
@@ -73,7 +73,7 @@ def GenerateDeployment(notebook_url):
 ########## 1. Generate Service
 #############################################
 
-def GenerateService():
+def GenerateService(acc):
 
 	# Create API Endpoint and Resources
 	api_instance = client.CoreV1Api()
@@ -82,11 +82,11 @@ def GenerateService():
 	# Fill Required Fields (apiVersion, kind, metadata)
 	service.api_version = "v1"
 	service.kind = "Service"
-	service.metadata = client.V1ObjectMeta(name="notebook-generator-service")
+	service.metadata = client.V1ObjectMeta(name="notebook-generator-service-{acc}".format(**locals()))
 
 	# Add Spec
 	service.spec = client.V1ServiceSpec()
-	service.spec.selector = {"app": "notebook-generator"}
+	service.spec.selector = {"app": "notebook-generator-{acc}".format(**locals())}
 	service.spec.ports = [client.V1ServicePort(protocol="TCP", port=8888, target_port=8888)]
 	service.spec.type = "LoadBalancer"
 
@@ -97,7 +97,7 @@ def GenerateService():
 ########## 2. Watch Service
 #############################################
 
-def WatchService():
+def WatchService(acc):
 
 	# Create API Instance
 	api_instance = client.CoreV1Api()
@@ -105,7 +105,7 @@ def WatchService():
 	# Run a Watch
 	w = watch.Watch()
 	for event in w.stream(api_instance.list_service_for_all_namespaces):
-		if event['type'] == 'MODIFIED' and event['raw_object']['metadata']['name'] and len(event['raw_object']['status']['loadBalancer']['ingress']) > 0:
+		if event['type'] == 'MODIFIED' and event['raw_object']['metadata']['name']=='notebook-generator-service-{acc}'.format(**locals()) and len(event['raw_object']['status']['loadBalancer']['ingress']) > 0:
 			ip = event['raw_object']['status']['loadBalancer']['ingress'][0]['ip']
 			break
 

@@ -81,13 +81,13 @@ def launchService():
 	notebook_url = 'http://amp.pharm.mssm.edu/notebook-generator-web/notebook?acc={acc}'.format(**locals())
 
 	# Generate Deployment - add user ID & dataset
-	GenerateDeployment(notebook_url)
+	GenerateDeployment(notebook_url, acc.lower())
 
 	# Generate Service - add user ID & dataset
-	GenerateService()
+	GenerateService(acc.lower())
 
 	# Get IP - add user ID & dataset
-	url = WatchService()
+	url = WatchService(acc.lower())
 
 	# Wait 5 Seconds
 	time.sleep(5)

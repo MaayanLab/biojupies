@@ -1,0 +1,36 @@
+{
+	"name": "Notebook Generator",
+	"version": "1.0",
+	"description": "Ma'ayan Lab",
+	
+	"icons":{
+		"720": "icons/icon.png"
+	},
+	
+	"browser_action": {
+		"default_icon": "icons/icon.png"
+	},
+		
+	"content_scripts": [
+		{
+			"matches": [
+				"https://www.ncbi.nlm.nih.gov/*"
+			],
+
+			"css": [
+				"css/style.css"
+			],
+
+			"js": [
+				"js/jquery.js",
+				"notebook-generator.js"
+			]
+		}
+	],
+
+	"web_accessible_resources": [
+		"icons/icon.png"
+	],
+
+	"manifest_version": 2
+}
