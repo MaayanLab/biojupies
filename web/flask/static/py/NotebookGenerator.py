@@ -53,13 +53,25 @@ Here we download the dataset from the ARCHS4 library, load data and metadata in 
 
 	intro_analysis_text = """
 ## 2. Data Analysis
-Here we analyze the processed dataset applying scripts and computational tools.
+Here we analyze the processed dataset.
+
+##### PCA Plot
+First, we compute a PCA plot of the samples.
 	""".format(**locals())
 
+	heatmap_analysis_text = """
+##### Expression Heatmap
+Second, we display a heatmap of the top 500 most variable genes.
+	""".format(**locals())
+
+	coexpression_analysis_text = """
+##### Gene Coexpression Heatmap
+Third, we display a correlation heatmap of the top 500 most variable genes.
+	""".format(**locals())
 
 	# Load Libraries
 	notebook['cells'].append(nbf.v4.new_markdown_cell(intro_text))
-	notebook['cells'].append(nbf.v4.new_code_cell('# Import Modules\nimport archs4\nimport clustergrammer'))
+	notebook['cells'].append(nbf.v4.new_code_cell('# Import Modules\n%matplotlib inline\nimport archs4\nimport pca\nimport heatmap\nimport clustergrammer\nfrom plotly.offline import init_notebook_mode\ninit_notebook_mode()'))
 
 	# Fetch Data
 	notebook['cells'].append(nbf.v4.new_code_cell('# Get Dataset\nrawcount_dataframe, sample_metadata_dataframe = archs4.fetch_dataset("{acc}")\nrawcount_dataframe.head()'.format(**locals())))
@@ -67,8 +79,12 @@ Here we analyze the processed dataset applying scripts and computational tools.
 
 	# Add tools
 	notebook['cells'].append(nbf.v4.new_markdown_cell(intro_analysis_text))
-	notebook['cells'].append(nbf.v4.new_code_cell('# Normalize Dataset\nnormalized_dataframe = archs4.normalize_dataset(rawcount_dataframe)\nnormalized_dataframe.head()'))
-	notebook['cells'].append(nbf.v4.new_code_cell('# Display Clustergrammer\n#clustergrammer.display_clustergram(normalized_dataframe)'))
+	notebook['cells'].append(nbf.v4.new_code_cell('# PCA\npca.display(rawcount_dataframe)'))
+	notebook['cells'].append(nbf.v4.new_markdown_cell(heatmap_analysis_text))
+	notebook['cells'].append(nbf.v4.new_code_cell('# Heatmap\nheatmap.display(rawcount_dataframe);'))
+	notebook['cells'].append(nbf.v4.new_markdown_cell(coexpression_analysis_text))
+	notebook['cells'].append(nbf.v4.new_code_cell('# Gene-gene Correlation Heatmap\nheatmap.display(rawcount_dataframe, correlation=True);'))
+	notebook['cells'].append(nbf.v4.new_code_cell('# Display Clustergrammer\nclustergrammer.display_clustergram(rawcount_dataframe)'))
 
 	# Get string
 	notebook_string = nbf.writes(notebook)

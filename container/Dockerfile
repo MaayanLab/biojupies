@@ -15,6 +15,7 @@ RUN pip3 install scipy
 RUN pip3 install seaborn
 RUN pip3 install sklearn
 RUN pip3 install clustergrammer-widget
+RUN pip3 install plotly
 RUN jupyter nbextension enable --py --sys-prefix widgetsnbextension
 RUN jupyter nbextension enable --py --sys-prefix clustergrammer_widget
 

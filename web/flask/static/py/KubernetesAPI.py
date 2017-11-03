@@ -18,7 +18,7 @@
 #############################################
 ##### 1. Python modules #####
 from kubernetes import client, config, watch
-# config.load_kube_config()
+config.load_kube_config()
 
 #################################################################
 #################################################################
@@ -41,7 +41,7 @@ def GenerateDeployment(notebook_url, acc):
 	# Fill Required Fields (apiVersion, kind, metadata)
 	deployment.api_version = "extensions/v1beta1"
 	deployment.kind = "Deployment"
-	deployment.metadata = client.V1ObjectMeta(name="notebook-generator-deployment-{acc}".format(**locals()))
+	deployment.metadata = client.V1ObjectMeta(name="notebook-generator-deployment-{acc}".format(**locals()), labels={"group": "notebook-generator"})
 
 	# Add Spec
 	deployment.spec = client.ExtensionsV1beta1DeploymentSpec()
@@ -82,7 +82,7 @@ def GenerateService(acc):
 	# Fill Required Fields (apiVersion, kind, metadata)
 	service.api_version = "v1"
 	service.kind = "Service"
-	service.metadata = client.V1ObjectMeta(name="notebook-generator-service-{acc}".format(**locals()))
+	service.metadata = client.V1ObjectMeta(name="notebook-generator-service-{acc}".format(**locals()), labels={"group": "notebook-generator"})
 
 	# Add Spec
 	service.spec = client.V1ServiceSpec()
