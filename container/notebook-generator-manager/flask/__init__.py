@@ -17,19 +17,22 @@
 ########## 1. Load libraries
 #############################################
 ##### 1. Flask modules #####
-from flask import Flask, request, url_for
+from flask import Flask, request, url_for, send_from_directory
 
 ##### 2. Python modules #####
-import os
+import os, sys, json, nbformat
+from nbconvert.preprocessors import ExecutePreprocessor
 import urllib.request
 
 ##### 3. Custom modules #####
+sys.path.append('static/py')
+from SendNotebook import *
 
 #############################################
 ########## 2. App Setup
 #############################################
 ##### 1. Flask App #####
-entry_point = '/notebook-generator-downloader'
+entry_point = '/notebook-generator-manager'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'static'))
 
 #######################################################
@@ -44,17 +47,72 @@ app = Flask(__name__, static_url_path=os.path.join(entry_point, 'static'))
 
 @app.route(entry_point)
 def index():
-	return ''
+	return 'Welcome {username}'.format(**os.environ)
 
 #############################################
-########## 2. Download Notebook
+########## 2. Download
 #############################################
 
-@app.route(entry_point+'/download', methods=['GET', 'POST'])
+@app.route(entry_point+'/download', methods=['POST'])
 def download():
-	url = 'https://raw.githubusercontent.com/denis-torre/notebook-generator/master/Untitled.ipynb'
-	urllib.request.urlretrieve(url, os.path.join('notebooks', os.path.basename(url)))
-	return ','.join(os.listdir())
+
+	# Get POSTed Data
+	data = json.loads(request.data)
+
+	# Get file
+	notebook_file = os.path.join('notebooks', data['notebook_name'])
+
+	# Save Notebook to File
+	if not os.path.exists(notebook_file):
+		urllib.request.urlretrieve(data['notebook_url'], notebook_file)
+
+		# Execute
+		# if data['new_notebook']:
+		# 	with open(notebook_file) as f:
+		# 		nb = nbformat.read(f, as_version=4)
+		# 	ep = ExecutePreprocessor(timeout=600)
+		# 	ep.preprocess(nb, {'metadata': {'path': 'notebooks'}})
+		# 	with open(notebook_file) as f:
+		# 		nbformat.write(nb, f)
+			
+
+	# Get Notebook URLs
+	raw_notebook_url = os.path.join(request.host_url, 'notebook-generator-manager', 'notebooks', data['notebook_name'])
+	live_notebook_url = os.path.join(request.host_url.replace('5000', '8888'), 'notebooks', 'notebooks', data['notebook_name'])
+
+	# Upload to Google
+	if data['new_notebook']:
+		google_notebook_url = SendNotebook(raw_notebook_url)
+
+	# Return
+	urls = {'raw_notebook_url': raw_notebook_url, 'live_notebook_url': live_notebook_url}
+	return json.dumps(url)
+
+#############################################
+########## 3. Send
+#############################################
+
+# @app.route(entry_point+'/send', methods=['POST'])
+# def send():
+
+# 	# Get POSTed Data
+# 	data = json.loads(request.data)
+
+# 	# Send
+# 	google_notebook_url = SendNotebook(data['raw_notebook_url'])
+
+# 	# Return
+# 	return google_notebook_url
+
+#############################################
+########## 4. Notebooks
+#############################################
+
+@app.route(entry_point+'/notebooks/<path:path>')
+def notebooks(path):
+
+	# Return
+	return send_from_directory('notebooks', path)
 
 #######################################################
 #######################################################

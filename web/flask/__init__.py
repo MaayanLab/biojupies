@@ -18,14 +18,18 @@
 #############################################
 ##### 1. Flask modules #####
 from flask import Flask, request, url_for, redirect, render_template
+from flask_sqlalchemy import SQLAlchemy
 
 ##### 2. Python modules #####
-import os, sys, time
+import os, sys, urllib.request, json, requests
+from google.cloud import storage
+from google.cloud.storage import Blob
 
 ##### 3. Custom modules #####
 sys.path.append('static/py')
 from NotebookGenerator import *
-from KubernetesAPI import *
+from NotebookManager import *
+import KubernetesAPI
 
 #############################################
 ########## 2. App Setup
@@ -33,6 +37,14 @@ from KubernetesAPI import *
 ##### 1. Flask App #####
 entry_point = '/notebook-generator-web'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'static'))
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+##### 2. Database Connection #####
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
+db = SQLAlchemy(app)
+
+##### 3. API #####
+NotebookManager = NotebookManager(db)
 
 #######################################################
 #######################################################
@@ -51,11 +63,27 @@ def index():
 	return render_template('index.html')
 
 #############################################
-########## 2. Notebook Generation
+########## 2. Dashboard
 #############################################
 
-@app.route(entry_point+'/notebook')
-def generateNotebook():
+@app.route(entry_point+'/dashboard')
+def dashboard():
+
+	# Launch User Deployment
+	KubernetesAPI.LaunchDeployment(username='maayanlab')
+
+	# Get Notebooks
+	notebooks = NotebookManager.list_notebooks(user_id=1)
+
+	# Return
+	return render_template('dashboard.html', notebooks=notebooks)
+
+#############################################
+########## 3. Generate
+#############################################
+
+@app.route(entry_point+'/generate')
+def generate():
 
 	# Get Dataset Accession
 	acc = request.args.get('acc')
@@ -67,33 +95,56 @@ def generateNotebook():
 	return notebook_string
 
 #############################################
-########## 3. Launch Service
+########## 4. Launch
 #############################################
 
-@app.route(entry_point+'/launch')
-def launchService():
+@app.route(entry_point+'/launch', methods=['GET', 'POST'])
+def launch():
 
-	# Get Dataset Accession
-	acc = request.args.get('acc')
+	# Get accession
+	accession = request.args.get('acc', 'GSE30017')
 
 	# Get Notebook URL
-	# notebook_url = url_for('generateNotebook', acc=acc, _external=True)
-	notebook_url = 'http://amp.pharm.mssm.edu/notebook-generator-web/notebook?acc={acc}'.format(**locals())
+	data = {
+		'notebook_url': 'http://amp.pharm.mssm.edu/notebook-generator-web/generate?acc={accession}'.format(**locals()),
+		'notebook_name': '{accession} Analysis Notebook.ipynb'.format(**locals()),
+		'new_notebook': True
+	}
 
-	# Generate Deployment - add user ID & dataset
-	GenerateDeployment(notebook_url, acc.lower())
+	# Get Service IP
+	service_ip = KubernetesAPI.LaunchDeployment(username='maayanlab')
 
-	# Generate Service - add user ID & dataset
-	GenerateService(acc.lower())
+	# Post Notebook to Pod Manager
+	manager_url = 'http://{service_ip}:5000/notebook-generator-manager/download'.format(**locals())
+	# response = requests.post(manager_url, data=json.dumps(data))
 
-	# Get IP - add user ID & dataset
-	url = WatchService(acc.lower())
-
-	# Wait 5 Seconds
-	time.sleep(5)
+	# Get Notebook URL
+	# live_notebook_url = response.text
 
 	# Return
-	return url
+	return manager_url
+
+#############################################
+########## 5. Upload
+#############################################
+
+@app.route(entry_point+'/upload', methods=['POST'])
+def upload():
+
+	# Get POSTed data
+	data = json.loads(request.data)
+
+	# Upload to Google
+	client = storage.Client()
+	bucket = client.get_bucket('mssm-notebook-generator')
+	blob = Blob(data['notebook_name'], bucket)
+	blob.make_public()
+	notebook_string = urllib.request.urlopen(data['raw_notebook_url']).read().decode('utf-8')
+	blob.upload_from_string(notebook_string)
+	google_notebook_url = blob.public_url
+
+	# Return
+	return google_notebook_url
 
 #######################################################
 #######################################################

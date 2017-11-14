@@ -23,4 +23,4 @@ RUN mkdir jupyter
 COPY scripts jupyter
 WORKDIR jupyter
 
-ENTRYPOINT ln -s /notebooks static/notebooks; jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root --no-browser --NotebookApp.iopub_data_rate_limit=10000000000 --NotebookApp.token=
+ENTRYPOINT ln -s /notebooks notebooks; mv *.py notebooks; jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root --no-browser --NotebookApp.iopub_data_rate_limit=10000000000 --NotebookApp.token=

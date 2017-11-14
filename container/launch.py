@@ -45,15 +45,15 @@ jupyter_container.image="gcr.io/notebook-generator/notebook-generator-jupyter"
 jupyter_container.ports = [client.V1ContainerPort(container_port=8888, host_port=8888)]
 jupyter_container.volume_mounts = [volume_mount]
 
-# Create Notebook Downloader
-downloader_container = client.V1Container()
-downloader_container.name="notebook-generator-downloader"
-downloader_container.image="gcr.io/notebook-generator/notebook-generator-downloader"
-downloader_container.ports = [client.V1ContainerPort(container_port=5000, host_port=5000)]
-downloader_container.volume_mounts = [volume_mount]
+# Create Notebook Manager
+manager_container = client.V1Container()
+manager_container.name="notebook-generator-manager"
+manager_container.image="gcr.io/notebook-generator/notebook-generator-manager"
+manager_container.ports = [client.V1ContainerPort(container_port=5000, host_port=5000)]
+manager_container.volume_mounts = [volume_mount]
 
 # Add Containers
-deployment.spec.template.spec.containers = [jupyter_container, downloader_container]
+deployment.spec.template.spec.containers = [jupyter_container, manager_container]
 
 # Create Deployment
 extension.create_namespaced_deployment(namespace="default", body=deployment)
@@ -78,7 +78,7 @@ service.spec.selector = {"app": "notebook-generator".format(**locals())}
 jupyter_port = client.V1ServicePort(protocol="TCP", port=8888, target_port=8888)
 jupyter_port.name = "notebook-generator-jupyter"
 downloader_port = client.V1ServicePort(protocol="TCP", port=5000, target_port=5000)
-downloader_port.name = "notebook-generator-downloader"
+downloader_port.name = "notebook-generator-manager"
 
 # Add Ports
 service.spec.ports = [jupyter_port, downloader_port]
