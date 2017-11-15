@@ -66,16 +66,6 @@ def download():
 	if not os.path.exists(notebook_file):
 		urllib.request.urlretrieve(data['notebook_url'], notebook_file)
 
-		# Execute
-		# if data['new_notebook']:
-		# 	with open(notebook_file) as f:
-		# 		nb = nbformat.read(f, as_version=4)
-		# 	ep = ExecutePreprocessor(timeout=600)
-		# 	ep.preprocess(nb, {'metadata': {'path': 'notebooks'}})
-		# 	with open(notebook_file) as f:
-		# 		nbformat.write(nb, f)
-			
-
 	# Get Notebook URLs
 	raw_notebook_url = os.path.join(request.host_url, 'notebook-generator-manager', 'notebooks', data['notebook_name'])
 	live_notebook_url = os.path.join(request.host_url.replace('5000', '8888'), 'notebooks', 'notebooks', data['notebook_name'])
@@ -83,26 +73,28 @@ def download():
 	# Upload to Google
 	if data['new_notebook']:
 		google_notebook_url = SendNotebook(raw_notebook_url)
+	else:
+		google_notebook_url = data['google_notebook_url']
 
 	# Return
-	urls = {'raw_notebook_url': raw_notebook_url, 'live_notebook_url': live_notebook_url}
-	return json.dumps(url)
+	urls = {'raw_notebook_url': raw_notebook_url, 'live_notebook_url': live_notebook_url, 'google_notebook_url': google_notebook_url}
+	return json.dumps(urls)
 
 #############################################
 ########## 3. Send
 #############################################
 
-# @app.route(entry_point+'/send', methods=['POST'])
-# def send():
+@app.route(entry_point+'/send', methods=['POST'])
+def send():
 
-# 	# Get POSTed Data
-# 	data = json.loads(request.data)
+	# Get POSTed Data
+	raw_notebook_url = json.loads(request.data['raw_notebook_url'])
 
-# 	# Send
-# 	google_notebook_url = SendNotebook(data['raw_notebook_url'])
+	# Send
+	google_notebook_url = SendNotebook(raw_notebook_url)
 
-# 	# Return
-# 	return google_notebook_url
+	# Return
+	return google_notebook_url
 
 #############################################
 ########## 4. Notebooks

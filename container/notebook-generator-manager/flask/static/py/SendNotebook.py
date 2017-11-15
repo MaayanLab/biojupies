@@ -31,9 +31,8 @@ import requests, os, json
 
 def SendNotebook(live_notebook_url):
 
-	# url = 'http://localhost:5000/notebook-generator-web/upload'
-	# data = {'live_notebook_url': live_notebook_url, 'username': os.environ['username']}
-	# response = requests.post(url, data=json.dumps(data))
-	# google_notebook_url = response.text
-	# return google_notebook_url
-	return ''
+	url = 'http://amp.pharm.mssm.edu/notebook-generator-web/upload'
+	data = {'raw_notebook_url': live_notebook_url, 'username': os.environ['username']}
+	response = requests.post(url, data=json.dumps(data))
+	google_notebook_url = json.loads(response.text)['google_notebook_url']
+	return google_notebook_url

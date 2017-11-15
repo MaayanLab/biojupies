@@ -116,32 +116,30 @@ def launch():
 
 	# Post Notebook to Pod Manager
 	manager_url = 'http://{service_ip}:5000/notebook-generator-manager/download'.format(**locals())
-	# response = requests.post(manager_url, data=json.dumps(data))
+	response = requests.post(manager_url, data=json.dumps(data))
 
 	# Get Notebook URL
-	# live_notebook_url = response.text
+	live_notebook_url = response.text
 
 	# Return
-	return manager_url
+	return live_notebook_url
 
 #############################################
 ########## 5. Upload
 #############################################
 
-@app.route(entry_point+'/upload', methods=['POST'])
+@app.route(entry_point+'/upload', methods=['GET', 'POST'])
 def upload():
 
 	# Get POSTed data
-	data = json.loads(request.data)
+	# raw_notebook_url = json.loads(request.data)['raw_notebook_url']
+	raw_notebook_url = request.args.get('raw_notebook_url')
 
 	# Upload to Google
-	client = storage.Client()
-	bucket = client.get_bucket('mssm-notebook-generator')
-	blob = Blob(data['notebook_name'], bucket)
-	blob.make_public()
-	notebook_string = urllib.request.urlopen(data['raw_notebook_url']).read().decode('utf-8')
-	blob.upload_from_string(notebook_string)
-	google_notebook_url = blob.public_url
+	google_notebook_url = NotebookManager.upload_to_google(raw_notebook_url)
+
+	# Add to database
+	NotebookManager.upload_to_database(user_id='maayanlab', google_notebook_url=google_notebook_url)
 
 	# Return
 	return google_notebook_url
