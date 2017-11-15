@@ -5,3 +5,6 @@ kubectl config use-context notebook-generator-context
 
 export GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS
 echo $CREDENTIALS > $GOOGLE_APPLICATION_CREDENTIALS
+
+ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
+dpkg-reconfigure --frontend noninteractive tzdata

@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y python3-pip
 RUN apt-get update && apt-get install -y python3-dev
 RUN apt-get update && apt-get install -y libmysqlclient-dev
 RUN apt-get update && apt-get install -y curl
+RUN apt-get update && apt-get install -y tzdata
 
 RUN pip3 install --upgrade pip
 RUN pip3 install numpy

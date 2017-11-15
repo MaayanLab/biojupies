@@ -132,14 +132,14 @@ def launch():
 def upload():
 
 	# Get POSTed data
-	# raw_notebook_url = json.loads(request.data)['raw_notebook_url']
-	raw_notebook_url = request.args.get('raw_notebook_url')
+	raw_notebook_url = json.loads(request.data)['raw_notebook_url']
+	# raw_notebook_url = request.args.get('raw_notebook_url')
 
 	# Upload to Google
 	google_notebook_url = NotebookManager.upload_to_google(raw_notebook_url)
 
 	# Add to database
-	NotebookManager.upload_to_database(user_id='maayanlab', google_notebook_url=google_notebook_url)
+	NotebookManager.upload_to_database(user_id=1, notebook_uid=os.path.basename(google_notebook_url))
 
 	# Return
 	return google_notebook_url
