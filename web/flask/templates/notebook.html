@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+	<div id="content">
+		<div id="loading">Loading notebook.</div>
+	</div>
+
+{% endblock %}
+
+
+{% block footer %}
+
+	<script type="text/javascript">
+		$.ajax({
+			url: "{{ url_for('notebook_api', _external=True, notebook_uid=notebook_uid) }}",
+			type: "post",
+			success: function(data) {
+				window.location.href = data;
+			}
+		});
+	</script>
+
+{% endblock %}
+

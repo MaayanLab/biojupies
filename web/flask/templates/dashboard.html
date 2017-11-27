@@ -6,14 +6,85 @@
 			<div class="row">
 				<div class="col-12 text-center">
 					{% for notebook in notebooks %}
-						<div>{{ notebook.name }}</div>
+						<div><a href="{{ url_for('notebook', notebook_uid=notebook.notebook_uid) }}" target="_blank">{{ notebook.notebook_uid }}</a></div>
 					{% endfor %}
-					<form action="{{ url_for('launch') }}">
-						<input type="text" name="acc" value="GSE30017">
-						<button class="btn btn-primary" type="submit">Launch</button>
-					</form>
+					<a id="new-notebook" href="#">New Notebook</a>
+					<br>
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+						New Notebook
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						...
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary">Save changes</button>
+					</div>
 				</div>
 			</div>
 		</div>
 
 {% endblock %}
+
+
+{% block footer %}
+
+	<script type="text/javascript">
+		$.ajax({
+			url: "{{ url_for('dashboard_api') }}",
+			type: "post",
+			success: function(data) {
+				// console.log(data);
+			}
+		});
+
+		$('#new-notebook').click(function() {
+			$.ajax({
+				url: "{{ url_for('generate_api') }}",
+				type: "post",
+				data: "GSE30017",
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				success: function(notebook_data) {
+
+					$.ajax({
+						url: "{{ url_for('upload_api') }}",
+						type: "post",
+						contentType: "application/json; charset=utf-8",
+						data: JSON.stringify(notebook_data),
+						success: function(notebook_uid) {
+
+							$.ajax({
+								url: "/notebook-generator-web/api/notebook/"+notebook_uid,
+								type: "post",
+								contentType: "application/json; charset=utf-8",
+								success: function(live_notebook_url) {
+									window.open(live_notebook_url);
+									location.reload();
+								}
+							});
+
+						}
+					})
+
+				}
+			})
+		});
+
+	</script>
+
+{% endblock %}
+

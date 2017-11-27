@@ -69,7 +69,7 @@ class NotebookManager:
 	########## 3. Upload to Google
 	#############################################
 
-	def upload_to_google(self, raw_notebook_url):
+	def upload_to_google(self, notebook_string, notebook_name):
 
 		# Get string
 		notebook_uid = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(9))
@@ -79,8 +79,8 @@ class NotebookManager:
 		# Upload to Google
 		client = storage.Client()
 		bucket = client.get_bucket('mssm-notebook-generator')
-		blob = Blob(os.path.join(notebook_uid, os.path.basename(raw_notebook_url)), bucket)
-		notebook_string = urllib.request.urlopen(raw_notebook_url).read().decode('utf-8')
+		blob = Blob(os.path.join(notebook_uid, notebook_name), bucket)
+		# notebook_string = urllib.request.urlopen(raw_notebook_url).read().decode('utf-8')
 		blob.upload_from_string(notebook_string)
 		blob.make_public()
 
@@ -96,7 +96,7 @@ class NotebookManager:
 		session = self.Session()
 
 		# Insert
-		session.execute(self.tables['notebook'].insert().values({'user_fk': 1, 'notebook_uid': notebook_uid}))
+		session.execute(self.tables['notebook'].insert().values({'user_fk': user_id, 'notebook_uid': notebook_uid}))
 
 		# Close session
 		session.commit()

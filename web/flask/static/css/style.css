@@ -1,3 +1,221 @@
+/**********************/
+/* MAIN */
+/**********************/
+
+html {
+  height: 100%;
+}
+
+  body {
+    height: 100%;
+  }
+
+/**********************/
+/* Dashboard General **/
+/**********************/
+
+#dashboard-wrapper {
+  height: 100%;
+}
+
+  #dashboard-sidebar {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    background-color: white;
+    width: 250px;
+  }
+
+    #dashboard-sidebar-logo {
+      height: 75px;
+      width: 100%;
+      background-color: #006B99;
+      color: white;
+      font-family: "Montserrat";
+      display: table;
+    }
+
+      #dashboard-sidebar-logo-icon {
+        display: table-cell;
+        vertical-align: middle;
+        font-size: 33pt;
+        position: absolute;
+        left: 33px;
+        top: 15px;
+      }
+
+      #dashboard-sidebar-logo-text {
+        display: table-cell;
+        vertical-align: middle;
+        font-size: 14pt;
+        position: absolute;
+        left: 100px;
+        top: 13px;
+        line-height: 17pt;
+        font-weight: 300;
+      }
+
+    #dashboard-sidebar-user {
+      padding: 25px 25px;
+      border-bottom: 1px solid #eaeaea;
+      width: 100%;
+      height: 110px;
+    }
+
+      #dashboard-sidebar-user-icon {
+        font-size: 50pt;
+        color: #c2c2c2;
+        position: absolute;
+        left: 20px;
+      }
+
+      #dashboard-sidebar-user-info {
+        padding-left: 85px;
+        font-family: "Montserrat";
+        padding-top: 5px;
+      }
+
+        #dashboard-sidebar-user-name {
+          font-size: 14pt;
+        }
+
+        #dashboard-sidebar-user-status {
+          font-size: 8pt;
+          font-weight: 300;
+        }
+
+          #dashboard-sidebar-user-status-circle {
+            color: green;
+            margin-right: 5px;
+          }
+
+    #dashboard-sidebar-options {
+      display: block;
+      border-bottom: none;
+    }
+
+      .dashboard-sidebar-option {
+        font-family: "Montserrat";
+        font-weight: 500;
+        text-align: left;
+        margin-bottom: 0px !important;
+      }
+
+        .dashboard-sidebar-option-link {
+          font-size: 12pt;
+          color: #a1a1a1 !important;
+          border-color: none !important;
+          border: none !important;
+          border-radius: 0px !important;
+          border-bottom: 1px solid #eaeaea !important;
+          padding: 20px 20px;
+        }
+
+          .dashboard-sidebar-option-link.active {
+            color: #006B99 !important;
+            -webkit-box-shadow: inset 10px 0px 0px -5px #006B99;
+            -moz-box-shadow: inset 10px 0px 0px -5px #006B99;
+            box-shadow: inset 10px 0px 0px -5px #006B99;
+          }
+
+        .dashboard-sidebar-option .fa {
+          font-size: 17pt;
+          margin-right: 15px;
+          vertical-align: -7%;
+        }
+
+  #dashboard-content {
+    padding-left: 250px;
+    width: 100%;
+    background-color: #FAFAFA;
+    height: 100%;
+  }
+
+    #dashboard-topbar {
+      background-color: white;
+      width: 100%;
+      height: 75px;
+    }
+
+      #dashboard-topbar-search-form {
+        height: 100%;
+        padding-left: 20px;
+      }
+
+      #dashboard-topbar-search-form-icon {
+        font-size: 17pt;
+        color: #a1a1a1;
+      }
+
+      #dashboard-topbar-search-form-input {
+        color: #a1a1a1;
+        padding-left: 15px;
+        height: 100%;
+        width: 90%;
+        border: none;
+        box-shadow: none !important;
+        outline: none !important;
+        font-family: "FontAwesome", "Montserrat";
+        font-weight: 300;
+        font-size: 15pt;
+      }
+
+    #dashboard-data {
+      height: 100%;
+      width: 100%;
+      border-left: 1px solid #eaeaea;
+      border-top: 1px solid #eaeaea;
+      padding: 30px;
+    }
+
+      .dashboard-card {
+        border: 1px solid #eaeaea;
+        border-radius: 5px;
+        font-family: "Montserrat";
+      }
+
+        .dashboard-card-title {
+          width: 100%;
+          background-color: #F6F6F6;
+          border-bottom: 1px solid #eaeaea;
+          border-radius: 5px 5px 0px 0px;
+          padding: 10px 15px;
+          color: #808080;
+        }
+
+        .dashboard-card-contents {
+          width: 100%;
+          background-color: white;
+          border-radius: 0px 0px 5px 5px;
+          padding: 15px 15px;
+          color: #737373;
+        }
+
+
+/**********************/
+/* Dashboard Tab ******/
+/**********************/
+
+#dashboard {
+
+}
+
+  #dashboard-title {
+    font-family: "Montserrat";
+    font-size: 20pt;
+    margin-bottom: 20px;
+  }
+
+  #dashboard-intro {
+
+  }
+
+
+/**********************/
+/* Loading */
+/**********************/
+
 .sk-cube-grid {
   width: 100px;
   height: 100px;

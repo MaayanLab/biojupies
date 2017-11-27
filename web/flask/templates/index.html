@@ -2,4 +2,60 @@
 
 {% block content %}
 
+<link href="https://fonts.googleapis.com/css?family=Montserrat:300,500" rel="stylesheet">
+
+<div id="dashboard-wrapper">
+	<div id="dashboard-sidebar">
+		<div id="dashboard-sidebar-logo">
+			<i id="dashboard-sidebar-logo-icon" class="fa fa-book"></i>
+			<div id="dashboard-sidebar-logo-text">Notebook<br>Generator</div>
+		</div>
+		<div id="dashboard-sidebar-user">
+			<i id="dashboard-sidebar-user-icon" class="fa fa-user-circle-o"></i>
+			<div id="dashboard-sidebar-user-info">
+				<div id="dashboard-sidebar-user-name">Guest User</div>
+				<div id="dashboard-sidebar-user-status"><i id="dashboard-sidebar-user-status-circle" class="fa fa-circle"></i>ONLINE</div>
+			</div>
+		</div>
+		<ul id="dashboard-sidebar-options" class="nav nav-tabs" role="tablist">
+			<li class="nav-item dashboard-sidebar-option">
+				<a class="dashboard-sidebar-option-link nav-link active" data-toggle="tab" href="#dashboard" role="tab" aria-controls="dashboard" aria-selected="true"><i class="fa fa-tachometer"></i>Dashboard</a>
+			</li>
+			<li class="nav-item dashboard-sidebar-option">
+				<a class="dashboard-sidebar-option-link nav-link" data-toggle="tab" href="#notebooks" role="tab" aria-controls="notebooks" aria-selected="false""><i class="fa fa-book"></i>Notebooks</a>
+			</li>
+			<li class="nav-item dashboard-sidebar-option">
+				<a class="dashboard-sidebar-option-link nav-link" data-toggle="tab" href="#datasets" role="tab" aria-controls="datasets" aria-selected="false""><i class="fa fa-table"></i>Datasets</a>
+			</li>
+			<li class="nav-item dashboard-sidebar-option">
+				<a class="dashboard-sidebar-option-link nav-link" data-toggle="tab" href="#tools" role="tab" aria-controls="tools" aria-selected="false""><i class="fa fa-cogs"></i>Tools</a>
+			</li>
+			<li class="nav-item dashboard-sidebar-option">
+				<a class="dashboard-sidebar-option-link nav-link" data-toggle="tab" href="#help" role="tab" aria-controls="help" aria-selected="false""><i class="fa fa-question-circle"></i>Help</a>
+			</li>
+		</ul>
+	</div>
+	<div id="dashboard-content">
+		<div id="dashboard-topbar">
+			<form id="dashboard-topbar-search-form">
+				<i id="dashboard-topbar-search-form-icon" class="fa fa-search"></i>
+				<input id="dashboard-topbar-search-form-input" type="text" name="q" placeholder="Search...">
+			</form>
+		</div>
+		<div id="dashboard-data" class="tab-content">
+			<div class="tab-pane show active" id="dashboard" role="tabpanel">
+				<div id="dashboard-title">Notebook Generator</div>
+				<div id="dashboard-howto-card" class="dashboard-card">
+					<div class="dashboard-card-title">HOW IT WORKS</div>
+					<div class="dashboard-card-contents">I don't really know how it works.</div>
+				</div>
+			</div>
+			<div class="tab-pane" id="notebooks" role="tabpanel">notebooks</div>
+			<div class="tab-pane" id="datasets" role="tabpanel">datasets</div>
+			<div class="tab-pane" id="tools" role="tabpanel">tools</div>
+			<div class="tab-pane" id="help" role="tabpanel">help</div>
+		</div>
+	</div>
+</div>
+
 {% endblock %}
