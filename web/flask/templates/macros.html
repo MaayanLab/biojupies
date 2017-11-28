@@ -1,6 +1,6 @@
 <!-- Badge -->
-{% macro badge(title, description, color, id, icon='book', colsize=4, button=False, progress=False) %}
-<div class="col-{{ colsize }}">
+{% macro badge(title, description, color, id, icon='book', colsize=4, offset=0, button=False, progress=False, search=False) %}
+<div class="col-xl-{{ colsize }} col-lg-12 offset-xl-{{ offset }}">
 	<div id="{{ id }}-badge" class="dashboard-badge">
 		<div class="dashboard-badge-icon" style="background-color: {{ color  }};"><i class="fa fa-{{ icon }}"></i></div>
 		<div class="dashboard-badge-content">
@@ -10,6 +10,12 @@
 				<div class="progress">
 				  <div class="progress-bar" style="width:{{ progress*100  }}%;height:20px; background-color: {{ color }};"></div>
 				</div>
+				{% endif %}
+				{% if search %}
+				<form class="badge-search-form">
+					<i class="fa fa-search badge-search-icon"></i>
+					<input class="badge-search-input" type="text" placeholder="Search...">
+				</form>
 				{% endif %}
 			</div>
 			{% if button %}
@@ -31,25 +37,25 @@
 {% endmacro %}
 
 <!-- Overview -->
-{% macro step(icon, number, title, description, colsize=4, color='#006B99', line_left=False, line_right=False) %}
-<div class="col-{{ colsize }}">
+{% macro step(icon, number, title, description, colsize=4, offset=0, color='#006B99', line_left=False, line_right=False) %}
+<div class="col-{{ colsize }} offset-xl-{{ offset }}">
 	<div class="overview-step" style="background-color: {{ color  }};">
 		<i class="fa fa-{{ icon }}"></i>
 	</div>
 	<div class="overview-title text-center" style="color: {{ color }};">{{number}}. {{title}}</div>
 	<div class="overview-description text-center">{{description}}</div>
 	{% if line_left %}
-	<div id="line-left" style="position: absolute; height: 1px; width: 30%; background-color: {{ color }}; top: 73px; left: 0px;"></div>
+	<div id="line-left" style="position: absolute; height: 1px; width: 29%; background-color: {{ color }}; top: 73px; left: 0px;"></div>
 	{% endif %}
 	{% if line_right %}
-	<div id="line-right" style="position: absolute; height: 1px; width: 30%; background-color: {{ color }}; top: 73px; right: 0px;"></div>
+	<div id="line-right" style="position: absolute; height: 1px; width: 29%; background-color: {{ color }}; top: 73px; right: 0px;"></div>
 	{% endif %}
 </div>
 {% endmacro %}
 
 <!-- Notebook -->
-{% macro notebook(title, description, id='') %}
-<div id="{{ id }}" class="col-xl-2 col-lg-3">
+{% macro notebook(title, description, id='', colsize='col-xl-2 col-lg-3') %}
+<div id="{{ id }}" class="{{ colsize }}">
 	<div class="notebook-card">
 		<div class="notebook-card-title">
 			Analysis Notebook {{title+1}}

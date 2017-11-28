@@ -8,6 +8,7 @@ html {
 
   body {
     height: 100%;
+    min-width: 900px;
   }
 
 /**********************/
@@ -103,7 +104,7 @@ html {
       }
 
         .dashboard-sidebar-option-link {
-          font-size: 12pt;
+          font-size: 11pt;
           color: #a1a1a1 !important;
           border-color: none !important;
           border: none !important;
@@ -167,23 +168,23 @@ html {
 /**********************/
 
 #dashboard-data {
-  height: 100%;
   width: 100%;
+  min-width: 700px;
   border-left: 1px solid #eaeaea;
   border-top: 1px solid #eaeaea;
-  padding: 30px;
+  /*padding: 30px;*/
   background-color: #FAFAFA;
 }
 
   .dashboard-title {
     font-family: "Montserrat";
-    font-size: 23pt;
+    font-size: 19pt;
     margin-bottom: 20px;
   }
 
   .dashboard-text {
     font-family: "Montserrat";
-    font-size: 14pt;
+    font-size: 12pt;
     margin-bottom: 20px;
     font-weight: 300;
   }
@@ -201,6 +202,9 @@ html {
   border-radius: 5px;
   font-family: "Montserrat";
   margin-bottom: 20px;
+  -webkit-box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
+  -moz-box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
+  box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
 }
 
   .dashboard-card-title {
@@ -210,6 +214,7 @@ html {
     border-radius: 5px 5px 0px 0px;
     padding: 10px 15px;
     color: #808080;
+    font-size: 11pt;
   }
 
   .dashboard-card-contents {
@@ -263,12 +268,12 @@ html {
     }
 
       .dashboard-badge-title {
-        font-size: 17pt;
+        font-size: 15pt;
         margin-bottom: 17px;
       }
 
       .dashboard-badge-description {
-        font-size: 10pt;
+        font-size: 8pt;
         color: #737373;
         padding-right: 10px;
         font-weight: 300;
@@ -279,7 +284,7 @@ html {
       vertical-align: middle;
       border-radius: 0px 5px 5px 0px;
       color: white;
-      font-size: 35pt;
+      font-size: 30pt;
       width: 75px;
       text-align: center;
       cursor: pointer;
@@ -287,6 +292,23 @@ html {
 
     .dashboard-badge-button:hover {
       opacity: 0.9;
+    }
+
+  .badge-search-form {
+    color: #a1a1a1;
+  }
+
+    .badge-search-icon {
+      font-size: 17pt;
+    }
+
+    .badge-search-input {
+      border: none;
+      font-weight: 300;
+      padding-left: 10px;
+      font-size: 12pt;
+      outline: none !important;
+      width: 70%;
     }
 
 /**********************/
@@ -373,53 +395,6 @@ html {
       }
 
 /**********************/
-/* Notebook Slide *****/
-/**********************/
-
-#notebook-slider {
-  width: 90%;
-  margin: auto;
-}
-
-  .notebook-slide {
-    width: 100%;
-  }
-
-    .notebook-slide img {
-      width: 95%;
-      -webkit-box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
-      -moz-box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
-      box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
-      margin: auto;
-      margin-bottom: 3px;
-    }
-
-    #notebook-slider .slick-arrow::before {
-      color: red;
-      background-color: #eaeaea;
-      color: #3d3d3d;
-      font-family: "FontAwesome";
-      position: absolute;
-      height: 35px;
-      width: 35px;
-      border-radius: 35px;
-      font-size: 25pt;
-    }
-
-      #notebook-slider .slick-prev::before { content: '\f104'; left: -7px;}
-      #notebook-slider .slick-next::before { content: '\f105'; left: -7px;}
-
-
-
-    #notebook-slider .slick-dots {
-      bottom: -40px;
-    }
-
-      #notebook-slider .slick-dots button::before {
-        font-size: 19pt;
-      }
-
-/**********************/
 /* Overview */
 /**********************/
 
@@ -440,16 +415,19 @@ html {
 
 .overview-title {
   font-weight: 500;
-  font-size: 13pt;
+  font-size: 12pt;
   margin-top: 15px;
   font-family: "Montserrat";
 }
 
 .overview-description {
   font-family: "Montserrat";
-  font-size: 11pt;
+  font-size: 10pt;
   font-weight: 300;
-  padding: 10px 50px;
+  /*padding: 10px 50px;*/
+  margin: auto;
+  max-width: 200px;
+  min-width: 50px;
   color: #808080;
 }
 
@@ -467,6 +445,54 @@ html {
 
 #featured-title {
   margin-left: 50px;
+}
+
+#examples-title {
+  margin-top: -30px;
+}
+
+#get-started-button {
+  padding: 15px 20px;
+  margin: auto;
+  width: 100%;
+  font-family: "Montserrat";
+  background-color: #006B99;
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  cursor: pointer;
+}
+
+/**********************/
+/* New Notebook */
+/**********************/
+
+#new-notebook {
+}
+
+  #new-notebook-row1 {
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 10px;
+    height: 75px;
+    padding: 15px 30px;
+  }
+
+    #new-notebook-row1 .col-1 {
+      margin: auto;
+    }
+
+    #cancel-new-notebook {
+      cursor: pointer;
+      margin-right: 10px;
+      font-size: 15pt;
+    }
+
+#stored-notebooks {
+  display: none;
+}
+
+#dashboard {
+  padding: 30px;
 }
 
 /**********************/
