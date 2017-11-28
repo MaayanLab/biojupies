@@ -59,7 +59,6 @@ NotebookManager = NotebookManager(db)
 
 @app.route(entry_point)
 def index():
-
 	# Return
 	return render_template('index.html')
 

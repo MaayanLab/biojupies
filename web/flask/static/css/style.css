@@ -161,56 +161,313 @@ html {
         font-size: 15pt;
       }
 
-    #dashboard-data {
-      height: 100%;
-      width: 100%;
-      border-left: 1px solid #eaeaea;
-      border-top: 1px solid #eaeaea;
-      padding: 30px;
-    }
-
-      .dashboard-card {
-        border: 1px solid #eaeaea;
-        border-radius: 5px;
-        font-family: "Montserrat";
-      }
-
-        .dashboard-card-title {
-          width: 100%;
-          background-color: #F6F6F6;
-          border-bottom: 1px solid #eaeaea;
-          border-radius: 5px 5px 0px 0px;
-          padding: 10px 15px;
-          color: #808080;
-        }
-
-        .dashboard-card-contents {
-          width: 100%;
-          background-color: white;
-          border-radius: 0px 0px 5px 5px;
-          padding: 15px 15px;
-          color: #737373;
-        }
-
 
 /**********************/
-/* Dashboard Tab ******/
+/* Dashboard Generics */
 /**********************/
 
-#dashboard {
-
+#dashboard-data {
+  height: 100%;
+  width: 100%;
+  border-left: 1px solid #eaeaea;
+  border-top: 1px solid #eaeaea;
+  padding: 30px;
+  background-color: #FAFAFA;
 }
 
-  #dashboard-title {
+  .dashboard-title {
     font-family: "Montserrat";
-    font-size: 20pt;
+    font-size: 23pt;
     margin-bottom: 20px;
   }
 
-  #dashboard-intro {
-
+  .dashboard-text {
+    font-family: "Montserrat";
+    font-size: 14pt;
+    margin-bottom: 20px;
+    font-weight: 300;
   }
 
+  .dashboard-row {
+    margin-bottom: 35px;
+  }
+
+/**********************/
+/* Dashboard Card *****/
+/**********************/
+
+.dashboard-card {
+  border: 1px solid #eaeaea;
+  border-radius: 5px;
+  font-family: "Montserrat";
+  margin-bottom: 20px;
+}
+
+  .dashboard-card-title {
+    width: 100%;
+    background-color: #F6F6F6;
+    border-bottom: 1px solid #eaeaea;
+    border-radius: 5px 5px 0px 0px;
+    padding: 10px 15px;
+    color: #808080;
+  }
+
+  .dashboard-card-contents {
+    width: 100%;
+    background-color: white;
+    border-radius: 0px 0px 5px 5px;
+    padding: 15px 15px;
+    color: #737373;
+  }
+
+/**********************/
+/* Dashboard Badge ****/
+/**********************/
+
+.dashboard-badge {
+  border-radius: 5px;
+  display: table;
+  height: 100%;
+  width: 100%;
+  -webkit-box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
+  -moz-box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
+  box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
+}
+
+  .dashboard-badge-icon {
+    display: table-cell;
+    vertical-align: middle;
+    font-size: 55pt;
+    border-radius: 5px 0px 0px 5px;
+    color: white;
+    padding: 5px 10px;
+    width: 120px;
+    text-align: center;
+    background-color: #006B99;
+  }
+
+  .dashboard-badge-content {
+    display: table;
+    height: 100%;
+    border-radius: 0px 5px 5px 0px;
+    background-color: white;
+    border: 1px solid #eaeaea;
+    border-left: none;
+    font-family: "Montserrat";
+    width: 100%;
+  }
+
+    .dashboard-badge-text {
+      height: 100%;
+      padding: 15px;
+    }
+
+      .dashboard-badge-title {
+        font-size: 17pt;
+        margin-bottom: 17px;
+      }
+
+      .dashboard-badge-description {
+        font-size: 10pt;
+        color: #737373;
+        padding-right: 10px;
+        font-weight: 300;
+      }
+
+    .dashboard-badge-button {
+      display: table-cell;
+      vertical-align: middle;
+      border-radius: 0px 5px 5px 0px;
+      color: white;
+      font-size: 35pt;
+      width: 75px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .dashboard-badge-button:hover {
+      opacity: 0.9;
+    }
+
+/**********************/
+/* Notebook Generation*/
+/**********************/
+
+#notebook-generation-interface {
+  height: 100%;
+  width: 100%;
+  background-color: red;
+  top: 0px;
+  left: 0px;
+}
+
+/**********************/
+/* Notebook Action ****/
+/**********************/
+
+#notebook-actions-row {
+  margin-bottom: 25px;
+}
+
+/**********************/
+/* Notebook Card ******/
+/**********************/
+
+.notebook-card {
+  border: 1px solid #eaeaea;
+  background-color: white;
+  border-radius: 5px;
+  margin-bottom: 25px;
+  -webkit-box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
+  -moz-box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
+  box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
+  font-family: "Montserrat";
+  text-align: center;
+}
+
+  .notebook-card-title {
+    background-color: #F6F6F6;
+    width: 100%;
+    padding: 10px 15px;
+    color: #808080;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    border-bottom: 1px solid #eaeaea;
+  }
+
+  .notebook-card-contents {
+    cursor: pointer !important;
+    width: 100%;
+    height: 100%;
+  }
+
+    .notebook-card-image {
+      width: 100%;
+      padding-top: 15px;
+      padding-bottom: 15px;
+      padding-left: 70px;
+      padding-right: 70px;
+    }
+
+    .notebook-card-dropup {
+      position: absolute;
+      background-color: rgba(255, 255, 255, 0.7);
+      width: 89.5%;
+      top: 45px;
+      height: 70%;
+      border-radius: 0px 0px 5px 5px;
+      visibility: hidden;
+    }
+
+      .notebook-card-contents:hover .notebook-card-dropup {
+        visibility: visible;
+      }
+
+      .notebook-card-dropup button {
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 12px;
+        cursor: pointer;
+        background-color: #007bff !important;
+      }
+
+/**********************/
+/* Notebook Slide *****/
+/**********************/
+
+#notebook-slider {
+  width: 90%;
+  margin: auto;
+}
+
+  .notebook-slide {
+    width: 100%;
+  }
+
+    .notebook-slide img {
+      width: 95%;
+      -webkit-box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
+      -moz-box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
+      box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
+      margin: auto;
+      margin-bottom: 3px;
+    }
+
+    #notebook-slider .slick-arrow::before {
+      color: red;
+      background-color: #eaeaea;
+      color: #3d3d3d;
+      font-family: "FontAwesome";
+      position: absolute;
+      height: 35px;
+      width: 35px;
+      border-radius: 35px;
+      font-size: 25pt;
+    }
+
+      #notebook-slider .slick-prev::before { content: '\f104'; left: -7px;}
+      #notebook-slider .slick-next::before { content: '\f105'; left: -7px;}
+
+
+
+    #notebook-slider .slick-dots {
+      bottom: -40px;
+    }
+
+      #notebook-slider .slick-dots button::before {
+        font-size: 19pt;
+      }
+
+/**********************/
+/* Overview */
+/**********************/
+
+.overview-step {
+  text-align: center;
+  color: white;
+  height: 150px;
+  width: 150px;
+  border-radius: 150px;
+  margin: auto;
+  font-size: 65pt;
+  font-family: "Montserrat";
+}
+
+  .overview-step .fa {
+    vertical-align: -10%;
+  }
+
+.overview-title {
+  font-weight: 500;
+  font-size: 13pt;
+  margin-top: 15px;
+  font-family: "Montserrat";
+}
+
+.overview-description {
+  font-family: "Montserrat";
+  font-size: 11pt;
+  font-weight: 300;
+  padding: 10px 50px;
+  color: #808080;
+}
+
+/**********************/
+/* Custom */
+/**********************/
+
+.under-development {
+  text-align: center;
+  font-family: "Montserrat";
+  font-size: 30pt;
+  font-weight: 300;
+  margin-top: 50px;
+}
+
+#featured-title {
+  margin-left: 50px;
+}
 
 /**********************/
 /* Loading */
