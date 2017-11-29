@@ -11,6 +11,10 @@ html {
     min-width: 900px;
   }
 
+.fill {
+  height: 100%;
+}
+
 /**********************/
 /* Dashboard General **/
 /**********************/
@@ -169,7 +173,7 @@ html {
 
 #dashboard-content {
   width: 100%;
-  min-height: 100%;
+  height: 95%;
   min-width: 700px;
   border-left: 1px solid #eaeaea;
   border-top: 1px solid #eaeaea;
@@ -180,6 +184,11 @@ html {
     font-family: "Montserrat";
     font-size: 19pt;
   }
+
+    .dashboard-title-lg {
+      font-family: "Montserrat";
+      font-size: 23pt;
+    }
 
   .dashboard-text {
     font-family: "Montserrat";
@@ -461,6 +470,81 @@ html {
       padding-top: 17px;
     }
 
+  /**********************/
+  /* Tab Card ***********/
+  /**********************/
+
+  .tab-card {
+    background-color: white;
+    text-align: center;
+  }
+
+    .tab-card .nav-tabs {
+      border: 1px solid #eaeaea;
+      border-bottom: none;
+      border-radius: 5px 5px 0px 0px;
+    }
+
+      .tab-card .nav-link {
+        border-radius: 0px;
+        border: none;
+        border-bottom: 1px solid #eaeaea;
+        color: #808080;
+        background-color: #F6F6F6;
+      }
+
+        .tab-card .nav-item:nth-child(1) .nav-link { border-radius: 5px 0px 0px 0px; border-right: 1px solid #eaeaea;}
+        .tab-card .nav-item:nth-child(2) .nav-link { border-radius: 0px 5px 0px 0px; }
+
+        .tab-card .nav-link.active {
+          background-color: white;
+          color: #006B99;
+        }
+
+    .tab-card-content {
+      border: 1px solid #eaeaea;
+      border-radius: 0px 0px 5px 5px;
+    }
+
+/**********************/
+/* Processed Datatable */
+/**********************/
+
+#processed-data {
+  /*display: none;*/
+}
+
+  #processed-data-table {
+    width: 100%;
+  }
+
+    #processed-data-table_info {
+      text-align: left;
+    }
+
+    #processed-data-table_length {
+      text-align: left;
+    }
+
+    #processed-data-table tr td.select-checkbox {
+      cursor: pointer;
+    }
+
+      #processed-data-table tbody td.select-checkbox:before {
+        margin-top: -13px;
+      }
+
+      #processed-data-table tr.selected td.select-checkbox:after {
+        content: 'X';
+        margin-left: -6px;
+        margin-top: -17px !important;
+      }
+
+/*
+      #processed-data-table tr.selected td.select-checkbox:after, table.dataTable tr.selected th.select-checkbox:after {
+        content: 'asd';
+      }
+*/
 /**********************/
 /* Development */
 /**********************/
@@ -478,16 +562,80 @@ html {
 /**********************/
 
 #stored-notebooks {
+  display: none;
 }
-
 
 /**********************/
 /* New Notebooks ******/
 /**********************/
 
 #new-notebook {
-  display: none;
+  /*display: none;*/
+  font-family: "Montserrat";
 }
+
+  #new-notebook-header-row {
+    border-bottom: 1px solid #eaeaea;
+    height: 109px;
+    background-color: white;
+    -webkit-box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
+    -moz-box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
+    box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
+  }
+
+    .new-notebook-navigation-button {
+      padding: 15px 25px;
+      cursor: pointer;
+      outline: none !important;
+      box-shadow: none !important;
+      margin-left: 10px;
+    }
+
+      #new-notebook-back-button { display: none; }
+      #new-notebook-back-button .fa { padding-right: 10px; }
+      #new-notebook-continue-button .fa { padding-left: 10px; }
+
+  #new-notebook-content-row {
+    height: 87%;
+  }
+
+    #new-notebook-content {
+
+    }
+
+    #new-notebook-sidebar {
+      border-left: 1px solid #eaeaea;
+      background-color: white;
+    }
+
+      .new-notebook-step {
+        padding: 10px 15px;
+      }
+
+      .active-notebook-step {
+        background-color: #006B99;
+        border-top: 1px solid #006B99;
+        border-bottom: 1px solid #006B99;
+        color: white;
+      }
+
+      .pending-notebook-step {
+        background-color: #eaeaea;
+        border-top: 1px solid #808080;
+        border-bottom: 1px solid #808080;
+        color: #808080;
+      }
+
+        .pending-notebook-step + .row {
+          opacity: 0.3;
+        }
+
+      .completed-notebook-step {
+        background-color: #eaeaea;
+        border-top: 1px solid #808080;
+        border-bottom: 1px solid #808080;
+        color: #808080;
+      }
 
 
 /*
@@ -513,6 +661,34 @@ html {
     }
 */
 
+
+/**********************/
+/* Sel Object Badge ***/
+/**********************/
+
+.selected-object-card {
+}
+
+  .selected-object-card-icon {
+    font-size: 50pt;
+    margin: auto;
+    color: #808080;
+  }
+
+  .selected-object-card-text {
+    margin: auto;
+  }
+
+    .selected-object-card-title {
+
+    }
+
+    .selected-object-card-description {
+      color: #808080;
+      font-weight: 300;
+      margin-top: 3px;
+      font-size: 11pt;
+    }
 
 /**********************/
 /* Loading */

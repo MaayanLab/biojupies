@@ -54,18 +54,13 @@
 {% endmacro %}
 
 <!-- Notebook -->
-{% macro notebook(title, id='', colsize='col-xl-2 col-lg-3 col-md-4 col-sm-4 col-xs-4 col-4', example=False, new=False) %}
+{% macro notebook(title, id='', colsize='col-xl-2 col-lg-3 col-md-4 col-sm-4 col-xs-4 col-4', example=False) %}
 <div id="{{ id }}" class="{{ colsize }}">
 	<div class="notebook-card">
 		<div class="notebook-card-title">
 			{{title}}
 		</div>
 		<div class="notebook-card-contents">
-			{% if new %}
-			<div class="new-notebook-plus">
-				<i class="fa fa-plus"></i>
-			</div>
-			{% else %}
 			<img class="notebook-card-image" src="{{ url_for('static', filename='img/jupyter.png') }}">
 			<div class="notebook-card-dropup">
 				<div class="notebook-card-dropup-option" style="color: white; background-color: #07a207;"><span>Launch</span></div>
@@ -76,7 +71,50 @@
 				<div class="notebook-card-dropup-option" style="color: white; background-color: #FF4463;"><span>Delete</span></div>
 				{% endif %}
 			</div>
-			{% endif %}
+		</div>
+	</div>
+</div>
+{% endmacro %}
+
+<!-- Tab Card -->
+{% macro tab_card(options=['Browse', 'Upload']) %}
+<div id="{{ id }}" class="{{ colsize }}">
+	<div class="tab-card">
+
+		<ul class="nav nav-tabs nav-justified tab-card-nav">
+		  <li class="nav-item">
+		    <a class="nav-link active" href="#">Browse</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" href="#">Upload</a>
+		  </li>
+		</ul>
+
+		<div class="tab-card-content">
+		</div>
+
+	</div>
+</div>
+{% endmacro %}
+
+<!-- Selected Object Card -->
+{% macro selected_object(id, title, description, icon) %}
+<div id="{{ id }}" class="selected-object-card">
+	<div class="row">
+		<div class="col-3">
+			<div class="selected-object-card-icon text-center">
+				<i class="fa fa-{{ icon }}"></i>
+			</div>
+		</div>
+		<div class="col-9">
+			<div class="selected-object-card-text padded-sm">
+				<div class="selected-object-card-title">
+					{{ title }}
+				</div>
+				<div class="selected-object-card-description">
+					{{ description }}
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

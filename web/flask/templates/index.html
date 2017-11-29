@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<link href="https://fonts.googleapis.com/css?family=Montserrat:300,500" rel="stylesheet">
+
 
 <div id="dashboard-wrapper">
 	<div id="dashboard-sidebar">
@@ -47,7 +47,7 @@
 			</form>
 		</div>
 
-		<div id="dashboard-content" class="tab-content">
+		<div id="dashboard-content" class="tab-content fill">
 			<div class="tab-pane padded-lg" id="home" role="tabpanel">
 				<div class="container-fluid">
 					<div class="row">
@@ -91,7 +91,7 @@
 							</div>
 							<div class="row">
 								{% for notebook in range(3) %}
-									{{ macros.notebook(notebook, notebook, colsize='col-4', example=True) }}
+									{{ macros.notebook(title='Analysis Notebook '+(notebook+1)|string, colsize='col-4', example=True) }}
 								{% endfor %}
 							</div>
 						</div>
@@ -129,32 +129,114 @@
 					</div>
 				</div>
 			</div>
-			<div class="tab-pane show active" id="notebooks" role="tabpanel">
-				<div id="new-notebook">
-					<div id="new-notebook-row1" class="row">
-						<div class="col-11">
-							<div class="dashboard-title">New Notebook</div>
+			<div class="tab-pane show active fill" id="notebooks" role="tabpanel">
+				<div class="container-fluid fill">
+					<div id="stored-notebooks" class="padded-lg">
+						<div class="row">
+							<div class="col-12">
+								<div class="dashboard-title margin-bottom-md">Notebooks</div>
+							</div>
 						</div>
-						<div class="col-1 text-right">
-							<i id="cancel-new-notebook" class="fa fa-times"></i>
-						</div>
-					</div>
-
-					<div id="new-notebook-row2" class="row">
-					</div>
-				</div>
-				<div id="stored-notebooks" class="padded-lg">
-					<div class="row">
-						<div class="col-12">
-							<div class="dashboard-title margin-bottom-md">Notebooks</div>
+						<div id="notebook-row" class="row">
+							{% for notebook in range(10) %}
+								{{ macros.notebook(title='Analysis Notebook '+(notebook+1)|string) }}
+							{% endfor %}
 						</div>
 					</div>
-					<div id="notebook-row" class="row">
-						{% for notebook in range(10) %}
-							{{ macros.notebook(title='Analysis Notebook '+(notebook+1)|string) }}
-						{% endfor %}
-							{{ macros.notebook(title='New Notebook', new=True) }}
-
+					<div id="new-notebook" class="fill">
+						<div id="new-notebook-header-row" class="row padded-lg">
+							<div class="col-6">
+								<div class="dashboard-title-lg">New Notebook</div>
+							</div>
+							<div class="col-6 text-right">
+								<button id="new-notebook-cancel-button" class="btn btn-secondary new-notebook-navigation-button">Cancel</button>
+								<button id="new-notebook-back-button" class="btn btn-primary new-notebook-navigation-button"><i class="fa fa-angle-double-left"></i> Back</button>
+								<button id="new-notebook-continue-button" class="btn btn-primary new-notebook-navigation-button">Continue <i class="fa fa-angle-double-right"></i></button>
+							</div>
+						</div>
+						<div id="new-notebook-content-row" class="row">
+							<div id="new-notebook-content" class="col-9 padded-lg">
+								<div class="row">
+									<div class="col-12">
+										<div class="dashboard-title margin-bottom-sm">1. Add Data</div>
+										<div class="dashboard-text margin-bottom-md">To begin, select a dataset from the 5,000+ pre-processed datasets below, or upload your own using our dataset upload form.</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-12">
+										<div id="" class="tab-card">
+											<ul class="nav nav-tabs nav-justified">
+											  <li class="nav-item">
+											    <a class="nav-link active" data-toggle="tab" href="#processed-data" role="tab" aria-controls="processed-data" aria-selected="true">Processed Data</a>
+											  </li>
+											  <li class="nav-item">
+											    <a class="nav-link" data-toggle="tab" href="#uploaded-data" role="tab" aria-controls="uploaded-data" aria-selected="false">Uploaded Data</a>
+											  </li>
+											</ul>
+											<div class="tab-card-content tab-content">
+												<div class="tab-pane show active padded-lg" role="tabpanel" id="processed-data">
+													<table id="processed-data-table">
+														<thead>
+															<tr>
+																<th></th>
+																<th>Accession</th>
+																<th>Title</th>
+																<th>Description</th>
+																<th>Repository</th>
+															</tr>
+														</thead>
+														<tbody>
+															{% for index, rowData in datasets.head(20).iterrows() %}
+															<tr>
+																<td></td>
+																<td>{{ rowData.dataset_accession }}</td>
+																<td class="processed-dataset-title">{{ rowData.title }}</td>
+																<td class="processed-dataset-description">{{ rowData.summary }}</td>
+																<td>GEO</td>
+															</tr>
+															{% endfor %}
+														</tbody>
+													</table>
+												</div>
+												<div class="tab-pane" role="tabpanel" id="uploaded-data">
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div id="new-notebook-sidebar" class="col-3">
+								<div id="new-notebook-data-row" class="row new-notebook-step active-notebook-step">
+									<div class="col-12">
+										1. Data
+									</div>
+								</div>
+								<div id="new-notebook-selected-data" class="row padded-sm">
+									<div class="col-12">
+										{{ macros.selected_object(id='dataset', title='No Data Selected.', description='To proceed, select a dataset from the menu.', icon='table') }}
+									</div>
+								</div>
+								<div id="new-notebook-tools-row" class="row new-notebook-step pending-notebook-step">
+									<div class="col-12">
+										2. Tools
+									</div>
+								</div>
+								<div id="new-notebook-selected-tools" class="row padded-sm">
+									<div class="col-12">
+										{{ macros.selected_object(id='tool', title='No Tools Selected', description='To proceed, select one or more tools from the menu.', icon='cogs') }}
+									</div>
+								</div>
+								<div id="new-notebook-config-row" class="row new-notebook-step pending-notebook-step">
+									<div class="col-12">
+										3. Review
+									</div>
+								</div>
+								<div id="new-notebook-continue-row" class="row">
+									<div class="col-12">
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -169,6 +251,34 @@
 
 {% block footer %}
 
-<script type="text/javascript">$('#new-notebook').click(function(){ $('#new-notebook').hide(); $('#stored-notebooks').show(); });</script>
+<script type="text/javascript">
+$('#processed-data-table').DataTable(
+	{
+		columnDefs:[
+			{targets:0, orderable:false, className:'select-checkbox'},
+			{targets:1, render:$.fn.dataTable.render.ellipsis(10, true), width:"10%"},
+			{targets:2, render:$.fn.dataTable.render.ellipsis(20, true), width:"15%"},
+			{targets:3, render:$.fn.dataTable.render.ellipsis(70, true), width:"70%"},
+			{targets:4, width:"5%"}
+		],
+		select: {
+			style:'os',
+			selector:'td:first-child'
+		}
+	}
+);
+
+$('#new-notebook-cancel-button').click(function(){$('#new-notebook').hide();$('#stored-notebooks').show();})
+$('#get-started-button').click(function(){$('a[href="#notebooks"]').tab('show');$('#stored-notebooks').hide();$('#new-notebook').show();})
+$('#new-notebook-continue-button').click(function() {
+	$('#new-notebook-back-button').show();
+	$('.active-notebook-step').siblings('.pending-notebook-step').first().removeClass('pending-notebook-step').addClass('active-notebook-step');
+	$('.active-notebook-step').first().removeClass('active-notebook-step').addClass('completed-notebook-step');
+})
+$('#new-notebook-back-button').click(function() {
+	$('.active-notebook-step').siblings('.completed-notebook-step').last().removeClass('completed-notebook-step').addClass('active-notebook-step');
+	$('.active-notebook-step').last().removeClass('active-notebook-step').addClass('pending-notebook-step');
+})
+</script>
 
 {% endblock %}
