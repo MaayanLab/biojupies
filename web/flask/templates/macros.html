@@ -1,6 +1,6 @@
 <!-- Badge -->
-{% macro badge(title, description, color, id, icon='book', colsize=4, offset=0, button=False, progress=False, search=False) %}
-<div class="col-xl-{{ colsize }} col-lg-12 offset-xl-{{ offset }}">
+{% macro badge(title, description, color, id, icon='book', button=False, progress=False, search=False) %}
+<div class="col-xl-10 col-lg-12">
 	<div id="{{ id }}-badge" class="dashboard-badge">
 		<div class="dashboard-badge-icon" style="background-color: {{ color  }};"><i class="fa fa-{{ icon }}"></i></div>
 		<div class="dashboard-badge-content">
@@ -54,7 +54,7 @@
 {% endmacro %}
 
 <!-- Notebook -->
-{% macro notebook(title, description, id='', colsize='col-xl-2 col-lg-3') %}
+{% macro notebook(title, description, id='', colsize='col-xl-2 col-lg-3 col-md-4 col-sm-4 col-xs-4 col-4', example=False) %}
 <div id="{{ id }}" class="{{ colsize }}">
 	<div class="notebook-card">
 		<div class="notebook-card-title">
@@ -62,11 +62,16 @@
 		</div>
 		<div class="notebook-card-contents">
 			<img class="notebook-card-image" src="{{ url_for('static', filename='img/jupyter.png') }}">
-			<div class="notebook-card-dropup text-center">
-				<button class="btn btn-primary">Launch</button><br>
-				<button class="btn btn-primary">View</button><br>
-				<button class="btn btn-primary">Download</button><br>
+			<div class="notebook-card-dropup">
+				<div class="notebook-card-dropup-option" style="color: white; background-color: green;"><span>Launch</span></div>
+				<div class="notebook-card-dropup-option" style="color: white; background-color: #006B99;"><span>View</span></div>
+				<div class="notebook-card-dropup-option" style="color: white; background-color: #FE973C;"><span>Download</span></div>
+				<div class="notebook-card-dropup-option" style="color: white; background-color: #A65F9D;"><span>Share</span></div>
+				{% if not example %}
+				<div class="notebook-card-dropup-option" style="color: white; background-color: #FF4463;"><span>Delete</span></div>
+				{% endif %}
 			</div>
+			
 		</div>
 	</div>
 </div>
