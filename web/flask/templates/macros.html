@@ -54,16 +54,21 @@
 {% endmacro %}
 
 <!-- Notebook -->
-{% macro notebook(title, description, id='', colsize='col-xl-2 col-lg-3 col-md-4 col-sm-4 col-xs-4 col-4', example=False) %}
+{% macro notebook(title, id='', colsize='col-xl-2 col-lg-3 col-md-4 col-sm-4 col-xs-4 col-4', example=False, new=False) %}
 <div id="{{ id }}" class="{{ colsize }}">
 	<div class="notebook-card">
 		<div class="notebook-card-title">
-			Analysis Notebook {{title+1}}
+			{{title}}
 		</div>
 		<div class="notebook-card-contents">
+			{% if new %}
+			<div class="new-notebook-plus">
+				<i class="fa fa-plus"></i>
+			</div>
+			{% else %}
 			<img class="notebook-card-image" src="{{ url_for('static', filename='img/jupyter.png') }}">
 			<div class="notebook-card-dropup">
-				<div class="notebook-card-dropup-option" style="color: white; background-color: green;"><span>Launch</span></div>
+				<div class="notebook-card-dropup-option" style="color: white; background-color: #07a207;"><span>Launch</span></div>
 				<div class="notebook-card-dropup-option" style="color: white; background-color: #006B99;"><span>View</span></div>
 				<div class="notebook-card-dropup-option" style="color: white; background-color: #FE973C;"><span>Download</span></div>
 				<div class="notebook-card-dropup-option" style="color: white; background-color: #A65F9D;"><span>Share</span></div>
@@ -71,7 +76,7 @@
 				<div class="notebook-card-dropup-option" style="color: white; background-color: #FF4463;"><span>Delete</span></div>
 				{% endif %}
 			</div>
-			
+			{% endif %}
 		</div>
 	</div>
 </div>

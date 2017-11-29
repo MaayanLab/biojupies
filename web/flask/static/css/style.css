@@ -169,6 +169,7 @@ html {
 
 #dashboard-content {
   width: 100%;
+  min-height: 100%;
   min-width: 700px;
   border-left: 1px solid #eaeaea;
   border-top: 1px solid #eaeaea;
@@ -406,13 +407,14 @@ html {
     .notebook-card-contents {
       cursor: pointer !important;
       width: 100%;
-      height: 185px;
+      height: 200px;
       display: flex;
     }
 
       .notebook-card-image {
         margin: auto;
-        height: 80%;
+        max-height: 80%;
+        max-width: 100%;
       }
 
       .notebook-card-dropup {
@@ -443,6 +445,21 @@ html {
       .notebook-card-contents:hover .notebook-card-image {
         display: none;
       }
+
+  .new-notebook-plus {
+    margin: auto;
+    color: #808080;
+    border: 2px solid #808080;
+    border-radius: 125px;
+    width: 125px;
+    height: 125px;
+  }
+
+    .new-notebook-plus .fa-plus {
+      font-size: 70pt;
+      margin: auto;
+      padding-top: 17px;
+    }
 
 /**********************/
 /* Development */

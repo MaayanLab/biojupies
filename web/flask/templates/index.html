@@ -65,7 +65,7 @@
 									<button id="get-started-button" class="btn btn-primary">Get Started <i class="fa fa-angle-double-right"></i></button>
 								</div>
 							</div>
-							<div class="row margin-bottom-lg">
+							<div class="row margin-bottom-sm">
 								<div class="col-12">
 									<div id="{{ id }}-card" class="dashboard-card">
 										<div class="dashboard-card-title">HOW IT WORKS</div>
@@ -151,8 +151,10 @@
 					</div>
 					<div id="notebook-row" class="row">
 						{% for notebook in range(10) %}
-							{{ macros.notebook(notebook, notebook) }}
+							{{ macros.notebook(title='Analysis Notebook '+(notebook+1)|string) }}
 						{% endfor %}
+							{{ macros.notebook(title='New Notebook', new=True) }}
+
 					</div>
 				</div>
 			</div>
