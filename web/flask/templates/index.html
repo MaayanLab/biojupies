@@ -138,8 +138,8 @@
 							</div>
 						</div>
 						<div id="notebook-row" class="row">
-							{% for notebook in range(10) %}
-								{{ macros.notebook(title='Analysis Notebook '+(notebook+1)|string) }}
+							{% for notebook in notebooks %}
+								{{ macros.notebook(title=notebook['notebook_uid'], notebook_uid=notebook['notebook_uid'], notebook_name=notebook['notebook_name'].replace('.ipynb', '')) }}
 							{% endfor %}
 						</div>
 					</div>
@@ -511,6 +511,27 @@ $('#new-notebook-generate-button').click(function() {
 	notebook_configuration = getNotebookConfiguration();
 	generateNotebook(notebook_configuration);
 });
+
+// Delete Notebook
+var deleteNotebook = function(notebook_uid) {
+	$.ajax({
+		url: "{{ url_for('delete_api') }}",
+		type: "post",
+		data: notebook_uid,
+		contentType: "application/json; charset=utf-8",
+		dataType: "json",
+		success: function(notebook_uid) {
+			console.log('Deleted notebook '+notebook_uid['notebook_uid']+'.');
+		}				
+	})
+};
+
+// Delete Notebook
+$('.delete-notebook-button').click(function(evt) {
+	notebook_uid = $(evt.target).parents('.notebook-card').attr('id');
+	deleteNotebook(notebook_uid);
+	location.reload();
+})
 
 
 </script>

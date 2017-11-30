@@ -449,10 +449,11 @@ html {
         flex-direction: column;
       }
 
-        .notebook-card-dropup-option {
+        a.notebook-card-dropup-option {
           width: 100%;
           height: 100%;
           display: flex;
+          text-decoration: none !important;
         }
 
           .notebook-card-dropup-option span {

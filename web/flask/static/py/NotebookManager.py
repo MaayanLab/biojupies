@@ -43,7 +43,7 @@ class NotebookManager:
 		
 		# Save engine and tables
 		self.engine = db.engine
-		self.Session = sessionmaker(bind=self.engine)
+		self.Session = sessionmaker(bind=self.engine, autoflush=True)
 		metadata = MetaData()
 		metadata.reflect(bind=self.engine)
 		self.tables = metadata.tables
@@ -85,18 +85,79 @@ class NotebookManager:
 		blob.make_public()
 
 		return notebook_uid
-	
+		
 	#############################################
-	########## 4. Upload to Database
+	########## 4. Delete from Google
 	#############################################
 
-	def upload_to_database(self, user_id, notebook_uid):
+	def delete_from_google(self, notebook_uid):
+
+		# Initialize session
+		session = self.Session()
+
+		# Get notebook name
+		notebook_name = [x._asdict() for x in session.query(self.tables['notebook']).filter(self.tables['notebook'].columns['notebook_uid'] == notebook_uid).all()][0]['notebook_name']
+
+		# Close session
+		session.close()
+
+		# Delete from Google
+		client = storage.Client()
+		bucket = client.get_bucket('mssm-notebook-generator')
+		blob = Blob(os.path.join(notebook_uid, notebook_name), bucket)
+		blob.delete()
+			
+	#############################################
+	########## 5. Download from Google
+	#############################################
+
+	def download_from_google(self, notebook_uid):
+
+		# Initialize session
+		session = self.Session()
+
+		# Get notebook name
+		notebook_name = [x._asdict() for x in session.query(self.tables['notebook']).filter(self.tables['notebook'].columns['notebook_uid'] == notebook_uid).all()][0]['notebook_name']
+
+		# Close session
+		session.close()
+
+		# Download from Google
+		client = storage.Client()
+		bucket = client.get_bucket('mssm-notebook-generator')
+		blob = Blob(os.path.join(notebook_uid, notebook_name), bucket)
+		notebook_string = blob.download_as_string().decode('utf-8')
+
+		return notebook_string
+	
+	#############################################
+	########## 6. Upload to Database
+	#############################################
+
+	def upload_to_database(self, user_id, notebook_uid, notebook_name):
 
 		# Initialize session
 		session = self.Session()
 
 		# Insert
-		session.execute(self.tables['notebook'].insert().values({'user_fk': user_id, 'notebook_uid': notebook_uid}))
+		session.execute(self.tables['notebook'].insert().values({'user_fk': user_id, 'notebook_uid': notebook_uid, 'notebook_name': notebook_name}))
+
+		# Close session
+		session.commit()
+		session.close()
+	
+	#############################################
+	########## 7. Delete from Database
+	#############################################
+
+	def delete_from_database(self, user_id, notebook_uid):
+
+		# Initialize session
+		session = self.Session()
+
+		# Delete
+		d = self.tables['notebook'].delete(self.tables['notebook'].columns['notebook_uid'] == notebook_uid)
+		session.execute(d)
 
 		# Close session
 		session.commit()

@@ -61,8 +61,9 @@ NotebookManager = NotebookManager(db)
 def index():
 	datasets = pd.read_table('static/data/archs4.txt')
 	toolkits = pd.read_table('static/data/toolkits.txt')
+	notebooks = NotebookManager.list_notebooks(user_id=1)
 	# Return
-	return render_template('index.html', datasets=datasets, toolkits=toolkits)
+	return render_template('index.html', datasets=datasets, toolkits=toolkits, notebooks=notebooks)
 
 #######################################################
 #######################################################
@@ -183,10 +184,42 @@ def upload_api():
 	notebook_uid = NotebookManager.upload_to_google(notebook_string=notebook_data['notebook_string'], notebook_name=notebook_data['notebook_name'])
 
 	# Add to database
-	# NotebookManager.upload_to_database(user_id=1, notebook_uid=notebook_uid)
+	NotebookManager.upload_to_database(user_id=1, notebook_uid=notebook_uid, notebook_name=notebook_data['notebook_name'])
 
 	# Return
 	return json.dumps({'notebook_uid': notebook_uid})
+
+#############################################
+########## 3. Delete API
+#############################################
+
+@app.route(entry_point+'/api/delete', methods=['POST'])
+def delete_api():
+
+	# Get POSTed data
+	notebook_uid = request.data.decode('utf-8')
+
+	# Delete from Google
+	NotebookManager.delete_from_google(notebook_uid=notebook_uid)
+
+	# Delete from database
+	NotebookManager.delete_from_database(user_id=1, notebook_uid=notebook_uid)
+
+	# Return
+	return json.dumps({'notebook_uid': notebook_uid})
+
+#############################################
+########## 4. Display API
+#############################################
+
+@app.route(entry_point+'/api/download/<notebook_uid>', methods=['GET', 'POST'])
+def download_api(notebook_uid):
+
+	# Get Notebook URL
+	notebook_url = NotebookManager.download_from_google(notebook_uid=notebook_uid)
+
+	# Return
+	return notebook_url
 
 #############################################
 ########## 3. New Notebook API
