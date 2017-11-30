@@ -59,8 +59,10 @@ NotebookManager = NotebookManager(db)
 
 @app.route(entry_point)
 def index():
+	datasets = pd.read_table('static/data/archs4.txt')
+	toolkits = pd.read_table('static/data/toolkits.txt')
 	# Return
-	return render_template('index.html')
+	return render_template('index.html', datasets=datasets, toolkits=toolkits)
 
 #######################################################
 #######################################################

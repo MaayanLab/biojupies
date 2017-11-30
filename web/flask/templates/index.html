@@ -146,61 +146,124 @@
 					<div id="new-notebook" class="fill">
 						<div id="new-notebook-header-row" class="row padded-lg">
 							<div class="col-6">
-								<div class="dashboard-title-lg">New Notebook</div>
+								<div class="dashboard-title-lg">Create a New Notebook</div>
 							</div>
 							<div class="col-6 text-right">
 								<button id="new-notebook-cancel-button" class="btn btn-secondary new-notebook-navigation-button">Cancel</button>
 								<button id="new-notebook-back-button" class="btn btn-primary new-notebook-navigation-button"><i class="fa fa-angle-double-left"></i> Back</button>
 								<button id="new-notebook-continue-button" class="btn btn-primary new-notebook-navigation-button">Continue <i class="fa fa-angle-double-right"></i></button>
+								<button id="new-notebook-generate-button" class="btn btn-success new-notebook-navigation-button">Generate!</button>
 							</div>
 						</div>
 						<div id="new-notebook-content-row" class="row">
 							<div id="new-notebook-content" class="col-9 padded-lg">
-								<div class="row">
-									<div class="col-12">
-										<div class="dashboard-title margin-bottom-sm">1. Add Data</div>
-										<div class="dashboard-text margin-bottom-md">To begin, select a dataset from the 5,000+ pre-processed datasets below, or upload your own using our dataset upload form.</div>
+								<div id="new-notebook-add-data" class="notebook-step-contents">
+									<div class="row">
+										<div class="col-12">
+											<div class="dashboard-title margin-bottom-sm">1. Add Data</div>
+											<div class="dashboard-text margin-bottom-md">To begin, select a dataset from below, or add your own using the dataset upload form.</div>
+										</div>
 									</div>
-								</div>
-								<div class="row">
-									<div class="col-12">
-										<div id="" class="tab-card">
-											<ul class="nav nav-tabs nav-justified">
-											  <li class="nav-item">
-											    <a class="nav-link active" data-toggle="tab" href="#processed-data" role="tab" aria-controls="processed-data" aria-selected="true">Processed Data</a>
-											  </li>
-											  <li class="nav-item">
-											    <a class="nav-link" data-toggle="tab" href="#uploaded-data" role="tab" aria-controls="uploaded-data" aria-selected="false">Uploaded Data</a>
-											  </li>
-											</ul>
-											<div class="tab-card-content tab-content">
-												<div class="tab-pane show active padded-lg" role="tabpanel" id="processed-data">
-													<table id="processed-data-table">
-														<thead>
-															<tr>
-																<th></th>
-																<th>Accession</th>
-																<th>Title</th>
-																<th>Description</th>
-																<th>Repository</th>
-															</tr>
-														</thead>
-														<tbody>
-															{% for index, rowData in datasets.head(20).iterrows() %}
-															<tr>
-																<td></td>
-																<td>{{ rowData.dataset_accession }}</td>
-																<td class="processed-dataset-title">{{ rowData.title }}</td>
-																<td class="processed-dataset-description">{{ rowData.summary }}</td>
-																<td>GEO</td>
-															</tr>
-															{% endfor %}
-														</tbody>
-													</table>
-												</div>
-												<div class="tab-pane" role="tabpanel" id="uploaded-data">
+									<div class="row">
+										<div class="col-12">
+											<div id="" class="tab-card">
+												<ul class="nav nav-tabs nav-justified">
+												  <li class="nav-item">
+												    <a class="nav-link active" data-toggle="tab" href="#processed-data" role="tab" aria-controls="processed-data" aria-selected="true">Processed Data</a>
+												  </li>
+												  <li class="nav-item">
+												    <a class="nav-link" data-toggle="tab" href="#uploaded-data" role="tab" aria-controls="uploaded-data" aria-selected="false">Uploaded Data</a>
+												  </li>
+												</ul>
+												<div class="tab-card-content tab-content">
+													<div class="tab-pane show active padded-lg" role="tabpanel" id="processed-data">
+														<table id="processed-data-table" class="table table-striped table-bordered" cellspacing="0">
+															<thead>
+																<tr>
+																	<th></th>
+																	<th>Accession</th>
+																	<th>Title</th>
+																	<!-- <th>Description</th> -->
+																	<th>Repository</th>
+																</tr>
+															</thead>
+															<tbody>
+																{% for index, rowData in datasets.head(100).iterrows() %}
+																<tr>
+																	<td></td>
+																	<td>{{ rowData.dataset_accession }}</td>
+																	<td class="processed-dataset-title">{{ rowData.title }}</td>
+																	<!-- <td class="processed-dataset-description">{{ rowData.summary }}</td> -->
+																	<td>GEO</td>
+																</tr>
+																{% endfor %}
+															</tbody>
+														</table>
+													</div>
+													<div class="tab-pane padded-lg" role="tabpanel" id="uploaded-data">
+														<div class="under-development">Under development.</div>
+													</div>
 												</div>
 											</div>
+										</div>
+									</div>
+								</div>
+								<div id="new-notebook-add-tools" class="notebook-step-contents notebook-step-contents-active">
+									<div class="row">
+										<div class="col-12">
+											<div class="dashboard-title margin-bottom-sm">2. Add Tools</div>
+											<div class="dashboard-text margin-bottom-md">Select one or more analysis tools, or one preset toolkit, from the menu below.</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-12">
+											<div id="" class="tab-card">
+												<ul class="nav nav-tabs nav-justified">
+												  <li class="nav-item">
+												    <a class="nav-link active" data-toggle="tab" href="#add-toolkit" role="tab" aria-controls="add-toolkit" aria-selected="true">Toolkits</a>
+												  </li>
+												  <li class="nav-item">
+												    <a class="nav-link" data-toggle="tab" href="#add-tools" role="tab" aria-controls="add-tools" aria-selected="false">Tools</a>
+												  </li>
+												</ul>
+												<div class="tab-card-content tab-content">
+													<div class="tab-pane show active padded-lg" role="tabpanel" id="add-toolkit">
+														<div class="row">
+															{% for index, rowData in toolkits.iterrows() %}
+															<input type="radio" name="toolkit-radio" id="toolkit-radio-{{ rowData['id'] }}" value="toolkit-radio-{{ rowData['id'] }}" class="toolkit-radio">
+															<label class="toolkit-radio-label col-4" for="toolkit-radio-{{ rowData['id'] }}">
+																<div class="toolkit-card">
+																	<div class="row">
+																		<div class="col-5">
+																			<img class="toolkit-card-icon" src="">
+																		</div>
+																		<div class="col-7 text-left">
+																			<div class="toolkit-card-title">{{ rowData['name'] }}</div>
+																			<div class="toolkit-card-description">{{ rowData['description'] }}</div>
+																		</div>
+																	</div>
+																</div>
+															</label>
+															{% endfor %}
+														</div>
+													</div>
+													<div class="tab-pane padded-lg" role="tabpanel" id="add-tools">
+														<div class="under-development">Under development.</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div id="new-notebook-review" class="notebook-step-contents">
+									<div class="row">
+										<div class="col-12">
+											<div class="dashboard-title margin-bottom-sm">3. Review</div>
+											<div class="dashboard-text margin-bottom-md">Review the notebook configuration below..</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-12">
 										</div>
 									</div>
 								</div>
@@ -213,7 +276,7 @@
 								</div>
 								<div id="new-notebook-selected-data" class="row padded-sm">
 									<div class="col-12">
-										{{ macros.selected_object(id='dataset', title='No Data Selected.', description='To proceed, select a dataset from the menu.', icon='table') }}
+										{{ macros.selected_object(title='No Data Selected.', description='To proceed, select a dataset from the menu.', icon='table') }}
 									</div>
 								</div>
 								<div id="new-notebook-tools-row" class="row new-notebook-step pending-notebook-step">
@@ -223,10 +286,10 @@
 								</div>
 								<div id="new-notebook-selected-tools" class="row padded-sm">
 									<div class="col-12">
-										{{ macros.selected_object(id='tool', title='No Tools Selected', description='To proceed, select one or more tools from the menu.', icon='cogs') }}
+										{{ macros.selected_object(title='No Tools Selected', description='To proceed, select one or more tools from the menu.', icon='cogs') }}
 									</div>
 								</div>
-								<div id="new-notebook-config-row" class="row new-notebook-step pending-notebook-step">
+								<div id="new-notebook-review-row" class="row new-notebook-step pending-notebook-step">
 									<div class="col-12">
 										3. Review
 									</div>
@@ -252,14 +315,15 @@
 {% block footer %}
 
 <script type="text/javascript">
-$('#processed-data-table').DataTable(
+var table = $('#processed-data-table').DataTable(
 	{
+		pageLength: 5,
+		lengthMenu: [[5, 10, 25], [5, 10, 25]],
 		columnDefs:[
-			{targets:0, orderable:false, className:'select-checkbox'},
-			{targets:1, render:$.fn.dataTable.render.ellipsis(10, true), width:"10%"},
-			{targets:2, render:$.fn.dataTable.render.ellipsis(20, true), width:"15%"},
-			{targets:3, render:$.fn.dataTable.render.ellipsis(70, true), width:"70%"},
-			{targets:4, width:"5%"}
+			{targets:0, orderable:false, order:[], className:'select-checkbox'},
+			{targets:1},
+			{targets:2, render:$.fn.dataTable.render.ellipsis(100, true)},
+			{targets:3}
 		],
 		select: {
 			style:'os',
@@ -268,17 +332,78 @@ $('#processed-data-table').DataTable(
 	}
 );
 
+table
+	.on('select', function(e, dt, type, indexes) {
+		var rowData = table.rows( indexes ).data().toArray()[0];
+		$('#new-notebook-selected-data .selected-object-card-title').html(rowData[1]);
+		$('#new-notebook-selected-data .selected-object-card-description').html(rowData[2]);
+	})
+	.on('deselect', function(e, dt, type, indexes) {
+		var rowData = table.rows( indexes ).data().toArray()[0];
+		$('#new-notebook-selected-data .selected-object-card-title').html('No Data Selected.');
+		$('#new-notebook-selected-data .selected-object-card-description').html('To proceed, select a dataset from the menu.');
+	});
+
+// Toggle New Notebook
 $('#new-notebook-cancel-button').click(function(){$('#new-notebook').hide();$('#stored-notebooks').show();})
 $('#get-started-button').click(function(){$('a[href="#notebooks"]').tab('show');$('#stored-notebooks').hide();$('#new-notebook').show();})
-$('#new-notebook-continue-button').click(function() {
-	$('#new-notebook-back-button').show();
-	$('.active-notebook-step').siblings('.pending-notebook-step').first().removeClass('pending-notebook-step').addClass('active-notebook-step');
-	$('.active-notebook-step').first().removeClass('active-notebook-step').addClass('completed-notebook-step');
-})
-$('#new-notebook-back-button').click(function() {
+
+
+// Form
+var goAhead = function() {
+	if ($('#processed-data .selected').length === 0) {
+		alert('To continue, please select a dataset.');
+	} else if (1 < 0) {
+
+	} else {
+		$('.active-notebook-step').siblings('.pending-notebook-step').first().removeClass('pending-notebook-step').addClass('active-notebook-step');
+		$('.active-notebook-step').first().removeClass('active-notebook-step').addClass('completed-notebook-step');
+		$('.notebook-step-contents-active').next().addClass('notebook-step-contents-active');
+		$('.notebook-step-contents-active').first().removeClass('notebook-step-contents-active');
+		$('#new-notebook-back-button').show();
+	}
+};
+var goBack = function() {
 	$('.active-notebook-step').siblings('.completed-notebook-step').last().removeClass('completed-notebook-step').addClass('active-notebook-step');
 	$('.active-notebook-step').last().removeClass('active-notebook-step').addClass('pending-notebook-step');
+	$('.notebook-step-contents-active').prev().addClass('notebook-step-contents-active');
+	$('.notebook-step-contents-active').last().removeClass('notebook-step-contents-active');
+};
+var toggleGenerate = function() {
+	$('#new-notebook-continue-button').toggle();
+	$('#new-notebook-generate-button').toggle();
+};
+var toggleNextStep = function() {
+
+}
+
+// Proceed
+$('#new-notebook-continue-button').click(function() {
+	switch ($('.active-notebook-step').attr('id').split('-')[2]) {
+		case 'data':
+			goAhead();
+			break; 
+		case 'tools':
+			toggleGenerate();
+			goAhead();
+			break;
+	}
 })
+
+// Go Back
+$('#new-notebook-back-button').click(function() {
+	switch ($('.active-notebook-step').attr('id').split('-')[2]) {
+		case 'tools':
+			$('#new-notebook-back-button').toggle();
+			goBack()
+			break;
+		case 'review':
+			toggleGenerate();
+			goBack();
+			break;
+	}
+})
+
 </script>
 
 {% endblock %}

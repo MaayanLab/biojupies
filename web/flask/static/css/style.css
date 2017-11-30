@@ -477,6 +477,10 @@ html {
   .tab-card {
     background-color: white;
     text-align: center;
+    -webkit-box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
+    -moz-box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
+    box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
+    margin-bottom: 25px;
   }
 
     .tab-card .nav-tabs {
@@ -497,8 +501,9 @@ html {
         .tab-card .nav-item:nth-child(2) .nav-link { border-radius: 0px 5px 0px 0px; }
 
         .tab-card .nav-link.active {
-          background-color: white;
-          color: #006B99;
+          background-color: #006B99;
+          border-bottom: 1px solid #006B99;
+          color: white;
         }
 
     .tab-card-content {
@@ -531,13 +536,15 @@ html {
     }
 
       #processed-data-table tbody td.select-checkbox:before {
-        margin-top: -13px;
+        margin-top: -2px;
       }
 
       #processed-data-table tr.selected td.select-checkbox:after {
-        content: 'X';
+        content: '\f14a';
         margin-left: -6px;
-        margin-top: -17px !important;
+        margin-top: -8px !important;
+        text-shadow: none !important;
+        font-family: "FontAwesome";
       }
 
 /*
@@ -555,6 +562,7 @@ html {
   font-size: 30pt;
   font-weight: 300;
   margin-top: 50px;
+  margin-bottom: 50px;
 }
 
 /**********************/
@@ -592,6 +600,7 @@ html {
     }
 
       #new-notebook-back-button { display: none; }
+      #new-notebook-generate-button { display: none; }
       #new-notebook-back-button .fa { padding-right: 10px; }
       #new-notebook-continue-button .fa { padding-left: 10px; }
 
@@ -603,14 +612,29 @@ html {
 
     }
 
+      .notebook-step-contents {
+        display: none;
+      }
+
+      .notebook-step-contents-active {
+        display: block;
+      }
+
     #new-notebook-sidebar {
       border-left: 1px solid #eaeaea;
       background-color: white;
+      -webkit-box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
+      -moz-box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
+      box-shadow: 1px -1px 3px 3px rgba(0,0,0,0.03);
     }
 
       .new-notebook-step {
         padding: 10px 15px;
       }
+
+        #new-notebook-data-row {
+          border-top: none;
+        }
 
       .active-notebook-step {
         background-color: #006B99;
@@ -637,6 +661,10 @@ html {
         color: #808080;
       }
 
+        .completed-notebook-step + .row {
+          opacity: 0.5;
+        }
+
 
 /*
 #new-notebook {
@@ -660,6 +688,50 @@ html {
       font-size: 15pt;
     }
 */
+
+
+/**********************/
+/* Toolkit Card *******/
+/**********************/
+
+.toolkit-radio {
+  display: none;
+}
+
+.toolkit-radio-label {
+
+}
+
+  .toolkit-radio:checked + .toolkit-radio-label .toolkit-card {
+    -webkit-box-shadow: 3px 3px 1px -1px rgba(0, 107, 153, 0.3);
+    -moz-box-shadow: 3px 3px 1px -1px rgba(0, 107, 153, 0.3);
+    box-shadow: 3px 3px 1px -1px rgba(0, 107, 153, 0.3);
+    border-color: #006B99;
+  }
+
+  .toolkit-card {
+    border: 1px solid #eaeaea;
+    height: 200px;
+    border-radius: 5px;
+    -webkit-box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
+    -moz-box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
+    box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
+    cursor: pointer;
+  }
+
+    .toolkit-card-title {
+      font-size: 13pt;
+      color: #808080;
+      margin-top: 20px;
+      margin-bottom: 7px;
+    }
+
+    .toolkit-card-description {
+      font-size: 10pt;
+      font-weight: 300;
+      color: #a1a1a1;
+      padding-right: 25px;
+    }
 
 
 /**********************/
