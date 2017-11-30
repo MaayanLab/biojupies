@@ -157,7 +157,7 @@
 						</div>
 						<div id="new-notebook-content-row" class="row">
 							<div id="new-notebook-content" class="col-9 padded-lg">
-								<div id="new-notebook-add-data" class="notebook-step-contents">
+								<div id="new-notebook-add-data" class="notebook-step-contents notebook-step-contents-active">
 									<div class="row">
 										<div class="col-12">
 											<div class="dashboard-title margin-bottom-sm">1. Add Data</div>
@@ -208,7 +208,7 @@
 										</div>
 									</div>
 								</div>
-								<div id="new-notebook-add-tools" class="notebook-step-contents notebook-step-contents-active">
+								<div id="new-notebook-add-tools" class="notebook-step-contents">
 									<div class="row">
 										<div class="col-12">
 											<div class="dashboard-title margin-bottom-sm">2. Add Tools</div>
@@ -229,13 +229,13 @@
 												<div class="tab-card-content tab-content">
 													<div class="tab-pane show active padded-lg" role="tabpanel" id="add-toolkit">
 														<div class="row">
-															{% for index, rowData in toolkits.iterrows() %}
+															{% for index, rowData in toolkits.head(3).iterrows() %}
 															<input type="radio" name="toolkit-radio" id="toolkit-radio-{{ rowData['id'] }}" value="toolkit-radio-{{ rowData['id'] }}" class="toolkit-radio">
 															<label class="toolkit-radio-label col-4" for="toolkit-radio-{{ rowData['id'] }}">
 																<div class="toolkit-card">
-																	<div class="row">
-																		<div class="col-5">
-																			<img class="toolkit-card-icon" src="">
+																	<div class="row fill">
+																		<div class="col-5 my-auto">
+																			<img class="toolkit-card-icon" src=" {{ url_for('static', filename='img/'+rowData['image']|string+'.png') }} ">
 																		</div>
 																		<div class="col-7 text-left">
 																			<div class="toolkit-card-title">{{ rowData['name'] }}</div>
@@ -332,6 +332,7 @@ var table = $('#processed-data-table').DataTable(
 	}
 );
 
+// Selected Data
 table
 	.on('select', function(e, dt, type, indexes) {
 		var rowData = table.rows( indexes ).data().toArray()[0];
@@ -344,6 +345,12 @@ table
 		$('#new-notebook-selected-data .selected-object-card-description').html('To proceed, select a dataset from the menu.');
 	});
 
+// Selected Toolkit
+$('.toolkit-radio').change(function() {
+	$('#new-notebook-selected-tools .selected-object-card-title').html($('.toolkit-radio:checked + .toolkit-radio-label .toolkit-card .toolkit-card-title').html());
+	$('#new-notebook-selected-tools .selected-object-card-description').html($('.toolkit-radio:checked + .toolkit-radio-label .toolkit-card .toolkit-card-description').html());
+})
+
 // Toggle New Notebook
 $('#new-notebook-cancel-button').click(function(){$('#new-notebook').hide();$('#stored-notebooks').show();})
 $('#get-started-button').click(function(){$('a[href="#notebooks"]').tab('show');$('#stored-notebooks').hide();$('#new-notebook').show();})
@@ -351,17 +358,11 @@ $('#get-started-button').click(function(){$('a[href="#notebooks"]').tab('show');
 
 // Form
 var goAhead = function() {
-	if ($('#processed-data .selected').length === 0) {
-		alert('To continue, please select a dataset.');
-	} else if (1 < 0) {
-
-	} else {
-		$('.active-notebook-step').siblings('.pending-notebook-step').first().removeClass('pending-notebook-step').addClass('active-notebook-step');
-		$('.active-notebook-step').first().removeClass('active-notebook-step').addClass('completed-notebook-step');
-		$('.notebook-step-contents-active').next().addClass('notebook-step-contents-active');
-		$('.notebook-step-contents-active').first().removeClass('notebook-step-contents-active');
-		$('#new-notebook-back-button').show();
-	}
+	$('.active-notebook-step').siblings('.pending-notebook-step').first().removeClass('pending-notebook-step').addClass('active-notebook-step');
+	$('.active-notebook-step').first().removeClass('active-notebook-step').addClass('completed-notebook-step');
+	$('.notebook-step-contents-active').next().addClass('notebook-step-contents-active');
+	$('.notebook-step-contents-active').first().removeClass('notebook-step-contents-active');
+	$('#new-notebook-back-button').show();
 };
 var goBack = function() {
 	$('.active-notebook-step').siblings('.completed-notebook-step').last().removeClass('completed-notebook-step').addClass('active-notebook-step');
@@ -381,11 +382,19 @@ var toggleNextStep = function() {
 $('#new-notebook-continue-button').click(function() {
 	switch ($('.active-notebook-step').attr('id').split('-')[2]) {
 		case 'data':
-			goAhead();
+			if ($('#processed-data .selected').length === 0) {
+				alert('To continue, please select a dataset.');
+			} else {
+				goAhead();
+			}
 			break; 
 		case 'tools':
-			toggleGenerate();
-			goAhead();
+			if ($('.toolkit-radio:checked').length === 0) {
+				alert('To continue, please select a toolkit.');
+			} else {
+				goAhead();
+				toggleGenerate();
+			}
 			break;
 	}
 })
@@ -398,8 +407,8 @@ $('#new-notebook-back-button').click(function() {
 			goBack()
 			break;
 		case 'review':
-			toggleGenerate();
 			goBack();
+			toggleGenerate();
 			break;
 	}
 })

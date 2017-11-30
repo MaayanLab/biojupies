@@ -706,7 +706,7 @@ html {
     -webkit-box-shadow: 3px 3px 1px -1px rgba(0, 107, 153, 0.3);
     -moz-box-shadow: 3px 3px 1px -1px rgba(0, 107, 153, 0.3);
     box-shadow: 3px 3px 1px -1px rgba(0, 107, 153, 0.3);
-    border-color: #006B99;
+    border-color: #89b1c3;
   }
 
   .toolkit-card {
@@ -718,6 +718,12 @@ html {
     box-shadow: 3px 3px 1px -1px rgba(0,0,0,0.03);
     cursor: pointer;
   }
+
+    .toolkit-card-icon {
+      width: 100%;
+      padding-left: 15px;
+      max-height: 175px;
+    }
 
     .toolkit-card-title {
       font-size: 13pt;
