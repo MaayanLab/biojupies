@@ -48,7 +48,7 @@
 		</div>
 
 		<div id="dashboard-content" class="tab-content fill">
-			<div class="tab-pane padded-lg" id="home" role="tabpanel">
+			<div class="tab-pane show active padded-lg" id="home" role="tabpanel">
 				<div class="container-fluid">
 					<div class="row">
 						<div class="col-xl-7">
@@ -62,7 +62,7 @@
 									<div class="dashboard-text">An intuitive user interface for the generation of Jupyter Notebooks containing bioinformatics analyses biomedical datasets.</div>
 								</div>
 								<div class="col-3">
-									<button id="get-started-button" class="btn btn-primary">Get Started <i class="fa fa-angle-double-right"></i></button>
+									<button id="get-started-button" class="btn btn-primary new-notebook-button">Get Started <i class="fa fa-angle-double-right"></i></button>
 								</div>
 							</div>
 							<div class="row margin-bottom-sm">
@@ -107,7 +107,7 @@
 										{{ macros.badge(title='3/15 Notebooks', description='', color='#006B99', icon='book', id='notebook', button='+', progress=0.2) }}
 									</div>
 									<div class="row margin-bottom-md">
-										{{ macros.badge(title='1/3 Datasets', description='', color='#006B99', icon='table', id='notebook', button='+', progress=0.33) }}
+										{{ macros.badge(title='1/3 Datasets', description='', color='#006B99', icon='table', id='dataset', button='+', progress=0.33) }}
 									</div>
 									<div class="row margin-bottom-sm">
 										<div class="col-12">
@@ -129,7 +129,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="tab-pane show active fill" id="notebooks" role="tabpanel">
+			<div class="tab-pane fill" id="notebooks" role="tabpanel">
 				<div class="container-fluid fill">
 					<div id="stored-notebooks" class="padded-lg">
 						<div class="row">
@@ -152,7 +152,7 @@
 								<button id="new-notebook-cancel-button" class="btn btn-secondary new-notebook-navigation-button">Cancel</button>
 								<button id="new-notebook-back-button" class="btn btn-primary new-notebook-navigation-button"><i class="fa fa-angle-double-left"></i> Back</button>
 								<button id="new-notebook-continue-button" class="btn btn-primary new-notebook-navigation-button">Continue <i class="fa fa-angle-double-right"></i></button>
-								<button id="new-notebook-generate-button" class="btn btn-success new-notebook-navigation-button">Generate!</button>
+								<button id="new-notebook-generate-button" class="btn btn-success new-notebook-navigation-button generate-notebook-button">Generate!</button>
 							</div>
 						</div>
 						<div id="new-notebook-content-row" class="row">
@@ -264,6 +264,43 @@
 									</div>
 									<div class="row">
 										<div class="col-12">
+											<div class="under-development">You're all set.</div>
+										</div>
+									</div>
+								</div>
+								<div id="new-notebook-loading" class="notebook-step-contents">
+									<div class="row">
+										<div class="col-12">
+											<div class="dashboard-title-lg text-center margin-top-xl margin-bottom-lg">Your Jupyter Notebook is Loading...</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-12">
+											<div class="dashboard-text text-center">
+												<div class="sk-cube-grid">
+												 	<div class="sk-cube sk-cube1"></div>
+												 	<div class="sk-cube sk-cube2"></div>
+												 	<div class="sk-cube sk-cube3"></div>
+												 	<div class="sk-cube sk-cube4"></div>
+												 	<div class="sk-cube sk-cube5"></div>
+												 	<div class="sk-cube sk-cube6"></div>
+												 	<div class="sk-cube sk-cube7"></div>
+												 	<div class="sk-cube sk-cube8"></div>
+												 	<div class="sk-cube sk-cube9"></div>
+												 </div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div id="new-notebook-results" class="notebook-step-contents">
+									<div class="row">
+										<div class="col-12">
+											<div class="dashboard-title-lg">Your Jupyter Notebook is Ready</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-12">
+											<a id="new-notebook-link" class="under-development" href="#" target="_blank">Notebook Link</a>
 										</div>
 									</div>
 								</div>
@@ -353,7 +390,7 @@ $('.toolkit-radio').change(function() {
 
 // Toggle New Notebook
 $('#new-notebook-cancel-button').click(function(){$('#new-notebook').hide();$('#stored-notebooks').show();})
-$('#get-started-button').click(function(){$('a[href="#notebooks"]').tab('show');$('#stored-notebooks').hide();$('#new-notebook').show();})
+$('.new-notebook-button').click(function(){$('a[href="#notebooks"]').tab('show');$('#stored-notebooks').hide();$('#new-notebook').show();})
 
 
 // Form
@@ -365,8 +402,10 @@ var goAhead = function() {
 	$('#new-notebook-back-button').show();
 };
 var goBack = function() {
-	$('.active-notebook-step').siblings('.completed-notebook-step').last().removeClass('completed-notebook-step').addClass('active-notebook-step');
-	$('.active-notebook-step').last().removeClass('active-notebook-step').addClass('pending-notebook-step');
+	if ($('.notebook-step-contents-active').attr('id') != 'new-notebook-loading') {
+		$('.active-notebook-step').siblings('.completed-notebook-step').last().removeClass('completed-notebook-step').addClass('active-notebook-step');
+		$('.active-notebook-step').last().removeClass('active-notebook-step').addClass('pending-notebook-step');
+	}
 	$('.notebook-step-contents-active').prev().addClass('notebook-step-contents-active');
 	$('.notebook-step-contents-active').last().removeClass('notebook-step-contents-active');
 };
@@ -393,7 +432,9 @@ $('#new-notebook-continue-button').click(function() {
 				alert('To continue, please select a toolkit.');
 			} else {
 				goAhead();
-				toggleGenerate();
+				$('#new-notebook-continue-button').hide();
+				$('#new-notebook-generate-button').show();
+				$('#new-notebook-generate-button').prop('disabled', false);
 			}
 			break;
 	}
@@ -408,10 +449,69 @@ $('#new-notebook-back-button').click(function() {
 			break;
 		case 'review':
 			goBack();
-			toggleGenerate();
+			if ($('.notebook-step-contents-active').attr('id') != 'new-notebook-loading') {
+				$('#new-notebook-continue-button').show();
+				$('#new-notebook-generate-button').hide();
+			}
 			break;
 	}
 })
+
+// Generate
+$('#new-notebook-generate-button').click(function() {
+	// Fix UI
+	$('#new-notebook-review').removeClass('notebook-step-contents-active');
+	$('#new-notebook-loading').addClass('notebook-step-contents-active');
+	$('#new-notebook-generate-button').prop('disabled', true);
+})
+
+// Get Notebook Config
+var getNotebookConfiguration = function() {
+	return $('#new-notebook-selected-data .selected-object-card-title').html();
+};
+
+
+// Get Live URL from UID
+var addNotebookLink = function(notebook_uid) {
+	$('#new-notebook-results').addClass('notebook-step-contents-active');
+	$('#new-notebook-loading').removeClass('notebook-step-contents-active');
+	$('#new-notebook-link').attr('href', window.location.origin+'/notebook-generator-web/notebook/'+notebook_uid);
+}
+
+// Upload Notebook
+var uploadNotebook = function(notebook_data) {
+	$.ajax({
+		url: "{{ url_for('upload_api') }}",
+		type: "post",
+		data: JSON.stringify(notebook_data),
+		contentType: "application/json; charset=utf-8",
+		dataType: "json",
+		success: function(notebook_uid) {
+			addNotebookLink(notebook_uid['notebook_uid']);
+		}				
+	})
+}
+
+// Launch Notebook
+var generateNotebook = function(notebook_configuration) {
+	$.ajax({
+		url: "{{ url_for('generate_api') }}",
+		type: "post",
+		data: notebook_configuration,
+		contentType: "application/json; charset=utf-8",
+		dataType: "json",
+		success: function(notebook_data) {
+			uploadNotebook(notebook_data);
+		}				
+	})
+};
+
+// Listener
+$('#new-notebook-generate-button').click(function() {
+	notebook_configuration = getNotebookConfiguration();
+	generateNotebook(notebook_configuration);
+});
+
 
 </script>
 

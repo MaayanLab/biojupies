@@ -196,6 +196,22 @@ html {
     font-weight: 300;
   }
 
+  .margin-top-sm {
+    margin-top: 10px;
+  }
+
+  .margin-top-md {
+    margin-top: 20px;
+  }
+
+  .margin-top-lg {
+    margin-top: 35px;
+  }
+
+  .margin-top-xl {
+    margin-top: 50px;
+  }
+
   .margin-bottom-sm {
     margin-bottom: 10px;
   }
@@ -570,7 +586,7 @@ html {
 /**********************/
 
 #stored-notebooks {
-  display: none;
+  /*display: none;*/
 }
 
 /**********************/
@@ -578,7 +594,7 @@ html {
 /**********************/
 
 #new-notebook {
-  /*display: none;*/
+  display: none;
   font-family: "Montserrat";
 }
 
@@ -600,7 +616,7 @@ html {
     }
 
       #new-notebook-back-button { display: none; }
-      #new-notebook-generate-button { display: none; }
+      #new-notebook-generate-button { display: none; padding-left: 34px; padding-right: 35px;}
       #new-notebook-back-button .fa { padding-right: 10px; }
       #new-notebook-continue-button .fa { padding-left: 10px; }
 

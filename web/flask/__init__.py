@@ -177,16 +177,16 @@ def generate_api():
 def upload_api():
 
 	# Get POSTed data
-	notebook_data = json.loads(request.data)
+	notebook_data = json.loads(request.data.decode('utf-8'))
 
 	# Upload to Google
 	notebook_uid = NotebookManager.upload_to_google(notebook_string=notebook_data['notebook_string'], notebook_name=notebook_data['notebook_name'])
 
 	# Add to database
-	NotebookManager.upload_to_database(user_id=1, notebook_uid=notebook_uid)
+	# NotebookManager.upload_to_database(user_id=1, notebook_uid=notebook_uid)
 
 	# Return
-	return notebook_uid
+	return json.dumps({'notebook_uid': notebook_uid})
 
 #############################################
 ########## 3. New Notebook API

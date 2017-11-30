@@ -21,7 +21,6 @@ from flask import Flask, request, url_for, send_from_directory
 
 ##### 2. Python modules #####
 import os, sys, json, nbformat
-from nbconvert.preprocessors import ExecutePreprocessor
 import urllib.request
 
 ##### 3. Custom modules #####
