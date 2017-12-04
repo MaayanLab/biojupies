@@ -27,9 +27,6 @@ from google.cloud.storage import Blob
 from sqlalchemy import MetaData
 from sqlalchemy.orm import sessionmaker
 
-##### 3. Timezone #####
-set_timezone = lambda x: os.system('ln -fs /usr/share/zoneinfo/{x} /etc/localtime; dpkg-reconfigure --frontend noninteractive tzdata;'.format(**locals()))
-
 #################################################################
 #################################################################
 ############### 1. Notebook Manager #############################
@@ -80,14 +77,12 @@ class NotebookManager:
 		#check UID, else create another
 
 		# Upload to Google
-		# set_timezone('Europe/London')
 		client = storage.Client()
 		bucket = client.get_bucket('mssm-notebook-generator')
 		blob = Blob(os.path.join(notebook_uid, notebook_name), bucket)
 		# notebook_string = urllib.request.urlopen(raw_notebook_url).read().decode('utf-8')
 		blob.upload_from_string(notebook_string)
 		blob.make_public()
-		# set_timezone('America/New_York')
 		
 		return notebook_uid
 		
@@ -107,12 +102,10 @@ class NotebookManager:
 		session.close()
 
 		# Delete from Google
-		# set_timezone('Europe/London')
 		client = storage.Client()
 		bucket = client.get_bucket('mssm-notebook-generator')
 		blob = Blob(os.path.join(notebook_uid, notebook_name), bucket)
 		blob.delete()
-		# set_timezone('America/New_York')
 			
 	#############################################
 	########## 5. Download from Google
@@ -130,12 +123,10 @@ class NotebookManager:
 		session.close()
 
 		# Download from Google
-		# set_timezone('Europe/London')
 		client = storage.Client()
 		bucket = client.get_bucket('mssm-notebook-generator')
 		blob = Blob(os.path.join(notebook_uid, notebook_name), bucket)
 		notebook_string = blob.download_as_string().decode('utf-8')
-		# set_timezone('America/New_York')
 
 		return notebook_string
 	

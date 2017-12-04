@@ -59,7 +59,7 @@ NotebookManager = NotebookManager(db)
 
 @app.route(entry_point)
 def index():
-	datasets = pd.read_table('static/data/archs4.txt')
+	datasets = pd.read_table('static/data/archs4_good.txt')
 	toolkits = pd.read_table('static/data/toolkits.txt')
 	notebooks = NotebookManager.list_notebooks(user_id=1)
 	# Return

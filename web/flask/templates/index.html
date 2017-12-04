@@ -230,7 +230,7 @@
 													<div class="tab-pane show active padded-lg" role="tabpanel" id="add-toolkit">
 														<div class="row">
 															{% for index, rowData in toolkits.head(3).iterrows() %}
-															<input type="radio" name="toolkit-radio" id="toolkit-radio-{{ rowData['id'] }}" value="toolkit-radio-{{ rowData['id'] }}" class="toolkit-radio">
+															<input type="radio" name="toolkit-radio" id="toolkit-radio-{{ rowData['id'] }}" value="toolkit-radio-{{ rowData['id'] }}" class="toolkit-radio" {{ 'checked' if loop.index == 1 else '' }}>
 															<label class="toolkit-radio-label col-4" for="toolkit-radio-{{ rowData['id'] }}">
 																<div class="toolkit-card">
 																	<div class="row fill">

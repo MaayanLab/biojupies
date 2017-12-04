@@ -59,12 +59,12 @@ def download():
 	notebook_info = json.loads(request.data)
 
 	# Get file
-	notebook_file = os.path.join('notebooks', notebook_info['notebook_uid'], notebook_info['notebook_name'])
+	notebook_file_path = os.path.join('notebooks', notebook_info['notebook_uid'], notebook_info['notebook_name'])
 
 	# Save Notebook to File
-	if not os.path.exists(notebook_file):
-		os.makedirs(os.path.dirname(notebook_file))
-		urllib.request.urlretrieve(notebook_info['raw_notebook_url'], notebook_file)
+	if not os.path.exists(notebook_file_path):
+		os.makedirs(os.path.dirname(notebook_file_path))
+		urllib.request.urlretrieve(notebook_info['raw_notebook_url'], notebook_file_path)
 
 	# Get Notebook URLs
 	live_notebook_url = os.path.join(request.host_url.replace('5000', '8888'), 'notebooks', 'notebooks', notebook_info['notebook_uid'], notebook_info['notebook_name'])
