@@ -222,6 +222,16 @@ def download_api(notebook_uid):
 	return notebook_url
 
 #############################################
+########## 5. View API
+#############################################
+
+@app.route(entry_point+'/api/view/<notebook_uid>', methods=['GET', 'POST'])
+def view_api(notebook_uid):
+
+	# Return
+	return redirect('http://nbviewer.jupyter.org/url/amp.pharm.mssm.edu/notebook-generator-web/api/download/{notebook_uid}'.format(**locals()))
+
+#############################################
 ########## 3. New Notebook API
 #############################################
 

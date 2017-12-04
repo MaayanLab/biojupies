@@ -63,12 +63,12 @@
 		<div class="notebook-card-contents">
 			<img class="notebook-card-image" src="{{ url_for('static', filename='img/jupyter.png') }}">
 			<div class="notebook-card-dropup">
-				<a class="notebook-card-dropup-option" style="color: white; background-color: #07a207;" href="{{ url_for('notebook', notebook_uid=notebook_uid) }}" target="_blank"><span>Launch</span></a>
-				<a class="notebook-card-dropup-option" style="color: white; background-color: #006B99;"><span>View</span></a>
-				<a class="notebook-card-dropup-option" style="color: white; background-color: #FE973C;"><span>Download</span></a>
-				<a class="notebook-card-dropup-option" style="color: white; background-color: #A65F9D;"><span>Share</span></a>
+				<a class="notebook-card-dropup-option" style="" href="{{ url_for('notebook', notebook_uid=notebook_uid) }}" target="_blank"><span>Launch</span></a>
+				<a class="notebook-card-dropup-option" style="" href="{{ url_for('view_api', notebook_uid=notebook_uid) }}" target="_blank"><span>View</span></a>
+				<a class="notebook-card-dropup-option" style="" href="{{ url_for('download_api', notebook_uid=notebook_uid) }}" target="_blank"><span>Download</span></a>
+				<a class="notebook-card-dropup-option" style=""><span>Share</span></a>
 				{% if not example %}
-				<a class="notebook-card-dropup-option delete-notebook-button" style="color: white; background-color: #FF4463;"><span>Delete</span></a>
+				<a class="notebook-card-dropup-option delete-notebook-button" style=""><span>Delete</span></a>
 				{% endif %}
 			</div>
 		</div>

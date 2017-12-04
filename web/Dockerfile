@@ -20,6 +20,7 @@ RUN pip3 install kubernetes
 RUN pip3 install google-cloud
 RUN pip3 install mysqlclient
 RUN pip3 install google-api-python-client
+RUN pip3 install google-auth-httplib2
 
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
 RUN chmod +x ./kubectl

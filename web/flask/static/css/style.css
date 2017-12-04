@@ -454,7 +454,37 @@ html {
           height: 100%;
           display: flex;
           text-decoration: none !important;
+          background-color: #eaeaea;
+          color: black;
+          border-bottom: 1px solid #eaeaea;
+          background: -moz-linear-gradient(270deg, rgba(250,250,250,1) 0%, rgba(245,245,245,1) 100%); /* ff3.6+ */
+          background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(250,250,250,1)), color-stop(100%, rgba(245,245,245,1))); /* safari4+,chrome */
+          background: -webkit-linear-gradient(270deg, rgba(250,250,250,1) 0%, rgba(245,245,245,1) 100%); /* safari5.1+,chrome10+ */
+          background: -o-linear-gradient(270deg, rgba(250,250,250,1) 0%, rgba(245,245,245,1) 100%); /* opera 11.10+ */
+          background: -ms-linear-gradient(270deg, rgba(250,250,250,1) 0%, rgba(245,245,245,1) 100%); /* ie10+ */
+          background: linear-gradient(180deg, rgba(250,250,250,1) 0%, rgba(245,245,245,1) 100%); /* w3c */
+          filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FAFAFA', endColorstr='#F5F5F5',GradientType=0 ); /* ie6-9 */
         }
+
+          a.notebook-card-dropup-option:nth-child(1) {
+background: -moz-linear-gradient(270deg, rgba(240,250,235,1) 0%, rgba(223,255,219,1) 100%); /* ff3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(240,250,235,1)), color-stop(100%, rgba(223,255,219,1))); /* safari4+,chrome */
+background: -webkit-linear-gradient(270deg, rgba(240,250,235,1) 0%, rgba(223,255,219,1) 100%); /* safari5.1+,chrome10+ */
+background: -o-linear-gradient(270deg, rgba(240,250,235,1) 0%, rgba(223,255,219,1) 100%); /* opera 11.10+ */
+background: -ms-linear-gradient(270deg, rgba(240,250,235,1) 0%, rgba(223,255,219,1) 100%); /* ie10+ */
+background: linear-gradient(180deg, rgba(240,250,235,1) 0%, rgba(223,255,219,1) 100%); /* w3c */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F0FAEB', endColorstr='#DFFFDB',GradientType=0 ); /* ie6-9 */
+          }
+
+          a.notebook-card-dropup-option:nth-child(5) {
+background: -moz-linear-gradient(270deg, rgba(250,240,240,1) 0%, rgba(250,232,232,1) 100%); /* ff3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(250,240,240,1)), color-stop(100%, rgba(250,232,232,1))); /* safari4+,chrome */
+background: -webkit-linear-gradient(270deg, rgba(250,240,240,1) 0%, rgba(250,232,232,1) 100%); /* safari5.1+,chrome10+ */
+background: -o-linear-gradient(270deg, rgba(250,240,240,1) 0%, rgba(250,232,232,1) 100%); /* opera 11.10+ */
+background: -ms-linear-gradient(270deg, rgba(250,240,240,1) 0%, rgba(250,232,232,1) 100%); /* ie10+ */
+background: linear-gradient(180deg, rgba(250,240,240,1) 0%, rgba(250,232,232,1) 100%); /* w3c */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FAF0F0', endColorstr='#FAE8E8',GradientType=0 ); /* ie6-9 */
+          }
 
           .notebook-card-dropup-option span {
             margin: auto;
