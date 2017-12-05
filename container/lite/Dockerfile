@@ -23,8 +23,10 @@ RUN jupyter nbextension enable --py --sys-prefix clustergrammer_widget
 RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("limma");'
 RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("edgeR");'
 
+RUN pip3 install qgrid --pre
+RUN jupyter nbextension enable --py --sys-prefix qgrid
+
 RUN mkdir jupyter
-COPY scripts jupyter
 WORKDIR jupyter
 
-ENTRYPOINT jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root --no-browser --NotebookApp.iopub_data_rate_limit=10000000000 --c.NotebookApp.notebook_dir='jupyter' --NotebookApp.token=
+ENTRYPOINT jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root --no-browser --NotebookApp.iopub_data_rate_limit=10000000000 --NotebookApp.token=

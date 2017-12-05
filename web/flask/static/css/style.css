@@ -224,6 +224,10 @@ html {
     margin-bottom: 35px;
   }
 
+  .margin-bottom-xl {
+    margin-bottom: 50px;
+  }
+
   .padded-sm {
     padding: 10px;
   }
@@ -476,7 +480,7 @@ background: linear-gradient(180deg, rgba(240,250,235,1) 0%, rgba(223,255,219,1) 
 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F0FAEB', endColorstr='#DFFFDB',GradientType=0 ); /* ie6-9 */
           }
 
-          a.notebook-card-dropup-option:nth-child(5) {
+          a.notebook-card-dropup-option.delete-notebook-button {
 background: -moz-linear-gradient(270deg, rgba(250,240,240,1) 0%, rgba(250,232,232,1) 100%); /* ff3.6+ */
 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(250,240,240,1)), color-stop(100%, rgba(250,232,232,1))); /* safari4+,chrome */
 background: -webkit-linear-gradient(270deg, rgba(250,240,240,1) 0%, rgba(250,232,232,1) 100%); /* safari5.1+,chrome10+ */
@@ -646,6 +650,8 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FAF0F0', end
       margin-left: 10px;
     }
 
+      #create-new-notebook-button { padding: 10px 15px; background-color: #006B99; outline: none !important; border: none !important; cursor: pointer; margin-left: 30px;}
+        #create-new-notebook-button .fa { margin-right: 10px; }
       #new-notebook-back-button { display: none; }
       #new-notebook-generate-button { display: none; padding-left: 34px; padding-right: 35px;}
       #new-notebook-back-button .fa { padding-right: 10px; }

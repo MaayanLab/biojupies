@@ -187,7 +187,7 @@ def upload_api():
 	NotebookManager.upload_to_database(user_id=1, notebook_uid=notebook_uid, notebook_name=notebook_data['notebook_name'])
 
 	# Return
-	return json.dumps({'notebook_uid': notebook_uid})
+	return json.dumps({'notebook_uid': notebook_uid, 'notebook_name': notebook_data['notebook_name']})
 
 #############################################
 ########## 3. Delete API
@@ -230,32 +230,6 @@ def view_api(notebook_uid):
 
 	# Return
 	return redirect('http://nbviewer.jupyter.org/url/amp.pharm.mssm.edu/notebook-generator-web/api/download/{notebook_uid}'.format(**locals()))
-
-#############################################
-########## 3. New Notebook API
-#############################################
-
-# @app.route(entry_point+'/api/new_notebook', methods=['GET', 'POST'])
-# def new_notebook_api():
-
-# 	# Get accession
-# 	accession = request.args.get('acc', 'GSE30017')
-
-# 	# Get Notebook URL
-# 	data = {
-# 		'notebook_url': 'http://amp.pharm.mssm.edu/notebook-generator-web/generate?acc={accession}'.format(**locals()),
-# 		'notebook_name': '{accession} Analysis Notebook.ipynb'.format(**locals()),
-# 		'new_notebook': True
-# 	}
-
-# 	# Get Service IP
-# 	service_ip = KubernetesAPI.LaunchDeployment(username='maayanlab')
-
-# 	# Post Notebook to Pod Manager
-# 	live_notebook_url = requests.post('http://{service_ip}:5000/notebook-generator-manager/download'.format(**locals()), data=json.dumps(data)).text
-
-# 	# Return
-# 	return live_notebook_url
 
 #######################################################
 #######################################################

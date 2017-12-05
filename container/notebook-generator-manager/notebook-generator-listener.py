@@ -20,8 +20,9 @@ from watchdog.events import PatternMatchingEventHandler
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
 # Timeout
-seconds = 5
-timeout = time.time() + seconds
+idle_buffer = 500
+idle_timeout = time.time() + idle_buffer
+max_timeout = time.time() + 1000
 
 #######################################################
 #######################################################
@@ -35,23 +36,20 @@ timeout = time.time() + seconds
 
 class MyHandler(PatternMatchingEventHandler):
 
-	patterns = ["*.txt"]
+	patterns = ["*.ipynb"]
 
 	def refresh_timer(self):
-		global timeout
-		timeout = time.time() + seconds
+		global idle_timeout
+		idle_timeout = time.time() + idle_buffer
 
 	def upload_file(self, event):
 		file = event.src_path
-		print('Uploading {file}...'.format(**locals()))
+		print('Updated {file}...'.format(**locals()))
 		pass
 
-	def process(self, event):
+	def on_created(self, event):
 		self.refresh_timer()
 		self.upload_file(event)
-
-	def on_created(self, event):
-		self.process(event)
 
 #############################################
 ########## 2. Main
@@ -61,12 +59,12 @@ def main():
 
 	# Create observer
 	observer = Observer()
-	observer.schedule(MyHandler(), path='.')
+	observer.schedule(MyHandler(), path='/notebook-generator', recursive=True)
 	observer.start()
 
 	# Start observing
-	while time.time() < timeout:
-		print(round(timeout-time.time()))
+	while time.time() < idle_timeout and time.time() < max_timeout:
+		print('Deleting pod in at least '+str(round(idle_timeout-time.time()))+' seconds (maximum '+str(round(max_timeout-time.time()))+'s)...')
 		time.sleep(1)
 
 	# Stop observer
@@ -74,9 +72,7 @@ def main():
 	observer.join()
 
 	# Kill healthy directory
-	healthy_dir = '/healthy'
-	if os.path.exists(healthy_dir):
-		pass
+	os.unlink('/notebook-generator/healthy')
 
 ##################################################
 ##################################################

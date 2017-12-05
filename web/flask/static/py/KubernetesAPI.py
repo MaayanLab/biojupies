@@ -61,7 +61,14 @@ def GenerateDeployment(username):
 	# Create Volume Mount
 	volume_mount = client.V1VolumeMount()
 	volume_mount.name = "notebook-volume"
-	volume_mount.mount_path = "/notebooks"
+	volume_mount.mount_path = "/notebook-generator"
+
+	# Create Liveness Probe
+	liveness_probe = client.V1Probe()
+	liveness_probe._exec = client.V1ExecAction(['cat', '/notebook-generator/healthy'])
+	liveness_probe.initial_delay_seconds = 5
+	liveness_probe.period_seconds = 5
+	liveness_probe.failure_threshold = 1
 
 	# Create Jupyter Server
 	jupyter_container = client.V1Container()
@@ -69,6 +76,7 @@ def GenerateDeployment(username):
 	jupyter_container.image="gcr.io/notebook-generator/notebook-generator-jupyter"
 	jupyter_container.ports = [client.V1ContainerPort(container_port=8888, host_port=8888)]
 	jupyter_container.volume_mounts = [volume_mount]
+	jupyter_container.liveness_probe = liveness_probe
 
 	# Create Notebook Manager
 	manager_container = client.V1Container()
@@ -77,9 +85,12 @@ def GenerateDeployment(username):
 	manager_container.ports = [client.V1ContainerPort(container_port=5000, host_port=5000)]
 	manager_container.volume_mounts = [volume_mount]
 	manager_container.env = [client.V1EnvVar(name='username', value=username)]
+	manager_container.liveness_probe = liveness_probe
 
 	# Add Containers
 	deployment.spec.template.spec.containers = [jupyter_container, manager_container]
+	deployment.spec.template.spec.restart_policy = "NEVER"
+	print(dir(extension))
 
 	# Create Deployment
 	extension.create_namespaced_deployment(namespace="default", body=deployment)
@@ -106,11 +117,11 @@ def GenerateService(username):
 	# Create Ports
 	jupyter_port = client.V1ServicePort(protocol="TCP", port=8888, target_port=8888)
 	jupyter_port.name = "notebook-generator-jupyter"
-	downloader_port = client.V1ServicePort(protocol="TCP", port=5000, target_port=5000)
-	downloader_port.name = "notebook-generator-manager"
+	manager_port = client.V1ServicePort(protocol="TCP", port=5000, target_port=5000)
+	manager_port.name = "notebook-generator-manager"
 
 	# Add Ports
-	service.spec.ports = [jupyter_port, downloader_port]
+	service.spec.ports = [jupyter_port, manager_port]
 	service.spec.type = "LoadBalancer"
 
 	# Create Service

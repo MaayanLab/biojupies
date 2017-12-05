@@ -54,19 +54,19 @@
 {% endmacro %}
 
 <!-- Notebook -->
-{% macro notebook(title, notebook_uid='', notebook_name='', colsize='col-xl-2 col-lg-3 col-md-4 col-sm-4 col-xs-4 col-4', example=False) %}
+{% macro notebook(notebook_uid='', notebook_name='', colsize='col-xl-2 col-lg-3 col-md-4 col-sm-4 col-xs-4 col-4', example=False) %}
 <div class="{{ colsize }}">
 	<div id="{{ notebook_uid }}" class="notebook-card">
 		<div class="notebook-card-title">
-			{{notebook_name}}
+			{{ notebook_name }}
 		</div>
 		<div class="notebook-card-contents">
 			<img class="notebook-card-image" src="{{ url_for('static', filename='img/jupyter.png') }}">
 			<div class="notebook-card-dropup">
 				<a class="notebook-card-dropup-option" style="" href="{{ url_for('notebook', notebook_uid=notebook_uid) }}" target="_blank"><span>Launch</span></a>
 				<a class="notebook-card-dropup-option" style="" href="{{ url_for('view_api', notebook_uid=notebook_uid) }}" target="_blank"><span>View</span></a>
-				<a class="notebook-card-dropup-option" style="" href="{{ url_for('download_api', notebook_uid=notebook_uid) }}" target="_blank"><span>Download</span></a>
-				<a class="notebook-card-dropup-option" style=""><span>Share</span></a>
+				<a class="notebook-card-dropup-option download-notebook-button" style="" href="{{ url_for('download_api', notebook_uid=notebook_uid) }}" target="_blank" download="{{ notebook_name }}.ipynb"><span>Download</span></a>
+				<!-- <a class="notebook-card-dropup-option share-notebook-button" style=""><span>Share</span></a> -->
 				{% if not example %}
 				<a class="notebook-card-dropup-option delete-notebook-button" style=""><span>Delete</span></a>
 				{% endif %}
