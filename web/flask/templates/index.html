@@ -15,7 +15,16 @@
 			<i id="dashboard-sidebar-user-icon" class="fa fa-user-circle-o"></i>
 			<div id="dashboard-sidebar-user-info">
 				<div id="dashboard-sidebar-user-name">Guest User</div>
-				<div id="dashboard-sidebar-user-status"><i id="dashboard-sidebar-user-status-circle" class="fa fa-circle"></i>ONLINE</div>
+				<div id="dashboard-sidebar-user-dropdown" class="dropdown">
+					<div id="dashboard-sidebar-user-status" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true">
+						<div class="spinner"><div class="double-bounce1"></div><div class="double-bounce2"></div></div>
+						<i id="dashboard-sidebar-user-status-circle" class="fa fa-circle" style="color: grey;"></i>
+						<span id="dashboard-sidebar-user-status-label">PENDING</span>
+					</div>
+					<div id="dashboard-sidebar-user-dropdown-menu" class="dropdown-menu" aria-labelledby="dashboard-sidebar-user-status-label">
+						No information about the Jupyter Server is currently available.
+					</div>
+				</div>
 			</div>
 		</div>
 		<ul id="dashboard-sidebar-options" class="nav nav-tabs" role="tablist">
@@ -565,6 +574,80 @@ var cancelNotebookCreation = function() {
 $('#new-notebook-cancel-button').click(function(){
 	cancelNotebookCreation();
 });
+
+// Service Status
+var getServiceStatus = function() {
+	$.ajax({
+		url: "{{ url_for('watch_api') }}",
+		type: "post",
+		contentType: "application/json; charset=utf-8",
+		dataType: "json",
+		success: function(service_status) {
+			updateServiceStatus(service_status['status']);
+		}				
+	})
+}
+
+// Update Service Status
+var updateServiceStatus = function(service_status) {
+	var status_label = $('#dashboard-sidebar-user-status-label');
+	var status_circle = $('#dashboard-sidebar-user-status-circle');
+	var dropdown_menu = $('#dashboard-sidebar-user-dropdown-menu');
+	var spinner = $('.spinner');
+	if (service_status === 'offline') {
+		spinner.css('visibility', 'hidden');
+		status_label.html('OFFLINE');
+		status_circle.css('visibility', 'visible').css('color', 'red');
+		dropdown_menu.html('Your Jupyter Server is currently offline. To start it, launch a notebook from the dashboard menu, or use the button below.<button id="launch-server-button" class="btn btn-success" onclick="launchService()">Launch Server</button>');
+	} else if (service_status === 'launching') {
+		status_label.html('STARTING');
+		spinner.css('visibility', 'visible');
+		status_circle.css('visibility', 'hidden');
+		dropdown_menu.html('Your Jupyter Server is currently being launched.  It will be available shortly.');
+	} else {
+		spinner.css('visibility', 'hidden');
+		status_label.html('ONLINE');
+		status_circle.css('visibility', 'visible').css('color', 'green');
+		service_status = 'http://'+service_status+':8888'
+		dropdown_menu.html('Your Jupyter Server is currently online at the following IP address:<br><a href="'+service_status+'" target="_blank">'+service_status+'</a><button id="stop-server-button" class="btn btn-danger" onclick="stopService()">Stop Server</button>');
+	}
+}
+
+getServiceStatus();
+setInterval(getServiceStatus, 10000);
+
+// Stop Service
+var stopService = function() {
+	$.ajax({
+		url: "{{ url_for('stop_api') }}",
+		type: "post",
+		contentType: "application/json; charset=utf-8",
+		dataType: "json",
+		success: function(response) {
+			console.log(response);
+			getServiceStatus();
+		}				
+	})
+}
+
+// Launch Service
+var launchService = function() {
+	updateServiceStatus('launching');
+	$.ajax({
+		url: "{{ url_for('launch_api') }}",
+		type: "post",
+		contentType: "application/json; charset=utf-8",
+		dataType: "json",
+		success: function(response) {
+			console.log(response);
+			getServiceStatus();
+		},
+		error: function(response) {
+			alert('sorry, there has been an error.')
+		}	
+	})
+}
+
 
 </script>
 

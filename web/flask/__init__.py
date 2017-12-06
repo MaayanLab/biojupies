@@ -92,7 +92,7 @@ def dashboard():
 def dashboard_api():
 
 	# Launch User Deployment
-	service_ip = KubernetesAPI.LaunchDeployment(username='maayanlab')
+	service_ip = KubernetesAPI.LaunchPod(username='maayanlab')
 
 	# Return
 	return service_ip
@@ -121,7 +121,7 @@ def notebook(notebook_uid):
 def notebook_api(notebook_uid):
 
 	# Get Service IP
-	service_ip = KubernetesAPI.LaunchDeployment(username='maayanlab')
+	service_ip = KubernetesAPI.LaunchPod(username='maayanlab')
 
 	# Get Bucket Contents
 	bucket_contents = googleapiclient.discovery.build('storage', 'v1').objects().list(bucket='mssm-notebook-generator', fields='items(id,name,mediaLink)').execute()['items']
@@ -159,7 +159,7 @@ def notebook_api(notebook_uid):
 def generate_api():
 
 	# Get data
-	data = request.data.decode('utf-8')
+	data = request.data.decode('utf-8') # keys: to update
 
 	# Get Notebook String
 	notebook_string = GenerateNotebook(data)
@@ -178,7 +178,7 @@ def generate_api():
 def upload_api():
 
 	# Get POSTed data
-	notebook_data = json.loads(request.data.decode('utf-8'))
+	notebook_data = json.loads(request.data.decode('utf-8')) # keys: 'notebook_name', 'notebook_string'
 
 	# Upload to Google
 	notebook_uid = NotebookManager.upload_to_google(notebook_string=notebook_data['notebook_string'], notebook_name=notebook_data['notebook_name'])
@@ -230,6 +230,51 @@ def view_api(notebook_uid):
 
 	# Return
 	return redirect('http://nbviewer.jupyter.org/url/amp.pharm.mssm.edu/notebook-generator-web/api/download/{notebook_uid}'.format(**locals()))
+
+#############################################
+########## 6. Watch API
+#############################################
+
+@app.route(entry_point+'/api/watch', methods=['GET', 'POST'])
+def watch_api():
+
+	# Username
+	username = 'maayanlab'
+
+	# Get Pod Status
+	service_status = KubernetesAPI.GetServiceStatus(username)
+
+	# Return
+	return json.dumps({'status': service_status})
+
+#############################################
+########## 7. Stop API
+#############################################
+
+@app.route(entry_point+'/api/stop', methods=['GET', 'POST'])
+def stop_api():
+
+	# Username
+	username = 'maayanlab'
+
+	# Stop Server
+	response = KubernetesAPI.StopService(username)
+
+	# Return
+	return json.dumps({'response': response})
+
+#############################################
+########## 8. Launch API
+#############################################
+
+@app.route(entry_point+'/api/launch', methods=['GET', 'POST'])
+def launch_api():
+
+	# Stop Server
+	service_ip = KubernetesAPI.LaunchPod(username='maayanlab')
+
+	# Return
+	return json.dumps({'service_ip': service_ip})
 
 #######################################################
 #######################################################

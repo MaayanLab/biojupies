@@ -30,33 +30,21 @@ config.load_kube_config()
 ########## 1. Generate Deployment
 #############################################
 
-def GenerateDeployment(username):
+def GeneratePod(username):
 
 	# Load Extension
-	extension = client.ExtensionsV1beta1Api()
-
-	# Create Deployment Object
-	deployment = client.ExtensionsV1beta1Deployment()
-
-	# Fill Required Fields (apiVersion, kind, metadata)
-	deployment.api_version = "extensions/v1beta1"
-	deployment.kind = "Deployment"
-	deployment.metadata = client.V1ObjectMeta(name="notebook-generator-deployment-{username}".format(**locals()), labels={"group": "notebook-generator", "username": username})
-
-	# Add Spec
-	deployment.spec = client.ExtensionsV1beta1DeploymentSpec()
-	deployment.spec.replicas = 1
+	v1 = client.CoreV1Api()
 
 	# Add Pod Template
-	deployment.spec.template = client.V1PodTemplateSpec()
-	deployment.spec.template.metadata = client.V1ObjectMeta(labels={"app": "notebook-generator", "username": username})
-	deployment.spec.template.spec = client.V1PodSpec()
+	pod = client.V1Pod()
+	pod.metadata = client.V1ObjectMeta(name="notebook-generator-pod-{username}".format(**locals()), labels={"group": "notebook-generator", "username": username})
+	pod.spec = client.V1PodSpec()
 
 	# Create Volume
 	volume = client.V1Volume()
 	volume.name = "notebook-volume"
 	volume.emptyDir = client.V1EmptyDirVolumeSource()
-	deployment.spec.template.spec.volumes = [volume]
+	pod.spec.volumes = [volume]
 
 	# Create Volume Mount
 	volume_mount = client.V1VolumeMount()
@@ -64,11 +52,11 @@ def GenerateDeployment(username):
 	volume_mount.mount_path = "/notebook-generator"
 
 	# Create Liveness Probe
-	liveness_probe = client.V1Probe()
-	liveness_probe._exec = client.V1ExecAction(['cat', '/notebook-generator/healthy'])
-	liveness_probe.initial_delay_seconds = 5
-	liveness_probe.period_seconds = 5
-	liveness_probe.failure_threshold = 1
+	# liveness_probe = client.V1Probe()
+	# liveness_probe._exec = client.V1ExecAction(['cat', '/notebook-generator/healthy'])
+	# liveness_probe.initial_delay_seconds = 5
+	# liveness_probe.period_seconds = 5
+	# liveness_probe.failure_threshold = 1
 
 	# Create Jupyter Server
 	jupyter_container = client.V1Container()
@@ -76,7 +64,7 @@ def GenerateDeployment(username):
 	jupyter_container.image="gcr.io/notebook-generator/notebook-generator-jupyter"
 	jupyter_container.ports = [client.V1ContainerPort(container_port=8888, host_port=8888)]
 	jupyter_container.volume_mounts = [volume_mount]
-	jupyter_container.liveness_probe = liveness_probe
+	# jupyter_container.liveness_probe = liveness_probe
 
 	# Create Notebook Manager
 	manager_container = client.V1Container()
@@ -85,15 +73,14 @@ def GenerateDeployment(username):
 	manager_container.ports = [client.V1ContainerPort(container_port=5000, host_port=5000)]
 	manager_container.volume_mounts = [volume_mount]
 	manager_container.env = [client.V1EnvVar(name='username', value=username)]
-	manager_container.liveness_probe = liveness_probe
+	# manager_container.liveness_probe = liveness_probe
 
 	# Add Containers
-	deployment.spec.template.spec.containers = [jupyter_container, manager_container]
-	deployment.spec.template.spec.restart_policy = "NEVER"
-	print(dir(extension))
+	pod.spec.containers = [jupyter_container, manager_container]
+	# pod.spec.restart_policy = "Never"
 
 	# Create Deployment
-	extension.create_namespaced_deployment(namespace="default", body=deployment)
+	v1.create_namespaced_pod(namespace="default", body=pod)
 
 #############################################
 ########## 2. Generate Service
@@ -177,10 +164,10 @@ def GetServiceIP(username, check=True):
 #################################################################
 
 #############################################
-########## 1. Launch Deployment
+########## 1. Launch Pod
 #############################################
 
-def LaunchDeployment(username):
+def LaunchPod(username):
 
 	# Check IP
 	checked_ip = CheckServiceIP(username)
@@ -190,9 +177,56 @@ def LaunchDeployment(username):
 		service_ip = checked_ip
 	else:
 		try:
-			GenerateDeployment(username)
+			GeneratePod(username)
 			GenerateService(username)
 		except:
 			pass
 		service_ip = GetServiceIP(username)
 	return service_ip
+
+#############################################
+########## 2. Launch Service
+#############################################
+
+def GetServiceStatus(username):
+
+	# Create API Instance
+	api_instance = client.CoreV1Api()
+
+	# Get Services
+	services = api_instance.list_service_for_all_namespaces()
+
+	# Get Service
+	service = [x for x in services.to_dict()['items'] if x['metadata']['name']=='notebook-generator-service-maayanlab']
+
+	# Get Status
+	if len(service) == 0:
+		service_status = 'offline'
+	else:
+		load_balancer = service[0]['status']['load_balancer']['ingress']
+		if type(load_balancer) == list:
+			service_status = load_balancer[0]['ip']
+		else:
+			service_status = 'launching'
+
+	return service_status
+
+#############################################
+########## 3. Stop Service
+#############################################
+
+def StopService(username):
+
+	# Create API Instance
+	api_instance = client.CoreV1Api()
+
+	# Delete Pod and Service
+	try:
+		api_response = api_instance.delete_namespaced_pod(name='notebook-generator-pod-{username}'.format(**locals()), namespace='default', body=client.V1DeleteOptions())
+		api_response = api_instance.delete_namespaced_service(name='notebook-generator-service-{username}'.format(**locals()), namespace='default')
+		response = 'success'
+	except:
+		response = 'error'
+
+	# Stop
+	return response
