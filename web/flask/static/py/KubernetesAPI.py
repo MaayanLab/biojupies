@@ -224,9 +224,9 @@ def StopService(username):
 	try:
 		api_response = api_instance.delete_namespaced_pod(name='notebook-generator-pod-{username}'.format(**locals()), namespace='default', body=client.V1DeleteOptions())
 		api_response = api_instance.delete_namespaced_service(name='notebook-generator-service-{username}'.format(**locals()), namespace='default')
-		response = 'success'
+		response = 'deletion success'
 	except:
-		response = 'error'
+		response = 'deletion error'
 
 	# Stop
 	return response

@@ -29,11 +29,36 @@ import nbformat as nbf
 ########## 1. Generate Notebook
 #############################################
 
+def AddCodeCell(notebook, content, init=True):
+	notebook['cells'].append(nbf.v4.new_code_cell(content))
+	notebook['cells'][-1].metadata.init_cell=True
+	notebook['cells'][-1].metadata.hide_input=True
+
 def GenerateNotebook(config):
 	config = {'dataset': {'acc': config}}
 
 	# Create new notebook
 	notebook = nbf.v4.new_notebook()
+	notebook.metadata.init_cell = 'run_on_kernel_ready'
+
+	# Get Toggle Code
+	toggle_code = """
+from IPython.display import HTML
+
+HTML('''<script>
+code_show=true; 
+function code_toggle() {
+ if (code_show){
+ $('div.input').hide();
+ } else {
+ $('div.input').show();
+ }
+ code_show = !code_show
+} 
+$( document ).ready(code_toggle);
+</script>
+<form action="javascript:code_toggle()"><input type="submit" value="Toggle Code"></form>''')
+"""
 
 	# Get Intro Text
 	intro_text = """
@@ -53,12 +78,17 @@ Here we download the dataset from the ARCHS4 library, load data and metadata in 
 	""".format(**config['dataset'])
 
 	# Load Libraries
+	AddCodeCell(notebook, toggle_code)
 	notebook['cells'].append(nbf.v4.new_markdown_cell(intro_text))
-	notebook['cells'].append(nbf.v4.new_code_cell('# Import Modules\n%matplotlib inline\nimport sys\nsys.path.append("..")\nimport archs4\nimport pca\nimport heatmap\nimport clustergrammer\nfrom plotly.offline import init_notebook_mode\ninit_notebook_mode()'))
+	AddCodeCell(notebook, '# Import Modules\n%matplotlib inline\nimport sys\nsys.path.append("../scripts")\nimport archs4\nimport pca\nimport heatmap\nimport clustergrammer\nfrom plotly.offline import init_notebook_mode\ninit_notebook_mode()')
+	# notebook['cells'].append(nbf.v4.new_code_cell('# Import Modules\n%matplotlib inline\nimport sys\nsys.path.append("../scripts")\nimport archs4\nimport pca\nimport heatmap\nimport clustergrammer\nfrom plotly.offline import init_notebook_mode\ninit_notebook_mode()'))
 
 	# Fetch Data
-	notebook['cells'].append(nbf.v4.new_code_cell('# Get Dataset\nrawcount_dataframe, sample_metadata_dataframe = archs4.fetch_dataset("{acc}")\nrawcount_dataframe.head()'.format(**config['dataset'])))
-	notebook['cells'].append(nbf.v4.new_code_cell('# Show Metadata\nsample_metadata_dataframe'.format(**locals())))
+	
+	AddCodeCell(notebook, '# Get Dataset\nrawcount_dataframe, sample_metadata_dataframe = archs4.fetch_dataset("{acc}")\nrawcount_dataframe.head()'.format(**config['dataset']))
+	# notebook['cells'].append(nbf.v4.new_code_cell('# Get Dataset\nrawcount_dataframe, sample_metadata_dataframe = archs4.fetch_dataset("{acc}")\nrawcount_dataframe.head()'.format(**config['dataset'])))
+	AddCodeCell(notebook, '# Show Metadata\nsample_metadata_dataframe'.format(**locals()))
+	# notebook['cells'].append(nbf.v4.new_code_cell('# Show Metadata\nsample_metadata_dataframe'.format(**locals())))
 
 	# # Add tools
 	notebook['cells'].append(nbf.v4.new_markdown_cell('## 2. Data Analysis'))

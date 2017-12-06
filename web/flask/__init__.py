@@ -155,7 +155,7 @@ def notebook_api(notebook_uid):
 ########## 1. Generate API
 #############################################
 
-@app.route(entry_point+'/api/generate', methods=['POST'])
+@app.route(entry_point+'/api/generate', methods=['GET', 'POST'])
 def generate_api():
 
 	# Get data

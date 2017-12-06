@@ -20,13 +20,11 @@
 from flask import Flask, request, url_for, send_from_directory
 
 ##### 2. Python modules #####
-import os, sys, json, nbformat
+import os, sys, json, nbformat, time
 import urllib.request
 from nbconvert.preprocessors import ExecutePreprocessor
 
 ##### 3. Custom modules #####
-sys.path.append('static/py')
-from SendNotebook import *
 
 #############################################
 ########## 2. App Setup
@@ -66,18 +64,11 @@ def download():
 	if not os.path.exists(notebook_file_path):
 		os.makedirs(os.path.dirname(notebook_file_path))
 		urllib.request.urlretrieve(notebook_info['raw_notebook_url'], notebook_file_path)
-
-	# Execute - add if statement for pre-run notebooks maybe?
-	# with open(notebook_file_path) as f:
-	# 	print('executing notebook...')
-	# 	nb = nbformat.read(f, as_version=4)
-	# ep = ExecutePreprocessor(timeout=600)
-	# ep.preprocess(nb, {'metadata': {'path': 'notebooks'}})
-	# with open(notebook_file_path, 'w') as f:
-	# 	nbformat.write(nb, f)
+		os.system('jupyter trust '+notebook_file_path)
 
 	# Get Notebook URLs
 	live_notebook_url = os.path.join(request.host_url.replace('5000', '8888'), 'notebooks', 'notebook-generator', notebook_info['notebook_uid'], notebook_info['notebook_name'])
+	time.sleep(5)
 
 	return live_notebook_url
 
@@ -85,17 +76,14 @@ def download():
 ########## 3. Send
 #############################################
 
-# @app.route(entry_point+'/send', methods=['POST'])
-# def send():
-
-# 	# Get POSTed Data
-# 	raw_notebook_url = request.data
-
-# 	# Send
-# 	google_notebook_url = SendNotebook(raw_notebook_url)
-
-# 	# Return
-# 	return google_notebook_url
+@app.route(entry_point+'/send', methods=['POST'])
+def send():
+	# 	url = 'http://amp.pharm.mssm.edu/notebook-generator-web/upload'
+	# 	data = {'raw_notebook_url': live_notebook_url, 'username': os.environ['username']}
+	# 	response = requests.post(url, data=json.dumps(data))
+	# 	google_notebook_url = json.loads(response.text)['google_notebook_url']
+	# 	return google_notebook_url
+	return ''
 
 #######################################################
 #######################################################

@@ -584,7 +584,10 @@ var getServiceStatus = function() {
 		dataType: "json",
 		success: function(service_status) {
 			updateServiceStatus(service_status['status']);
-		}				
+		},
+		error: function(e) {
+			console.log('Error fetching server status');
+		}		
 	})
 }
 
@@ -614,7 +617,7 @@ var updateServiceStatus = function(service_status) {
 }
 
 getServiceStatus();
-setInterval(getServiceStatus, 10000);
+setInterval(getServiceStatus, 30000);
 
 // Stop Service
 var stopService = function() {
@@ -626,7 +629,7 @@ var stopService = function() {
 		success: function(response) {
 			console.log(response);
 			getServiceStatus();
-		}				
+		}
 	})
 }
 
@@ -642,8 +645,8 @@ var launchService = function() {
 			console.log(response);
 			getServiceStatus();
 		},
-		error: function(response) {
-			alert('sorry, there has been an error.')
+		error: function(e) {
+			console.log('Error launching service.')
 		}	
 	})
 }
