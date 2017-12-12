@@ -22,7 +22,7 @@ from nbconvert.preprocessors import ExecutePreprocessor
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
 # Timeout
-idle_buffer = 500
+idle_buffer = 1000
 idle_timeout = time.time() + idle_buffer
 max_timeout = time.time() + 1000
 
@@ -46,9 +46,13 @@ class MyHandler(PatternMatchingEventHandler):
 
 	def send_notebook(self, notebook_path):
 		print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())+' | Sending {notebook_path}...'.format(**locals()))
-		basedir, notebook_uid, notebook_name = notebook_path.split('/')
-		notebook_info = {'notebook_path': notebook_path, 'notebook_uid': notebook_uid}
-		response = requests.post('http://amp.pharm.mssm.edu/notebook-generator-manager/update', data=json.dumps(notebook_info))
+		notebook_uid, notebook_name = notebook_path.replace('/notebook-generator/', '').split('/')
+		print(notebook_uid, notebook_name)
+		notebook_info = {'notebook_name': notebook_name, 'notebook_uid': notebook_uid}
+		print(notebook_info)
+		print('performing post request...')
+		response = requests.post('http://amp.pharm.mssm.edu/notebook-generator-web/api/update', data=json.dumps(notebook_info))
+		print('done!')
 		print(response.text)
 
 	def trust_notebook(self, notebook_path):
@@ -56,16 +60,18 @@ class MyHandler(PatternMatchingEventHandler):
 
 	def on_created(self, event):
 		notebook_path = event.src_path
-		print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())+' | Created '+notebook_path)
-		self.refresh_timer()
-		self.trust_notebook(notebook_path)
+		if 'checkpoint' not in notebook_path and '.~' not in notebook_path:
+			print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())+' | Created '+notebook_path)
+			self.refresh_timer()
+			self.trust_notebook(notebook_path)
 
 	def on_modified(self, event):
 		notebook_path = event.src_path
-		print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())+' | Modified '+notebook_path)
-		self.refresh_timer()
-		self.trust_notebook(notebook_path)
-		self.send_notebook(notebook_path)
+		if 'checkpoint' not in notebook_path and '.~' not in notebook_path:
+			print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())+' | Modified '+notebook_path)
+			self.refresh_timer()
+			self.trust_notebook(notebook_path)
+			self.send_notebook(notebook_path)
 
 #############################################
 ########## 2. Stop Server

@@ -230,7 +230,7 @@ def download_api(notebook_uid):
 def view_api(notebook_uid):
 
 	# Return
-	return redirect('http://nbviewer.jupyter.org/url/amp.pharm.mssm.edu/notebook-generator-web/api/download/{notebook_uid}'.format(**locals()))
+	return redirect('http://nbviewer.jupyter.org/url/amp.pharm.mssm.edu/notebook-generator-web/api/download/{notebook_uid}?flush_cache=True'.format(**locals()))
 
 #############################################
 ########## 6. Watch API
@@ -286,6 +286,8 @@ def update():
 
 	# Get POSTed data
 	notebook_info = json.loads(request.data.decode('utf-8')) # keys: 'notebook_uid', 'notebook_name'
+	print('Updating notebook...')
+	print(notebook_info)
 
 	# Get Service IP
 	service_ip = KubernetesAPI.LaunchPod(username='maayanlab')
