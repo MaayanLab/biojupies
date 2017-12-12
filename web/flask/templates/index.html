@@ -243,7 +243,7 @@
 														<div class="row">
 															{% for index, rowData in toolkits.head(3).iterrows() %}
 															<input type="radio" name="toolkit-radio" id="toolkit-radio-{{ rowData['id'] }}" value="toolkit-radio-{{ rowData['id'] }}" class="toolkit-radio" {{ 'checked' if loop.index == 0 else '' }}>
-															<label class="toolkit-radio-label col-4" for="toolkit-radio-{{ rowData['id'] }}">
+															<label class="toolkit-radio-label col-4" for="toolkit-radio-{{ rowData['id'] }}" data-toolkit-id="{{ loop.index }}">
 																<div class="toolkit-card">
 																	<div class="row fill">
 																		<div class="col-5 my-auto">
@@ -480,7 +480,12 @@ $('.generate-notebook-button').click(function() {
 
 // Get Notebook Config
 var getNotebookConfiguration = function() {
-	return $('#new-notebook-selected-data .selected-object-card-title').html();
+	// 
+	notebook_configuration = {
+		'dataset_accession': $('#new-notebook-selected-data .selected-object-card-title').html(),
+		'toolkit_id': parseInt($('input[type="radio"]:checked + label').attr('data-toolkit-id'))
+	}
+	return notebook_configuration;
 };
 
 
@@ -513,7 +518,7 @@ var generateNotebook = function(notebook_configuration) {
 	$.ajax({
 		url: "{{ url_for('generate_api') }}",
 		type: "post",
-		data: notebook_configuration,
+		data: JSON.stringify(notebook_configuration),
 		contentType: "application/json; charset=utf-8",
 		dataType: "json",
 		success: function(notebook_data) {
@@ -601,18 +606,18 @@ var updateServiceStatus = function(service_status) {
 		spinner.css('visibility', 'hidden');
 		status_label.html('OFFLINE');
 		status_circle.css('visibility', 'visible').css('color', 'red');
-		dropdown_menu.html('Your Jupyter Server is currently offline. To start it, launch a notebook from the dashboard menu, or use the button below.<button id="launch-server-button" class="btn btn-success" onclick="launchService()">Launch Server</button>');
+		dropdown_menu.html('Your Jupyter Server is offline.<br><button id="launch-server-button" class="btn btn-success" onclick="launchService()">Launch Server</button>');
 	} else if (service_status === 'launching') {
 		status_label.html('STARTING');
 		spinner.css('visibility', 'visible');
 		status_circle.css('visibility', 'hidden');
-		dropdown_menu.html('Your Jupyter Server is currently being launched.  It will be available shortly.');
+		dropdown_menu.html('Your Jupyter Server is being launched.');
 	} else {
 		spinner.css('visibility', 'hidden');
 		status_label.html('ONLINE');
 		status_circle.css('visibility', 'visible').css('color', 'green');
 		service_status = 'http://'+service_status+':8888'
-		dropdown_menu.html('Your Jupyter Server is currently online at the following IP address:<br><a href="'+service_status+'" target="_blank">'+service_status+'</a><button id="stop-server-button" class="btn btn-danger" onclick="stopService()">Stop Server</button>');
+		dropdown_menu.html('Your Jupyter Server is available at the following IP address:<br><a href="'+service_status+'" target="_blank">'+service_status+'</a><br><button id="stop-server-button" class="btn btn-danger" onclick="stopService()">Stop Server</button>');
 	}
 }
 

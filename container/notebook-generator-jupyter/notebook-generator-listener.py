@@ -11,7 +11,7 @@
 ########## 1. Load libraries
 #############################################
 ##### 1. Python modules #####
-import time, logging, os, subprocess
+import time, logging, os, subprocess, requests, json
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 import nbformat as nbf
@@ -44,28 +44,45 @@ class MyHandler(PatternMatchingEventHandler):
 		global idle_timeout
 		idle_timeout = time.time() + idle_buffer
 
-	def upload_notebook(self, notebook_path):
-		pass
+	def send_notebook(self, notebook_path):
+		print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())+' | Sending {notebook_path}...'.format(**locals()))
+		basedir, notebook_uid, notebook_name = notebook_path.split('/')
+		notebook_info = {'notebook_path': notebook_path, 'notebook_uid': notebook_uid}
+		response = requests.post('http://amp.pharm.mssm.edu/notebook-generator-manager/update', data=json.dumps(notebook_info))
+		print(response.text)
 
 	def trust_notebook(self, notebook_path):
 		output = subprocess.call(['jupyter', 'trust', notebook_path])
 
 	def on_created(self, event):
 		notebook_path = event.src_path
-		print('Created '+notebook_path)
+		print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())+' | Created '+notebook_path)
 		self.refresh_timer()
 		self.trust_notebook(notebook_path)
-		# self.upload_notebook(notebook_path)
 
 	def on_modified(self, event):
 		notebook_path = event.src_path
-		print('Modified '+notebook_path)
+		print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())+' | Modified '+notebook_path)
 		self.refresh_timer()
 		self.trust_notebook(notebook_path)
-		# self.upload_notebook(notebook_path)
+		self.send_notebook(notebook_path)
 
 #############################################
-########## 2. Main
+########## 2. Stop Server
+#############################################
+
+def stopServer():
+
+	# Print
+	print('Stopping Server...')
+
+	# Get URL
+	url = 'http://amp.pharm.mssm.edu/notebook-generator-web/api/stop'
+	response = requests.post(url)
+	print(response.text)
+
+#############################################
+########## 3. Main
 #############################################
 
 def main():
@@ -85,7 +102,7 @@ def main():
 	observer.join()
 
 	# Kill healthy directory
-	os.unlink('/notebook-generator/healthy')
+	stopServer()
 
 ##################################################
 ##################################################

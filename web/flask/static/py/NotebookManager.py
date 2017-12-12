@@ -69,10 +69,11 @@ class NotebookManager:
 	########## 3. Upload to Google
 	#############################################
 
-	def upload_to_google(self, notebook_string, notebook_name):
+	def upload_to_google(self, notebook_string, notebook_name, notebook_uid=None):
 
 		# Get string
-		notebook_uid = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(9))
+		if not notebook_uid:
+			notebook_uid = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(9))
 
 		#check UID, else create another
 

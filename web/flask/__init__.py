@@ -159,13 +159,14 @@ def notebook_api(notebook_uid):
 def generate_api():
 
 	# Get data
-	data = request.data.decode('utf-8') # keys: to update
+	# notebook_config = request.data.decode('utf-8') # keys: to update
+	notebook_configuration = json.loads(request.data.decode('utf-8')) # keys: to update
 
 	# Get Notebook String
-	notebook_string = GenerateNotebook(data)
+	notebook_string = GenerateNotebook(notebook_configuration)
 
 	# Get Notebook Data
-	notebook_data = json.dumps({"notebook_name": '{data}.ipynb'.format(**locals()), "notebook_string": notebook_string})
+	notebook_data = json.dumps({"notebook_name": '{dataset_accession}.ipynb'.format(**notebook_configuration), "notebook_string": notebook_string})
 
 	# Return
 	return notebook_data
@@ -275,6 +276,33 @@ def launch_api():
 
 	# Return
 	return json.dumps({'service_ip': service_ip})
+
+#############################################
+########## 9. Update API
+#############################################
+
+@app.route(entry_point+'/api/update', methods=['GET', 'POST'])
+def update():
+
+	# Get POSTed data
+	notebook_info = json.loads(request.data.decode('utf-8')) # keys: 'notebook_uid', 'notebook_name'
+
+	# Get Service IP
+	service_ip = KubernetesAPI.LaunchPod(username='maayanlab')
+
+	# Get notebook string
+	notebook_string = requests.get('http://{service_ip}'.format(**locals())+':5000/notebook-generator-manager/notebooks/{notebook_uid}/{notebook_name}'.format(**notebook_info)).text
+
+	# Delete
+	NotebookManager.delete_from_google(notebook_uid=notebook_info['notebook_uid'])
+	NotebookManager.delete_from_database(user_id=1, notebook_uid=notebook_info['notebook_uid'])
+
+	# Update
+	NotebookManager.upload_to_google(notebook_string=notebook_string, notebook_name=notebook_info['notebook_name'], notebook_uid=notebook_info['notebook_uid'])
+	NotebookManager.upload_to_database(user_id=1, notebook_uid=notebook_info['notebook_uid'], notebook_name=notebook_info['notebook_name'])
+
+	# Return
+	return 'Updated notebook {notebook_uid}/{notebook_name}.'.format(**notebook_info)
 
 #######################################################
 #######################################################

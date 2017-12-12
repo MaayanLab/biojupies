@@ -73,17 +73,14 @@ def download():
 	return live_notebook_url
 
 #############################################
-########## 3. Send
+########## 3. Notebooks
 #############################################
 
-@app.route(entry_point+'/send', methods=['POST'])
-def send():
-	# 	url = 'http://amp.pharm.mssm.edu/notebook-generator-web/upload'
-	# 	data = {'raw_notebook_url': live_notebook_url, 'username': os.environ['username']}
-	# 	response = requests.post(url, data=json.dumps(data))
-	# 	google_notebook_url = json.loads(response.text)['google_notebook_url']
-	# 	return google_notebook_url
-	return ''
+@app.route(entry_point+'/notebooks/<path:path>')
+def notebooks(path):
+
+	# Return
+	return send_from_directory('notebook-generator', path)
 
 #######################################################
 #######################################################

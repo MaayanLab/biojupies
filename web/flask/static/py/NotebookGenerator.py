@@ -34,17 +34,13 @@ def AddCodeCell(notebook, content, init=True):
 	notebook['cells'][-1].metadata.init_cell=True
 	notebook['cells'][-1].metadata.hide_input=True
 
-def GenerateNotebook(config):
-	config = {'dataset': {'acc': config}}
+def BaseNotebook(dataset_accession):
 
 	# Create new notebook
 	notebook = nbf.v4.new_notebook()
-	notebook.metadata.init_cell = 'run_on_kernel_ready'
 
 	# Get Toggle Code
-	toggle_code = """
-from IPython.display import HTML
-
+	toggle_code = """from IPython.display import HTML
 HTML('''<script>
 code_show=true; 
 function code_toggle() {
@@ -57,15 +53,14 @@ function code_toggle() {
 } 
 $( document ).ready(code_toggle);
 </script>
-<form action="javascript:code_toggle()"><input type="submit" value="Toggle Code"></form>''')
-"""
+<form action="javascript:code_toggle()"><input type="submit" value="Toggle Code"></form>''')"""
 
 	# Get Intro Text
 	intro_text = """
-# {acc} Analysis Notebook
+# {dataset_accession} Analysis Notebook
 ## Overview
 ##### Introduction
-This Notebook contains an analysis of GEO dataset [{acc}](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={acc}).  It has been programmatically generated with the Jupyter Notebook Generator, available at the following [link](https://amp.pharm.mssm.edu/notebook-generator-web/notebook?acc={acc}).
+This Notebook contains an analysis of GEO dataset [{dataset_accession}](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={dataset_accession}).  It has been programmatically generated with the Jupyter Notebook Generator, available at the following [link](https://amp.pharm.mssm.edu/notebook-generator-web/notebook?acc={dataset_accession}).
 
 ##### Sections
 The report is divided in two sections:
@@ -75,29 +70,40 @@ The report is divided in two sections:
 
 ## 1. Data Processing
 Here we download the dataset from the ARCHS4 library, load data and metadata in pandas DataFrames.
-	""".format(**config['dataset'])
+	""".format(**locals())
 
 	# Load Libraries
 	AddCodeCell(notebook, toggle_code)
 	notebook['cells'].append(nbf.v4.new_markdown_cell(intro_text))
-	AddCodeCell(notebook, '# Import Modules\n%matplotlib inline\nimport sys\nsys.path.append("../scripts")\nimport archs4\nimport pca\nimport heatmap\nimport clustergrammer\nfrom plotly.offline import init_notebook_mode\ninit_notebook_mode()')
-	# notebook['cells'].append(nbf.v4.new_code_cell('# Import Modules\n%matplotlib inline\nimport sys\nsys.path.append("../scripts")\nimport archs4\nimport pca\nimport heatmap\nimport clustergrammer\nfrom plotly.offline import init_notebook_mode\ninit_notebook_mode()'))
+	AddCodeCell(notebook, '# Initialize Notebook\n%run ../scripts/nb.ipy')
 
 	# Fetch Data
-	
-	AddCodeCell(notebook, '# Get Dataset\nrawcount_dataframe, sample_metadata_dataframe = archs4.fetch_dataset("{acc}")\nrawcount_dataframe.head()'.format(**config['dataset']))
-	# notebook['cells'].append(nbf.v4.new_code_cell('# Get Dataset\nrawcount_dataframe, sample_metadata_dataframe = archs4.fetch_dataset("{acc}")\nrawcount_dataframe.head()'.format(**config['dataset'])))
+	AddCodeCell(notebook, '# Get Dataset\nrawcount_dataframe, sample_metadata_dataframe = fetch_dataset("{dataset_accession}")\nrawcount_dataframe.head()'.format(**locals()))
 	AddCodeCell(notebook, '# Show Metadata\nsample_metadata_dataframe'.format(**locals()))
-	# notebook['cells'].append(nbf.v4.new_code_cell('# Show Metadata\nsample_metadata_dataframe'.format(**locals())))
 
-	# # Add tools
+	# Data Analysis
 	notebook['cells'].append(nbf.v4.new_markdown_cell('## 2. Data Analysis'))
-	# notebook['cells'].append(nbf.v4.new_code_cell('# PCA\npca.display(rawcount_dataframe)'))
-	# notebook['cells'].append(nbf.v4.new_markdown_cell(heatmap_analysis_text))
-	# notebook['cells'].append(nbf.v4.new_code_cell('# Heatmap\nheatmap.display(rawcount_dataframe);'))
-	# notebook['cells'].append(nbf.v4.new_markdown_cell(coexpression_analysis_text))
-	# notebook['cells'].append(nbf.v4.new_code_cell('# Gene-gene Correlation Heatmap\nheatmap.display(rawcount_dataframe, correlation=True);'))
-	# notebook['cells'].append(nbf.v4.new_code_cell('# Display Clustergrammer\nclustergrammer.display_clustergram(rawcount_dataframe)'))
+
+	# Return
+	return notebook
+
+
+def AddAnalyses(notebook, toolkit_id):
+
+	if toolkit_id == 1:
+		return notebook
+	elif toolkit_id == 2:
+		AddCodeCell(notebook, 'plot_library_sizes(rawcount_dataframe);')
+		AddCodeCell(notebook, 'plot_library_sizes(rawcount_dataframe);')
+
+
+def GenerateNotebook(notebook_configuration):
+
+	# Get Notebook
+	notebook = BaseNotebook(dataset_accession=notebook_configuration['dataset_accession'])
+
+	# Add Analysis
+	notebook = AddAnalyses(notebook=notebook, toolkit_id=notebook_configuration['toolkit_id'])
 
 	# Get string
 	notebook_string = nbf.writes(notebook)

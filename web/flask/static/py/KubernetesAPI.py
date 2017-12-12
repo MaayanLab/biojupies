@@ -18,7 +18,6 @@
 #############################################
 ##### 1. Python modules #####
 from kubernetes import client, config, watch
-config.load_kube_config()
 
 #################################################################
 #################################################################
@@ -168,6 +167,9 @@ def GetServiceIP(username, check=True):
 #############################################
 
 def LaunchPod(username):
+	
+	# Load Config
+	config.load_kube_config()
 
 	# Check IP
 	checked_ip = CheckServiceIP(username)
@@ -189,6 +191,9 @@ def LaunchPod(username):
 #############################################
 
 def GetServiceStatus(username):
+
+	# Load Config
+	config.load_kube_config()
 
 	# Create API Instance
 	api_instance = client.CoreV1Api()
@@ -216,6 +221,9 @@ def GetServiceStatus(username):
 #############################################
 
 def StopService(username):
+
+	# Load Config
+	config.load_kube_config()
 
 	# Create API Instance
 	api_instance = client.CoreV1Api()
