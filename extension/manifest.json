@@ -14,7 +14,9 @@
 	"content_scripts": [
 		{
 			"matches": [
-				"https://www.ncbi.nlm.nih.gov/*"
+				"https://www.ncbi.nlm.nih.gov/*",
+				"http://lincsportal.ccs.miami.edu/*",
+				"http://amp.pharm.mssm.edu/datasets2tools/*"
 			],
 
 			"css": [
@@ -29,7 +31,7 @@
 	],
 
 	"web_accessible_resources": [
-		"icons/icon.png"
+		"icons/*.png"
 	],
 
 	"manifest_version": 2
