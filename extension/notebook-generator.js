@@ -6,12 +6,10 @@
 
 function main() {
 
-	addButtons();
 	addModal();
+	addButtons();
 	addEventListeners();
 
-	// $('#notebook-generator-modal').css('display', 'block');
-	// addTools();
 	// $('#pca-checkbox').attr('checked', 'true');
 	// $('#tsne-checkbox').attr('checked', 'true');
 	// $('#clustered_heatmap-checkbox').attr('checked', 'true');
@@ -23,169 +21,6 @@ function main() {
 //////////////////////////////////////////////////////////////////////
 ///////// 2. Define Functions ////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
-
-sections = {
-	"Dimensionality Reduction": ["pca", "tsne"],
-	"Data Visualization": ["clustered_heatmap", "library_size_analysis"],
-	"Differential Expression": ["de_table", "volcano_plot", "ma_plot"],
-	"Signature Analysis": ["enrichr", "l1000cds2"]
-};
-
-tools = {
-	"pca": {
-		"tool_name": "PCA",
-		"tool_string": "pca",
-		"tool_description": "Linear dimensionality reduction technique",
-		"requires_signature": false,
-		"parameters": [
-			{
-				"parameter_name": "Dimensions",
-				"parameter_string": "dimensions",
-				"parameter_description": "The number of dimensions to reduce the dataset to",
-				"values": [{"value": 2, "default": 0}, {"value": 3, "default": 0}]
-			},
-			{
-				"parameter_name": "Number of genes",
-				"parameter_string": "nr_genes",
-				"parameter_description": "Top number of genes to take",
-				"values": [{"value": 500, "default": 0}, {"value": 1000, "default": 1}, {"value": 5000, "default": 0}]
-			},
-			{
-				"parameter_name": "Normalization Method",
-				"parameter_string": "normalization",
-				"parameter_description": "Method to be used to normalize the data",
-				"values": [{"value": "Z-score", "default": 1}, {"value": "voom", "default": 0}, {"value": "vst", "default": 0}, {"value": "Size Factors", "default": 0}, {"value": "None", "default": 0}]
-			}
-		]
-	},
-	"tsne": {
-		"tool_name": "t-SNE",
-		"tool_string": "tsne",
-		"tool_description": "Nonlinear dimensionality reduction technique",
-		"requires_signature": false,
-		"parameters": [
-			{
-				"parameter_name": "Dimensions",
-				"parameter_string": "dimensions",
-				"parameter_description": "The number of dimensions to reduce the dataset to",
-				"values": [{"value": 2, "default": 0}, {"value": 3, "default": 0}]
-			},
-			{
-				"parameter_name": "Number of genes",
-				"parameter_string": "nr_genes",
-				"parameter_description": "Top number of genes to take",
-				"values": [{"value": 500, "default": 0}, {"value": 1000, "default": 1}, {"value": 5000, "default": 0}]
-			},
-			{
-				"parameter_name": "Normalization Method",
-				"parameter_string": "normalization",
-				"parameter_description": "Method to be used to normalize the data",
-				"values": [{"value": "Z-score", "default": 1}, {"value": "voom", "default": 0}, {"value": "vst", "default": 0}, {"value": "Size Factors", "default": 0}, {"value": "None", "default": 0}]
-			}
-		]
-	},
-	"clustered_heatmap": {
-		"tool_name": "Clustered Heatmap",
-		"tool_string": "clustered_heatmap",
-		"tool_description": "Clustered heatmap analysis",
-		"requires_signature": false,
-		"parameters": [
-			{
-				"parameter_name": "Number of genes",
-				"parameter_string": "nr_genes",
-				"parameter_description": "Top number of genes to take",
-				"values": [{"value": 500, "default": 0}, {"value": 1000, "default": 1}, {"value": 5000, "default": 0}]
-			},
-			{
-				"parameter_name": "Normalization Method",
-				"parameter_string": "normalization",
-				"parameter_description": "Method to be used to normalize the data",
-				"values": [{"value": "Z-score", "default": 1}, {"value": "voom", "default": 0}, {"value": "vst", "default": 0}, {"value": "Size Factors", "default": 0}, {"value": "None", "default": 0}]
-			}
-		]
-	},
-	"library_size_analysis": {
-		"tool_name": "Library Size Analysis",
-		"tool_string": "library_size_analysis",
-		"tool_description": "Analysis of readcount distribution for the samples within the dataset",
-		"requires_signature": false,
-		"parameters": [
-		]
-	},
-	"de_table": {
-		"tool_name": "Differential Expression Analysis",
-		"tool_string": "de_table",
-		"tool_description": "Differential expression analysis table",
-		"requires_signature": true,
-		"parameters": [
-			 {
-				"parameter_name": "Method",
-				"parameter_string": "method",
-				"parameter_description": "DE Method",
-				"values": [{"value": "limma", "default": 1}, {"value": "deseq", "default": 0}, {"value": "CD", "default": 0}]
-			}
-		]
-	},
-	"volcano_plot": {
-		"tool_name": "Volcano Plot",
-		"tool_string": "volcano_plot",
-		"tool_description": "Plot the logFC and logP values resulting from a differential expression analysis",
-		"requires_signature": true,
-		"parameters": [
-			 {
-				"parameter_name": "Method",
-				"parameter_string": "method",
-				"parameter_description": "DE Method",
-				"values": [{"value": "limma", "default": 1}, {"value": "deseq", "default": 0}, {"value": "CD", "default": 0}]
-			}
-		]
-	},
-	"ma_plot": {
-		"tool_name": "MA Plot",
-		"tool_string": "ma_plot",
-		"tool_description": "Plot the logFC and average expression values resulting from a differential expression analysis",
-		"requires_signature": true,
-		"parameters": [
-			 {
-				"parameter_name": "Method",
-				"parameter_string": "method",
-				"parameter_description": "DE Method",
-				"values": [{"value": "limma", "default": 1}, {"value": "deseq", "default": 0}, {"value": "CD", "default": 0}]
-			}
-		]
-	},
-	"enrichr": {
-		"tool_name": "Enrichr",
-		"tool_string": "enrichr",
-		"tool_description": "Enrichment analysis of the top most overexpressed and underexpressed genes from a differential expression analysis.",
-		"requires_signature": true,
-		"parameters": [
-			 {
-				"parameter_name": "Method",
-				"parameter_string": "method",
-				"parameter_description": "DE Method",
-				"values": [{"value": "limma", "default": 1}, {"value": "deseq", "default": 0}, {"value": "CD", "default": 0}]
-			}
-		]
-	},
-	"l1000cds2": {
-		"tool_name": "L1000CDS2",
-		"tool_string": "l1000cds2",
-		"tool_description": "Identify small molecules which mimic or reverse a given differential gene expression signature.",
-		"requires_signature": true,
-		"parameters": [
-			 {
-				"parameter_name": "Direction",
-				"parameter_string": "direction",
-				"parameter_description": "DE Method",
-				"values": [{"value": "both", "default": 1}, {"value": "mimic", "default": 0}, {"value": "reverse", "default": 0}]
-			}
-		]
-	}
-};
-
-signature_tools = [];
-$.each(tools, function(tool_name, tool){if(tool["requires_signature"]){signature_tools.push(tool_name);}})
 
 samples = [
 	{"gsm": "GSM862352", "sample_title": "LNCaP_abl_Control_KD_rep1"},
@@ -216,15 +51,13 @@ var modal = {
 
 	Tool: function(tool) {
 		return $('<div>', {'class': 'modal-tool-card'})
-					.append($('<input>', {'type': 'checkbox', 'class': 'modal-tool-checkbox', 'id': tool['tool_string']+'-checkbox', 'value': tool['tool_string'], 'name': 'input-tools', 'required': 'true'}))
+					.append($('<input>', {'type': 'checkbox', 'class': 'modal-tool-checkbox', 'id': tool['tool_string']+'-checkbox', 'value': tool['tool_string'], 'name': 'input-tools', 'required': 'true'}).data(tool))
 					.append($('<label>', {'class': 'modal-tool-label', 'for': tool['tool_string']+'-checkbox'})
 						.append($('<div>', {'class': 'modal-tool-icon-wrapper'})
-							.html($('<img>', {'class': 'modal-tool-icon', 'src': chrome.extension.getURL('icons/'+tool['tool_string']+'.png')}))
-						)
+							.html($('<img>', {'class': 'modal-tool-icon', 'src': chrome.extension.getURL('icons/'+tool['tool_string']+'.png')})))
 						.append($('<div>', {'class': 'modal-tool-text'})
 							.append($('<div>', {'class': 'modal-tool-title'}).html(tool['tool_name']))
-							.append($('<div>', {'class': 'modal-tool-description'}).html(tool['tool_description']))
-						)
+							.append($('<div>', {'class': 'modal-tool-description'}).html(tool['tool_description'])))
 					);
 	},
 
@@ -293,12 +126,16 @@ function addButtons() {
 
 					// Add Button
 					entries[gse].append(
-						$('<div>', {'class': 'notebook-generator-link', 'data-samples': JSON.stringify(samples), 'data-gse': gse})
+						$('<div>', {'class': 'notebook-generator-link'})
 							.append($('<img>', {'src': chrome.extension.getURL('icons/icon.png')}))
 							.append($('<span>').html('Launch Notebook'))
+							.data('samples', samples)
+							.data('gse', gse)
 					);
 				}				
 			})
+
+			$('.notebook-generator-link').click();
 		}			
 	})
 }
@@ -310,7 +147,7 @@ function addButtons() {
 function addModal() {
 	// Add Template
 	$('body').append(
-		$('<div>', {'id': 'notebook-generator-modal', 'class': 'modal', 'data-gse': ''})
+		$('<div>', {'id': 'notebook-generator-modal', 'class': 'modal'})
 			.html($('<div>', {'id': 'modal-wrapper'})
 					.append($('<div>', {'id': 'modal-head'})
 						.append($('<div>', {'id': 'modal-title'}))
@@ -332,21 +169,25 @@ function addModal() {
 	)
 
 	// Add Tools
+	signature_tools = [];
 	$.ajax({
 		url: "http://amp.pharm.mssm.edu/notebook-generator-server/api/tools",
 		method: "POST",
 		dataType: 'json',
 		success: function(res) {
 			$.each(res['sections'], function(index, section) {
-				console.log(section);
+				// Add button
 				$('#tool-form').append(modal.Section(section['section_name']));
-				$.each(section['tool_name'], function(index, tool_name) {
-					$('#tool-form').append(modal.Tool(res['tools'][tool_name]));
+				$.each(section['tool_string'], function(index, tool_string) {
+					$('#tool-form').append(modal.Tool(res['tools'][tool_string]));
+					// Add to list
+					if (res['tools'][tool_string]['requires_signature']) {
+						signature_tools.push(tool_string);
+					}
 				})
 			})
 		}
 	})
-
 }
 
 //////////////////////////////////////////////////
@@ -356,7 +197,7 @@ function addModal() {
 function addTools() {
 	// Add Text
 	$('#modal-title').html('Select Tools');
-	$('#notebook-generator-modal').attr('data-step', 'add-tools');
+	$('#notebook-generator-modal').data('step', 'add-tools');
 	$('#next-step').html('Next').removeClass('active');
 	$('#previous-step').html('Cancel');
 
@@ -372,8 +213,14 @@ function addTools() {
 //////////////////////////////////////////////////
 
 function getTools() {
-	var selected_tools = [];
-	$.each($('#tool-form').serializeArray(), function(i, elem) { selected_tools.push(elem['value']); });
+	var selected_tools = {'tools': [], 'requires_signature': false};
+	$('.modal-tool-checkbox:checked').each(function(index, elem){
+		var tool = $(elem).data();
+		selected_tools['tools'].push(tool);
+		if (tool['requires_signature']) {
+			selected_tools['requires_signature'] = true;
+		}
+	});
 	return selected_tools
 }
 
@@ -385,7 +232,7 @@ function addGroups() {
 
 	// Add Text
 	$('#modal-title').html('Set Groups');
-	$('#notebook-generator-modal').attr('data-step', 'add-groups');
+	$('#notebook-generator-modal').data('step', 'add-groups');
 	$('#next-step').html('Next').removeClass('active');
 	$('#previous-step').html('Back');
 
@@ -439,23 +286,24 @@ function addConfiguration(selected_tools, groups) {
 
 	// Add Text
 	$('#modal-title').html('Review');
-	$('#notebook-generator-modal').attr('data-step', 'add-configuration');
+	$('#notebook-generator-modal').data('step', 'add-configuration');
 	$('#previous-step').html('Back');
 	$('#next-step').html('Get Notebook').addClass('active');
 
 	// Add Content
+	console.log($('#notebook-generator-modal').data());
 	$('#configuration-form').html('');
 	$('#configuration-form').append(modal.Text('Optionally, review the notebook and modify optional parameters:'));
 	$('#configuration-form').append(modal.Section('General Settings'));
-	$('#configuration-form').append(modal.Input('Notebook Title:', 'Title of the Jupyter Notebook', 'notebook_title', $('#notebook-generator-modal').attr('data-gse')+' Analysis Notebook'));
+	$('#configuration-form').append(modal.Input('Notebook Title:', 'Title of the Jupyter Notebook', 'notebook_title', $('#notebook-generator-modal').data('gse')+' Analysis Notebook'));
 	$('#configuration-form').append(modal.Input('Live:', 'Indicates whether the Jupyter Notebook should be deployed in a live server or as a static HTML report', 'live', 'False', 'select', ['False', 'True']));
 
 	// Add Tool Parameters
-	$.each(selected_tools, function(index, tool_string){
-		var parameters = tools[tool_string]['parameters'];
-		if (parameters.length > 0) {
-			$('#configuration-form').append(modal.Section(tools[tool_string]["tool_name"], tool_string));
-			$.each(parameters, function(parameter_id, parameter) {
+	$.each(selected_tools['tools'], function(index, tool){
+		console.log(tool);
+		if (tool['parameters'].length > 0) {
+			$('#configuration-form').append(modal.Section(tool['tool_name'], tool['tool_string']));
+			$.each(tool['parameters'], function(parameter_id, parameter) {
 				var value, options = [];
 				$.each(parameter['values'], function(index, option) { options.push(option["value"]); if (option["default"]){value = option["value"]}; });
 				$('#configuration-form').append(modal.Input(parameter["parameter_name"]+' :', parameter["parameter_description"], parameter["parameter_string"], value, 'select', options));
@@ -535,7 +383,7 @@ function showNotebookForm() {
 	// Add Text
 	$('#modal-title').html('Results');
 	$('#next-step').html('Done').addClass('active');
-	$('#notebook-generator-modal').attr('data-step', 'results');
+	$('#notebook-generator-modal').data('step', 'results');
 	$('#results-form').html('');
 	$('#results-form').append($('<div>', {'id': 'modal-loading-text'}).html('Your Jupyter Notebook is being prepared.'))
 	$('#results-form').append('<div class="sk-circle"><div class="sk-circle1 sk-child"></div><div class="sk-circle2 sk-child"></div><div class="sk-circle3 sk-child"></div><div class="sk-circle4 sk-child"></div><div class="sk-circle5 sk-child"></div><div class="sk-circle6 sk-child"></div><div class="sk-circle7 sk-child"></div><div class="sk-circle8 sk-child"></div><div class="sk-circle9 sk-child"></div><div class="sk-circle10 sk-child"></div><div class="sk-circle11 sk-child"></div><div class="sk-circle12 sk-child"></div></div>');
@@ -555,8 +403,9 @@ function addEventListeners() {
 	var step, selected_tools, groups, configuration;
 
 	// open modal
-	$(document).on('click', '.notebook-generator-link', function() {
+	$(document).on('click', '.notebook-generator-link', function(evt) {
 		$('#notebook-generator-modal').css('display', 'block');
+		$('#notebook-generator-modal').data('gse', $(evt.target).data('gse'));
 		addTools();
 	})
 
@@ -570,7 +419,7 @@ function addEventListeners() {
 
 	// Next step
 	$('#next-step').click(function(evt) {
-		var step = $('#notebook-generator-modal').attr('data-step');
+		var step = $('#notebook-generator-modal').data('step');
 
 		// Add Tools Step
 		if (step === 'add-tools') {
@@ -584,7 +433,7 @@ function addEventListeners() {
 			} else {
 
 				// If tools require signature
-				if (selected_tools.some(a => signature_tools.some( m => a === m))) {
+				if (selected_tools['requires_signature']) {
 					addGroups();
 
 				// If tools do not require signature
@@ -645,7 +494,7 @@ function addEventListeners() {
 	$('#previous-step').click(function(evt) {
 
 		// Get Step
-		var step = $('#notebook-generator-modal').attr('data-step');
+		var step = $('#notebook-generator-modal').data('step');
 
 		// Toggle Forms
 		$('.modal-form').hide();
@@ -655,26 +504,26 @@ function addEventListeners() {
 			$('#notebook-generator-modal').click();
 		} else if (step === 'add-groups') {
 			$('#tool-form').show();
-			$('#notebook-generator-modal').attr('data-step', 'add-tools');
+			$('#notebook-generator-modal').data('step', 'add-tools');
 			$('#previous-step').html('Cancel').removeClass('active');
 		} else if (step === 'add-configuration') {
 			// If Groups are required
-			if (selected_tools.some(a => signature_tools.some( m => a === m))) {
+			if (selected_tools['requires_signature']) {
 				$('#group-form').show();
-				$('#notebook-generator-modal').attr('data-step', 'add-groups');
+				$('#notebook-generator-modal').data('step', 'add-groups');
 				$('#previous-step').html('Back').removeClass('active');
 				$('#next-step').html('Next');
 			// If groups aren't required
 			} else {
 				$('#tool-form').show();
-				$('#notebook-generator-modal').attr('data-step', 'add-tools');
+				$('#notebook-generator-modal').data('step', 'add-tools');
 				$('#previous-step').html('Cancel');
 				$('#next-step').html('Next');
 			}
 		} else if (step === 'results') {
 			$('#results-form').hide();
 			$('#configuration-form').show();
-			$('#notebook-generator-modal').attr('data-step', 'add-configuration');
+			$('#notebook-generator-modal').data('step', 'add-configuration');
 			$('#next-step').html('Generate Notebook').addClass('active');
 		}
 

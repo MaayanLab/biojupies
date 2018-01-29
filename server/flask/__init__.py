@@ -96,7 +96,7 @@ def samples():
 def tools():
 
 	# Get data
-	tool_dict = pd.read_sql_query('SELECT id, tool_string, tool_name, tool_description FROM tool', engine, index_col='id').to_dict(orient='index')
+	tool_dict = pd.read_sql_query('SELECT id, tool_string, tool_name, tool_description, requires_signature FROM tool', engine, index_col='id').to_dict(orient='index')
 	parameter_dataframe = pd.read_sql_query('SELECT * FROM parameter', engine, index_col='tool_fk')
 	parameter_value_dataframe = pd.read_sql_query('SELECT * FROM parameter_value', engine, index_col='parameter_fk').drop('id', axis=1)
 
@@ -111,10 +111,10 @@ def tools():
 		tool_data['parameters'] = parameter_dict.get(tool_id, [])
 
 	# Reindex
-	tool_dict = pd.DataFrame(tool_dict).T.set_index('tool_string').to_dict(orient='index')
+	tool_dict = pd.DataFrame(tool_dict).T.set_index('tool_string', drop=False).to_dict(orient='index')
 
 	# Get sections
-	section_dict = pd.read_sql_query('SELECT section_name, tool_string FROM section s LEFT JOIN tool t ON s.id=t.section_fk', engine).groupby('section_name').aggregate(lambda x: list(x)).reset_index().to_dict(orient='records')
+	section_dict = pd.read_sql_query('SELECT s.id, section_name, tool_string FROM section s LEFT JOIN tool t ON s.id=t.section_fk', engine).groupby(['id', 'section_name']).aggregate(lambda x: tuple(x)).reset_index().drop('id', axis=1).to_dict(orient='records')
 
 	return json.dumps({'tools': tool_dict, 'sections': section_dict})
 

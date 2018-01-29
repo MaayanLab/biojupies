@@ -33,6 +33,7 @@ CREATE TABLE tool (
 	`tool_name` VARCHAR(255),
 	`tool_description` TEXT,
 	`tool_icon` TEXT,
+	`required_signature` BOOL,
 	`section_fk` INT,
 	FOREIGN KEY (section_fk) REFERENCES section(id)
 );

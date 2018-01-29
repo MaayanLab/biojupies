@@ -11,3 +11,7 @@ web/flask/static/py/__pycache__/KubernetesAPI.cpython-36.pyc
 *.dir
 
 *.sqlite
+
+database/.ruffus_history.sqlite
+
+database/.ruffus_history.sqlite
