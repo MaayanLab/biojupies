@@ -5,3 +5,9 @@ web/flask/static/py/__pycache__/KubernetesAPI.cpython-36.pyc
 *.pyc
 
 *.pyc
+
+*.sqlite
+
+*.dir
+
+*.sqlite

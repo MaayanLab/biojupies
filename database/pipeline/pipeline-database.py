@@ -125,7 +125,7 @@ def getSampleTable(infiles, outfile):
 
 @follows(mkdir('s4-upload.dir'))
 
-@files('sql.dir/notebook_generator.sql',
+@files('sql/notebook_generator.sql',
 	   's4-upload.dir/db-upload.txt')
 
 def createDb(infile, outfile):

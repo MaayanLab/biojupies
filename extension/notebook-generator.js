@@ -6,9 +6,6 @@
 
 function main() {
 
-	// entries = getEntries();
-	// samples = API.getSamples(Object.keys(entries));
-
 	addButtons();
 	addModal();
 	addEventListeners();
@@ -203,25 +200,6 @@ samples = [
 ////////// 1. modal /////////////////////////
 //////////////////////////////////////////////////
 
-var API = {
-
-	getSamples: function(gse_list) {
-		$.ajax({
-			url: "http://127.0.0.1:5000/notebook-generator-server/api/datasets",
-			method: "post",
-			data: JSON.stringify({'gse': Object.keys(entries)}),
-			success: function(res) {
-				alert('success');
-			}			
-		})
-	}
-
-};
-
-//////////////////////////////////////////////////
-////////// 1. modal /////////////////////////
-//////////////////////////////////////////////////
-
 var modal = {
 
 	Section: function(title, tool_string) {
@@ -295,21 +273,33 @@ var modal = {
 //////////////////////////////////////////////////
 
 function addButtons() {
-
 	// Get Entries
-	// entries = {}
-	// $('.rslt').each(function(i, elem) {entries[$(elem).find('dt:contains("Accession:")').next().html()] = $(elem)});
-	// return entries
-		// $(elem).append(
-		// 	$('<div>', {'class': 'notebook-generator-link'})
-		// 		.append($('<img>', {'src': chrome.extension.getURL('icons/icon.png')}))
-		// 		.append($('<span>').html('Launch Notebook')));
+	entries = {}
+	$('.rprt').each(function(i, elem) {entries[$(elem).find('dt:contains("Accession:")').next().text()] = $(elem)});
 
-	$('.rslt').each(function(i, elem) {
-		$(elem).append(
-			$('<div>', {'class': 'notebook-generator-link'})
-				.append($('<img>', {'src': chrome.extension.getURL('icons/icon.png')}))
-				.append($('<span>').html('Launch Notebook')));
+	// Get Samples
+	$.ajax({	
+		url: "http://amp.pharm.mssm.edu/notebook-generator-server/api/samples",
+		method: "POST",
+		data: JSON.stringify({'gse': Object.keys(entries)}),
+		dataType: 'json',
+		success: function(res) {
+
+			// Loop through GSE
+			$.each(res, function(gse, samples) {
+
+				// Check if GSE has been processed
+				if (Object.keys(samples).length) {
+
+					// Add Button
+					entries[gse].append(
+						$('<div>', {'class': 'notebook-generator-link', 'data-samples': JSON.stringify(samples), 'data-gse': gse})
+							.append($('<img>', {'src': chrome.extension.getURL('icons/icon.png')}))
+							.append($('<span>').html('Launch Notebook'))
+					);
+				}				
+			})
+		}			
 	})
 }
 
@@ -318,15 +308,18 @@ function addButtons() {
 //////////////////////////////////////////////////
 
 function addModal() {
+	// Add Template
 	$('body').append(
-		$('<div>', {'id': 'notebook-generator-modal', 'class': 'modal', 'data-gse': 'GSE35126'})
+		$('<div>', {'id': 'notebook-generator-modal', 'class': 'modal', 'data-gse': ''})
 			.html($('<div>', {'id': 'modal-wrapper'})
 					.append($('<div>', {'id': 'modal-head'})
 						.append($('<div>', {'id': 'modal-title'}))
 						.append($('<div>', {'id': 'close-modal'}))
 					)
 					.append($('<div>', {'id': 'modal-body'})
-						.append($('<form>', {'id': 'tool-form', 'class': 'modal-form'}))
+						.append($('<form>', {'id': 'tool-form', 'class': 'modal-form'})
+							.html(modal.Text('To start building your notebook, select analysis tools by choosing from the options below:'))
+						)
 						.append($('<form>', {'id': 'group-form', 'class': 'modal-form'}))
 						.append($('<form>', {'id': 'configuration-form', 'class': 'modal-form'}))
 						.append($('<form>', {'id': 'results-form', 'class': 'modal-form'}))
@@ -337,6 +330,23 @@ function addModal() {
 					)
 			)
 	)
+
+	// Add Tools
+	$.ajax({
+		url: "http://amp.pharm.mssm.edu/notebook-generator-server/api/tools",
+		method: "POST",
+		dataType: 'json',
+		success: function(res) {
+			$.each(res['sections'], function(index, section) {
+				console.log(section);
+				$('#tool-form').append(modal.Section(section['section_name']));
+				$.each(section['tool_name'], function(index, tool_name) {
+					$('#tool-form').append(modal.Tool(res['tools'][tool_name]));
+				})
+			})
+		}
+	})
+
 }
 
 //////////////////////////////////////////////////
@@ -350,15 +360,7 @@ function addTools() {
 	$('#next-step').html('Next').removeClass('active');
 	$('#previous-step').html('Cancel');
 
-	// Add Content
-	$('#tool-form').html('');
-	$('#tool-form').append(modal.Text('To start building your notebook, select analysis tools by choosing from the options below:'));
-	$.each(sections, function(section, tool_names) {
-		$('#tool-form').append(modal.Section(section));
-		$.each(tool_names, function(index, tool_name) {
-			$('#tool-form').append(modal.Tool(tools[tool_name]));
-		})
-	})
+	// Reset Selection
 
 	// Toggle
 	$('.modal-form').hide();
@@ -501,7 +503,6 @@ function getConfiguration() {
 
 	// Return
 	return configuration
-
 }
 
 //////////////////////////////////////////////////
@@ -554,7 +555,7 @@ function addEventListeners() {
 	var step, selected_tools, groups, configuration;
 
 	// open modal
-	$('.notebook-generator-link').click(function() {
+	$(document).on('click', '.notebook-generator-link', function() {
 		$('#notebook-generator-modal').css('display', 'block');
 		addTools();
 	})
