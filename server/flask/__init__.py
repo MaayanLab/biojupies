@@ -21,7 +21,7 @@ from flask import Flask, request, render_template
 from flask_sqlalchemy import SQLAlchemy
 
 ##### 2. Python modules #####
-import sys, os, json
+import sys, os, json, time
 import pandas as pd
 
 ##### 3. Custom modules #####
@@ -83,10 +83,26 @@ def samples():
 
 			# Add platforms
 			for platform in platforms:
-				result[gse][platform] = sample_dataframe.loc[gse].set_index('gpl').loc[platform].to_dict(orient='records')
+				result[gse][platform] = sample_dataframe.loc[gse].set_index('gpl').loc[platform].sort_values('sample_title').to_dict(orient='records')
 
 	# Return
 	return json.dumps(result)
+
+#############################################
+########## 3. Generate API
+#############################################
+
+@app.route(entry_point+'/api/generate', methods=['GET', 'POST'])
+def generate():
+
+	# Get configuration
+	notebook_configuration = json.loads(request.args.get('data'))
+
+	# Get Notebook
+	notebook = GenerateNotebook(notebook_configuration)
+
+	# Return
+	return json.dumps(notebook)
 
 #############################################
 ########## 3. Tools API
@@ -96,7 +112,7 @@ def samples():
 def tools():
 
 	# Get data
-	tool_dict = pd.read_sql_query('SELECT id, tool_string, tool_name, tool_description, requires_signature FROM tool', engine, index_col='id').to_dict(orient='index')
+	tool_dict = pd.read_sql_query('SELECT id, tool_string, tool_name, tool_description, default_selected, requires_signature FROM tool', engine, index_col='id').to_dict(orient='index')
 	parameter_dataframe = pd.read_sql_query('SELECT * FROM parameter', engine, index_col='tool_fk')
 	parameter_value_dataframe = pd.read_sql_query('SELECT * FROM parameter_value', engine, index_col='parameter_fk').drop('id', axis=1)
 
@@ -106,7 +122,7 @@ def tools():
 	parameter_dataframe.drop('id', axis=1, inplace=True)
 
 	# Add parameters
-	parameter_dict = {x: pd.DataFrame(parameter_dataframe.loc[x]).to_dict(orient='records') for x in parameter_dataframe.index.unique()}
+	parameter_dict = {x: (parameter_dataframe.loc[x] if isinstance(parameter_dataframe.loc[x], pd.DataFrame) else parameter_dataframe.loc[x].to_frame().T).to_dict(orient='records') for x in parameter_dataframe.index.unique()}
 	for tool_id, tool_data in tool_dict.items():
 		tool_data['parameters'] = parameter_dict.get(tool_id, [])
 

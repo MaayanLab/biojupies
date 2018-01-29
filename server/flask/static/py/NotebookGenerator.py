@@ -272,19 +272,18 @@ def GenerateNotebook(config):
 	notebook = nbf.v4.new_notebook()
 
 	# Add init cells
-	notebook['cells'].append(nbf.v4.new_code_cell('# Initialize Environment\n%run static/lib/v1.0/init.ipy'))
-	notebook['cells'].append(nbf.v4.new_code_cell("""HTML('''<script> code_show=true;  function code_toggle() {  if (code_show){  $('div.input').hide();  } else {  $('div.input').show();  }  code_show = !code_show }  $( document ).ready(code_toggle); </script> <form action="javascript:code_toggle()"><input type="submit" value="Toggle Code"></form>''')"""))
+	notebook['cells'].append(nbf.v4.new_code_cell("""# Initialize Environment\n%run static/lib/v1.0/init.ipy\nHTML('''<script> code_show=true;  function code_toggle() {  if (code_show){  $('div.input').hide();  } else {  $('div.input').show();  }  code_show = !code_show }  $( document ).ready(code_toggle); </script> <form action="javascript:code_toggle()"><input type="submit" value="Toggle Code"></form>''')"""))
 
 	# Get Notebook
-	notebook = eval('{toolkit}(notebook = notebook, config = config)'.format(**config))
+	# notebook = eval('{toolkit}(notebook = notebook, config = config)'.format(**config))
 
 	# Execute
 	# ep.preprocess(notebook, {'metadata': {'path': '.'}})
 
 	# Convert
 	# notebook_html = html_exporter_with_figs.from_notebook_node(notebook)[0]
-	notebook_html = nbf.writes(notebook)
+	# notebook_html = nbf.writes(notebook)
 
 	# Return
-	return notebook_html
+	return notebook
 
