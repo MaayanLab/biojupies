@@ -10,25 +10,11 @@ function main() {
 	addButtons();
 	addEventListeners();
 
-	// $('#pca-checkbox').attr('checked', 'true');
-	// $('#tsne-checkbox').attr('checked', 'true');
-	// $('#clustered_heatmap-checkbox').attr('checked', 'true');
-	// $('#next-step').click();
-
 }
 
 //////////////////////////////////////////////////////////////////////
 ///////// 2. Define Functions ////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
-
-samples = [
-	{"gsm": "GSM862352", "sample_title": "LNCaP_abl_Control_KD_rep1"},
-	{"gsm": "GSM862353", "sample_title": "LNCaP_abl_Control_KD_rep2"},
-	{"gsm": "GSM862354", "sample_title": "LNCaP_abl_Control_KD_rep3"},
-	{"gsm": "GSM862355", "sample_title": "LNCaP_abl_AR_KD_rep1"},
-	{"gsm": "GSM862356", "sample_title": "LNCaP_abl_AR_KD_rep2"},
-	{"gsm": "GSM862357", "sample_title": "LNCaP_abl_AR_KD_rep3"}
-];
 
 //////////////////////////////////////////////////
 ////////// 1. modal /////////////////////////
@@ -134,7 +120,7 @@ function addButtons() {
 				}				
 			})
 
-			$('.notebook-generator-link').click();
+			$('.notebook-generator-link').first().click();
 			$('#next-step').click();
 		}			
 	})
@@ -328,7 +314,7 @@ function addConfiguration(selected_tools, groups) {
 function getConfiguration() {
 
 	// Initialize
-	var current_tool, configuration = {'general':{}, 'tools':{}};
+	var current_tool, configuration = {'general':{}, 'tools':[]};
 
 	// Serialize form
 	form = $('#configuration-form').serializeArray();
@@ -344,12 +330,12 @@ function getConfiguration() {
 		// Get current tool
 		if (parameter['name'] === 'tool_string') {
 			current_tool = parameter['value'];
-			configuration['tools'][current_tool] = {};
+			configuration['tools'].push({'tool_string': current_tool});
  		}
 
 		// Add tool parameters
 		if (current_tool && parameter['name'] != 'tool_string') {
-			configuration['tools'][current_tool][parameter['name']] = parameter['value'];
+			configuration['tools'][configuration['tools'].length-1][parameter['name']] = parameter['value'];
 		}
 
 	})
@@ -369,7 +355,6 @@ function addNotebookLink(configuration) {
 		data: JSON.stringify(configuration),
 		dataType: 'json',
 		success: function(res) {
-			console.log(JSON.stringify(res));
 			$('.sk-circle').remove();
 			$('#modal-loading-text').html('Your Notebook is available at the link below:')
 			$('#results-form').append($('<div>', {'id': 'modal-notebook-results'}).html($('<a>', {'id': 'modal-notebook-link', 'href': 'http://www.google.com', 'target': '_blank'}).html('Open Notebook')));
@@ -411,6 +396,7 @@ function addEventListeners() {
 		$('#notebook-generator-modal').css('display', 'block');
 		$('#notebook-generator-modal').data('gse', $(evt.target).data('gse'));
 		$('#notebook-generator-modal').data('samples', $(evt.target).data('samples'));
+		console.log($(evt.target).data('samples'));
 		addTools();
 	})
 
@@ -478,6 +464,9 @@ function addEventListeners() {
 			if (groups) {
 				configuration['groups'] = groups;
 			}
+			
+			// Convert to array
+			console.log(JSON.stringify(configuration));
 
 			// Get Notebook
 			showNotebookForm();
