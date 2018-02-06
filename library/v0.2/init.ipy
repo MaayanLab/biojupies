@@ -25,7 +25,7 @@ init_notebook_mode()
 
 ##### Custom Scripts
 # Add Paths
-scripts_paths = [os.path.join(os.path.dirname(os.path.realpath(__file__)), x) for x in ['data_scripts', 'analysis_tools']]
+scripts_paths = [os.path.join(os.path.dirname(os.path.realpath(__file__)), x) for x in ['core_scripts', 'analysis_tools']]
 for path in scripts_paths:
 	sys.path.append(path)
 

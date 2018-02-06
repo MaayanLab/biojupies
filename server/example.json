@@ -1,0 +1,44 @@
+{
+	"notebook": {
+		"title": "GSE89799 Analysis Notebook",
+		"live": false,
+		"version": "v0.2"
+	},
+	"data": {
+		"source": "archs4",
+		"parameters": {
+			"gse": "GSE30017",
+			"platform": null
+		}
+	},
+	"signature": {
+		"A": {
+			"samples": ["GSM742937", "GSM742938", "GSM742939"],
+			"name": ""
+		},
+		"B": {
+			"samples": ["GSM742940", "GSM742941", "GSM742942"],
+			"name": ""
+		},
+		"method": "limma"
+	},
+	"tools": [
+		{
+			"tool_string": "pca",
+			"tool_input": "dataset",
+			"parameters": {
+				"normalization": "zscore",
+				"dimensions": 3,
+				"nr_genes": 1500
+			}
+		},
+		{
+			"tool_string": "heatmap",
+			"tool_input": "dataset",
+			"parameters": {
+				"normalization": "quantile",
+				"nr_genes": 1500
+			}
+		}
+	]
+}

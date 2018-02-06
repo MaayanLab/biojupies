@@ -100,13 +100,14 @@ def generate():
 
 	# Get configuration
 	# notebook_configuration = json.loads(request.args.get('data'))
-	notebook_configuration = {"general":{"notebook_title":"GSE89799 Analysis Notebook","live":"False"},"tools":[{"tool_string":"pca","dimensions":"3","nr_genes":"1000","normalization":"Z-score"},{"tool_string":"clustered_heatmap","nr_genes":"1000","normalization":"Z-score"},{"tool_string":"enrichr","geneset_size":"500"}],"groups":{"A":{"name":"","samples":["GSM2389438","GSM2389439","GSM2389440"]},"B":{"name":"","samples":["GSM2389442","GSM2389443","GSM2389444"]},"method":"limma"}}
+	with open('../example.json', 'r') as openfile:
+		notebook_configuration = json.loads(openfile.read())
 
 	# Get Notebook
-	notebook = GenerateNotebook(notebook_configuration)
+	notebook = generate_notebook(notebook_configuration)
 
 	# Return
-	return json.dumps(notebook)
+	return notebook
 
 #############################################
 ########## 3. Tools API

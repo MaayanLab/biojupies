@@ -68,7 +68,7 @@ def get_enrichr_results(user_list_id, gene_set_libraries=['GO_Biological_Process
 	concatenatedDataframe = pd.concat(results)
 	return concatenatedDataframe
 
-def run(signature, nr_genes, libraries=['GO_Biological_Process_2017b', 'GO_Molecular_Function_2017b']):
+def run(signature, nr_genes, libraries=['GO_Biological_Process_2017b', 'GO_Molecular_Function_2017b', 'KEGG_2016']):
 
 	# Get genesets
 	genesets = {}

@@ -31,6 +31,7 @@ def addCell(notebook, content, celltype='code'):
 		notebook['cells'].append(nbf.v4.new_code_cell(content))
 	elif celltype == 'markdown':
 		notebook['cells'].append(nbf.v4.new_markdown_cell(content))
+	return notebook
 
 ##### 2. Notebook Execution #####
 ep = ExecutePreprocessor(timeout=600, kernel_name='python3')
@@ -40,150 +41,64 @@ c = Config()
 c.HTMLExporter.preprocessors = ['nbconvert.preprocessors.ExtractOutputPreprocessor']
 html_exporter_with_figs = HTMLExporter(config=c)
 
-#############################################
-########## 3. Text
-#############################################
-
-
-
 #################################################################
 #################################################################
-############### 1. Tools ########################################
+############### 1. Functions ####################################
 #################################################################
 #################################################################
 
 #############################################
-########## 1. Fetch data
+########## 1. Add Parameters
 #############################################
 
-def fetch_dataset(notebook, dataset_accession, platform):
-	# Introduction
-	intro_string = '''
-<h2 style="margin-top: 0px;" id="fetch_dataset">2.1 Data Download</h2>
-<p>The dataset is extracted from ARCHS4 and loaded in the Jupyter environment.</p>
-	'''.format(**locals())
-	notebook['cells'].append(nbf.v4.new_markdown_cell(intro_string))
+def add_parameters(configuration_dict):
+	parameters = ", " if len(configuration_dict) else ""
+	return parameters+", ".join(['='.join([str(key), str(value) if str(value).isnumeric() or not value else "'"+str(value)+"'"]) for key, value in configuration_dict.items()])
 
-	# Code
-	if platform:
-		notebook['cells'].append(nbf.v4.new_code_cell('# Fetch data \ndata = fetch_dataset("{dataset_accession}", platform="{platform}") \ndata["readcounts"].head()'.format(**locals())))
-	else:
-		notebook['cells'].append(nbf.v4.new_code_cell('# Fetch data \ndata = fetch_dataset("{dataset_accession}") \ndata["readcounts"].head()'.format(**locals())))
+#############################################
+########## 2. Load Data
+#############################################
 
+def load_data(notebook, data_configuration):
+	# Add Data and Display Metadata
+	cell = "# Load dataset\ndataset = load_dataset(source='{}'".format(data_configuration['source'])+add_parameters(data_configuration['parameters'])+")\n\n# Preview expression data\ndataset['rawdata'].head()"
+	notebook = addCell(notebook, cell)
+	cell = "# Display metadata\ndataset['sample_metadata']"
+	return addCell(notebook, cell)
 
-	# Read counts
-	notebook['cells'].append(nbf.v4.new_markdown_cell('<b>Table 1 | Raw readcount dataframe from ARCHS4.</b> Whatever.'.format(**locals())))
+#############################################
+########## 3. Normalize Data
+#############################################
 
-	# Sample metadata
-	notebook['cells'].append(nbf.v4.new_code_cell('data["sample_metadata"]'))
-	notebook['cells'].append(nbf.v4.new_markdown_cell('<b>Table 2 | Asd.</b> Whatever.'.format(**locals())))
-
+def normalize_data(notebook, tool_configuration_list):
+	# Get Normalization Methods
+	normalization_methods = set([tool_configuration['parameters']['normalization'] for tool_configuration in tool_configuration_list if 'normalization' in tool_configuration['parameters'].keys()])
+	for normalization_method in normalization_methods:
+		cell = "# Normalize dataset\ndataset['{normalization_method}'] = normalize_dataset(dataset=dataset, method='{normalization_method}')".format(**locals())
+		notebook = addCell(notebook, cell)
 	return notebook
 
 #############################################
-########## 2. Library sizes
+########## 4. Generate Signature
 #############################################
 
-def library_sizes(notebook, number):
-	# Introduction
-	intro_string = '''
-<h2 style="margin-top: 0px;" id="library_sizes">2.{number} Plot Library Sizes</h2>
-<p>Here we analyze stuff.</p>
-	'''.format(**locals())
-	notebook['cells'].append(nbf.v4.new_markdown_cell(intro_string))
-
-	# Code
-	notebook['cells'].append(nbf.v4.new_code_cell('# Plot Library Sizes \nresults["library_sizes"] = analyze(rawcount_dataframe = data["readcounts"], tool_name = "library_sizes") \nplot(results["library_sizes"])'))
-
-	# Legend
-	notebook['cells'].append(nbf.v4.new_markdown_cell('<b>Figure 2.{number} | Asd.</b> Whatever.'.format(**locals())))
-	return notebook
+def generate_signature(notebook, signature_configuration):
+	# Generate Signature
+	cell = "# Configure signature\ngroup_A = {A[samples]} # {A[name]}\ngroup_B = {B[samples]} # {B[name]}\nsignature_method = '{method}'\n\n# Generate signature\nsignature = generate_signature(group_A=group_A, group_B=group_B, method=signature_method, dataset=dataset)\nsignature.head()".format(**signature_configuration)
+	return addCell(notebook, cell)
 
 #############################################
-########## 3. Clustermap
+########## 5. Add Tool
 #############################################
 
-def clustermap(notebook, number):
-	# Introduction
-	intro_string = '''
-<h2 style="margin-top: 0px;" id="clustermap">2.{number} Clustermap</h2>
-<p>Here we analyze stuff.</p>
-	'''.format(**locals())
-	notebook['cells'].append(nbf.v4.new_markdown_cell(intro_string))
-
-	# Code
-	notebook['cells'].append(nbf.v4.new_code_cell('# Plot Clustered Heatmap \nplot(data["readcounts"], tool_name="clustermap")'))
-
-	# Legend
-	notebook['cells'].append(nbf.v4.new_markdown_cell('<b>Figure 2.{number} | Asd.</b> Whatever.'.format(**locals())))
-	return notebook
-
-#############################################
-########## 4. PCA
-#############################################
-
-def pca(notebook, number):
-	# Introduction
-	intro_string = '''
-<h2 style="margin-top: 0px;" id="pca">2.{number} Principal Components Analysis</h2>
-<p>Here we analyze stuff.</p>
-	'''.format(**locals())
-	notebook['cells'].append(nbf.v4.new_markdown_cell(intro_string))
-
-	# Code
-	notebook['cells'].append(nbf.v4.new_code_cell('# Plot PCA \nresults["pca"] = analyze(expression_dataframe = data["readcounts"], tool_name = "pca")\nplot(results["pca"])'))
-
-	# Legend
-	notebook['cells'].append(nbf.v4.new_markdown_cell('<b>Figure 2.{number} | Asd.</b> Whatever.'.format(**locals())))
-	return notebook
-
-#############################################
-########## 5. Limma
-#############################################
-
-def limma(notebook, control_samples, experimental_samples, signature_name, number):
-	# Introduction
-	intro_string = '''
-<h2 style="margin-top: 0px;" id="pca">2.{number} Signature Analysis</h2>
-<p>Here we analyze signature {signature_name}:</p>
-<ul>
-<li><b>Control samples:</b> {control_samples}</li>
-<li><b>Experimental samples:</b> {experimental_samples}</li>
-</ul>
-	'''.format(**locals())
-	notebook['cells'].append(nbf.v4.new_markdown_cell(intro_string))
-
-	# Code
-	notebook['cells'].append(nbf.v4.new_code_cell('# Compute Signature \nsignature = analyze(rawcount_dataframe = data["readcounts"],\n\ttool_name = "limma",\n\tcontrol_samples={control_samples},\n\texperimental_samples={experimental_samples},\n\tsignature_name="{signature_name}")'.format(**locals())))
-	notebook['cells'].append(nbf.v4.new_code_cell('# MA Plot \nplot(signature, plot_type="ma")'))
-	notebook['cells'].append(nbf.v4.new_code_cell('# Volcano Plot \nplot(signature, plot_type="volcano")'))
-
-	# Legend
-	notebook['cells'].append(nbf.v4.new_markdown_cell('<b>Figure 2.{number} | Asd.</b> Whatever.'.format(**locals())))
-	return notebook
-
-#############################################
-########## 6. Enrichr
-#############################################
-
-def enrichr(notebook, number):
-	# Introduction
-	intro_string = '''
-<h2 style="margin-top: 0px;" id="pca">2.{number} Enrichment Analysis</h2>
-<p>Here we analyze signature:</p>
-	'''.format(**locals())
-	notebook['cells'].append(nbf.v4.new_markdown_cell(intro_string))
-
-	# Code
-	notebook['cells'].append(nbf.v4.new_code_cell('# Run Enrichr \nresults["enrichr"] = analyze(signature = signature, tool_name = "enrichr") \nplot(results["enrichr"])'.format(**locals())))
-
-	# Legend
-	notebook['cells'].append(nbf.v4.new_markdown_cell('<b>Figure 2.{number} | Asd.</b> Whatever.'.format(**locals())))
-	return notebook
+def add_tool(notebook, tool_configuration):
+	# Add Tool
+	cell = "# Run analysis\nresults['{tool_string}'] = analyze({tool_input}={tool_input}, tool='{tool_string}'".format(**tool_configuration)+add_parameters(tool_configuration['parameters'])+")\n\n# Display results\nplot(results['{tool_string}'])".format(**tool_configuration)
+	return addCell(notebook, cell)
 
 #################################################################
 #################################################################
-############### 2. Tools ########################################
+############### 2. Wrapper ######################################
 #################################################################
 #################################################################
 
@@ -191,24 +106,35 @@ def enrichr(notebook, number):
 ########## 1. Generate Notebook
 #############################################
 
-def GenerateNotebook(config):
+def generate_notebook(notebook_configuration):
 
-	# Initialize Notebook
+	# Create Notebook
 	notebook = nbf.v4.new_notebook()
 
-	# Add init cells
-	notebook['cells'].append(nbf.v4.new_code_cell("""# Initialize Environment\n%run static/lib/v1.0/init.ipy\nHTML('''<script> code_show=true;  function code_toggle() {  if (code_show){  $('div.input').hide();  } else {  $('div.input').show();  }  code_show = !code_show }  $( document ).ready(code_toggle); </script> <form action="javascript:code_toggle()"><input type="submit" value="Toggle Code"></form>''')"""))
+	# Initialize Notebook
+	notebook['cells'].append(nbf.v4.new_code_cell("""# Initialize Notebook\n%run static/library/"""+notebook_configuration['notebook']['version']+"""/init.ipy\nHTML('''<script> code_show=true;  function code_toggle() {  if (code_show){  $('div.input').hide();  } else {  $('div.input').show();  }  code_show = !code_show }  $( document ).ready(code_toggle); </script> <form action="javascript:code_toggle()"><input type="submit" value="Toggle Code"></form>''')"""))
 
-	# Get Notebook
-	# notebook = eval('{toolkit}(notebook = notebook, config = config)'.format(**config))
+	# Load Data
+	notebook = load_data(notebook=notebook, data_configuration=notebook_configuration['data'])
+
+	# Normalize Data
+	notebook = normalize_data(notebook=notebook, tool_configuration_list=notebook_configuration['tools'])
+
+	# Generate Signature
+	if len(signature_configuration):
+		notebook = generate_signature(notebook=notebook, signature_configuration=notebook_configuration['signature'])
+
+	# Add Tools
+	for tool_configuration in notebook_configuration['tools']:
+		notebook = add_tool(notebook=notebook, tool_configuration=tool_configuration)
 
 	# Execute
-	# ep.preprocess(notebook, {'metadata': {'path': '.'}})
+	ep.preprocess(notebook, {'metadata': {'path': '.'}})
 
 	# Convert
-	# notebook_html = html_exporter_with_figs.from_notebook_node(notebook)[0]
+	notebook_html = html_exporter_with_figs.from_notebook_node(notebook)[0]
 	# notebook_html = nbf.writes(notebook)
 
 	# Return
-	return notebook
+	return notebook_html
 

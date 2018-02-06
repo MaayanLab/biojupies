@@ -27,18 +27,16 @@ import scipy.stats as ss
 ########## 1. Run
 #############################################
 
-def run(data, normalization, nr_genes):
+def run(dataset, normalization, nr_genes):
  
 	# Get clustering data
-	expression_dataframe = data[normalization]
+	expression_dataframe = dataset[normalization]
 
 	# Cases
-	if normalization == 'rawdata':
-		expression_dataframe = expression_dataframe/expression_dataframe.sum()
-		expression_dataframe = np.log10(expression_dataframe+1)
-		z_score = 0
-	elif normalization == 'zscore':
+	if normalization == 'zscore':
 		z_score = None
+	else:
+		z_score = 0
 
 	# Filter
 	filtered_dataframe = expression_dataframe.loc[expression_dataframe.var(axis=1).sort_values(ascending=False).index[:nr_genes]]
