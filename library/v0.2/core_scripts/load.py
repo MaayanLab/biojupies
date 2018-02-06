@@ -62,10 +62,19 @@ def archs4(gse, platform=None):
 ########## 2. H5
 #############################################
 
-def h5(path):
+def h5(path, data_type, from_url=False):
 
 	# Read H5
-	f = h5py.File(path, "r")
-	print(f)
+	if from_url:
+		pass
+	else:
+		f = h5py.File(path, "r")
 
-	return path
+	# Get expression
+	expression_dataframe = pd.DataFrame(f['data']['expression'].value, index=f['meta']['genes'].value.astype(str), columns=f['meta']['samples'].value.astype(str))
+
+	# Sample metadata
+	sample_metadata_dataframe = pd.DataFrame({key: meta.value.astype(str) if meta.value.dtype == 'S9' else meta.value for key, meta in f['meta'].items() if key != 'genes'}).set_index('samples')
+
+	# Return
+	return {'rawdata': expression_dataframe, 'sample_metadata': sample_metadata_dataframe, 'dataset_metadata': {'source': 'h5', 'data_type': data_type}}
