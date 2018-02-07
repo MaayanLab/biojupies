@@ -27,7 +27,7 @@ import scipy.stats as ss
 ########## 1. Run
 #############################################
 
-def run(dataset, normalization, nr_genes):
+def run(dataset, normalization='zscore', nr_genes=500):
  
 	# Get clustering data
 	expression_dataframe = dataset[normalization]

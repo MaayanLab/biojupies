@@ -24,7 +24,7 @@ from plotly.offline import iplot
 ########## 1. Run
 #############################################
 
-def run(dataset, dimensions, nr_genes, normalization, color_by, color_type):
+def run(dataset, dimensions=3, nr_genes=1000, normalization='zscore', color_by=None, color_type=None):
 
 	# Get expression
 	expression_dataframe = dataset[normalization]

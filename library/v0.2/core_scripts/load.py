@@ -8,11 +8,14 @@
 ########## 1. Load libraries
 #############################################
 ##### 1. General support #####
+import pandas as pd
 import urllib
 import json
 import gzip
-import h5py
-import pandas as pd
+import warnings
+with warnings.catch_warnings():
+	warnings.simplefilter("ignore")
+	import h5py
 
 ##### 2. Other libraries #####
 

@@ -20,7 +20,7 @@
 import pymysql
 pymysql.install_as_MySQLdb()
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
 
 ##### 2. Python modules #####
@@ -30,6 +30,7 @@ import pandas as pd
 ##### 3. Custom modules #####
 sys.path.append('static/py')
 from NotebookGenerator import *
+from NotebookManager import *
 
 #############################################
 ########## 2. App Setup
@@ -60,7 +61,31 @@ def index():
 	return render_template('index.html')
 
 #############################################
-########## 2. Samples API
+########## 2. Generate API
+#############################################
+
+@app.route(entry_point+'/api/generate', methods=['GET', 'POST'])
+def generate():
+
+	# Generate
+	# notebook_configuration = json.loads(request.args.get('data'))
+	with open('../example.json', 'r') as openfile:
+		notebook_configuration = json.loads(openfile.read())
+	notebook = generate_notebook(notebook_configuration)
+
+	# Get URL
+	if notebook_configuration['notebook']['live']:
+		# notebook_url = launch_notebook(notebook, notebook_configuration['notebook']['title'], 'maayanlab')
+		notebook_url = nbf.writes(notebook)
+	else:
+		notebook_html = execute_notebook(notebook, notebook_configuration['notebook']['title'])
+		notebook_url = upload_notebook(notebook_html)
+
+	# Return
+	return notebook_url
+
+#############################################
+########## 3. Samples API
 #############################################
 
 @app.route(entry_point+'/api/samples', methods=['GET', 'POST'])
@@ -90,24 +115,6 @@ def samples():
 
 	# Return
 	return json.dumps(result)
-
-#############################################
-########## 3. Generate API
-#############################################
-
-@app.route(entry_point+'/api/generate', methods=['GET', 'POST'])
-def generate():
-
-	# Get configuration
-	# notebook_configuration = json.loads(request.args.get('data'))
-	with open('../example.json', 'r') as openfile:
-		notebook_configuration = json.loads(openfile.read())
-
-	# Get Notebook
-	notebook = generate_notebook(notebook_configuration)
-
-	# Return
-	return notebook
 
 #############################################
 ########## 3. Tools API
