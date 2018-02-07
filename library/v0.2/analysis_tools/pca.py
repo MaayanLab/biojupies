@@ -24,7 +24,7 @@ from plotly.offline import iplot
 ########## 1. Run
 #############################################
 
-def run(dataset, dimensions=3, nr_genes=1000, normalization='zscore', color_by=None, color_type=None):
+def run(dataset, dimensions=3, nr_genes=2500, normalization='zscore', color_by=None, color_type='categorical'):
 
 	# Get expression
 	expression_dataframe = dataset[normalization]
@@ -40,7 +40,7 @@ def run(dataset, dimensions=3, nr_genes=1000, normalization='zscore', color_by=N
 	var_explained = ['PC'+str((i+1))+'('+str(round(e*100, 1))+'% var. explained)' for i, e in enumerate(pca.explained_variance_ratio_)]
 
 	# Return
-	pca_results = {'pca': pca, 'var_explained': var_explained, 'sample_titles': expression_dataframe.columns, 'color_column': dataset['sample_metadata'][color_by] if color_by else None, 'color_by': color_by, 'color_type': color_type, 'nr_genes': nr_genes}
+	pca_results = {'pca': pca, 'var_explained': var_explained, 'sample_metadata': dataset['sample_metadata'].loc[expression_dataframe.columns], 'color_by': color_by, 'color_type': color_type, 'nr_genes': nr_genes}
 	return pca_results
 
 #############################################
@@ -52,12 +52,12 @@ def plot(pca_results):
 	# Get results
 	pca = pca_results['pca']
 	var_explained = pca_results['var_explained']
-	sample_titles = pca_results['sample_titles']
+	sample_metadata = pca_results['sample_metadata']
 	color_by = pca_results.get('color_by')
 	color_type = pca_results.get('color_type')
-	color_column = pca_results.get('color_column')
-	# colors = ['red', 'blue', 'orange', 'purple', 'turkey', 'chicken', 'thanksigiving', 'orange', 'red', 'green']
+	color_column = pca_results['sample_metadata'][color_by] if color_by else None
 	colors = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928']
+	sample_titles = ['<b>{}</b><br>'.format(index)+'<br>'.join('<i>{key}</i>: {value}'.format(**locals()) for key, value in rowData.items()) for index, rowData in sample_metadata.iterrows()]
 
 	if not color_by:
 		marker = dict(size=15)
@@ -101,7 +101,7 @@ def plot(pca_results):
 								 z=pca.components_[2][category_indices],
 								 mode='markers',
 								 hoverinfo='text',
-								 text=sample_titles[category_indices],
+								 text=[sample_titles[x] for x in category_indices],
 								 name = category,
 								 marker=dict(size=15, color=category_color))
 			
