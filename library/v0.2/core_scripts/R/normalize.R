@@ -52,3 +52,28 @@ quantile <- function(rawcount_dataframe) {
 	# Return
 	return(quantile_dataframe)
 }
+
+#############################################
+########## 3. Combat
+#############################################
+
+combat <- function(expression_dataframe, sample_annotation_dataframe, batchColumn, covariateFormula) {
+    # Load library
+    suppressMessages(require(sva))
+
+    # Get batch
+    batch <- sample_annotation_dataframe[,batchColumn]
+
+    # Get covariate, if specified
+    if (!is.nan(covariateFormula)) {
+        covariateDesign <- model.matrix(as.formula(covariateFormula), data=sample_annotation_dataframe)
+    } else {
+        covariateDesign <- NULL
+    }
+    
+    # Run Combat
+    combatDataframe <- ComBat(dat=expression_dataframe, batch=batch, mod=covariateDesign, par.prior=TRUE, prior.plots=FALSE)
+
+    # Return dataframe
+    return(combatDataframe)
+}

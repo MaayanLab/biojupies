@@ -23,13 +23,18 @@ import numpy as np
 ########## 1. Run
 #############################################
 
-def run(dataset, nr_genes=500):
+def run(dataset, normalization='rawdata', normalize_cols=True, log=True, z_score=True, nr_genes=1500):
 	net = Network(clustergrammer_widget)
-	data = np.log10(dataset['rawdata']/dataset['rawdata'].sum()+1)
+	data = dataset[normalization]
+	if normalize_cols:
+		data = data/data.sum()
+	if log:
+		data = np.log10(data+1)
 	net.load_df(data)
 	net.add_cats(cat_data=[{'title': index, 'cats': {str(value): rowData[rowData==value].index.tolist() for value in set(rowData.values)}} for index, rowData in dataset['sample_metadata'].T.iterrows()], axis='col')
-	net.filter_N_top('row', 500, 'var')
-	net.normalize(axis='row', norm_type='zscore', keep_orig=True)
+	net.filter_N_top('row', nr_genes, 'var')
+	if z_score:
+		net.normalize(axis='row', norm_type='zscore', keep_orig=True)
 	net.cluster()
 	return net
 

@@ -62,10 +62,10 @@ def limma(dataset, group_A, group_B):
 ########## 2. CD
 #############################################
 
-def cd(dataset, group_A, group_B):
+def cd(dataset, group_A, group_B, normalization='rawdata'):
 
 	# Get design
-	processed_data = make_design_matrix(dataset['rawdata'], group_A, group_B)
+	processed_data = make_design_matrix(dataset[normalization], group_A, group_B)
  
 	# Add
 	return pandas2ri.ri2py(r.cd(pandas2ri.py2ri(processed_data['expression']), pandas2ri.py2ri(processed_data['design'])))

@@ -28,10 +28,10 @@ r.source(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'R', 'normali
 ########## 1. Z-score
 #############################################
 
-def zscore(dataset):
+def zscore(dataset, normalization='rawdata'):
 
 	# Get raw data
-	rawdata = dataset['rawdata']
+	rawdata = dataset[normalization]
 
 	# Z-score without warnings
 	with warnings.catch_warnings():
@@ -58,3 +58,18 @@ def vst(dataset):
 def quantile(dataset):
 
 	return pandas2ri.ri2py(r.quantile(pandas2ri.py2ri(dataset['rawdata'])))
+
+#############################################
+########## 4. Combat
+#############################################
+
+def combat(dataset, batch_column='batch', covariates=[], normalization='rawdata'):
+
+	# Get covariate formula
+	covariate_formula = '~'+'+'.join(covariates) if len(covariates) else np.nan
+
+	# Filter variable genes
+	gene_var = dataset[normalization].var(axis=1)
+	data = dataset[normalization].loc[gene_var[gene_var > 0].index]
+
+	return pandas2ri.ri2py(r.combat(pandas2ri.py2ri(data), pandas2ri.py2ri(dataset['sample_metadata']), batch_column, covariate_formula))
