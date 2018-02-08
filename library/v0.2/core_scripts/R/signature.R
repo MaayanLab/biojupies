@@ -234,14 +234,16 @@ limma <- function(rawcount_dataframe, design_dataframe, adjust="BH") {
 	list(T=T,P=P,pcvar=pcvar)
 }
 
-cd <- function(rawcount_dataframe, design_dataframe, constant_threshold=1e-5) {
+cd <- function(expression_dataframe, design_dataframe, log=TRUE, constant_threshold=1e-5) {
 
 	# Log-transform
-	log_rawcount_dataframe <- log10(rawcount_dataframe + 1)
+	if (log) {
+		expression_dataframe <- log10(expression_dataframe + 1)
+	}
 
 	# Get dataframes
-	A_dataframe <- log_rawcount_dataframe[,rownames(design_dataframe)[design_dataframe[,'A'] == 1]]
-	B_dataframe <- log_rawcount_dataframe[,rownames(design_dataframe)[design_dataframe[,'B'] == 1]]
+	A_dataframe <- expression_dataframe[,rownames(design_dataframe)[design_dataframe[,'A'] == 1]]
+	B_dataframe <- expression_dataframe[,rownames(design_dataframe)[design_dataframe[,'B'] == 1]]
 
 	# Get variable genes
 	experiment_variable_genes <- names(which(diag(var(t(A_dataframe))) > constant_threshold))
@@ -258,7 +260,7 @@ cd <- function(rawcount_dataframe, design_dataframe, constant_threshold=1e-5) {
 	cd_results <- chdir(B_dataframe_filtered, A_dataframe_filtered, common_genes)
 
 	# Convert to dataframe
-	characteristic_direction_dataframe <- data.frame(CD=cd_results)
+	characteristic_direction_dataframe <- data.frame(CD=-cd_results)
 
 	# Return results
 	return(characteristic_direction_dataframe)

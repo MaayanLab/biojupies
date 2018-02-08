@@ -95,7 +95,7 @@ def plot_library_barchart(enrichr_results, gene_set_library, nr_genesets, height
         plot_dataframe = enrichment_dataframe[enrichment_dataframe['gene_set_library'] == gene_set_library].sort_values('combined_score', ascending=False).iloc[:nr_genesets].iloc[::-1]
 
         # Format
-        plot_dataframe['overlapping_genes'] = [', '.join(x) if len(x) < 5 else ', '.join(x[:5])+', + '+str(len(x)-5)+' others' for x in plot_dataframe['overlapping_genes']]
+        plot_dataframe['overlapping_genes'] = [', '.join(x) if len(x) <= 5 else ', '.join(x[:5])+', + '+str(len(x)-5)+' others' for x in plot_dataframe['overlapping_genes']]
         
         # Get Bar
         bar = go.Bar(
@@ -116,7 +116,7 @@ def plot_library_barchart(enrichr_results, gene_set_library, nr_genesets, height
             mode='text',
             hoverinfo='none',
             showlegend=False,
-            text=bar['y'],
+            text=['*<b>{}</b>'.format(rowData['term_name']) if rowData['FDR'] < 0.1 else '{}'.format(rowData['term_name']) for index, rowData in plot_dataframe.iterrows()],
             textposition="middle right",
             textfont={'color': 'black'}
         )
@@ -132,7 +132,7 @@ def plot_library_barchart(enrichr_results, gene_set_library, nr_genesets, height
 
 def plot(enrichr_results, nr_genesets=5, height=300):
 	if enrichr_results['signature_label']:
-		display(Markdown('### {signature_label} signature:'.format(**enrichr_results)))
+		display(Markdown('---\n## {signature_label} signature:'.format(**enrichr_results)))
 	display(Markdown(' **Enrichr Links:**'))
 	display(Markdown(' *Upregulated Genes*: {url}'.format(**enrichr_results['upregulated'])))
 	display(Markdown(' *Downregulated Genes*: {url}'.format(**enrichr_results['downregulated'])))

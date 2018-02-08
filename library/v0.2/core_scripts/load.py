@@ -65,7 +65,7 @@ def archs4(gse, platform=None):
 ########## 2. H5
 #############################################
 
-def h5(path, data_type, from_url=False):
+def h5(path, data_type='rnaseq', from_url=False):
 
 	# Read H5
 	if from_url:
@@ -78,6 +78,12 @@ def h5(path, data_type, from_url=False):
 
 	# Sample metadata
 	sample_metadata_dataframe = pd.DataFrame({key: meta.value.astype(str) if meta.value.dtype == 'S9' else meta.value for key, meta in f['meta'].items() if key != 'genes'}).set_index('samples')
+
+	# Fix bytes
+	sample_metadata_dataframe.index = sample_metadata_dataframe.index.astype(str)
+	for col in sample_metadata_dataframe.columns:
+		if type(sample_metadata_dataframe[col].iloc[0]) == bytes:
+			sample_metadata_dataframe[col] = [x.decode('utf-8') for x in sample_metadata_dataframe[col]]
 
 	# Return
 	return {'rawdata': expression_dataframe, 'sample_metadata': sample_metadata_dataframe, 'dataset_metadata': {'source': 'h5', 'data_type': data_type}}

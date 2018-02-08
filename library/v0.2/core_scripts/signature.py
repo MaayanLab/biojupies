@@ -25,8 +25,8 @@ r.source(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'R', 'signatu
 def make_design_matrix(expression_dataframe, group_A, group_B):
 
 	# Sample names
-	group_B = [x.replace(':', '.').replace('-', '.') for x in group_B]
 	group_A = [x.replace(':', '.').replace('-', '.') for x in group_A]
+	group_B = [x.replace(':', '.').replace('-', '.') for x in group_B]
 	expression_dataframe.columns = [x.replace(':', '.').replace('-', '.') for x in expression_dataframe.columns]
 
 	# Get expression dataframe
@@ -62,10 +62,10 @@ def limma(dataset, group_A, group_B):
 ########## 2. CD
 #############################################
 
-def cd(dataset, group_A, group_B, normalization='rawdata'):
+def cd(dataset, group_A, group_B, normalization='rawdata', log=True):
 
 	# Get design
 	processed_data = make_design_matrix(dataset[normalization], group_A, group_B)
- 
+
 	# Add
-	return pandas2ri.ri2py(r.cd(pandas2ri.py2ri(processed_data['expression']), pandas2ri.py2ri(processed_data['design'])))
+	return pandas2ri.ri2py(r.cd(pandas2ri.py2ri(processed_data['expression']), pandas2ri.py2ri(processed_data['design']), log))
