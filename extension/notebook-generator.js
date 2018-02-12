@@ -94,11 +94,10 @@ function addButtons() {
 	// Get Entries
 	entries = {}
 	$('.rprt').each(function(i, elem) {entries[$(elem).find('dt:contains("Accession:")').next().text()] = $(elem)});
-	console.log(JSON.stringify({'gse': Object.keys(entries)}));
 
 	// Get Samples
 	$.ajax({	
-		url: "http://localhost:5000/notebook-generator-server/api/samples",
+		url: "http://amp.pharm.mssm.edu/notebook-generator-server/api/samples",
 		method: "POST",
 		data: JSON.stringify({'gse': Object.keys(entries)}),
 		dataType: 'json',
@@ -187,8 +186,6 @@ function addTools() {
 	$('#notebook-generator-modal').data('step', 'add-tools');
 	$('#next-step').html('Next').removeClass('active');
 	$('#previous-step').html('Cancel');
-
-	// Reset Selection
 
 	// Toggle
 	$('.modal-form').hide();
@@ -315,7 +312,7 @@ function addConfiguration(selected_tools, groups) {
 function getConfiguration() {
 
 	// Initialize
-	var current_tool, configuration = {'general':{}, 'tools':[]};
+	var current_tool, configuration = {'notebook':{}, 'tools':[]};
 
 	// Serialize form
 	form = $('#configuration-form').serializeArray();
@@ -325,21 +322,25 @@ function getConfiguration() {
 
 		// Add general parameters
 		if (['notebook_title', 'live'].indexOf(parameter['name']) > -1) {
-			configuration['general'][parameter['name']] = parameter['value'];
+			configuration['notebook'][parameter['name']] = parameter['value'];
 		}
 
 		// Get current tool
 		if (parameter['name'] === 'tool_string') {
 			current_tool = parameter['value'];
-			configuration['tools'].push({'tool_string': current_tool});
+			configuration['tools'].push({'tool_string': current_tool, 'tool_input': signature_tools.indexOf(current_tool) > -1 ? 'signature' : 'dataset', 'parameters': {}});
  		}
 
 		// Add tool parameters
 		if (current_tool && parameter['name'] != 'tool_string') {
-			configuration['tools'][configuration['tools'].length-1][parameter['name']] = parameter['value'];
+			configuration['tools'][configuration['tools'].length-1]['parameters'][parameter['name']] = parameter['value'];
 		}
 
 	})
+
+	// Add data
+	configuration['data'] = {'source': 'archs4', 'parameters': {'gse': $('#notebook-generator-modal').data('gse'), 'platform': null}}
+	configuration['notebook']['version'] = 'v0.2'
 
 	// Return
 	return configuration
@@ -390,14 +391,13 @@ function showNotebookForm() {
 function addEventListeners() {
 
 	// Variables
-	var step, selected_tools, groups, configuration;
+	var step, selected_tools, groups={}, configuration;
 
 	// open modal
 	$(document).on('click', '.notebook-generator-link', function(evt) {
 		$('#notebook-generator-modal').css('display', 'block');
 		$('#notebook-generator-modal').data('gse', $(evt.target).data('gse'));
 		$('#notebook-generator-modal').data('samples', $(evt.target).data('samples'));
-		console.log($(evt.target).data('samples'));
 		addTools();
 	})
 
@@ -462,9 +462,7 @@ function addEventListeners() {
 			configuration = getConfiguration();
 
 			// Add groups
-			if (groups) {
-				configuration['groups'] = groups;
-			}
+			configuration['signature'] = groups;
 			
 			// Convert to array
 			console.log(JSON.stringify(configuration));
@@ -541,7 +539,6 @@ function addEventListeners() {
 	        $('#notebook-generator-modal').click();
 	    }
 	});
-
 }
 
 

@@ -29,37 +29,23 @@ with warnings.catch_warnings():
 ########## 1. ARCHS4
 #############################################
 
-def archs4(gse, platform=None):
- 
-	# Get Link Dict
-	with urllib.request.urlopen("http://amp.pharm.mssm.edu/archs4/search/getGSEmatrix.php?gse={gse}".format(**locals())) as response:
-		link_dict = {x['platform']: x['ziplink'] for x in json.loads(response.read())}
+def archs4(gse, gpl):
 
-	# Get Link
-	if platform:
-		link = link_dict[platform]
-	else:
-		platform = list(link_dict.keys())[0]
-		link = list(link_dict.values())[0]
-
-	# Read Data
-	response = urllib.request.urlopen(urllib.request.Request(link, headers={"Accept-Encoding": "gzip"}))
-	data = gzip.decompress(response.read()).decode('utf-8')
-
-	# Get Raw Counts
-	rawcount_dataframe = pd.DataFrame([x.split('\t') for x in data.split('\n')[1:] if '!' not in x]).drop(0)
-	rawcount_dataframe = rawcount_dataframe.rename(columns=rawcount_dataframe.iloc[0]).drop(1).set_index('ID_REF').fillna(0).astype('int')
-
-	# Get Sample Metadata
-	sample_metadata_dataframe = pd.DataFrame([x.split('\t') for x in data.split('\n')[1:] if any(y in x for y in ['!Sample_geo_accession', '!Sample_title', '!Sample_characteristics_ch1'])]).T
-	sample_metadata_dataframe = sample_metadata_dataframe.rename(columns=sample_metadata_dataframe.iloc[0]).drop(0).set_index('!Sample_geo_accession').fillna(0)
-	sample_metadata_dataframe['platform'] = platform
-
-	# Return dict
-	data = {'rawdata': rawcount_dataframe, 'sample_metadata': sample_metadata_dataframe, 'dataset_metadata': {'source': 'archs4', 'data_type': 'rnaseq'}}
-
-	# Return
-	return data
+    # Load HDF5 File
+    h5 = '/Users/denis/Data/archs-v1.1/matrices/{gse}-{gpl}.h5'.format(**locals())
+#     h5 = '{gse}-{gpl}.h5'.format(**locals())
+#     with open(h5, 'wb') as openfile:
+#         openfile.write(urllib.request.urlopen('https://storage.googleapis.com/archs4-h5/'+h5).read())
+    f = h5py.File(h5, 'r')
+#     os.unlink(h5)
+    
+    # Get data
+    rawcount_dataframe = pd.DataFrame(data=f['data']['expression'].value, columns=[x.decode('utf-8') for x in f['meta']['gene']['symbol'].value], index=[x.decode('utf-8') for x in f['meta']['sample']['Sample_geo_accession'].value]).T
+    sample_metadata_dataframe = pd.DataFrame({key: [x.decode('utf-8') for x in value.value] for key, value in f['meta']['sample'].items()}).set_index('Sample_geo_accession')
+    data = {'rawdata': rawcount_dataframe, 'sample_metadata': sample_metadata_dataframe, 'dataset_metadata': {'source': 'archs4', 'datatype': 'rnaseq'}}
+    
+    # Return
+    return data
 
 #############################################
 ########## 2. H5
