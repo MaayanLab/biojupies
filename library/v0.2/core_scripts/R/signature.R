@@ -53,6 +53,7 @@ limma <- function(rawcount_dataframe, design_dataframe, adjust="BH") {
 
 	# Get results
 	limma_dataframe <- topTable(fit2, adjust=adjust, number=nrow(rawcount_dataframe))
+	limma_dataframe$gene_symbol <- rownames(limma_dataframe)
 
 	# Return
 	return(limma_dataframe)
@@ -234,7 +235,7 @@ limma <- function(rawcount_dataframe, design_dataframe, adjust="BH") {
 	list(T=T,P=P,pcvar=pcvar)
 }
 
-cd <- function(expression_dataframe, design_dataframe, log=TRUE, constant_threshold=1e-5) {
+cd <- function(expression_dataframe, design_dataframe, log, constant_threshold=1e-5) {
 
 	# Log-transform
 	if (log) {
@@ -261,6 +262,7 @@ cd <- function(expression_dataframe, design_dataframe, log=TRUE, constant_thresh
 
 	# Convert to dataframe
 	characteristic_direction_dataframe <- data.frame(CD=-cd_results)
+	characteristic_direction_dataframe$gene_symbol <- rownames(characteristic_direction_dataframe)
 
 	# Return results
 	return(characteristic_direction_dataframe)

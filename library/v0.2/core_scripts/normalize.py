@@ -28,7 +28,7 @@ r.source(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'R', 'normali
 ########## 1. Z-score
 #############################################
 
-def zscore(dataset, normalization='rawdata'):
+def zscore(dataset, normalization='rawdata', normalize_cols=True, log=True):
 
 	# Get raw data
 	rawdata = dataset[normalization]
@@ -36,8 +36,10 @@ def zscore(dataset, normalization='rawdata'):
 	# Z-score without warnings
 	with warnings.catch_warnings():
 		warnings.simplefilter("ignore")
-		rawdata = rawdata/rawdata.sum()
-		rawdata = np.log10(rawdata+1)
+		if normalize_cols:
+			rawdata = rawdata/rawdata.sum()
+		if log:
+			rawdata = np.log10(rawdata+1)
 		zscore = rawdata.apply(ss.zscore, axis=1).dropna()
 
 	# Return
@@ -57,7 +59,7 @@ def vst(dataset):
 
 def quantile(dataset):
 
-	return pandas2ri.ri2py(r.quantile(pandas2ri.py2ri(dataset['rawdata'])))
+	return pandas2ri.ri2py(r.quantile(pandas2ri.py2ri(dataset['rawdata']))).set_index('gene_symbol')
 
 #############################################
 ########## 4. Combat

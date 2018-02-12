@@ -94,10 +94,11 @@ function addButtons() {
 	// Get Entries
 	entries = {}
 	$('.rprt').each(function(i, elem) {entries[$(elem).find('dt:contains("Accession:")').next().text()] = $(elem)});
+	console.log(JSON.stringify({'gse': Object.keys(entries)}));
 
 	// Get Samples
 	$.ajax({	
-		url: "http://amp.pharm.mssm.edu/notebook-generator-server/api/samples",
+		url: "http://localhost:5000/notebook-generator-server/api/samples",
 		method: "POST",
 		data: JSON.stringify({'gse': Object.keys(entries)}),
 		dataType: 'json',

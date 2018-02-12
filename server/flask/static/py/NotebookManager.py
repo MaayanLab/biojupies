@@ -23,12 +23,14 @@ import requests
 import string
 import os
 import urllib.parse
+from nbconvert.preprocessors import ExecutePreprocessor
+import nbformat as nbf
 
 #############################################
 ########## 2. Variables
 #############################################
-##### 1. Helper Function #####
-
+##### 1. Notebook Execution #####
+ep = ExecutePreprocessor(timeout=600, kernel_name='python3')
 
 #################################################################
 #################################################################
@@ -37,10 +39,22 @@ import urllib.parse
 #################################################################
 
 #############################################
-########## 1. Upload Notebook
+########## 1. Execute Notebook
 #############################################
 
-def upload_notebook(notebook_html):
+def execute_notebook(notebook):
+
+	# Execute
+	ep.preprocess(notebook, {'metadata': {'path': './static/library'}})
+
+	# Return
+	return nbf.writes(notebook)
+
+#############################################
+########## 2. Upload Notebook
+#############################################
+
+def upload_notebook(notebook_string, notebook_title):
 
 	# Get UID
 	notebook_uid = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(9))
@@ -48,24 +62,9 @@ def upload_notebook(notebook_html):
 	# Upload to Bucket
 	client = storage.Client()
 	bucket = client.get_bucket('jupyter-notebook-generator')
-	blob = bucket.blob(notebook_uid+'/notebook.html')
-	blob.upload_from_string(notebook_html, content_type='text/html')
+	blob = bucket.blob('{notebook_uid}/{notebook_title}.ipynb'.format(**locals()))
+	blob.upload_from_string(notebook_string, content_type='text/html')
 	blob.make_public()
 
 	# Return
 	return urllib.parse.unquote(blob.public_url)
-
-
-#############################################
-########## 2. Launch Notebook
-#############################################
-
-def launch_notebook(notebook_html, notebook_title, username):
-
-	# PUT
-	# r = requests.put('http://localhost:8888/api/contents', data={'content': notebook_json, 'name': notebook_title, 'path': '/', 'type': 'notebook', 'format': 'json'})
-	# upload to google cloud storage
-	# get username server with notebook title
-
-	return 'url'
-

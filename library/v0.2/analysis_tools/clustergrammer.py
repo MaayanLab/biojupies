@@ -23,7 +23,7 @@ import numpy as np
 ########## 1. Run
 #############################################
 
-def run(dataset, normalization='rawdata', normalize_cols=True, log=True, z_score=True, nr_genes=1500):
+def run(dataset, normalization='rawdata', normalize_cols=False, log=False, z_score=False, nr_genes=1500):
 	net = Network(clustergrammer_widget)
 	data = dataset[normalization]
 	if normalize_cols:

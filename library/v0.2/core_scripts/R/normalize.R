@@ -44,10 +44,14 @@ quantile <- function(rawcount_dataframe) {
 	suppressMessages(require(preprocessCore))
 
 	# Run Quantile Normalization
+	rawcount_dataframe <- log10(rawcount_dataframe+1)
+	rawcount_dataframe <- rawcount_dataframe/colSums(rawcount_dataframe)
 	quantile_dataframe <- as.data.frame(normalize.quantiles(as.matrix(rawcount_dataframe)))
-	quantile_dataframe <- log10(quantile_dataframe+1)
 	rownames(quantile_dataframe) <- rownames(rawcount_dataframe)
 	colnames(quantile_dataframe) <- colnames(rawcount_dataframe)
+
+	# Add Gene Symbol
+	quantile_dataframe$gene_symbol <- rownames(quantile_dataframe)
 
 	# Return
 	return(quantile_dataframe)

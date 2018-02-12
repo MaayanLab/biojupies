@@ -18,9 +18,6 @@
 #############################################
 ##### 1. Python modules #####
 import nbformat as nbf
-from nbconvert import HTMLExporter
-from nbconvert.preprocessors import ExecutePreprocessor
-from traitlets.config import Config
 
 #############################################
 ########## 2. Variables
@@ -32,14 +29,6 @@ def addCell(notebook, content, celltype='code'):
 	elif celltype == 'markdown':
 		notebook['cells'].append(nbf.v4.new_markdown_cell(content))
 	return notebook
-
-##### 2. Notebook Execution #####
-ep = ExecutePreprocessor(timeout=600, kernel_name='python3')
-
-##### 3. Notebook Conversion #####
-c = Config()
-c.HTMLExporter.preprocessors = ['nbconvert.preprocessors.ExtractOutputPreprocessor']
-html_exporter_with_figs = HTMLExporter(config=c)
 
 #################################################################
 #################################################################
@@ -112,7 +101,7 @@ def generate_notebook(notebook_configuration):
 	notebook = nbf.v4.new_notebook()
 
 	# Initialize Notebook
-	# notebook['cells'].append(nbf.v4.new_code_cell("""# Initialize Notebook\n%run static/library/"""+notebook_configuration['notebook']['version']+"""/init.ipy\nHTML('''<script> code_show=true;  function code_toggle() {  if (code_show){  $('div.input').hide();  } else {  $('div.input').show();  }  code_show = !code_show }  $( document ).ready(code_toggle); </script> <form action="javascript:code_toggle()"><input type="submit" value="Toggle Code"></form>''')"""))
+	notebook['cells'].append(nbf.v4.new_code_cell("""# Initialize Notebook\n%run """+notebook_configuration['notebook']['version']+"""/init.ipy\nHTML('''<script> code_show=true;  function code_toggle() {  if (code_show){  $('div.input').hide();  } else {  $('div.input').show();  }  code_show = !code_show }  $( document ).ready(code_toggle); </script> <form action="javascript:code_toggle()"><input type="submit" value="Toggle Code"></form>''')"""))
 
 	# Load Data
 	notebook = load_data(notebook=notebook, data_configuration=notebook_configuration['data'])
@@ -130,22 +119,3 @@ def generate_notebook(notebook_configuration):
 
 	# Return
 	return notebook
-
-#############################################
-########## 2. Execute Notebook
-#############################################
-
-def execute_notebook(notebook, notebook_title):
-
-	# Execute
-	ep.preprocess(notebook, {'metadata': {'path': '.'}})
-
-	# Convert
-	notebook_html = html_exporter_with_figs.from_notebook_node(notebook)[0]
-
-	# Add title
-	notebook_html = notebook_html.replace('<title>Notebook</title>', '<title>{}</title>'.format(notebook_title))
-
-	# Return
-	return notebook_html
-

@@ -1,7 +1,7 @@
 {
 	"notebook": {
 		"title": "GSE89799 Analysis Notebook",
-		"live": true,
+		"live": false,
 		"version": "v0.2"
 	},
 	"data": {

@@ -73,19 +73,21 @@ def generate():
 		notebook_configuration = json.loads(openfile.read())
 	notebook = generate_notebook(notebook_configuration)
 
-	# Get URL
-	if notebook_configuration['notebook']['live']:
-		# notebook_url = launch_notebook(notebook, notebook_configuration['notebook']['title'], 'maayanlab')
-		notebook_url = nbf.writes(notebook)
-	else:
-		notebook_html = execute_notebook(notebook, notebook_configuration['notebook']['title'])
-		notebook_url = upload_notebook(notebook_html)
+	# Get URL url = 'http://nbviewer.jupyter.org/urls/'+notebook_url.split('://')[-1]
+	notebook_string = execute_notebook(notebook)
+	notebook_url = upload_notebook(notebook_string, notebook_configuration['notebook']['title'])
 
 	# Return
 	return notebook_url
 
+#######################################################
+#######################################################
+########## 3. Extension API
+#######################################################
+#######################################################
+
 #############################################
-########## 3. Samples API
+########## 1. Samples API
 #############################################
 
 @app.route(entry_point+'/api/samples', methods=['GET', 'POST'])
@@ -117,7 +119,7 @@ def samples():
 	return json.dumps(result)
 
 #############################################
-########## 3. Tools API
+########## 2. Tools API
 #############################################
 
 @app.route(entry_point+'/api/tools', methods=['GET', 'POST'])
@@ -148,7 +150,7 @@ def tools():
 
 #######################################################
 #######################################################
-########## 3. Run App
+########## Run App
 #######################################################
 #######################################################
 
