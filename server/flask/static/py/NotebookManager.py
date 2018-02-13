@@ -32,6 +32,13 @@ import nbformat as nbf
 ##### 1. Notebook Execution #####
 ep = ExecutePreprocessor(timeout=600, kernel_name='python3')
 
+###
+from nbconvert import HTMLExporter
+from traitlets.config import Config
+c = Config()
+c.HTMLExporter.preprocessors = ['nbconvert.preprocessors.ExtractOutputPreprocessor']
+html_exporter_with_figs = HTMLExporter(config=c)
+
 #################################################################
 #################################################################
 ############### 1. Functions ####################################
@@ -45,7 +52,9 @@ ep = ExecutePreprocessor(timeout=600, kernel_name='python3')
 def execute_notebook(notebook):
 
 	# Execute
-	ep.preprocess(notebook, {'metadata': {'path': './static/library'}})
+	# ep.preprocess(notebook, {'metadata': {'path': './static/library'}})
+
+	notebook = html_exporter_with_figs.from_notebook_node(notebook)[0]
 
 	# Return
 	return notebook

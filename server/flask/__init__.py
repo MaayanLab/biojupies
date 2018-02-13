@@ -75,13 +75,13 @@ def generate():
 	notebook = generate_notebook(notebook_configuration)
 
 	# Get URL
-	# notebook = execute_notebook(notebook)
+	notebook = execute_notebook(notebook)
 	# notebook_url = upload_notebook(notebook, notebook_configuration['notebook']['title'])
 
 	# Return
 	# return notebook_url
 	# return nbf.writes(notebook)
-	return redirect('http://nbviewer.jupyter.org/urls/'+upload_notebook(notebook, notebook_configuration['notebook']['title']).split('://')[-1])
+	return notebook
 	# return json.dumps({'notebook_url': 'http://nbviewer.jupyter.org/urls/'+notebook_url.split('://')[-1]})
 
 #######################################################

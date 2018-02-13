@@ -45,7 +45,16 @@ def add_parameters(configuration_dict):
 	return parameters+", ".join(['='.join([str(key), str(value) if str(value).isnumeric() or not value else "'"+str(value)+"'"]) for key, value in configuration_dict.items()])
 
 #############################################
-########## 2. Load Data
+########## 2. Add Intro
+#############################################
+
+def add_intro(notebook, notebook_configuration):
+	# Add Intro
+	cell = """# {notebook[title]}\n ## Overview\nThis Jupyter Notebook contains an analyis of GEO dataset {data[parameters][gse]} (https://www.ncbi.nlm.nih.gov/gds/?term={data[parameters][gse]}) generated using the Jupyter Notebook Generator.""".format(**notebook_configuration)# \n\n### Sections\nIt is divided in the following sections: <ol>""".format(**notebook_configuration)+''.join(['<li><a href="#'+str(i)+'"><b>'+x['tool_string'].title()+'</b></a></li>'for i, x in enumerate([{'tool_string': 'Load Dataset'}, {'tool_string': 'Normalize Dataset'}, {'tool_string': ''}, {'tool_string': ''}, ]+notebook_configuration['tools'])])+"""</ol>"""
+	return addCell(notebook, cell, 'markdown')
+
+#############################################
+########## 3. Load Data
 #############################################
 
 def load_data(notebook, data_configuration):
@@ -56,7 +65,7 @@ def load_data(notebook, data_configuration):
 	return addCell(notebook, cell)
 
 #############################################
-########## 3. Normalize Data
+########## 4. Normalize Data
 #############################################
 
 def normalize_data(notebook, tool_configuration_list):
@@ -68,22 +77,25 @@ def normalize_data(notebook, tool_configuration_list):
 	return notebook
 
 #############################################
-########## 4. Generate Signature
+########## 5. Generate Signature
 #############################################
 
 def generate_signatures(notebook, signature_configuration):
 	# Generate Signature
-	config_cell = "# Configure signatures\nsignatures_metadata = {{\n    '{A[name]} vs {B[name]}': {{'{A[name]}': {A[samples]}, '{B[name]}': {B[samples]}}}\n}}".format(**signature_configuration)
-	compute_cell = "# Generate signatures\nfor signature_label, groups in signature_metadata.items():\n    signatures[signature_label] = compute_signature(group_A=groups['A'], group_B=groups['B'], method='{}')".format(signature_configuration['method'])
-	return addCell(addCell(notebook, config_cell), compute_cell)
+	cell = "# Configure signatures\nsignature_metadata = {{\n    '{A[name]} vs {B[name]}': {{'{A[name]}': {A[samples]}, '{B[name]}': {B[samples]}}}\n}}\n\n# Generate signatures\nfor label, groups in signature_metadata.items():\n    signatures[label] = generate_signature(group_A=groups['A'], group_B=groups['B'], method='{method}', dataset=dataset)".format(**signature_configuration)
+	return addCell(notebook, cell)
 
 #############################################
-########## 5. Add Tool
+########## 6. Add Tool
 #############################################
 
 def add_tool(notebook, tool_configuration):
 	# Add Tool
-	cell = "# Run analysis\nresults['{tool_string}'] = analyze({tool_input}={tool_input}, tool='{tool_string}'".format(**tool_configuration)+add_parameters(tool_configuration['parameters'])+")\n\n# Display results\nplot(results['{tool_string}'])".format(**tool_configuration)
+	if tool_configuration['tool_input'] == 'dataset':
+		cell = "# Run analysis\nresults['{tool_string}'] = analyze({tool_input}={tool_input}, tool='{tool_string}'".format(**tool_configuration)+add_parameters(tool_configuration['parameters'])+")\n\n# Display results\nplot(results['{tool_string}'])".format(**tool_configuration)
+	elif tool_configuration['tool_input'] == 'signature':
+		# cell = "# Run analysis\nresults['{tool_string}'] = {{}}\nfor label, signature in signatures.items():\n    results['{tool_string}'][label] = analyze({tool_input}={tool_input}, tool='{tool_string}'".format(**tool_configuration)+add_parameters(tool_configuration['parameters'])+")\n\n    # Plot results\n    plot(results['{tool_string}'])".format(**tool_configuration)
+		cell = "# Initialize results\nresults['{tool_string}'] = {{}}\n\n# Loop through signatures\nfor label, signature in signatures.items():\n\n    # Run analysis\n    results['{tool_string}'][label] = analyze({tool_input}={tool_input}, tool='{tool_string}'".format(**tool_configuration)+add_parameters(tool_configuration['parameters'])+")\n\n    # Display results\n    plot(results['{tool_string}'])".format(**tool_configuration)
 	return addCell(notebook, cell)
 
 #################################################################
@@ -102,7 +114,10 @@ def generate_notebook(notebook_configuration):
 	notebook = nbf.v4.new_notebook()
 
 	# Initialize Notebook
-	# notebook['cells'].append(nbf.v4.new_code_cell("""# Initialize Notebook\n%run """+notebook_configuration['notebook']['version']+"""/init.ipy\nHTML('''<script> code_show=true;  function code_toggle() {  if (code_show){  $('div.input').hide();  } else {  $('div.input').show();  }  code_show = !code_show }  $( document ).ready(code_toggle); </script> <form action="javascript:code_toggle()"><input type="submit" value="Toggle Code"></form>''')"""))
+	notebook['cells'].append(nbf.v4.new_code_cell("""# Initialize Notebook\n%run """+notebook_configuration['notebook']['version']+"""/init.ipy\nHTML('''<script> code_show=true;  function code_toggle() {  if (code_show){  $('div.input').hide();  } else {  $('div.input').show();  }  code_show = !code_show }  $( document ).ready(code_toggle); </script> <form action="javascript:code_toggle()"><input type="submit" value="Toggle Code"></form>''')"""))
+	
+	# Add Intro
+	notebook = add_intro(notebook=notebook, notebook_configuration=notebook_configuration)
 
 	# Load Data
 	notebook = load_data(notebook=notebook, data_configuration=notebook_configuration['data'])
