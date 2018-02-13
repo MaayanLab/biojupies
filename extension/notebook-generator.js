@@ -116,6 +116,7 @@ function addButtons() {
 							.append($('<span>').html('Launch Notebook'))
 							.data('samples', samples)
 							.data('gse', gse)
+							.data('gpl', Object.keys(samples)[0])
 					);
 				}				
 			})
@@ -285,7 +286,7 @@ function addConfiguration(selected_tools, groups) {
 	$('#configuration-form').html('');
 	$('#configuration-form').append(modal.Text('Optionally, review the notebook and modify optional parameters:'));
 	$('#configuration-form').append(modal.Section('General Settings'));
-	$('#configuration-form').append(modal.Input('Notebook Title:', 'Title of the Jupyter Notebook', 'notebook_title', $('#notebook-generator-modal').data('gse')+' Analysis Notebook'));
+	$('#configuration-form').append(modal.Input('Notebook Title:', 'Title of the Jupyter Notebook', 'title', $('#notebook-generator-modal').data('gse')+' Analysis Notebook'));
 	$('#configuration-form').append(modal.Input('Live:', 'Indicates whether the Jupyter Notebook should be deployed in a live server or as a static HTML report', 'live', 'False', 'select', ['False', 'True']));
 
 	// Add Tool Parameters
@@ -321,7 +322,7 @@ function getConfiguration() {
 	$.each(form, function(index, parameter) {
 
 		// Add general parameters
-		if (['notebook_title', 'live'].indexOf(parameter['name']) > -1) {
+		if (['title', 'live'].indexOf(parameter['name']) > -1) {
 			configuration['notebook'][parameter['name']] = parameter['value'];
 		}
 
@@ -339,7 +340,7 @@ function getConfiguration() {
 	})
 
 	// Add data
-	configuration['data'] = {'source': 'archs4', 'parameters': {'gse': $('#notebook-generator-modal').data('gse'), 'platform': null}}
+	configuration['data'] = {'source': 'archs4', 'parameters': {'gse': $('#notebook-generator-modal').data('gse'), 'platform': $('#notebook-generator-modal').data('gpl')}}
 	configuration['notebook']['version'] = 'v0.2'
 
 	// Return
@@ -355,11 +356,16 @@ function addNotebookLink(configuration) {
 		url: "http://amp.pharm.mssm.edu/notebook-generator-server/api/generate",
 		method: "POST",
 		data: JSON.stringify(configuration),
+		contentType: "application/json; charset=utf-8",
 		dataType: 'json',
 		success: function(res) {
 			$('.sk-circle').remove();
 			$('#modal-loading-text').html('Your Notebook is available at the link below:')
-			$('#results-form').append($('<div>', {'id': 'modal-notebook-results'}).html($('<a>', {'id': 'modal-notebook-link', 'href': 'http://www.google.com', 'target': '_blank'}).html('Open Notebook')));
+			$('#results-form').append($('<div>', {'id': 'modal-notebook-results'}).html($('<a>', {'id': 'modal-notebook-link', 'href': res['notebook_url'], 'target': '_blank'}).html('Open Notebook')));
+		},
+		error: function(e) {
+			$('.sk-circle').remove();
+			$('#modal-loading-text').html('Sorry, there has been an error.<br>&nbsp')
 		}
 	})
 }
@@ -397,6 +403,7 @@ function addEventListeners() {
 	$(document).on('click', '.notebook-generator-link', function(evt) {
 		$('#notebook-generator-modal').css('display', 'block');
 		$('#notebook-generator-modal').data('gse', $(evt.target).data('gse'));
+		$('#notebook-generator-modal').data('gpl', $(evt.target).data('gpl'));
 		$('#notebook-generator-modal').data('samples', $(evt.target).data('samples'));
 		addTools();
 	})

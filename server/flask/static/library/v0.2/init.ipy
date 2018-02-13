@@ -1,0 +1,68 @@
+###################################
+##### Notebook Initialization #####
+###################################
+####### Version 1.0
+####### This file contains commands used to initialize the Jupyter Notebook environment by loading useful Python and R libraries.
+##### Author: Denis Torre
+##### Affiliation: Ma'ayan Laboratory, Icahn School of Medicine at Mount Sinai
+
+##### Jupyter Environment
+# Modules
+import os
+import sys
+import glob
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from IPython.display import HTML
+from importlib import reload
+
+# Plotting
+%matplotlib inline
+from plotly.offline import init_notebook_mode
+init_notebook_mode()
+
+# Load R
+%load_ext rpy2.ipython
+
+##### Custom Scripts
+# Add Paths
+scripts_paths = [os.path.join(os.path.dirname(os.path.realpath(__file__)), x) for x in ['core_scripts', 'analysis_tools']]
+for path in scripts_paths:
+	sys.path.append(path)
+
+# Import Data Scripts
+import load, normalize
+import signature as sig
+
+# Import Analysis Tools
+scripts = glob.glob(os.path.join(scripts_paths[-1], '*.py'))
+for script in scripts:
+	exec('import '+os.path.basename(script).replace('.py', ''))
+
+##### Variables
+# Notebook Variables
+data = {}
+signatures = {}
+results = {}
+
+# Load Dataset
+def load_dataset(source, **kwargs):
+	return eval('load.{}'.format(source))(**kwargs)
+
+# Normalize Dataset
+def normalize_dataset(method, **kwargs):
+	return eval('normalize.{}'.format(method))(**kwargs)
+
+# Compute Signature
+def generate_signature(method, **kwargs):
+	return eval('sig.{}'.format(method))(**kwargs)
+	
+# Analyze
+def analyze(tool, **kwargs):
+	return {'results': eval(tool).run(**kwargs), 'tool': tool}
+
+# Plot
+def plot(results, **kwargs):
+	return eval(results['tool']).plot(results['results'], **kwargs)

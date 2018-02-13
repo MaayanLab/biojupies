@@ -71,10 +71,11 @@ def normalize_data(notebook, tool_configuration_list):
 ########## 4. Generate Signature
 #############################################
 
-def generate_signature(notebook, signature_configuration):
+def generate_signatures(notebook, signature_configuration):
 	# Generate Signature
-	cell = "# Configure signature\ngroup_A = {A[samples]} # {A[name]}\ngroup_B = {B[samples]} # {B[name]}\nsignature_method = '{method}'\n\n# Generate signature\nsignature = generate_signature(group_A=group_A, group_B=group_B, method=signature_method, dataset=dataset)\nsignature.head()".format(**signature_configuration)
-	return addCell(notebook, cell)
+	config_cell = "# Configure signatures\nsignatures_metadata = {{\n    '{A[name]} vs {B[name]}': {{'{A[name]}': {A[samples]}, '{B[name]}': {B[samples]}}}\n}}".format(**signature_configuration)
+	compute_cell = "# Generate signatures\nfor signature_label, groups in signature_metadata.items():\n    signatures[signature_label] = compute_signature(group_A=groups['A'], group_B=groups['B'], method='{}')".format(signature_configuration['method'])
+	return addCell(addCell(notebook, config_cell), compute_cell)
 
 #############################################
 ########## 5. Add Tool
@@ -101,7 +102,7 @@ def generate_notebook(notebook_configuration):
 	notebook = nbf.v4.new_notebook()
 
 	# Initialize Notebook
-	notebook['cells'].append(nbf.v4.new_code_cell("""# Initialize Notebook\n%run """+notebook_configuration['notebook']['version']+"""/init.ipy\nHTML('''<script> code_show=true;  function code_toggle() {  if (code_show){  $('div.input').hide();  } else {  $('div.input').show();  }  code_show = !code_show }  $( document ).ready(code_toggle); </script> <form action="javascript:code_toggle()"><input type="submit" value="Toggle Code"></form>''')"""))
+	# notebook['cells'].append(nbf.v4.new_code_cell("""# Initialize Notebook\n%run """+notebook_configuration['notebook']['version']+"""/init.ipy\nHTML('''<script> code_show=true;  function code_toggle() {  if (code_show){  $('div.input').hide();  } else {  $('div.input').show();  }  code_show = !code_show }  $( document ).ready(code_toggle); </script> <form action="javascript:code_toggle()"><input type="submit" value="Toggle Code"></form>''')"""))
 
 	# Load Data
 	notebook = load_data(notebook=notebook, data_configuration=notebook_configuration['data'])
@@ -111,7 +112,7 @@ def generate_notebook(notebook_configuration):
 
 	# Generate Signature
 	if len(notebook_configuration['signature']):
-		notebook = generate_signature(notebook=notebook, signature_configuration=notebook_configuration['signature'])
+		notebook = generate_signatures(notebook=notebook, signature_configuration=notebook_configuration['signature'])
 
 	# Add Tools
 	for tool_configuration in notebook_configuration['tools']:

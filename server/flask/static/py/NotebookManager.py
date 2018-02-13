@@ -48,15 +48,16 @@ def execute_notebook(notebook):
 	ep.preprocess(notebook, {'metadata': {'path': './static/library'}})
 
 	# Return
-	return nbf.writes(notebook)
+	return notebook
 
 #############################################
 ########## 2. Upload Notebook
 #############################################
 
-def upload_notebook(notebook_string, notebook_title):
+def upload_notebook(notebook, notebook_title):
 
 	# Get UID
+	notebook_string = nbf.writes(notebook)
 	notebook_uid = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(9))
 
 	# Upload to Bucket
