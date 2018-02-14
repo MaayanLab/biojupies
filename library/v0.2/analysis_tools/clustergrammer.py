@@ -8,8 +8,13 @@
 ########## 1. Load libraries
 #############################################
 ##### 1. General support #####
-from clustergrammer_widget import *
+import requests
+import os
 import numpy as np
+from IPython.display import display, IFrame
+import tempfile
+import scipy.stats as ss
+import pandas as pd
 
 ##### 2. Other libraries #####
 
@@ -23,24 +28,44 @@ import numpy as np
 ########## 1. Run
 #############################################
 
-def run(dataset, normalization='rawdata', normalize_cols=False, log=False, z_score=False, nr_genes=1500):
-	net = Network(clustergrammer_widget)
-	data = dataset[normalization]
-	if normalize_cols:
-		data = data/data.sum()
-	if log:
-		data = np.log10(data+1)
-	net.load_df(data)
-	net.add_cats(cat_data=[{'title': index, 'cats': {str(value): rowData[rowData==value].index.tolist() for value in set(rowData.values)}} for index, rowData in dataset['sample_metadata'].T.iterrows()], axis='col')
-	net.filter_N_top('row', nr_genes, 'var')
-	if z_score:
-		net.normalize(axis='row', norm_type='zscore', keep_orig=True)
-	net.cluster()
-	return net
+def run(dataset, normalization='rawdata', normalize_cols=True, log=True, z_score=True, nr_genes=500):
+
+	# Get tempfile
+	(fd, filename) = tempfile.mkstemp()
+	filename = filename+'.txt'
+	try:
+		# Get data
+		data = dataset[normalization]
+
+		# Normalize columns
+		if normalize_cols:
+			data = data/data.sum()
+
+		# Log-transform
+		if log:
+			data = np.log10(data+1)
+
+		# Get variable subset
+		data = data.loc[data.var(axis=1).sort_values(ascending=False).index[:nr_genes]]
+
+		# Z-score
+		if z_score:
+			data = data.apply(ss.zscore, axis=1)
+
+		# Add metadata
+		data.index = ['Gene: '+x for x in data.index]
+		data.columns=pd.MultiIndex.from_tuples([tuple(['{key}: {value}'.format(**locals()) for key, value in rowData.items()]) for index, rowData in dataset['sample_metadata'].iterrows()])
+
+		# Write file and get link
+		data.to_csv(filename, sep='\t')
+		clustergrammer_url = requests.post('http://amp.pharm.mssm.edu/clustergrammer/matrix_upload/', files={'file': open(filename, 'rb')}).text
+	finally:
+		os.remove(filename)
+	return clustergrammer_url
 
 #############################################
 ########## 2. Plot
 #############################################
 
-def plot(net):
-	return net.widget()
+def plot(clustergrammer_url):
+	return display(IFrame(clustergrammer_url, width="1000", height="1000"))

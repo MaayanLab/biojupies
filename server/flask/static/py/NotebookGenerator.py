@@ -50,7 +50,8 @@ def add_parameters(configuration_dict):
 
 def add_intro(notebook, notebook_configuration):
 	# Add Intro
-	cell = """# {notebook[title]}\n ## Overview\nThis Jupyter Notebook contains an analyis of GEO dataset {data[parameters][gse]} (https://www.ncbi.nlm.nih.gov/gds/?term={data[parameters][gse]}) generated using the Jupyter Notebook Generator.""".format(**notebook_configuration)# \n\n### Sections\nIt is divided in the following sections: <ol>""".format(**notebook_configuration)+''.join(['<li><a href="#'+str(i)+'"><b>'+x['tool_string'].title()+'</b></a></li>'for i, x in enumerate([{'tool_string': 'Load Dataset'}, {'tool_string': 'Normalize Dataset'}, {'tool_string': ''}, {'tool_string': ''}, ]+notebook_configuration['tools'])])+"""</ol>"""
+	# sections = ''.join(['<li>{}</li>'.format(x) for x in ['Load Dataset'] + ['Normalize Dataset'] if 1 else [] + ['Generate Signatures'] if 1 else [] + [x['tool_string'] for x in tool_configuration['tools']]])
+	cell = """# {notebook[title]}\n ## Overview\nThis notebook contains an analyis of GEO dataset {data[parameters][gse]} (https://www.ncbi.nlm.nih.gov/gds/?term={data[parameters][gse]}) generated using the Jupyter Notebook Generator.""".format(**notebook_configuration)#+"""\n### Sections\nThe analysis is divided in the following sections:\n<ol>{}</ol>""".format(sections)# \n\n### Sections\nIt is divided in the following sections: <ol>""".format(**notebook_configuration)+''.join(['<li><a href="#'+str(i)+'"><b>'+x['tool_string'].title()+'</b></a></li>'for i, x in enumerate([{'tool_string': 'Load Dataset'}, {'tool_string': 'Normalize Dataset'}, {'tool_string': ''}, {'tool_string': ''}, ]+notebook_configuration['tools'])])+"""</ol>"""
 	return addCell(notebook, cell, 'markdown')
 
 #############################################
@@ -94,8 +95,7 @@ def add_tool(notebook, tool_configuration):
 	if tool_configuration['tool_input'] == 'dataset':
 		cell = "# Run analysis\nresults['{tool_string}'] = analyze({tool_input}={tool_input}, tool='{tool_string}'".format(**tool_configuration)+add_parameters(tool_configuration['parameters'])+")\n\n# Display results\nplot(results['{tool_string}'])".format(**tool_configuration)
 	elif tool_configuration['tool_input'] == 'signature':
-		# cell = "# Run analysis\nresults['{tool_string}'] = {{}}\nfor label, signature in signatures.items():\n    results['{tool_string}'][label] = analyze({tool_input}={tool_input}, tool='{tool_string}'".format(**tool_configuration)+add_parameters(tool_configuration['parameters'])+")\n\n    # Plot results\n    plot(results['{tool_string}'])".format(**tool_configuration)
-		cell = "# Initialize results\nresults['{tool_string}'] = {{}}\n\n# Loop through signatures\nfor label, signature in signatures.items():\n\n    # Run analysis\n    results['{tool_string}'][label] = analyze({tool_input}={tool_input}, tool='{tool_string}'".format(**tool_configuration)+add_parameters(tool_configuration['parameters'])+")\n\n    # Display results\n    plot(results['{tool_string}'])".format(**tool_configuration)
+		cell = "# Initialize results\nresults['{tool_string}'] = {{}}\n\n# Loop through signatures\nfor label, signature in signatures.items():\n\n    # Run analysis\n    results['{tool_string}'][label] = analyze({tool_input}={tool_input}, tool='{tool_string}', signature_label=label".format(**tool_configuration)+add_parameters(tool_configuration['parameters'])+")\n\n    # Display results\n    plot(results['{tool_string}'][label])".format(**tool_configuration)
 	return addCell(notebook, cell)
 
 #################################################################

@@ -68,12 +68,12 @@ def get_enrichr_results(user_list_id, gene_set_libraries=['GO_Biological_Process
 	concatenatedDataframe = pd.concat(results)
 	return concatenatedDataframe
 
-def run(signature, nr_genes=500, libraries=['GO_Biological_Process_2017b', 'GO_Molecular_Function_2017b', 'KEGG_2016'], signature_label=''):
+def run(signature, geneset_size=500, libraries=['GO_Biological_Process_2017b', 'GO_Molecular_Function_2017b', 'KEGG_2016'], signature_label=''):
 
 	# Get genesets
 	genesets = {}
-	genesets['upregulated'] = signature.index[:nr_genes]
-	genesets['downregulated'] = signature.index[-nr_genes:]
+	genesets['upregulated'] = signature.index[:geneset_size]
+	genesets['downregulated'] = signature.index[-geneset_size:]
 
 	# Submit to Enrichr
 	enrichr_ids = {geneset_label: submit_enrichr_geneset(geneset=geneset) for geneset_label, geneset in genesets.items()}
