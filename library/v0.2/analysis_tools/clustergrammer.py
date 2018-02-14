@@ -28,7 +28,7 @@ import pandas as pd
 ########## 1. Run
 #############################################
 
-def run(dataset, normalization='rawdata', normalize_cols=True, log=True, z_score=True, nr_genes=500):
+def run(dataset, normalization='rawdata', normalize_cols=True, log=True, z_score=True, nr_genes=1500):
 
 	# Get tempfile
 	(fd, filename) = tempfile.mkstemp()

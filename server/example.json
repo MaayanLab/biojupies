@@ -6,10 +6,35 @@
   },
   "tools": [
     {
-      "tool_string": "enrichr",
-      "tool_input": "signature",
+      "tool_string": "pca",
       "parameters": {
-        "geneset_size": "500"
+        "normalization": "zscore"
+      }
+    },
+    {
+      "tool_string": "clustergrammer",
+      "parameters": {
+        "normalization": "zscore"
+      }
+    },
+    {
+      "tool_string": "volcano_plot",
+      "parameters": {
+      }
+    },
+    {
+      "tool_string": "ma_plot",
+      "parameters": {
+      }
+    },
+    {
+      "tool_string": "enrichr",
+      "parameters": {
+      }
+    },
+    {
+      "tool_string": "l1000cds2",
+      "parameters": {
       }
     }
   ],

@@ -36,7 +36,7 @@ def plot_2D_scatter(x, y, text='', title='', xlab='', ylab='', hoverinfo='text',
 ########## 1. Run
 #############################################
 
-def run(signature):
+def run(signature, signature_label):
 
 	# Loop through signature
 	color = []

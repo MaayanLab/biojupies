@@ -68,21 +68,38 @@ import nbformat as nbf
 @app.route(entry_point+'/api/generate', methods=['GET', 'POST'])
 def generate():
 
-	# Generate
-	# notebook_configuration = request.json
-	with open('../example.json', 'r') as openfile:
-		notebook_configuration = json.loads(openfile.read())
-	notebook = generate_notebook(notebook_configuration)
+	# Get tool metadata
+	tool_metadata = pd.read_sql_table('tool', engine).set_index('tool_string').to_dict(orient='index')
 
-	# Get URL
-	notebook = execute_notebook(notebook)
-	# notebook_url = upload_notebook(notebook, notebook_configuration['notebook']['title'])
+	# Set development
+	development = True
+	if development:
+		### Development
+		# Open example.json
+		with open('../example.json', 'r') as openfile:
+			notebook_configuration = json.loads(openfile.read())
 
-	# Return
-	# return notebook_url
-	# return nbf.writes(notebook)
-	return notebook
-	# return json.dumps({'notebook_url': 'http://nbviewer.jupyter.org/urls/'+notebook_url.split('://')[-1]})
+		# Generate, Execute and Convert to HTML
+		notebook = generate_notebook(notebook_configuration, tool_metadata)
+		notebook = execute_notebook(notebook, to_html=True)
+	
+		# Return
+		return notebook
+
+	else:
+		### Production
+		# Get Configuration
+		notebook_configuration = request.json
+
+		# Generate and Execute
+		notebook = generate_notebook(notebook_configuration, tool_metadata)
+		notebook = execute_notebook(notebook)
+
+		# Get URL
+		notebook_url = upload_notebook(notebook, notebook_configuration['notebook']['title'])
+
+		# Return
+		return json.dumps({'notebook_url': 'http://nbviewer.jupyter.org/urls/'+notebook_url.split('://')[-1]})
 
 #######################################################
 #######################################################

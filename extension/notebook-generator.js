@@ -329,7 +329,7 @@ function getConfiguration() {
 		// Get current tool
 		if (parameter['name'] === 'tool_string') {
 			current_tool = parameter['value'];
-			configuration['tools'].push({'tool_string': current_tool, 'tool_input': signature_tools.indexOf(current_tool) > -1 ? 'signature' : 'dataset', 'parameters': {}});
+			configuration['tools'].push({'tool_string': current_tool});
  		}
 
 		// Add tool parameters

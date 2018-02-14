@@ -32,6 +32,7 @@ CREATE TABLE tool (
 	`tool_string` VARCHAR(255),
 	`tool_name` VARCHAR(255),
 	`tool_description` TEXT,
+	`tool_notebook_annotation` TEXT,
 	`tool_icon` TEXT,
 	`default_selected` BOOL,
 	`requires_signature` BOOL,
