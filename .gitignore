@@ -19,3 +19,7 @@ database/.ruffus_history.sqlite
 jupyterhub/setup.txt
 
 jupyterhub/config.yaml
+
+*.sqlite
+
+database/.ruffus_history.sqlite

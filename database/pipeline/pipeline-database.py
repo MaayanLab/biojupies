@@ -45,7 +45,7 @@ r.source('pipeline/scripts/database.R')
 
 @follows(mkdir('s2-samples.dir'))
 
-@merge(glob.glob('s1-h5.dir/*.h5'),
+@merge(glob.glob('s1-h5.dir/h5/*.h5'),
 	   's2-samples.dir/samples.txt')
 
 def getSamples(infiles, outfile):
@@ -53,12 +53,14 @@ def getSamples(infiles, outfile):
 	# Loop through infiles
 	results = []
 	for infile in infiles:
-		h5 = h5py.File(infile, 'r')
-		h5_data = {x:[y.decode('utf-8') for y in h5['meta/'+x].value] for x in ['Sample_title', 'Sample_series_id', 'Sample_geo_accession', 'Sample_platform_id']}#, 'Sample_characteristics_ch1', 'Sample_organism_ch1', 'Sample_source_name_ch1']
-		h5_df = pd.DataFrame(h5_data).rename(columns={'Sample_title': 'sample_title', 'Sample_series_id': 'gse', 'Sample_geo_accession': 'gsm', 'Sample_platform_id': 'gpl'})
-		results.append(h5_df)
-	result_df = pd.concat(results).sort_values(['gse', 'gpl'])
-	result_df.to_csv(outfile, sep='\t', index=False)
+		f = h5py.File(infile, 'r')
+		gse, gpl = os.path.basename(infile)[:-len('.h5')].split('-')
+		sample_dataframe = pd.DataFrame({x: f['meta']['sample'][x] for x in ['Sample_geo_accession', 'Sample_title']}).rename(columns={'Sample_geo_accession': 'gsm', 'Sample_title': 'sample_title'})
+		sample_dataframe['gse'] = gse
+		sample_dataframe['gpl'] = gpl
+		results.append(sample_dataframe)
+	result_dataframe = pd.concat(results)
+	result_dataframe.to_csv(outfile, sep='\t', index=False)
 
 #######################################################
 #######################################################
@@ -153,6 +155,7 @@ def uploadTables(infile, outfile):
 	df = pd.read_csv(infile)
 	table = os.path.basename(infile).split('-')[0]
 	engine.execute('SET FOREIGN_KEY_CHECKS = 0;')
+	engine.execute('TRUNCATE TABLE {};'.format(table))
 	df.to_sql(table, engine, if_exists='append', index=False)
 	engine.execute('SET FOREIGN_KEY_CHECKS = 1;')
 	os.system('touch {}'.format(outfile))

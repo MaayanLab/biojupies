@@ -121,8 +121,8 @@ function addButtons() {
 				}				
 			})
 
-			$('.notebook-generator-link').first().click();
-			$('#next-step').click();
+			// $('.notebook-generator-link').first().click();
+			// $('#next-step').click();
 		}			
 	})
 }
@@ -363,11 +363,11 @@ function addNotebookLink(configuration) {
 			$('.sk-circle').remove();
 			$('#modal-loading-text').html('Your Notebook is available at the link below:')
 			$('#results-form').append($('<div>', {'id': 'modal-notebook-results'}).html($('<a>', {'id': 'modal-notebook-link', 'href': res['notebook_url'], 'target': '_blank'}).html('Open Notebook')));
-		}//,
-		// error: function(e) {
-		// 	$('.sk-circle').remove();
-		// 	$('#modal-loading-text').html('Sorry, there has been an error.<br>&nbsp')
-		// }
+		},
+		error: function(e) {
+			$('.sk-circle').remove();
+			$('#modal-loading-text').html('Sorry, there has been an error.<br>&nbsp')
+		}
 	})
 }
 
@@ -402,10 +402,11 @@ function addEventListeners() {
 
 	// open modal
 	$(document).on('click', '.notebook-generator-link', function(evt) {
+		var launch_button = $(evt.target).parents('.rprt').find('.notebook-generator-link');
 		$('#notebook-generator-modal').css('display', 'block');
-		$('#notebook-generator-modal').data('gse', $(evt.target).data('gse'));
-		$('#notebook-generator-modal').data('gpl', $(evt.target).data('gpl'));
-		$('#notebook-generator-modal').data('samples', $(evt.target).data('samples'));
+		$('#notebook-generator-modal').data('gse', launch_button.data('gse'));
+		$('#notebook-generator-modal').data('gpl', launch_button.data('gpl'));
+		$('#notebook-generator-modal').data('samples', launch_button.data('samples'));
 		addTools();
 		$("body").css("overflow-y", "hidden");
 	})

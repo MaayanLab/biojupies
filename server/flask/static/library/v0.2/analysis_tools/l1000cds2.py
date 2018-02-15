@@ -64,7 +64,7 @@ def run(signature, nr_genes=500, signature_label=''):
 def plot(l1000cds2_results, nr_drugs=7, height=300):
 	# Links
 	if l1000cds2_results['signature_label']:
-		display(Markdown('---\n## {signature_label} signature:'.format(**l1000cds2_results)))
+		display(Markdown('## {signature_label} signature:'.format(**l1000cds2_results)))
 	display(Markdown(' **L1000CDS<sup>2</sup> Links:**'))
 	display(Markdown(' *Mimic Signature*: {url}'.format(**l1000cds2_results['mimic'])))
 	display(Markdown(' *Reverse Signature*: {url}'.format(**l1000cds2_results['reverse'])))
