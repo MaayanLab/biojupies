@@ -128,7 +128,7 @@ def generate_signature(notebook, signature_configuration):
 	notebook = addCell(notebook, cell, 'markdown')
 
 	# Generate Signature
-	cell = "# Configure signatures\nsignature_metadata = {{\n    '{A[name]} vs {B[name]}': {{'{A[name]}': {A[samples]}, '{B[name]}': {B[samples]}}}\n}}\n\n# Generate signatures\nfor label, groups in signature_metadata.items():\n    signatures[label] = generate_signature(group_A=groups['A'], group_B=groups['B'], method='{method}', dataset=dataset)".format(**signature_configuration)
+	cell = "# Configure signatures\nsignature_metadata = {{\n    '{A[name]} vs {B[name]}': {{'A': {A[samples]}, 'B': {B[samples]}}}\n}}\n\n# Generate signatures\nfor label, groups in signature_metadata.items():\n    signatures[label] = generate_signature(group_A=groups['A'], group_B=groups['B'], method='{method}', dataset=dataset)".format(**signature_configuration)
 	return addCell(notebook, cell)
 
 #############################################

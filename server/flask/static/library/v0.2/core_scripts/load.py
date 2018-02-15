@@ -41,7 +41,7 @@ def archs4(gse, platform):
     
     # Get data
     rawcount_dataframe = pd.DataFrame(data=f['data']['expression'].value, columns=[x for x in f['meta']['gene']['symbol'].value], index=[x for x in f['meta']['sample']['Sample_geo_accession'].value]).T
-    sample_metadata_dataframe = pd.DataFrame({key: [x for x in value.value] for key, value in f['meta']['sample'].items()}).set_index('Sample_geo_accession')
+    sample_metadata_dataframe = pd.DataFrame({key: [x for x in value.value] for key, value in f['meta']['sample'].items()}).set_index('Sample_geo_accession').rename(columns={'Sample_title': 'Sample Title'})
     # for column in sample_metadata_dataframe.columns:
     # 	unique_vals = list(set(sample_metadata_dataframe[column]))
     # 	if len(unique_vals) == 1 or any([len(x) > 20 for x in unique_vals]):

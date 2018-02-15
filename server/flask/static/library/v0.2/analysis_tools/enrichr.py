@@ -132,7 +132,7 @@ def plot_library_barchart(enrichr_results, gene_set_library, nr_genesets, height
 
 def plot(enrichr_results, nr_genesets=10, height=300):
 	if enrichr_results['signature_label']:
-		display(Markdown('---\n## {signature_label} signature:'.format(**enrichr_results)))
+		display(Markdown('## {signature_label} signature:'.format(**enrichr_results)))
 	display(Markdown(' **Enrichr Links:**'))
 	display(Markdown(' *Upregulated Genes*: {url}'.format(**enrichr_results['upregulated'])))
 	display(Markdown(' *Downregulated Genes*: {url}'.format(**enrichr_results['downregulated'])))

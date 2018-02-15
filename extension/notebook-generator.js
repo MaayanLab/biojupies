@@ -230,7 +230,7 @@ function addGroups() {
 	$('#group-form').append(modal.Table(samples));
 	$('#group-form').append(modal.Section('Optional Settings'));
 	$('#group-form').append(modal.Text('Optionally, select the differential expression method and add a custom label for each group.'));
-	$('#group-form').append(modal.Input('Method:', 'DE Method', 'method', 'limma', 'select', ['limma', 'DESeq2', 'CD']));
+	$('#group-form').append(modal.Input('Method:', 'DE Method', 'method', 'limma', 'select', ['limma']));
 	$('#group-form').append(modal.Input('Group A name:', 'Label to assign to Group A', 'group_a'));
 	$('#group-form').append(modal.Input('Group B name:', 'Label to assign to Group B', 'group_a'));
 
@@ -329,7 +329,7 @@ function getConfiguration() {
 		// Get current tool
 		if (parameter['name'] === 'tool_string') {
 			current_tool = parameter['value'];
-			configuration['tools'].push({'tool_string': current_tool});
+			configuration['tools'].push({'tool_string': current_tool, 'parameters': {}});
  		}
 
 		// Add tool parameters
@@ -362,11 +362,11 @@ function addNotebookLink(configuration) {
 			$('.sk-circle').remove();
 			$('#modal-loading-text').html('Your Notebook is available at the link below:')
 			$('#results-form').append($('<div>', {'id': 'modal-notebook-results'}).html($('<a>', {'id': 'modal-notebook-link', 'href': res['notebook_url'], 'target': '_blank'}).html('Open Notebook')));
-		},
-		error: function(e) {
-			$('.sk-circle').remove();
-			$('#modal-loading-text').html('Sorry, there has been an error.<br>&nbsp')
-		}
+		}//,
+		// error: function(e) {
+		// 	$('.sk-circle').remove();
+		// 	$('#modal-loading-text').html('Sorry, there has been an error.<br>&nbsp')
+		// }
 	})
 }
 
@@ -406,15 +406,16 @@ function addEventListeners() {
 		$('#notebook-generator-modal').data('gpl', $(evt.target).data('gpl'));
 		$('#notebook-generator-modal').data('samples', $(evt.target).data('samples'));
 		addTools();
+		$("body").css("overflow-y", "hidden");
 	})
 
 	// close modal
-	$(document).click(function(evt) {
-		if ($(evt.target).attr('id') === 'notebook-generator-modal' ) {
-			$('#notebook-generator-modal').css('display', 'none');
-			$('#notebook-generator-modal form').css('display', 'none');
-		}
-	})
+	// $(document).click(function(evt) {
+	// 	if ($(evt.target).attr('id') === 'notebook-generator-modal' ) {
+	// 		$('#notebook-generator-modal').css('display', 'none');
+	// 		$('#notebook-generator-modal form').css('display', 'none');
+	// 	}
+	// })
 
 	// Next step
 	$('#next-step').click(function(evt) {
@@ -427,7 +428,7 @@ function addEventListeners() {
 			selected_tools = getTools();
 
 			// If no tools selected
-			if (selected_tools.length === 0) {
+			if (selected_tools['tools'].length === 0) {
 				alert('Please select one or more tools to continue.')
 			} else {
 
@@ -501,14 +502,19 @@ function addEventListeners() {
 
 		// Add Tools
 		if (step === 'add-tools') {
-			$('#notebook-generator-modal').click();
+			// $('#notebook-generator-modal').click();
+			$('#notebook-generator-modal').css('display', 'none');
+			$('#notebook-generator-modal form').css('display', 'none');
+			$("body").css("overflow-y", "");
 		} else if (step === 'add-groups') {
 			$('#tool-form').show();
 			$('#notebook-generator-modal').data('step', 'add-tools');
 			$('#previous-step').html('Cancel').removeClass('active');
+			$('#modal-title').html('Select Tools');
 		} else if (step === 'add-configuration') {
 			// If Groups are required
 			if (selected_tools['requires_signature']) {
+				$('#modal-title').html('Set Groups');
 				$('#group-form').show();
 				$('#notebook-generator-modal').data('step', 'add-groups');
 				$('#previous-step').html('Back').removeClass('active');
@@ -516,11 +522,13 @@ function addEventListeners() {
 			// If groups aren't required
 			} else {
 				$('#tool-form').show();
+				$('#modal-title').html('Select Tools');
 				$('#notebook-generator-modal').data('step', 'add-tools');
 				$('#previous-step').html('Cancel');
 				$('#next-step').html('Next');
 			}
 		} else if (step === 'results') {
+			$('#modal-title').html('Review');
 			$('#results-form').hide();
 			$('#configuration-form').show();
 			$('#notebook-generator-modal').data('step', 'add-configuration');

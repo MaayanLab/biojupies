@@ -30,6 +30,10 @@ RUN pip3 install sklearn
 RUN pip3 install qgrid
 RUN pip3 install clustergrammer-widget
 
+RUN echo "r <- getOption('repos'); r['CRAN'] <- 'http://cran.us.r-project.org'; options(repos = r);" > ~/.Rprofile
+RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("limma");'
+RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("edgeR");'
+
 RUN mkdir notebook-generator-server
 COPY . /notebook-generator-server
 WORKDIR /notebook-generator-server/flask

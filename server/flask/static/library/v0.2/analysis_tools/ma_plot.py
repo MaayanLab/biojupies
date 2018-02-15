@@ -36,7 +36,7 @@ def plot_2D_scatter(x, y, text='', title='', xlab='', ylab='', hoverinfo='text',
 ########## 1. Run
 #############################################
 
-def run(signature):
+def run(signature, signature_label):
 
 	# Loop through signature
 	color = []
@@ -59,7 +59,7 @@ def run(signature):
 			color.append('black')
 	
 	# Return 
-	volcano_plot_results = {'x': signature['logFC'], 'y': -np.log10(signature['P.Value']), 'text':text, 'color': color}
+	volcano_plot_results = {'x': signature['AveExpr'], 'y': signature['logFC'], 'text':text, 'color': color}
 	return volcano_plot_results
 
 #############################################
@@ -72,8 +72,8 @@ def plot(volcano_plot_results):
 		y=volcano_plot_results['y'],
 		text=volcano_plot_results['text'],
 		color=volcano_plot_results['color'],
-		symmetric_x=True,
-		xlab='logFC',
-		ylab='log10P',
-		title='<b>Signature | Volcano Plot</b><br><i>logFC vs. log10P, colored by expression</i>'.format(**locals())
+		symmetric_y=True,
+		xlab='Average Expression',
+		ylab='logFC',
+		title='<b>Signature | MA Plot</b><br><i>Average Expression vs. logFC, colored by expression</i>'.format(**locals())
 	)

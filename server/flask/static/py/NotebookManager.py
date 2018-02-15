@@ -52,7 +52,7 @@ html_exporter_with_figs = HTMLExporter(config=c)
 def execute_notebook(notebook, to_html=False):
 
 	# Execute
-	# ep.preprocess(notebook, {'metadata': {'path': './static/library'}})
+	ep.preprocess(notebook, {'metadata': {'path': './static/library'}})
 
 	if to_html:
 		notebook = html_exporter_with_figs.from_notebook_node(notebook)[0]
