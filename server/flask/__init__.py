@@ -72,7 +72,7 @@ def generate():
 	tool_metadata = pd.read_sql_table('tool', engine).set_index('tool_string').to_dict(orient='index')
 
 	# Set development
-	development = False
+	development = True
 	if development:
 		### Development
 		# Open example.json

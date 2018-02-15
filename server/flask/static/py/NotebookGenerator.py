@@ -98,13 +98,13 @@ def load_data(notebook, data_configuration):
 
 def normalize_data(notebook, normalization_methods):
 
-	# Section
-	global section_nr
-	section_nr += 1
+	# # Section
+	# global section_nr
+	# section_nr += 1
 
-	# Intro text
-	cell = "---\n # <span id='normalize_data'>{section_nr}. Normalize Data</span>\nHere the RNA-seq data is normalized in preparation for downstream analysis.".format(**globals()) + "The following methods are used:<ul>"+''.join(['<li>{}</li>'.format(x) for x in normalization_methods])+"</ul>"
-	notebook = addCell(notebook, cell, 'markdown')
+	# # Intro text
+	# cell = "---\n # <span id='normalize_data'>{section_nr}. Normalize Data</span>\nHere the RNA-seq data is normalized in preparation for downstream analysis.".format(**globals()) + "The following methods are used:<ul>"+''.join(['<li>{}</li>'.format(x) for x in normalization_methods])+"</ul>"
+	# notebook = addCell(notebook, cell, 'markdown')
 
 	# Loop through methods
 	for normalization_method in normalization_methods:

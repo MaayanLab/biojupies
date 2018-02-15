@@ -28,14 +28,14 @@ import pandas as pd
 ########## 1. Run
 #############################################
 
-def run(dataset, normalization='rawdata', normalize_cols=False, log=False, z_score=False, nr_genes=1500):
+def run(dataset, normalization='rawdata', normalize_cols=True, log=True, z_score=True, nr_genes=1500):
 
 	# Get tempfile
 	(fd, filename) = tempfile.mkstemp()
 	filename = filename+'.txt'
 	try:
 		# Get data
-		data = dataset[normalization]
+		data = dataset['rawdata']
 
 		# Normalize columns
 		if normalize_cols:

@@ -22,8 +22,8 @@ function main() {
 
 var modal = {
 
-	Section: function(title, tool_string) {
-		section = $('<div>', {'class': 'modal-section'}).html($('<span>').html(title));
+	Section: function(title, tool_string, display='block') {
+		section = $('<div>', {'class': 'modal-section'}).html($('<span>').html(title)).css('display', display);
 		if (tool_string) {
 			section.append($('<input>', {'type': 'hidden', 'name': 'tool_string', 'value': tool_string}));
 		}
@@ -231,8 +231,8 @@ function addGroups() {
 	$('#group-form').append(modal.Section('Optional Settings'));
 	$('#group-form').append(modal.Text('Optionally, select the differential expression method and add a custom label for each group.'));
 	$('#group-form').append(modal.Input('Method:', 'DE Method', 'method', 'limma', 'select', ['limma']));
-	$('#group-form').append(modal.Input('Group A name:', 'Label to assign to Group A', 'group_a'));
-	$('#group-form').append(modal.Input('Group B name:', 'Label to assign to Group B', 'group_a'));
+	$('#group-form').append(modal.Input('Group A name:', 'Label to assign to Group A', 'group_a', 'Group A'));
+	$('#group-form').append(modal.Input('Group B name:', 'Label to assign to Group B', 'group_b', 'Group B'));
 
 	// Toggle
 	$('.modal-form').hide();
@@ -291,14 +291,15 @@ function addConfiguration(selected_tools, groups) {
 
 	// Add Tool Parameters
 	$.each(selected_tools['tools'], function(index, tool) {
-		if (tool['parameters'].length > 0) {
-			$('#configuration-form').append(modal.Section(tool['tool_name'], tool['tool_string']));
-			$.each(tool['parameters'], function(parameter_id, parameter) {
-				var value, options = [];
-				$.each(parameter['values'], function(index, option) { options.push(option["value"]); if (option["default"]){value = option["value"]}; });
-				$('#configuration-form').append(modal.Input(parameter["parameter_name"]+' :', parameter["parameter_description"], parameter["parameter_string"], value, 'select', options));
-			})
-		}
+		// if (tool['parameters'].length > 0) {
+		display = tool['parameters'].length > 0 ? 'block' : 'none'
+		$('#configuration-form').append(modal.Section(tool['tool_name'], tool['tool_string'], display));
+		$.each(tool['parameters'], function(parameter_id, parameter) {
+			var value, options = [];
+			$.each(parameter['values'], function(index, option) { options.push(option["value"]); if (option["default"]){value = option["value"]}; });
+			$('#configuration-form').append(modal.Input(parameter["parameter_name"]+' :', parameter["parameter_description"], parameter["parameter_string"], value, 'select', options));
+		})
+		// }
 	})
 
 	// Toggle
@@ -484,7 +485,9 @@ function addEventListeners() {
 		// Results
 		else if (step === 'results') {
 			// Close modal
-			$('#notebook-generator-modal').click();
+			$('#notebook-generator-modal').css('display', 'none');
+			$('#notebook-generator-modal form').css('display', 'none');
+			$("body").css("overflow-y", "");
 		}
 
 		// De-focus Button
