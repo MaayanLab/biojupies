@@ -471,7 +471,11 @@ function addEventListeners() {
 			configuration = getConfiguration();
 
 			// Add groups
-			configuration['signature'] = groups;
+			if (selected_tools['requires_signature']) {
+				configuration['signature'] = groups;
+			} else {
+				configuration['signature'] = {};
+			}
 			
 			// Convert to array
 			console.log(JSON.stringify(configuration));
