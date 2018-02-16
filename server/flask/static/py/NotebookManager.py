@@ -49,10 +49,11 @@ html_exporter_with_figs = HTMLExporter(config=c)
 ########## 1. Execute Notebook
 #############################################
 
-def execute_notebook(notebook, to_html=False):
+def execute_notebook(notebook, execute=True, to_html=False):
 
 	# Execute
-	ep.preprocess(notebook, {'metadata': {'path': './static/library'}})
+	if execute:
+		ep.preprocess(notebook, {'metadata': {'path': './static/library'}})
 
 	if to_html:
 		notebook = html_exporter_with_figs.from_notebook_node(notebook)[0]

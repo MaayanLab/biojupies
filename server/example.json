@@ -1,37 +1,59 @@
 {
   "notebook": {
-    "title": "GSE54006 Analysis Notebook",
+    "title": "GSE83772 Analysis Notebook",
     "live": "False",
     "version": "v0.2"
   },
   "tools": [
     {
-      "tool_string": "de_table",
-      "parameters": {}
+      "tool_string": "pca",
+      "parameters": {
+        "dimensions": "3",
+        "nr_genes": "1000",
+        "normalization": "zscore"
+      }
+    },
+    {
+      "tool_string": "clustergrammer",
+      "parameters": {
+        "nr_genes": "1000",
+        "normalization": "zscore"
+      }
+    },
+    {
+      "tool_string": "enrichr",
+      "parameters": {
+        "geneset_size": "500"
+      }
     }
   ],
   "data": {
     "source": "archs4",
     "parameters": {
-      "gse": "GSE54006",
-      "platform": "GPL13112"
+      "gse": "GSE83772",
+      "platform": "GPL11154"
     }
   },
   "signature": {
     "A": {
-      "name": "Group A",
+      "name": "FAM46CD90A,D92AGFP",
       "samples": [
-        "GSM1305786",
-        "GSM1305787",
-        "GSM1305788"
+        "GSM2218713",
+        "GSM2218702",
+        "GSM2218714",
+        "GSM2218703",
+        "GSM2218716"
       ]
     },
     "B": {
-      "name": "Group B",
+      "name": "FAM46CWTGFP",
       "samples": [
-        "GSM1305789",
-        "GSM1305790",
-        "GSM1305791"
+        "GSM2218704",
+        "GSM2218717",
+        "GSM2218718",
+        "GSM2218706",
+        "GSM2218719",
+        "GSM2218720"
       ]
     },
     "method": "limma"

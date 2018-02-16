@@ -32,8 +32,10 @@ CREATE TABLE tool (
 	`tool_string` VARCHAR(255),
 	`tool_name` VARCHAR(255),
 	`tool_description` TEXT,
-	`tool_notebook_annotation` TEXT,
-	`tool_icon` TEXT,
+	`introduction` TEXT,
+	`methods` TEXT,
+	`reference` TEXT,
+	`reference_link` TEXT,
 	`default_selected` BOOL,
 	`requires_signature` BOOL,
 	`section_fk` INT,
@@ -57,7 +59,6 @@ CREATE TABLE parameter_value (
 	`default` BOOL,
 	FOREIGN KEY (parameter_fk) REFERENCES parameter(id)
 );
-
 
 
 -- INSERT INTO tool (`id`, `tool_name`, `tool_description`) VALUES 
