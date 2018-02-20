@@ -72,7 +72,7 @@ def generate():
 	tool_metadata = pd.read_sql_table('tool', engine).set_index('tool_string').to_dict(orient='index')
 
 	# Set development
-	development = False
+	development = True
 	if development:
 		### Development
 		# Open example.json
@@ -81,7 +81,7 @@ def generate():
 
 		# Generate, Execute and Convert to HTML
 		notebook = generate_notebook(notebook_configuration, tool_metadata)
-		notebook = execute_notebook(notebook, execute=False,to_html=True)
+		notebook = execute_notebook(notebook, execute=True,to_html=True)
 	
 		# Return
 		return notebook

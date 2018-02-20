@@ -2,7 +2,7 @@
   "notebook": {
     "title": "GSE83772 Analysis Notebook",
     "live": "False",
-    "version": "v0.2"
+    "version": "v0.3"
   },
   "tools": [
     {
@@ -11,19 +11,6 @@
         "dimensions": "3",
         "nr_genes": "1000",
         "normalization": "zscore"
-      }
-    },
-    {
-      "tool_string": "clustergrammer",
-      "parameters": {
-        "nr_genes": "1000",
-        "normalization": "zscore"
-      }
-    },
-    {
-      "tool_string": "enrichr",
-      "parameters": {
-        "geneset_size": "500"
       }
     }
   ],
