@@ -70,6 +70,8 @@ def generate():
 
 	# Get tool metadata
 	tool_metadata = pd.read_sql_table('tool', engine).set_index('tool_string').to_dict(orient='index')
+	core_script_metadata = pd.read_sql_table('core_scripts', engine).set_index('option_string').to_dict(orient='index')
+	annotations = {'tools': tool_metadata, 'core_options': core_script_metadata}
 
 	# Set development
 	development = True
@@ -80,8 +82,8 @@ def generate():
 			notebook_configuration = json.loads(openfile.read())
 
 		# Generate, Execute and Convert to HTML
-		notebook = generate_notebook(notebook_configuration, tool_metadata)
-		notebook = execute_notebook(notebook, execute=True,to_html=True)
+		notebook = generate_notebook(notebook_configuration, annotations)
+		notebook = execute_notebook(notebook, execute=False,to_html=True)
 	
 		# Return
 		return notebook
@@ -92,7 +94,7 @@ def generate():
 		notebook_configuration = request.json
 
 		# Generate and Execute
-		notebook = generate_notebook(notebook_configuration, tool_metadata)
+		notebook = generate_notebook(notebook_configuration, annotations)
 		notebook = execute_notebook(notebook)
 
 		# Get URL

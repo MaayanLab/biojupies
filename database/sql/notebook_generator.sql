@@ -60,6 +60,17 @@ CREATE TABLE parameter_value (
 	FOREIGN KEY (parameter_fk) REFERENCES parameter(id)
 );
 
+CREATE TABLE core_scripts (
+	`id` INT AUTO_INCREMENT PRIMARY KEY,
+	`option_string` VARCHAR(255),
+	`option_name` VARCHAR(255),
+	`option_description` TEXT,
+	`introduction` TEXT,
+	`methods` TEXT,
+	`reference` TEXT,
+	`reference_link` TEXT
+);
+
 
 -- INSERT INTO tool (`id`, `tool_name`, `tool_description`) VALUES 
 -- 	(1, 'Exploratory Data Analysis'),
