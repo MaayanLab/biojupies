@@ -74,7 +74,7 @@ def generate():
 	annotations = {'tools': tool_metadata, 'core_options': core_script_metadata}
 
 	# Set development
-	development = True
+	development = False
 	try:
 		if development:
 			### Development
@@ -107,7 +107,7 @@ def generate():
 	except Exception as e:
 
 		# Raise
-		if not development:
+		if development:
 			raise
 		else:
 

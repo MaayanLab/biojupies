@@ -125,7 +125,7 @@ function addButtons() {
 					entries[gse].append(
 						$('<div>', {'class': 'notebook-generator-link'})
 							.append($('<img>', {'src': chrome.extension.getURL('icons/icon.png')}))
-							.append($('<span>').html('Launch Notebook'))
+							.append($('<span>').html('Generate Notebook'))
 							.data('samples', samples)
 							.data('gse', gse)
 							.data('gpl', Object.keys(samples)[0])

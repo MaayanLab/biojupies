@@ -76,6 +76,7 @@ CREATE TABLE error_log (
 	`gse` VARCHAR(20),
 	`version` VARCHAR(10),
 	`notebook_configuration` TEXT,
+	`error_type` VARCHAR(20),
 	`error` TEXT,
 	`date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
