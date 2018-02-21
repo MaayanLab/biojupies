@@ -22,9 +22,11 @@ import random
 import requests
 import string
 import os
+import json
 import urllib.parse
 from nbconvert.preprocessors import ExecutePreprocessor
 import nbformat as nbf
+import pandas as pd
 
 #############################################
 ########## 2. Variables
@@ -80,3 +82,13 @@ def upload_notebook(notebook, notebook_title):
 
 	# Return
 	return urllib.parse.unquote(blob.public_url)
+
+#############################################
+########## 3. Log Error
+#############################################
+
+def log_error(notebook_configuration, error, engine):
+
+	# Upload to database
+	error_dataframe = pd.Series({'notebook_configuration': json.dumps(notebook_configuration), 'error': error, 'version': notebook_configuration['notebook']['version'], 'gse': notebook_configuration['data']['parameters'].get('gse')}).to_frame().T
+	error_dataframe.to_sql('error_log', engine, if_exists='append', index=False)

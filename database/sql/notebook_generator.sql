@@ -71,6 +71,13 @@ CREATE TABLE core_scripts (
 	`reference_link` TEXT
 );
 
+CREATE TABLE error_log (
+	`id` INT AUTO_INCREMENT PRIMARY KEY,
+	`gse` VARCHAR(20),
+	`version` VARCHAR(10),
+	`notebook_configuration` TEXT,
+	`error` TEXT
+);
 
 -- INSERT INTO tool (`id`, `tool_name`, `tool_description`) VALUES 
 -- 	(1, 'Exploratory Data Analysis'),

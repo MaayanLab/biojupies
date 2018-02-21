@@ -21,7 +21,7 @@ from flask import Flask, request, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
 
 ##### 2. Python modules #####
-import sys, os, json, time
+import sys, os, json, time, re
 import pandas as pd
 import pymysql
 pymysql.install_as_MySQLdb()
@@ -75,33 +75,45 @@ def generate():
 
 	# Set development
 	development = True
-	if development:
-		### Development
-		# Open example.json
-		with open('../example.json', 'r') as openfile:
-			notebook_configuration = json.loads(openfile.read())
+	try:
+		if development:
+			### Development
+			# Open example.json
+			with open('../example.json', 'r') as openfile:
+				notebook_configuration = json.loads(openfile.read())
 
-		# Generate, Execute and Convert to HTML
-		notebook = generate_notebook(notebook_configuration, annotations)
-		notebook = execute_notebook(notebook, execute=True,to_html=True)
-	
-		# Return
-		return notebook
+			# Generate, Execute and Convert to HTML
+			notebook = generate_notebook(notebook_configuration, annotations)
+			notebook = execute_notebook(notebook, execute=True,to_html=True)
+		
+			# Return
+			return notebook
 
-	else:
-		### Production
-		# Get Configuration
-		notebook_configuration = request.json
+		else:
+			### Production
+			# Get Configuration
+			notebook_configuration = request.json
 
-		# Generate and Execute
-		notebook = generate_notebook(notebook_configuration, annotations)
-		notebook = execute_notebook(notebook)
+			# Generate and Execute
+			notebook = generate_notebook(notebook_configuration, annotations)
+			notebook = execute_notebook(notebook)
 
-		# Get URL
-		notebook_url = upload_notebook(notebook, notebook_configuration['notebook']['title'])
+			# Get URL
+			notebook_url = upload_notebook(notebook, notebook_configuration['notebook']['title'])
 
-		# Return
-		return json.dumps({'notebook_url': 'http://nbviewer.jupyter.org/urls/'+notebook_url.split('://')[-1]})
+			# Return
+			return json.dumps({'notebook_url': 'http://nbviewer.jupyter.org/urls/'+notebook_url.split('://')[-1]})
+	except Exception as e:
+
+		# Get error message
+		ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
+		error = ansi_escape.sub('', str(e))
+
+		# Log
+		log_error(notebook_configuration, error, engine)
+
+		# Raise
+		return 'Sorry, there has been an error.'
 
 #######################################################
 #######################################################

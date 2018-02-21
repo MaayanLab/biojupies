@@ -24,7 +24,7 @@ from plotly.offline import iplot
 def plot_2D_scatter(x, y, text='', title='', xlab='', ylab='', hoverinfo='text', color='black', colorscale='Blues', size=8, showscale=False, symmetric_x=False, symmetric_y=False, pad=0.5, hline=False, vline=False, return_trace=False):
 	range_x = [-max(abs(x))-pad, max(abs(x))+pad]if symmetric_x else []
 	range_y = [-max(abs(y))-pad, max(abs(y))+pad]if symmetric_y else []
-	trace = go.Scattergl(x=x, y=y, mode='markers', text=text, hoverinfo=hoverinfo, hovermode='closest', marker={'color': color, 'colorscale': colorscale, 'showscale': showscale, 'size': size})
+	trace = go.Scattergl(x=x, y=y, mode='markers', text=text, hoverinfo=hoverinfo, marker={'color': color, 'colorscale': colorscale, 'showscale': showscale, 'size': size})
 	if return_trace:
 		return trace
 	else:
