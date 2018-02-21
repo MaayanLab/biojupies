@@ -23,3 +23,5 @@ jupyterhub/config.yaml
 *.sqlite
 
 database/.ruffus_history.sqlite
+
+database/.ruffus_history.sqlite

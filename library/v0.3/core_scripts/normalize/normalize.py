@@ -38,9 +38,10 @@ def zscore(dataset, normalization='rawdata', normalize_cols=True, log=True):
 		warnings.simplefilter("ignore")
 		if normalize_cols:
 			rawdata = rawdata/rawdata.sum()
+			rawdata = rawdata.fillna(0)
 		if log:
 			rawdata = np.log10(rawdata+1)
-		zscore = rawdata.apply(ss.zscore, axis=1).dropna()
+		zscore = rawdata.apply(ss.zscore, axis=1)#.dropna()
 
 	# Return
 	return zscore

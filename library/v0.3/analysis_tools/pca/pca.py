@@ -24,7 +24,7 @@ from plotly.offline import iplot
 ########## 1. Run
 #############################################
 
-def run(dataset, dimensions=3, nr_genes=2500, normalization='zscore', color_by=None, color_type='categorical', colorscale='Viridis'):
+def run(dataset, dimensions=3, nr_genes=2500, normalization='zscore', color_by=None, color_type='categorical', colorscale='Viridis', signature={}):
 
 	# Get expression
 	expression_dataframe = dataset[normalization]
@@ -38,6 +38,9 @@ def run(dataset, dimensions=3, nr_genes=2500, normalization='zscore', color_by=N
 
 	# Get Variance
 	var_explained = ['PC'+str((i+1))+'('+str(round(e*100, 1))+'% var. explained)' for i, e in enumerate(pca.explained_variance_ratio_)]
+
+	# Add colors
+	# if signature.get('A') and signature.get('B'):
 
 	# Return
 	pca_results = {'pca': pca, 'var_explained': var_explained, 'sample_metadata': dataset['sample_metadata'].loc[expression_dataframe.columns], 'color_by': color_by, 'color_type': color_type, 'nr_genes': nr_genes, 'colorscale': colorscale}

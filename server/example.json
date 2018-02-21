@@ -1,6 +1,6 @@
 {
   "notebook": {
-    "title": "GSE83772 Analysis Notebook",
+    "title": "GSE75070 Analysis Notebook",
     "live": "False",
     "version": "v0.3"
   },
@@ -14,61 +14,16 @@
       }
     },
     {
-      "tool_string": "tsne",
-      "parameters": {
-        "dimensions": "3",
-        "nr_genes": "1000",
-        "normalization": "zscore"
-      }
-    },
-    {
-      "tool_string": "clustergrammer",
-      "parameters": {
-        "nr_genes": "100",
-        "normalization": "zscore"
-      }
-    },
-    {
-      "tool_string": "enrichr",
-      "parameters": {
-        "geneset_size": "500"
-      }
-    },
-    {
-      "tool_string": "l1000cds2",
-      "parameters": {
-      }
+      "tool_string": "library_size_analysis",
+      "parameters": {}
     }
   ],
   "data": {
     "source": "archs4",
     "parameters": {
-      "gse": "GSE83772",
+      "gse": "GSE75070",
       "platform": "GPL11154"
     }
   },
-  "signature": {
-    "A": {
-      "name": "FAM46CD90A,D92AGFP",
-      "samples": [
-        "GSM2218713",
-        "GSM2218702",
-        "GSM2218714",
-        "GSM2218703",
-        "GSM2218716"
-      ]
-    },
-    "B": {
-      "name": "FAM46CWTGFP",
-      "samples": [
-        "GSM2218704",
-        "GSM2218717",
-        "GSM2218718",
-        "GSM2218706",
-        "GSM2218719",
-        "GSM2218720"
-      ]
-    },
-    "method": "limma"
-  }
+  "signature": {}
 }

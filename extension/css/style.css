@@ -81,6 +81,20 @@
 				margin-top: 9px;
 			}
 
+				.modal-section-link {
+					font-size: 10pt;
+					color: rgb(63, 85, 226);
+					margin-left: 7px;
+				}
+
+				.modal-section-expand {
+				    cursor: pointer;
+				    font-size: 8pt;
+				    float: right;
+				    color: rgb(125,125,125);
+				    margin-top: 5px;
+				}
+
 			.modal-tool-card {
 				margin: 9px 20px 0px 20px;
 				border: 1px solid rgb(220,220,220);

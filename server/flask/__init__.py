@@ -83,7 +83,7 @@ def generate():
 
 		# Generate, Execute and Convert to HTML
 		notebook = generate_notebook(notebook_configuration, annotations)
-		notebook = execute_notebook(notebook, execute=False,to_html=True)
+		notebook = execute_notebook(notebook, execute=True,to_html=True)
 	
 		# Return
 		return notebook

@@ -6,6 +6,7 @@
 
 function main() {
 
+	library_version = 'v0.3';
 	addModal();
 	addButtons();
 	addEventListeners();
@@ -22,8 +23,18 @@ function main() {
 
 var modal = {
 
-	Section: function(title, tool_string, display='block') {
+	Section: function(title, tool_string, display='block', link=false, expandable=false) {
 		section = $('<div>', {'class': 'modal-section'}).html($('<span>').html(title)).css('display', display);
+		if (link) {
+			section.append($('<span>', {'class': 'modal-section-link'})
+				.append('(')
+				.append($('<a>', {'href': link['url'], 'target': '_blank'}).html(link['text']))
+				.append(')'));
+		}
+		if (expandable) {
+			section.append($('<span>', {'class': 'modal-section-expand'}).html('&#9660;'))
+				.append($('<span>', {'class': 'modal-section-expand'}).html('&#9650;').css('display', 'none'));
+		}
 		if (tool_string) {
 			section.append($('<input>', {'type': 'hidden', 'name': 'tool_string', 'value': tool_string}));
 		}
@@ -50,7 +61,7 @@ var modal = {
 		var table = $('<table>', {'class': 'group-table'})
 						.append($('<tr>')
 							.append($('<th>').html('Group A'))
-							.append($('<th>').html('Sample Title'))
+							.append($('<th>').html('Sample Description'))
 							.append($('<th>').html('Group B'))
 						);
 
@@ -64,7 +75,7 @@ var modal = {
 		return table;
 	},
 
-	Input: function(label, description='', name='', value='', type='text', options=[]) {
+	Input: function(label, description='', name='', value='', type='text', options=[], display='block') {
 		var input;
 		// Text input
 		if (type === 'text') {
@@ -80,6 +91,7 @@ var modal = {
 
 		// Return
 		return $('<div>', {'class': 'modal-input-row'})
+					.css('display', display)
 					.append($('<label>', {'class': 'modal-input-label'}).html(label))
 					.append($('<div>', {'class': 'modal-input-tooltip'}).html(description))
 					.append(input)
@@ -121,8 +133,9 @@ function addButtons() {
 				}				
 			})
 
-			// $('.notebook-generator-link').first().click();
-			// $('#next-step').click();
+			$('.notebook-generator-link').first().click();
+			$('#next-step').click();
+
 		}			
 	})
 }
@@ -142,7 +155,7 @@ function addModal() {
 					)
 					.append($('<div>', {'id': 'modal-body'})
 						.append($('<form>', {'id': 'tool-form', 'class': 'modal-form'})
-							.html(modal.Text('To start building your notebook, select analysis tools by choosing from the options below:'))
+							.html(modal.Text('To customize the content of your notebook, select analysis and visualization tools by clicking on the options below:'))
 						)
 						.append($('<form>', {'id': 'group-form', 'class': 'modal-form'}))
 						.append($('<form>', {'id': 'configuration-form', 'class': 'modal-form'}))
@@ -183,7 +196,7 @@ function addModal() {
 
 function addTools() {
 	// Add Text
-	$('#modal-title').html('Select Tools');
+	$('#modal-title').html('Select Data Analysis and Visualization Tools');
 	$('#notebook-generator-modal').data('step', 'add-tools');
 	$('#next-step').html('Next').removeClass('active');
 	$('#previous-step').html('Cancel');
@@ -216,23 +229,23 @@ function getTools() {
 function addGroups() {
 
 	// Add Text
-	$('#modal-title').html('Set Groups');
+	$('#modal-title').html('Define Your Signature');
 	$('#notebook-generator-modal').data('step', 'add-groups');
 	$('#next-step').html('Next').removeClass('active');
 	$('#previous-step').html('Back');
 
 	// Add Content
 	$('#group-form').html('');
-	$('#group-form').append(modal.Text('One or more of the selected tools requires a gene expression signature. To proceed, complete the information below:'));
+	$('#group-form').append(modal.Text('The selected tools require defining a gene expression signature. To proceed, please complete the information below:'));
 	$('#group-form').append(modal.Section('Select Samples'));
-	$('#group-form').append(modal.Text('First, set the conditions by adding at least three samples per group.'));
+	$('#group-form').append(modal.Text('To define your signature, click on the sample accession numbers to select at least 3 control samples on the left, and at least 3 perturbation samples on the right:'));
 	var samples = Object.values($('#notebook-generator-modal').data('samples'))[0];
 	$('#group-form').append(modal.Table(samples));
 	$('#group-form').append(modal.Section('Optional Settings'));
 	$('#group-form').append(modal.Text('Optionally, select the differential expression method and add a custom label for each group.'));
-	$('#group-form').append(modal.Input('Method:', 'DE Method', 'method', 'limma', 'select', ['limma']));
 	$('#group-form').append(modal.Input('Group A name:', 'Label to assign to Group A', 'group_a', 'Group A'));
 	$('#group-form').append(modal.Input('Group B name:', 'Label to assign to Group B', 'group_b', 'Group B'));
+	$('#group-form').append(modal.Input('Method:', 'DE Method', 'method', 'limma', 'select', ['limma']));
 
 	// Toggle
 	$('.modal-form').hide();
@@ -277,27 +290,27 @@ function getGroups() {
 function addConfiguration(selected_tools, groups) {
 
 	// Add Text
-	$('#modal-title').html('Review');
+	$('#modal-title').html('Review and Submit');
 	$('#notebook-generator-modal').data('step', 'add-configuration');
 	$('#previous-step').html('Back');
-	$('#next-step').html('Get Notebook').addClass('active');
+	$('#next-step').html('Generate Notebook').addClass('active');
 
 	// Add Content
 	$('#configuration-form').html('');
 	$('#configuration-form').append(modal.Text('Optionally, review the notebook and modify optional parameters:'));
 	$('#configuration-form').append(modal.Section('General Settings'));
 	$('#configuration-form').append(modal.Input('Notebook Title:', 'Title of the Jupyter Notebook', 'title', $('#notebook-generator-modal').data('gse')+' Analysis Notebook'));
-	$('#configuration-form').append(modal.Input('Live:', 'Indicates whether the Jupyter Notebook should be deployed in a live server or as a static HTML report', 'live', 'False', 'select', ['False', 'True']));
+	$('#configuration-form').append(modal.Input('Live:', 'Indicates whether the Jupyter Notebook should be deployed in a live server or as a static HTML report. Live notebooks coming soon!', 'live', 'False', 'select', ['False']));
 
 	// Add Tool Parameters
 	$.each(selected_tools['tools'], function(index, tool) {
 		// if (tool['parameters'].length > 0) {
 		display = tool['parameters'].length > 0 ? 'block' : 'none'
-		$('#configuration-form').append(modal.Section(tool['tool_name'], tool['tool_string'], display));
+		$('#configuration-form').append(modal.Section(tool['tool_name'], tool['tool_string'], display, {'url': 'https://github.com/denis-torre/notebook-generator/tree/master/library/'+library_version+'/analysis_tools/'+tool['tool_string'], 'text': 'Documentation'}, true));
 		$.each(tool['parameters'], function(parameter_id, parameter) {
 			var value, options = [];
 			$.each(parameter['values'], function(index, option) { options.push(option["value"]); if (option["default"]){value = option["value"]}; });
-			$('#configuration-form').append(modal.Input(parameter["parameter_name"]+' :', parameter["parameter_description"], parameter["parameter_string"], value, 'select', options));
+			$('#configuration-form').append(modal.Input(parameter["parameter_name"]+' :', parameter["parameter_description"], parameter["parameter_string"], value, 'select', options, 'none'));
 		})
 		// }
 	})
@@ -342,7 +355,7 @@ function getConfiguration() {
 
 	// Add data
 	configuration['data'] = {'source': 'archs4', 'parameters': {'gse': $('#notebook-generator-modal').data('gse'), 'platform': $('#notebook-generator-modal').data('gpl')}}
-	configuration['notebook']['version'] = 'v0.2'
+	configuration['notebook']['version'] = library_version
 
 	// Return
 	return configuration
@@ -518,11 +531,11 @@ function addEventListeners() {
 			$('#tool-form').show();
 			$('#notebook-generator-modal').data('step', 'add-tools');
 			$('#previous-step').html('Cancel').removeClass('active');
-			$('#modal-title').html('Select Tools');
+			$('#modal-title').html('Select Data Analysis and Visualization Tools');
 		} else if (step === 'add-configuration') {
 			// If Groups are required
 			if (selected_tools['requires_signature']) {
-				$('#modal-title').html('Set Groups');
+				$('#modal-title').html('Define Your Signature');
 				$('#group-form').show();
 				$('#notebook-generator-modal').data('step', 'add-groups');
 				$('#previous-step').html('Back').removeClass('active');
@@ -530,13 +543,13 @@ function addEventListeners() {
 			// If groups aren't required
 			} else {
 				$('#tool-form').show();
-				$('#modal-title').html('Select Tools');
+				$('#modal-title').html('Select Data Analysis and Visualization Tools');
 				$('#notebook-generator-modal').data('step', 'add-tools');
 				$('#previous-step').html('Cancel');
 				$('#next-step').html('Next');
 			}
 		} else if (step === 'results') {
-			$('#modal-title').html('Review');
+			$('#modal-title').html('Review and Submit');
 			$('#results-form').hide();
 			$('#configuration-form').show();
 			$('#notebook-generator-modal').data('step', 'add-configuration');
@@ -545,6 +558,14 @@ function addEventListeners() {
 
 		// De-focus Button
 		$(evt.target).blur();
+	})
+
+	// Expand
+	$(document).on('click', '.modal-section-expand', function(evt) {
+		var section = $(evt.target).parents('.modal-section'),
+			inputs_to_toggle = section.nextUntil('.modal-section');
+		inputs_to_toggle.toggle();
+		section.find('.modal-section-expand').toggle();
 	})
 
 	// Radio
