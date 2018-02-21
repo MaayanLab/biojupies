@@ -379,7 +379,7 @@ function addNotebookLink(configuration) {
 		},
 		error: function(e) {
 			$('.sk-circle').remove();
-			$('#modal-loading-text').html('Sorry, there has been an error.<br>&nbsp')
+			$('#modal-loading-text').html(e.responseText);
 		}
 	})
 }

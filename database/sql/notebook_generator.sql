@@ -76,12 +76,14 @@ CREATE TABLE error_log (
 	`gse` VARCHAR(20),
 	`version` VARCHAR(10),
 	`notebook_configuration` TEXT,
-	`error` TEXT
+	`error` TEXT,
+	`date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- INSERT INTO tool (`id`, `tool_name`, `tool_description`) VALUES 
--- 	(1, 'Exploratory Data Analysis'),
--- 	(2, 'Advanced Exploratory Data Analysis'),
--- 	(3, 'Signature Analysis'),
--- 	(4, 'Advanced Signature Analysis'),
--- 	(5, 'Coexpression Network Analysis');
+CREATE TABLE notebooks (
+	`id` INT AUTO_INCREMENT PRIMARY KEY,
+	`notebook_uid` VARCHAR(30),
+	`notebook_url` TEXT,
+	`gse` VARCHAR(20),
+	`version` VARCHAR(10)
+);

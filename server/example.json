@@ -9,14 +9,7 @@
       "tool_string": "pca",
       "parameters": {
         "dimensions": "3",
-        "nr_genes": "1000",
-        "normalization": "zscore"
-      }
-    },
-    {
-      "tool_string": "clustergrammer",
-      "parameters": {
-        "nr_genes": "1000",
+        "nr_genes": "asd",
         "normalization": "zscore"
       }
     },
@@ -27,18 +20,12 @@
     {
       "tool_string": "volcano_plot",
       "parameters": {}
-    },
-    {
-      "tool_string": "enrichr",
-      "parameters": {
-        "geneset_size": "500"
-      }
     }
   ],
   "data": {
     "source": "archs4",
     "parameters": {
-      "gse": "GSE100530123",
+      "gse": "GSE100530",
       "platform": "GPL16791"
     }
   },

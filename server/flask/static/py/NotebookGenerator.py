@@ -192,9 +192,10 @@ def add_methods(notebook, notebook_configuration, normalization_methods, annotat
 	# Add Tool Methods
 	for tool_configuration in notebook_configuration['tools']:
 		selected_tool_metadata = annotations['tools'][tool_configuration['tool_string']]
-		tool_method = '### {selected_tool_metadata[tool_name]}\n'.format(**locals())+selected_tool_metadata['methods'].format(**tool_configuration['parameters'])+'<br><br>Source code and additional information are publicly available on <a href="https://github.com/denis-torre/notebook-generator/tree/master/library/{notebook_configuration[notebook][version]}/analysis_tools/{tool_configuration[tool_string]}" target="_blank">GitHub</a>.'.format(**locals())
-		methods.append(tool_method)
-		# methods.append(annotations['tools'][tool_configuration['tool_string']]['methods'].format(**tool_configuration['parameters']))
+		if selected_tool_metadata['methods']:
+			tool_method = '### {selected_tool_metadata[tool_name]}\n'.format(**locals())+selected_tool_metadata['methods'].format(**tool_configuration['parameters'])+'<br><br>Source code and additional information are publicly available on <a href="https://github.com/denis-torre/notebook-generator/tree/master/library/{notebook_configuration[notebook][version]}/analysis_tools/{tool_configuration[tool_string]}" target="_blank">GitHub</a>.'.format(**locals())
+			methods.append(tool_method)
+			# methods.append(annotations['tools'][tool_configuration['tool_string']]['methods'].format(**tool_configuration['parameters']))
 
 	# Join
 	cell = "---\n# <span id='methods'>Methods</span>\n"+'\n\n'.join(methods)

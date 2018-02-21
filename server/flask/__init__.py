@@ -99,21 +99,25 @@ def generate():
 			notebook = execute_notebook(notebook)
 
 			# Get URL
-			notebook_url = upload_notebook(notebook, notebook_configuration['notebook']['title'])
+			notebook_url = upload_notebook(notebook, notebook_configuration, engine)
 
 			# Return
 			return json.dumps({'notebook_url': 'http://nbviewer.jupyter.org/urls/'+notebook_url.split('://')[-1]})
+
 	except Exception as e:
 
-		# Get error message
-		ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
-		error = ansi_escape.sub('', str(e))
-
-		# Log
-		log_error(notebook_configuration, error, engine)
-
 		# Raise
-		return 'Sorry, there has been an error.'
+		if not development:
+			raise
+		else:
+
+			# Get error message
+			ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
+
+			# Get response
+			error_response = log_error(notebook_configuration, ansi_escape.sub('', str(e)), annotations, engine)
+
+			return error_response
 
 #######################################################
 #######################################################

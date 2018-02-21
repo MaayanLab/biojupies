@@ -40,4 +40,6 @@ RUN mkdir notebook-generator-server
 COPY . /notebook-generator-server
 WORKDIR /notebook-generator-server/flask
 
+RUN cd static; wget https://github.com/denis-torre/notebook-generator/raw/master/library.zip; rm -r library; unzip library.zip; cd ..;
+
 ENTRYPOINT mkdir ~/.config; mkdir ~/.config/gcloud; echo $APPLICATION_DEFAULT_CREDENTIALS > ~/.config/gcloud/application_default_credentials.json; python3 __init__.py
