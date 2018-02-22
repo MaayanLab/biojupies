@@ -52,18 +52,18 @@ def add_parameters(configuration_dict):
 def add_introduction(notebook, notebook_configuration, tool_metadata):
 
 	# Get Sections
-	sections = [{'id': 'load_dataset', 'name': 'Load Dataset', 'description': 'Load and preview the input dataset in the notebook environment.'}]
+	sections = [{'id': 'load_dataset', 'name': 'Load Dataset', 'description': 'Loads and previews the input dataset in the notebook environment.'}]
 	# if len(set([tool_configuration['parameters']['normalization'] for tool_configuration in notebook_configuration['tools'] if 'normalization' in tool_configuration['parameters'].keys()])):
 		# sections.append({'id': 'normalize_dataset', 'name': 'Normalize Dataset', 'description': 'Normalize the dataset prior to downstream analysis.'})
 	if len(notebook_configuration['signature']):
-		sections.append({'id': 'generate_signature', 'name': 'Generate Signature', 'description': 'Generate differential gene expression signatures by comparing gene expression between two groups.'})
+		sections.append({'id': 'generate_signature', 'name': 'Generate Signature', 'description': 'Generates differential gene expression signatures by comparing gene expression between the two groups.'})
 	for tool_configuration in notebook_configuration['tools']:
 		tool_meta = tool_metadata[tool_configuration['tool_string']]
 		sections.append({'id': tool_configuration['tool_string'], 'name': tool_meta['tool_name'], 'description': tool_meta['tool_description']})
 	sections_str = ''.join(['<li><b><a href="#{id}">{name}</a></b> - <i>{description}</i></li>'.format(**x) for x in sections])
 
 	# Add Intro
-	cell = """# {notebook[title]}\n---\n# Introduction\nThis notebook contains an analyis of GEO dataset {data[parameters][gse]} (https://www.ncbi.nlm.nih.gov/gds/?term={data[parameters][gse]}) created using the Jupyter Notebook Generator.""".format(**notebook_configuration) + \
+	cell = """# {notebook[title]}\n---\n# Introduction\nThis notebook contains an analyis of GEO dataset {data[parameters][gse]} (https://www.ncbi.nlm.nih.gov/gds/?term={data[parameters][gse]}) created using the BioJupies Generator.""".format(**notebook_configuration) + \
 			"""\n### Table of Contents\nThe notebook is divided into the following sections:\n<ol>{}</ol>""".format(sections_str)
 	return addCell(notebook, cell, 'markdown')
 
@@ -90,7 +90,7 @@ def load_data(notebook, data_configuration, core_options):
 	# Add Metadata
 	cell = "# Display metadata\ndataset['sample_metadata']"
 	notebook = addCell(notebook, cell)
-	cell = "**Table 2 | Sample metadata.** The table displays the metadata associated to the samples in the RNA-seq dataset.  Rows represent RNA-seq samples, columns represent metadata categories."
+	cell = "**Table 2 | Sample metadata.** The table displays the metadata associated with the samples in the RNA-seq dataset.  Rows represent RNA-seq samples, columns represent metadata categories."
 	return addCell(notebook, cell, 'markdown')
 
 #############################################
@@ -131,7 +131,7 @@ def generate_signature(notebook, signature_configuration, core_options):
 	signature_table= signature_dataframe.to_html(index=False)
 
 	# Intro text
-	cell = "---\n ## <span id='generate_signature'>{section_nr}. Generate Signature</span>\nHere, a differential gene expression analysis is performed in order to identify a signature by comparing the following two groups:".format(**globals()) + "<br>{}".format(signature_table)
+	cell = "---\n ## <span id='generate_signature'>{section_nr}. Generate Signature</span>\nHere, differential gene expression analysis is performed in order to identify a signature by comparing the following two groups:".format(**globals()) + "<br>{}".format(signature_table)
 	# cell += core_options[signature_configuration['method']]['introduction'].format(**signature_configuration)
 	notebook = addCell(notebook, cell, 'markdown')
 
@@ -143,14 +143,14 @@ def generate_signature(notebook, signature_configuration, core_options):
 ########## 6. Add Tool
 #############################################
 
-def add_tool(notebook, tool_configuration, tool_metadata):
+def add_tool(notebook, tool_configuration, tool_metadata, signature_configuration):
 
 	# Section
 	global section_nr
 	section_nr += 1
 
 	# Intro text
-	cell = "---\n ## <span id='{}'>".format(tool_configuration['tool_string'])+str(section_nr)+". {tool_name}</span>\n{introduction}\n".format(**tool_metadata[tool_configuration['tool_string']])#+annotations[tool_configuration['tool_string']]['introduction']
+	cell = "---\n ## <span id='{}'>".format(tool_configuration['tool_string'])+str(section_nr)+". {tool_name}</span>\n".format(**tool_metadata[tool_configuration['tool_string']])+tool_metadata[tool_configuration['tool_string']]['introduction'].format(**signature_configuration, **tool_configuration['parameters'])#+annotations[tool_configuration['tool_string']]['introduction']
 	notebook = addCell(notebook, cell, 'markdown')
 
 	# Add Tool
@@ -262,7 +262,7 @@ def generate_notebook(notebook_configuration, annotations):
 
 	# Add Tools
 	for tool_configuration in notebook_configuration['tools']:
-		notebook = add_tool(notebook=notebook, tool_configuration=tool_configuration, tool_metadata=annotations['tools'])
+		notebook = add_tool(notebook=notebook, tool_configuration=tool_configuration, tool_metadata=annotations['tools'], signature_configuration=notebook_configuration['signature'])
 
 	# Add Methods
 	notebook = add_methods(notebook, notebook_configuration=notebook_configuration, normalization_methods=normalization_methods, annotations=annotations)
