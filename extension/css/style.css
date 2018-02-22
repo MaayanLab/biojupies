@@ -45,7 +45,7 @@
 	    border: 1px solid rgb(200,200,200);
 	    width: 800px; /* Could be more or less, depending on screen size */
         box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 16px;
-		font-family: "Avenir Next" "Helvetica";
+		font-family: "Avenir Next", "Helvetica";
 	}
 
 		#modal-head {
@@ -151,7 +151,7 @@
 			.group-table {
 			    margin-left: 20px;
 			    width: 760px;
-			    font-family: "Avenir Next" "Helvetica";
+			    font-family: "Avenir Next", "Helvetica";
 			}
 
 				.group-table th {
@@ -231,11 +231,11 @@
 						font-size: 11pt;
 						padding: 3px 5px;
 						width: 300px;
-						font-family: "Avenir Next" "Helvetica";
+						font-family: "Avenir Next", "Helvetica";
 					}
 
 					.modal-input-select {
-					    font-family: "Avenir Next" "Helvetica";
+					    font-family: "Avenir Next", "Helvetica";
 					    background-color: white;
 					    font-size: 11pt;
 					    width: 300px;
