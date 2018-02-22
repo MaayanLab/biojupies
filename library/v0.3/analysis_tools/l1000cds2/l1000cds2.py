@@ -99,7 +99,7 @@ def plot(l1000cds2_results, nr_drugs=7, height=300):
 		)
 		fig.append_trace(text, 1, i+1)
 
-	fig['layout'].update(height=height, title='<b>L1000CDS<sup>2</sup> | Small Molecule Query</b><br><i>Small molecules in the top 50 signatures</i>', hovermode='closest')
+	fig['layout'].update(height=height, title='<b>L1000CDS<sup>2</sup> | Small Molecule Query</b><br><i>Top small molecules</i>', hovermode='closest')
 	fig['layout']['xaxis1'].update(domain=[0,0.5])
 	fig['layout']['xaxis1'].update(title='<br>Count')
 	fig['layout']['xaxis2'].update(title='<br>Count')

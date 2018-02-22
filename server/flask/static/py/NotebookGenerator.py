@@ -186,7 +186,7 @@ def add_methods(notebook, notebook_configuration, normalization_methods, annotat
 		for normalization_method in normalization_methods:
 			normalization_methods_section += '##### {}\n'.format(annotations['core_options'][normalization_method]['option_name'])+annotations['core_options'][normalization_method]['methods']
 		# normalization_methods_section += '<br><br>Source code and additional information is available on GitHub: <a href="https://github.com/denis-torre/notebook-generator/tree/master/library/{notebook_configuration[notebook][version]}/core_scripts/normalize" target="_blank">https://github.com/denis-torre/notebook-generator/tree/master/library/{notebook_configuration[notebook][version]}/core_scripts/normalize</a>.'.format(**locals())
-		normalization_methods_section += '<br><br>Source code and additional information are publicly available on <a href="https://github.com/denis-torre/notebook-generator/tree/master/library/{notebook_configuration[notebook][version]}/core_scripts/normalize" target="_blank">GitHub</a>.'.format(**locals())
+		# normalization_methods_section += '<br><br>Source code and additional information are publicly available on <a href="https://github.com/denis-torre/notebook-generator/tree/master/library/{notebook_configuration[notebook][version]}/core_scripts/normalize" target="_blank">GitHub</a>.'.format(**locals())
 		methods.append(normalization_methods_section)
 
 	# Add Tool Methods

@@ -25,10 +25,11 @@ from IPython.display import display, HTML
 ########## 1. Run
 #############################################
 
-def run(signature, topN=10, signature_label=''):
+def run(signature, topN=30, signature_label=''):
  
 	if topN:
-		signature = pd.concat([signature.iloc[:topN], signature.iloc[-topN:]]).drop(['t', 'B'], axis=1)
+		# signature = pd.concat([signature.iloc[:topN], signature.iloc[-topN:]]).drop(['t', 'B'], axis=1).sort_values('P.Value')
+		signature = signature.sort_values('P.Value').iloc[:topN]
 		signature['logFC'] = ['{:.3}'.format(x) for x in signature['logFC']]
 		signature['AveExpr'] = ['{:.3}'.format(x) for x in signature['AveExpr']]
 		signature['P.Value'] = ['{:.2}'.format(x) for x in signature['P.Value']]
@@ -42,4 +43,4 @@ def run(signature, topN=10, signature_label=''):
 def plot(signature):
 	signature.index.name='Gene Symbol'
 	# return qgrid.show_grid(signature, grid_options={'maxVisibleRows': 5})
-	return display(HTML(signature.to_html()))
+	return display(HTML(signature.rename(columns={'logFC': 'logFoldChange', 'AveExpr': 'Average Expression', 'P.Value': 'P-value', 'adj.P.Val': 'Adjusted P-value (FDR)'}).to_html()))

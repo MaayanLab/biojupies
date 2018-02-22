@@ -74,7 +74,7 @@ def generate():
 	annotations = {'tools': tool_metadata, 'core_options': core_script_metadata}
 
 	# Set development
-	development = True
+	development = os.environ['DEVELOPMENT'] == 'True'
 	try:
 		if development:
 			### Development
