@@ -24,7 +24,7 @@ from plotly.offline import iplot
 ########## 1. Run
 #############################################
 
-def run(dataset, dimensions=3, nr_genes=2500, normalization='zscore', color_by=None, color_type='categorical', colorscale='Viridis'):
+def run(dataset, dimensions=3, nr_genes=2500, normalization='zscore'):
 
 	# Get expression
 	expression_dataframe = dataset[normalization]
@@ -36,8 +36,27 @@ def run(dataset, dimensions=3, nr_genes=2500, normalization='zscore', color_by=N
 	tsne=TSNE(n_components=3).fit_transform(expression_dataframe.T)
 	tsne_dim = [[x[i] for x in tsne] for i in range(3)]
 
+	# Add colors
+	if dataset['signature_metadata']:
+		A_label, B_label = list(dataset['signature_metadata'].keys())[0].split(' vs ')
+		col = []
+		group_dict = list(dataset['signature_metadata'].values())[0]
+		for gsm in dataset['sample_metadata'].index:
+			if gsm in group_dict['A']:
+				col.append(A_label)
+			elif gsm in group_dict['B']:
+				col.append(B_label)
+			else:
+				col.append('Other')
+		dataset['sample_metadata']['Group'] = col
+		color_by = 'Group'
+		color_type = 'categorical'
+	else:
+		color_by = None
+		color_type = 'categorical'
+
 	# Return
-	tsne_results = {'tsne': tsne_dim, 'sample_metadata': dataset['sample_metadata'].loc[expression_dataframe.columns], 'color_by': color_by, 'color_type': color_type, 'nr_genes': nr_genes, 'colorscale': colorscale}
+	tsne_results = {'tsne': tsne_dim, 'sample_metadata': dataset['sample_metadata'].loc[expression_dataframe.columns], 'color_by': color_by, 'color_type': color_type, 'nr_genes': nr_genes}
 	return tsne_results
 
 #############################################
@@ -66,7 +85,7 @@ def plot(tsne_results):
 							 marker=marker)
 		data = [trace]
 	elif color_by and color_type == 'continuous':
-		marker = dict(size=15, color=color_column, colorscale=tsne_results['colorscale'], showscale=True)
+		marker = dict(size=15, color=color_column, colorscale='Viridis', showscale=True)
 		trace = go.Scatter3d(x=tsne[0],
 							 y=tsne[1],
 							 z=tsne[2],
@@ -92,9 +111,9 @@ def plot(tsne_results):
 			category_indices = [i for i, sample_category in enumerate(color_column) if sample_category == category]
 			
 			# Create new trace
-			trace = go.Scatter3d(x=tsne[0][category_indices],
-								 y=tsne[1][category_indices],
-								 z=tsne[2][category_indices],
+			trace = go.Scatter3d(x=[tsne[0][x] for x in category_indices],
+								 y=[tsne[1][x] for x in category_indices],
+								 z=[tsne[2][x] for x in category_indices],
 								 mode='markers',
 								 hoverinfo='text',
 								 text=[sample_titles[x] for x in category_indices],
