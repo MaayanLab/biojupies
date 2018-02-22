@@ -125,7 +125,7 @@ function addButtons() {
 					entries[gse].append(
 						$('<div>', {'class': 'notebook-generator-link'})
 							.append($('<img>', {'src': chrome.extension.getURL('icons/icon.png')}))
-							.append($('<span>').html('Generate Notebook'))
+							.append($('<span>').html('Generate BioJupy'))
 							.data('samples', samples)
 							.data('gse', gse)
 							.data('gpl', Object.keys(samples)[0])
@@ -133,8 +133,8 @@ function addButtons() {
 				}				
 			})
 
-			$('.notebook-generator-link').first().click();
-			$('#next-step').click();
+			// $('.notebook-generator-link').first().click();
+			// $('#next-step').click();
 
 		}			
 	})

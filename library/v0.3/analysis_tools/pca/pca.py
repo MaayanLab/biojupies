@@ -24,7 +24,7 @@ from plotly.offline import iplot
 ########## 1. Run
 #############################################
 
-def run(dataset, dimensions=3, nr_genes=2500, normalization='zscore', color_by=None, color_type='categorical', colorscale='Viridis', signature={}):
+def run(dataset, dimensions=3, nr_genes=2500, normalization='zscore'):
 
 	# Get expression
 	expression_dataframe = dataset[normalization]
@@ -40,10 +40,26 @@ def run(dataset, dimensions=3, nr_genes=2500, normalization='zscore', color_by=N
 	var_explained = ['PC'+str((i+1))+'('+str(round(e*100, 1))+'% var. explained)' for i, e in enumerate(pca.explained_variance_ratio_)]
 
 	# Add colors
-	# if signature.get('A') and signature.get('B'):
+	if dataset['signature_metadata']:
+		A_label, B_label = list(dataset['signature_metadata'].keys())[0].split(' vs ')
+		col = []
+		group_dict = list(dataset['signature_metadata'].values())[0]
+		for gsm in dataset['sample_metadata'].index:
+			if gsm in group_dict['A']:
+				col.append(A_label)
+			elif gsm in group_dict['B']:
+				col.append(B_label)
+			else:
+				col.append('Other')
+		dataset['sample_metadata']['Group'] = col
+		color_by = 'Group'
+		color_type = 'categorical'
+	else:
+		color_by = None
+		color_type = 'categorical'
 
 	# Return
-	pca_results = {'pca': pca, 'var_explained': var_explained, 'sample_metadata': dataset['sample_metadata'].loc[expression_dataframe.columns], 'color_by': color_by, 'color_type': color_type, 'nr_genes': nr_genes, 'colorscale': colorscale}
+	pca_results = {'pca': pca, 'var_explained': var_explained, 'sample_metadata': dataset['sample_metadata'].loc[expression_dataframe.columns], 'color_by': color_by, 'color_type': color_type, 'nr_genes': nr_genes}
 	return pca_results
 
 #############################################
@@ -73,7 +89,7 @@ def plot(pca_results):
 							 marker=marker)
 		data = [trace]
 	elif color_by and color_type == 'continuous':
-		marker = dict(size=15, color=color_column, colorscale=pca_results['colorscale'], showscale=True)
+		marker = dict(size=15, color=color_column, colorscale='Viridis', showscale=True)
 		trace = go.Scatter3d(x=pca.components_[0],
 							 y=pca.components_[1],
 							 z=pca.components_[2],
