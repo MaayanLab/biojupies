@@ -25,12 +25,12 @@ var modal = {
 
 	Section: function(title, tool_string, display='block', link=false, expandable=false) {
 		section = $('<div>', {'class': 'modal-section'}).html($('<span>').html(title)).css('display', display);
-		if (link) {
-			section.append($('<span>', {'class': 'modal-section-link'})
-				.append('(')
-				.append($('<a>', {'href': link['url'], 'target': '_blank'}).html(link['text']))
-				.append(')'));
-		}
+		// if (link) {
+		// 	section.append($('<span>', {'class': 'modal-section-link'})
+		// 		.append('(')
+		// 		.append($('<a>', {'href': link['url'], 'target': '_blank'}).html(link['text']))
+		// 		.append(')'));
+		// }
 		if (expandable) {
 			section.append($('<span>', {'class': 'modal-section-expand'}).html('&#9660;'))
 				.append($('<span>', {'class': 'modal-section-expand'}).html('&#9650;').css('display', 'none'));
