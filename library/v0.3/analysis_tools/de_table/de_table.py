@@ -32,8 +32,8 @@ def run(signature, topN=30, signature_label=''):
 		signature = signature.sort_values('P.Value').iloc[:topN]
 		signature['logFC'] = ['{:.3}'.format(x) for x in signature['logFC']]
 		signature['AveExpr'] = ['{:.3}'.format(x) for x in signature['AveExpr']]
-		signature['P.Value'] = ['{:.2}'.format(x) for x in signature['P.Value']]
-		signature['adj.P.Val'] = ['{:.2}'.format(x) for x in signature['adj.P.Val']]
+		signature['P.Value'] = ['{:.3}'.format(x) for x in signature['P.Value']]
+		signature['adj.P.Val'] = ['{:.3}'.format(x) for x in signature['adj.P.Val']]
 	return signature
 
 #############################################
@@ -43,4 +43,4 @@ def run(signature, topN=30, signature_label=''):
 def plot(signature):
 	signature.index.name='Gene Symbol'
 	# return qgrid.show_grid(signature, grid_options={'maxVisibleRows': 5})
-	return display(HTML(signature.rename(columns={'logFC': 'logFoldChange', 'AveExpr': 'Average Expression', 'P.Value': 'P-value', 'adj.P.Val': 'Adjusted P-value (FDR)'}).to_html()))
+	return display(HTML(signature.rename(columns={'logFC': 'logFoldChange', 'AveExpr': 'Average Expression', 'P.Value': 'P-value', 'adj.P.Val': 'Adjusted P-value (FDR)'}).drop(['B', 't'], axis=1).to_html()))
