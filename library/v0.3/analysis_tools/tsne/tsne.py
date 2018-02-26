@@ -37,7 +37,7 @@ def run(dataset, dimensions=3, nr_genes=2500, normalization='zscore'):
 	tsne_dim = [[x[i] for x in tsne] for i in range(3)]
 
 	# Add colors
-	if dataset['signature_metadata']:
+	if dataset.get('signature_metadata'):
 		A_label, B_label = list(dataset['signature_metadata'].keys())[0].split(' vs ')
 		col = []
 		group_dict = list(dataset['signature_metadata'].values())[0]
