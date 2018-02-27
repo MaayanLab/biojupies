@@ -21,7 +21,7 @@ from flask import Flask, request, render_template, Response, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 ##### 2. Python modules #####
-import sys, os, json
+import sys, os, json, requests
 import pandas as pd
 import pymysql
 pymysql.install_as_MySQLdb()
@@ -70,7 +70,7 @@ def analyze():
 
 @app.route(entry_point+'/analyze/search')
 def search_data():
-	d = pd.read_sql_table('series', engine).head()
+	d = pd.read_sql_query('SELECT DISTINCT gpl, gse FROM series se LEFT JOIN sample sa ON se.id=sa.series_fk LEFT JOIN platform p ON p.id=sa.platform_fk', engine).head()
 	return render_template('search_data.html', d=d)
 
 #############################################
@@ -87,9 +87,8 @@ def upload_data():
 
 @app.route(entry_point+'/analyze/tools', methods=['GET', 'POST'])
 def add_tools():
-	f = request.form
-	t = pd.read_sql_table('tool', engine).head()
-	return render_template('add_tools.html', f=f, t=t)
+	t = pd.read_sql_table('tool', engine).head(2)
+	return render_template('add_tools.html', f=request.form, t=t)
 
 #############################################
 ########## 6. Configure Analysis
@@ -111,8 +110,14 @@ def configure_analysis():
 
 @app.route(entry_point+'/analyze/generate', methods=['GET', 'POST'])
 def generate_notebook():
-	d = {key:value for key, value in request.form.lists()}
-	return json.dumps(d)
+	d = {key:value if len(value) > 1 else value[0] for key, value in request.form.lists()}
+	c = {'notebook': {'title': d['notebook_title'], 'live': 'False', 'version': 'v0.3'}, 'tools': [{'tool_string': x, 'parameters': {}} for x in d['tool']], 'data': {'source': 'archs4', 'parameters': {'gse': d['gse'], 'platform': d['gpl']}}, 'signature': {"method": "limma", "A": {"name": d['group_a_label'], "samples": [key.split('-')[0] for key, value in d.items() if value == 'group_a']}, "B": {"name": d["group_b_label"], "samples": [key.split('-')[0] for key, value in d.items() if value == 'group_b']}}}
+	c['tools'][0]['parameters']['normalization'] = 'zscore'
+	c['tools'][0]['parameters']['nr_genes'] = 2000
+	c['tools'][1]['parameters']['normalization'] = 'zscore'
+	c['tools'][1]['parameters']['nr_genes'] = 2000
+	r = requests.post('http://amp.pharm.mssm.edu/notebook-generator-server/api/generate', data=json.dumps(c), headers={'content-type':'application/json'})
+	return r.text
 
 #######################################################
 #######################################################
