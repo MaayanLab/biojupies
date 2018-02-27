@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<button onclick="goBack()">Go Back</button>
+add tools
+<br>
+{{f.get('gse')}}
+<form id="add-tools-form" action="{{ url_for('configure_analysis') }}" method="post">
+	<input type="hidden" name="gse" value="{{f.get('gse')}}">
+	<select name="tool" multiple="true">
+	{% for index, tool in t.iterrows() %}
+		<option value="{{ tool['tool_string'] }}" selected>{{ tool['tool_name'] }}</option>
+	{% endfor %}
+	</select>
+	<button type="submit">Continue</button>
+</form>
+
+{% endblock %}

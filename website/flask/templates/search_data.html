@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<button onclick="goBack()">Go Back</button>
+	<form id="search-data-form" action="{{ url_for('add_tools') }}" method="post">
+		{% for gse in d.gse %}
+			<input type="radio" id="{{gse}}" name="gse" value="{{gse}}" checked>
+			<label for="{{gse}}">{{gse}}</label>
+		{% endfor %}
+		<button type="submit">Continue</button>
+	</form>
+
+{% endblock %}

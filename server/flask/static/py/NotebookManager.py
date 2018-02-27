@@ -106,13 +106,12 @@ def log_error(notebook_configuration, error, annotations, engine):
 		error_type = 'normalize'
 		error_response += ' normalizing the dataset.<br><br>Please try again with different normalization method.'
 	elif 'run' in error:
-		tool = annotations['tools'][error.split("tool='")[-1].split("'")[0]]
-		error_type = tool['tool_name']
-		error_response += ' running {tool_string}.<br><br>Please try again by removing the selected tool.'.format(**tool)
+		tool_name = annotations['tools'][error.split("tool='")[-1].split("'")[0]]['tool_name']
+		error_response += ' running {}.<br><br>Please try again by removing the selected tool.'.format(tool_name)
 	else:
 		error_type = 'unspecified'
-		error_response.replace('error', 'unspecified error.')
-	error_response += '<br><br>The error has been logged and we will work on fixing it.<br>&nbsp</span>'
+		error_response = error_response.replace('error', 'unspecified error.')
+	error_response += '.<br><br>The error has been logged and we will work on fixing it.<br>&nbsp</span>'
 
 	# Upload
 

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<button onclick="goBack()">Go Back</button>
+Review
+	<form id="review-analysis-form" action="{{ url_for('generate_notebook') }}" method="post">
+		<input type="text" name="notebook_title" value="Notebook Title">
+		{% for key, values in f.lists() %}
+			{% for value in values %}
+				<input type="hidden" name="{{ key }}" value="{{ value }}">
+			{% endfor %}
+		{% endfor %}
+		<button type="submit">Continue</button>
+	</form>
+
+{% endblock %}
