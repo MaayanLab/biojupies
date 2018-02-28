@@ -4,9 +4,9 @@
 <button onclick="goBack()">Go Back</button>
 	<form id="search-data-form" action="{{ url_for('add_tools') }}" method="post">
 		{% for gse, gpl in d[['gse', 'gpl']].as_matrix() %}
-			<input type="hidden" id="{{gpl}}" name="gpl" value="{{gpl}}">
-			<input type="radio" id="{{gse}}" name="gse" value="{{gse}}" checked>
+			<input type="radio" name="gse-gpl" value="{{gse}}-{{gpl}}" checked>
 			<label for="{{gse}}">{{gse}}</label>
+			<br>
 		{% endfor %}
 		<button type="submit">Continue</button>
 	</form>

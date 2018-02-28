@@ -4,7 +4,9 @@ USE notebook_generator;
 
 CREATE TABLE series (
 	`id` INT AUTO_INCREMENT PRIMARY KEY,
-	`gse` VARCHAR(35) UNIQUE
+	`gse` VARCHAR(35) UNIQUE,
+	`title` TEXT,
+	`summary` TEXT
 );
 
 CREATE TABLE platform (
@@ -20,6 +22,14 @@ CREATE TABLE sample (
 	`platform_fk` INT,
 	FOREIGN KEY (series_fk) REFERENCES series(id),
 	FOREIGN KEY (platform_fk) REFERENCES platform(id)
+);
+
+CREATE TABLE sample_metadata (
+	`id` INT AUTO_INCREMENT PRIMARY KEY,
+	`variable` TEXT,
+	`value` TEXT,
+	`sample_fk` INT,
+	FOREIGN KEY (sample_fk) REFERENCES sample(id)
 );
 
 CREATE TABLE section (

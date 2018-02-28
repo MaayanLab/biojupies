@@ -87,8 +87,9 @@ def upload_data():
 
 @app.route(entry_point+'/analyze/tools', methods=['GET', 'POST'])
 def add_tools():
-	t = pd.read_sql_table('tool', engine).head(2)
-	return render_template('add_tools.html', f=request.form, t=t)
+	t = pd.read_sql_table('tool', engine)
+	d = {'gse': request.form.get('gse-gpl').split('-')[0], 'gpl': request.form.get('gse-gpl').split('-')[1]}
+	return render_template('add_tools.html', d=d, t=t)
 
 #############################################
 ########## 6. Configure Analysis
@@ -100,7 +101,9 @@ def configure_analysis():
 	requires_signature = False if f.get('requires_signature') else True
 	if requires_signature:
 		s = pd.read_sql_query('SELECT gsm, sample_title FROM sample s LEFT JOIN series g ON g.id=s.series_fk WHERE gse = "{}"'.format(f.get('gse')), engine)
-		return render_template('configure_signature.html', f=f, s=s)
+		j = pd.read_sql_query('SELECT CONCAT(gsm, "---", sample_title) AS sample_info, variable, value FROM sample s LEFT JOIN series g ON g.id=s.series_fk LEFT JOIN sample_metadata sm ON s.id=sm.sample_fk WHERE gse = "{}"'.format(f.get('gse')), engine).pivot(index='sample_info', columns='variable', values='value')
+		j = pd.concat([pd.DataFrame({'ID': [x.split('---')[0] for x in j.index], 'sample': [x.split('---')[1] for x in j.index]}, index=j.index), j], axis=1).reset_index(drop=True).fillna('')
+		return render_template('configure_signature.html', f=f, s=s, j=j)
 	else:
 		return render_template('review_analysis.html', f=f)
 

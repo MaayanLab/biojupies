@@ -4,11 +4,27 @@
 
 <button onclick="goBack()">Back</button>
 	<form id="configure-signature-form" action="{{ url_for('configure_analysis') }}" method="post">
-		<input type="text" name="group_a_label" value="control" class="group_label"> vs <input type="text" name="group_b_label" value="experimental" class="group_label">
-		<table width="500px;">
-			<tr><th>GSM</th><th>Title</th><th>Group</th></tr>
-			{% for index, rowData in s.iterrows() %}
-				<tr><th>{{rowData.gsm}}</th><th>{{rowData.sample_title}}</th><th><select name="{{rowData.gsm}}-group"><option selected value="">None</option><option {{'selected' if loop.index < 5 else ''}} value="group_a" class="group_a_label">control</option><option {{'selected' if loop.index >= 5 else ''}} value="group_b" class="group_b_label">experimental</option></select></th></tr>
+		<input type="text" name="group_a_label" value="control" class="group_label"> vs <input type="text" name="group_b_label" value="perturbation" class="group_label">
+		<table width="1500px;">
+			<tr>
+				{% for col in j.columns %}
+					<th>{{ col }}</th>
+				{% endfor %}
+				<th>Group</th>
+			</tr>
+			{% for index, rowData in j.iterrows() %}
+				<tr>
+					{% for col in j.columns %}
+						<td>{{ rowData[col] }}</td>
+					{% endfor %}
+					<td>
+						<select name="{{rowData.gsm}}-group">
+							<option selected value="">None</option>
+							<option {{'selected' if loop.index < 5 else ''}} value="group_a" class="group_a_label">control</option>
+							<option {{'selected' if loop.index >= 5 else ''}} value="group_b" class="group_b_label">perturbation</option>
+						</select>
+					</td>
+				</tr>
 			{% endfor %}
 		</table>
 		{% for key, values in f.lists() %}

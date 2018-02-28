@@ -12,8 +12,9 @@
 #############################################
 ##### 1. Python modules #####
 from ruffus import *
-import sys, glob, h5py, os, time
+import sys, glob, h5py, os, time, urllib.request, json
 import pandas as pd
+import xml.etree.ElementTree as ET
 from rpy2.robjects import r, pandas2ri
 pandas2ri.activate()
 
@@ -62,6 +63,38 @@ def getSamples(infiles, outfile):
 	result_dataframe = pd.concat(results)
 	result_dataframe.to_csv(outfile, sep='\t', index=False)
 
+#############################################
+########## 2. Get Dataset Annotations
+#############################################
+
+@follows(mkdir('s2-samples.dir/annotations'))
+
+@subdivide(getSamples,
+		   formatter(),
+		   's2-samples.dir/annotations/*.txt',
+		   's2-samples.dir/annotations/')
+
+def getSeriesAnnotations(infile, outfiles, outfile_root):
+
+	# Read infile
+	gse_list = pd.read_table(infile)['gse'].unique()
+
+	# Loop through GSE
+	for gse in gse_list:
+		outfile = '{outfile_root}{gse}-annotation.txt'.format(**locals())
+		if not os.path.exists(outfile):
+			print('Doing {}'.format(gse))
+			try:
+				geoId = ET.fromstring(urllib.request.urlopen('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gds&term={}%5BAccession%20ID%5D'.format(gse)).read()).findall('IdList')[0][0].text
+				root = ET.fromstring(urllib.request.urlopen('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gds&id={geoId}'.format(**locals())).read())
+				annotated_dataset = {x.attrib['Name']: x.text for x in root.find('DocSum') if 'Name' in x.attrib.keys() and x.attrib['Name'] in ['title', 'summary']}
+				print('Done')
+			except:
+				annotated_dataset = {x: '' for x in ['title', 'summary']}
+				print('Error')
+			with open(outfile, 'w') as openfile:
+				openfile.write(json.dumps(annotated_dataset))
+
 #######################################################
 #######################################################
 ########## S2. Tables
@@ -88,16 +121,20 @@ def getPlatformTable(infile, outfile):
 ########## 2. Series table
 #############################################
 
-@files(getSamples,
+@files(getSeriesAnnotations,
 	   's3-tables.dir/series-table.csv')
 
-def getSeriesTable(infile, outfile):
-	# Get samples
-	series_df = pd.read_table(infile).drop_duplicates('gse')
-	series_df['id'] = [x+1 for x in range(len(series_df.index))]
-	series_df = series_df[['id', 'gse']]
-	series_df['gse'] = [x.replace('\t', ';').replace(',', ';').replace('"', '') for x in series_df['gse']]
-	series_df.to_csv(outfile, index=False)
+def getSeriesTable(infiles, outfile):
+	# Get data
+	results = {}
+	for infile in infiles:
+		with open(infile, 'r') as openfile:
+			gse = os.path.basename(infile).split('-')[0]
+			results[gse] = json.loads(openfile.read())
+	result_dataframe = pd.DataFrame(results).T.reset_index().rename(columns={'index': 'gse'})
+	result_dataframe['id'] = [x+1 for x in range(len(result_dataframe.index))]
+	result_dataframe = result_dataframe[['id', 'gse', 'title', 'summary']]
+	result_dataframe.to_csv(outfile,index=False)
 
 #############################################
 ########## 3. Sample table
@@ -114,6 +151,20 @@ def getSampleTable(infiles, outfile):
 	sample_df = df['sample'].merge(df['platform'], on='gpl', how='inner').merge(df['series'], on='gse', how='inner')[['gsm', 'platform_fk', 'series_fk', 'sample_title']]
 	sample_df['id'] = [x+1 for x in range(len(sample_df.index))]
 	sample_df.to_csv(outfile,index=False)
+
+#############################################
+########## 4. Sample Metadata table
+#############################################
+
+@files([getSampleTable, glob.glob('s1-h5.dir/series/*')],
+	   's3-tables.dir/sample_metadata-table.csv')
+
+def getSampleMetadataTable(infiles, outfile):
+	# Get samples
+	sample_dataframe = pd.read_csv(infiles.pop(0)).rename(columns={'id': 'sample_fk'})
+	sample_metadata_dataframe = pd.concat([pd.melt(pd.read_table(x).rename(columns={'Unnamed: 0': 'gsm'}), id_vars='gsm').dropna() for x in infiles[0]]).merge(sample_dataframe, on='gsm', how='inner')[['sample_fk', 'variable', 'value']]
+	sample_metadata_dataframe['id'] = [x+1 for x in range(len(sample_metadata_dataframe.index))]
+	sample_metadata_dataframe.to_csv(outfile,index=False)
 
 #######################################################
 #######################################################
@@ -142,7 +193,7 @@ def createDb(infile, outfile):
 ########## 1. Upload Tables
 #############################################
 
-@follows(createDb)
+# @follows(createDb)
 
 @transform(glob.glob('s3-tables.dir/*-table.*'),
 		   regex(r'.*/(.*)-table.*'),
@@ -166,5 +217,5 @@ def uploadTables(infile, outfile):
 ########## Run pipeline
 ##################################################
 ##################################################
-pipeline_run([sys.argv[-1]], multiprocess=1, verbose=1)
+pipeline_run([sys.argv[-1]], multiprocess=1, verbose=1)#, forcedtorun_tasks=[getSampleMetadataTable]) #forcedtorun_tasks = [up_to_date_task1])
 print('Done!')

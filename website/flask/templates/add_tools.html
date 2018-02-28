@@ -4,11 +4,9 @@
 <button onclick="goBack()">Go Back</button>
 add tools
 <br>
-{{f.get('gse')}}
-{{f.get('gpl')}}
 <form id="add-tools-form" action="{{ url_for('configure_analysis') }}" method="post">
-	<input type="hidden" name="gse" value="{{f.get('gse')}}">
-	<input type="hidden" name="gpl" value="{{f.get('gpl')}}">
+	<input type="hidden" name="gse" value="{{d.get('gse')}}">
+	<input type="hidden" name="gpl" value="{{d.get('gpl')}}">
 	<select name="tool" multiple="true">
 	{% for index, tool in t.iterrows() %}
 		<option value="{{ tool['tool_string'] }}" selected>{{ tool['tool_name'] }}</option>
