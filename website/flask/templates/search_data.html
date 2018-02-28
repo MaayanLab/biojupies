@@ -2,13 +2,48 @@
 
 {% block content %}
 <button onclick="goBack()">Go Back</button>
-	<form id="search-data-form" action="{{ url_for('add_tools') }}" method="post">
-		{% for gse, gpl in d[['gse', 'gpl']].as_matrix() %}
-			<input type="radio" name="gse-gpl" value="{{gse}}-{{gpl}}" checked>
-			<label for="{{gse}}">{{gse}}</label>
-			<br>
-		{% endfor %}
+	<form id="dataset-search-form">
+		<input type="text" value="cancer">
+		<button type="submit">Search</button>
+	</form>
+
+	<form id="dataset-form" action="{{ url_for('add_tools') }}" method="post">
+		<div id="datasets"></div>
 		<button type="submit">Continue</button>
 	</form>
+
+{% endblock %}
+
+{% block footer %}
+
+<script type="text/javascript">
+
+$('#dataset-search-form').submit(function(evt) {
+	evt.preventDefault();
+	
+	$.ajax({
+		url: "{{ url_for('search_datasets', _external=True) }}",
+		method: "POST",
+		data: JSON.stringify({'search': $('#dataset-search-form').find('input').first().val()}),
+		contentType: "application/json; charset=utf-8",
+		dataType: 'json',
+		success: function(res) {
+			$.each(res, function(index, elem) {
+				var id = elem['gse']+'-'+elem['gpl'];
+				$('#datasets')
+					.append($('<div>')
+						.append($('<input>', {'type': 'radio', 'name': 'gse-gpl', 'id': id, 'value': id}))
+						.append($('<label>', {'for': id})
+							.html(elem['gse'])
+						)
+					)
+			})
+
+			
+		}
+	})
+
+})
+</script>
 
 {% endblock %}

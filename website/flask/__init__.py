@@ -100,10 +100,10 @@ def configure_analysis():
 	f=request.form
 	requires_signature = False if f.get('requires_signature') else True
 	if requires_signature:
-		s = pd.read_sql_query('SELECT gsm, sample_title FROM sample s LEFT JOIN series g ON g.id=s.series_fk WHERE gse = "{}"'.format(f.get('gse')), engine)
 		j = pd.read_sql_query('SELECT CONCAT(gsm, "---", sample_title) AS sample_info, variable, value FROM sample s LEFT JOIN series g ON g.id=s.series_fk LEFT JOIN sample_metadata sm ON s.id=sm.sample_fk WHERE gse = "{}"'.format(f.get('gse')), engine).pivot(index='sample_info', columns='variable', values='value')
-		j = pd.concat([pd.DataFrame({'ID': [x.split('---')[0] for x in j.index], 'sample': [x.split('---')[1] for x in j.index]}, index=j.index), j], axis=1).reset_index(drop=True).fillna('')
-		return render_template('configure_signature.html', f=f, s=s, j=j)
+		j = pd.concat([pd.DataFrame({'accession': [x.split('---')[0] for x in j.index], 'sample': [x.split('---')[1] for x in j.index]}, index=j.index), j], axis=1).reset_index(drop=True).fillna('')
+		j = j[[col for col, colData in j.iteritems() if len(colData.unique()) > 1]]
+		return render_template('configure_signature.html', f=f, j=j)
 	else:
 		return render_template('review_analysis.html', f=f)
 
@@ -121,6 +121,15 @@ def generate_notebook():
 	c['tools'][1]['parameters']['nr_genes'] = 2000
 	r = requests.post('http://amp.pharm.mssm.edu/notebook-generator-server/api/generate', data=json.dumps(c), headers={'content-type':'application/json'})
 	return r.text
+
+#############################################
+########## 8. Search Datasets
+#############################################
+
+@app.route(entry_point+'/api/search_datasets', methods=['POST'])
+def search_datasets():
+	d = pd.read_sql_query('SELECT gse, title, summary, COUNT(*) AS nr_samples FROM series se LEFT JOIN sample sa ON se.id=sa.series_fk WHERE title LIKE "%%{search}%%" OR summary LIKE "%%{search}%%" GROUP BY gse ORDER BY nr_samples DESC LIMIT 50'.format(**request.json), engine)
+	return json.dumps(d.to_dict(orient='records'))
 
 #######################################################
 #######################################################

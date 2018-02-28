@@ -7,16 +7,13 @@
 		<input type="text" name="group_a_label" value="control" class="group_label"> vs <input type="text" name="group_b_label" value="perturbation" class="group_label">
 		<table width="1500px;">
 			<tr>
-				{% for col in j.columns %}
-					<th>{{ col }}</th>
-				{% endfor %}
 				<th>Group</th>
+				{% for col in j.columns %}
+					<th>{{ col.title() }}</th>
+				{% endfor %}
 			</tr>
 			{% for index, rowData in j.iterrows() %}
 				<tr>
-					{% for col in j.columns %}
-						<td>{{ rowData[col] }}</td>
-					{% endfor %}
 					<td>
 						<select name="{{rowData.gsm}}-group">
 							<option selected value="">None</option>
@@ -24,6 +21,9 @@
 							<option {{'selected' if loop.index >= 5 else ''}} value="group_b" class="group_b_label">perturbation</option>
 						</select>
 					</td>
+					{% for col in j.columns %}
+						<td>{{ rowData[col] }}</td>
+					{% endfor %}
 				</tr>
 			{% endfor %}
 		</table>
