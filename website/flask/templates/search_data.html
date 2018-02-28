@@ -11,6 +11,7 @@
 		<div id="datasets"></div>
 		<button type="submit">Continue</button>
 	</form>
+	<button onclick="showMore()">Show More</button>
 
 {% endblock %}
 
@@ -28,22 +29,22 @@ $('#dataset-search-form').submit(function(evt) {
 		contentType: "application/json; charset=utf-8",
 		dataType: 'json',
 		success: function(res) {
+			$('#datasets').html('');
 			$.each(res, function(index, elem) {
 				var id = elem['gse']+'-'+elem['gpl'];
-				$('#datasets')
-					.append($('<div>')
-						.append($('<input>', {'type': 'radio', 'name': 'gse-gpl', 'id': id, 'value': id}))
-						.append($('<label>', {'for': id})
-							.html(elem['gse'])
-						)
-					)
+				$('#datasets').append($('<div>', {'class': index > 5 ? 'hidden' : ''}).append($('<input>', {'type': 'radio', 'required': 'true', 'name': 'gse-gpl', 'id': id, 'value': id})).append($('<label>', {'for': id}).html(elem['gse'])));
 			})
 
-			
+
 		}
 	})
 
 })
+
+function showMore() {
+	$('#datasets .hidden:lt(5)').removeClass('hidden');
+}
+
 </script>
 
 {% endblock %}
