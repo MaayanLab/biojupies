@@ -3,8 +3,9 @@
 {% block content %}
 
 <button onclick="goBack()">Back</button>
+	<button onclick="reset_groups()">Reset</button>
 	<form id="configure-signature-form" action="{{ url_for('configure_analysis') }}" method="post">
-		<input type="text" name="group_a_label" value="control" class="group_label"> vs <input type="text" name="group_b_label" value="perturbation" class="group_label">
+		<input type="text" name="group_a_label" value="control" class="group_label" data-group="a"> vs <input type="text" name="group_b_label" value="perturbation" class="group_label" data-group="b">
 		<table width="1500px;">
 			<tr>
 				<th>Group</th>
@@ -13,13 +14,9 @@
 				{% endfor %}
 			</tr>
 			{% for index, rowData in j.iterrows() %}
-				<tr>
+				<tr class="sample-row" data-group="none">
 					<td>
-						<select name="{{rowData.gsm}}-group">
-							<option selected value="">None</option>
-							<option {{'selected' if loop.index < 5 else ''}} value="group_a" class="group_a_label">control</option>
-							<option {{'selected' if loop.index >= 5 else ''}} value="group_b" class="group_b_label">perturbation</option>
-						</select>
+						None
 					</td>
 					{% for col in j.columns %}
 						<td>{{ rowData[col] }}</td>
@@ -35,5 +32,50 @@
 		<input type="hidden" name="requires_signature" value="False">
 		<button type="submit">Continue</button>
 	</form>
+
+{% endblock %}
+
+{% block footer %}
+
+<script type="text/javascript">
+
+	// Cycle
+	function cycle_group(evt) {
+		var $row = $(evt.target).parents('.sample-row'),
+			new_group,
+			new_group_label;
+		if ($row.attr('data-group') != 'none') {
+			new_group = 'none'
+			new_group_label = 'None'
+		} else {
+			if (evt.shiftKey) {
+				new_group = 'b'
+			} else {
+				new_group = 'a'
+			}
+			new_group_label = $('input[name="group_'+new_group+'_label"').val();
+		}
+		$row.attr('data-group', new_group);
+		$row.find('td').first().html(new_group_label);
+	}
+
+	// Reset
+	function reset_groups() {
+		$('.sample-row').each(function(index, elem) {
+			$(elem).attr('data-group', 'none');
+			$(elem).find('td').first().html('None');
+		});
+	}
+
+	// Cycle listener
+	$('.sample-row').mousedown(function(evt) { cycle_group(evt); })
+	$('.sample-row').mouseenter(function(evt) { if (evt.buttons == 1) {cycle_group(evt);} })
+
+	// Name updater
+	$('.group_label').change(function(evt) {
+		$('tr[data-group="'+$(evt.target).attr('data-group')+'"]').each(function(index, elem) { $(elem).find('td').first().html($(evt.target).val()); })
+	})
+
+</script>
 
 {% endblock %}
