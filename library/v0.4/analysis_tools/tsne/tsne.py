@@ -1,6 +1,6 @@
 #################################################################
 #################################################################
-############### PCA 
+############### tsne 
 #################################################################
 #################################################################
 
@@ -8,7 +8,7 @@
 ########## 1. Load libraries
 #############################################
 ##### 1. General support #####
-from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
 import plotly.graph_objs as go
 from plotly.offline import iplot
 
@@ -24,7 +24,7 @@ from plotly.offline import iplot
 ########## 1. Run
 #############################################
 
-def run(dataset, dimensions=3, nr_genes=2500, normalization='zscore', color_by=None, color_type='categorical'):
+def run(dataset, dimensions=3, nr_genes=2500, normalization='zscore'):
 
 	# Get expression
 	expression_dataframe = dataset[normalization]
@@ -32,12 +32,9 @@ def run(dataset, dimensions=3, nr_genes=2500, normalization='zscore', color_by=N
 	# Filter
 	expression_dataframe = expression_dataframe.loc[expression_dataframe.var(axis=1).sort_values(ascending=False).index[:nr_genes]]
 
-	# Run PCA
-	pca=PCA(n_components=3)
-	pca.fit(expression_dataframe)
-
-	# Get Variance
-	var_explained = ['PC'+str((i+1))+'('+str(round(e*100, 1))+'% var. explained)' for i, e in enumerate(pca.explained_variance_ratio_)]
+	# Run tsne
+	tsne=TSNE(n_components=3).fit_transform(expression_dataframe.T)
+	tsne_dim = [[x[i] for x in tsne] for i in range(3)]
 
 	# Add colors
 	if dataset.get('signature_metadata'):
@@ -54,32 +51,34 @@ def run(dataset, dimensions=3, nr_genes=2500, normalization='zscore', color_by=N
 		dataset['sample_metadata']['Group'] = col
 		color_by = 'Group'
 		color_type = 'categorical'
+	else:
+		color_by = None
+		color_type = 'categorical'
 
 	# Return
-	pca_results = {'pca': pca, 'var_explained': var_explained, 'sample_metadata': dataset['sample_metadata'].loc[expression_dataframe.columns], 'color_by': color_by, 'color_type': color_type, 'nr_genes': nr_genes}
-	return pca_results
+	tsne_results = {'tsne': tsne_dim, 'sample_metadata': dataset['sample_metadata'].loc[expression_dataframe.columns], 'color_by': color_by, 'color_type': color_type, 'nr_genes': nr_genes}
+	return tsne_results
 
 #############################################
 ########## 2. Plot
 #############################################
 
-def plot(pca_results):
+def plot(tsne_results):
 
 	# Get results
-	pca = pca_results['pca']
-	var_explained = pca_results['var_explained']
-	sample_metadata = pca_results['sample_metadata']
-	color_by = pca_results.get('color_by')
-	color_type = pca_results.get('color_type')
-	color_column = pca_results['sample_metadata'][color_by] if color_by else None
+	tsne = tsne_results['tsne']
+	sample_metadata = tsne_results['sample_metadata']
+	color_by = tsne_results.get('color_by')
+	color_type = tsne_results.get('color_type')
+	color_column = tsne_results['sample_metadata'][color_by] if color_by else None
 	colors = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928']
 	sample_titles = ['<b>{}</b><br>'.format(index)+'<br>'.join('<i>{key}</i>: {value}'.format(**locals()) for key, value in rowData.items()) for index, rowData in sample_metadata.iterrows()]
 
 	if not color_by:
 		marker = dict(size=15)
-		trace = go.Scatter3d(x=pca.components_[0],
-							 y=pca.components_[1],
-							 z=pca.components_[2],
+		trace = go.Scatter3d(x=tsne[0],
+							 y=tsne[1],
+							 z=tsne[2],
 							 mode='markers',
 							 hoverinfo='text',
 							 text=sample_titles,
@@ -87,9 +86,9 @@ def plot(pca_results):
 		data = [trace]
 	elif color_by and color_type == 'continuous':
 		marker = dict(size=15, color=color_column, colorscale='Viridis', showscale=True)
-		trace = go.Scatter3d(x=pca.components_[0],
-							 y=pca.components_[1],
-							 z=pca.components_[2],
+		trace = go.Scatter3d(x=tsne[0],
+							 y=tsne[1],
+							 z=tsne[2],
 							 mode='markers',
 							 hoverinfo='text',
 							 text=sample_titles,
@@ -112,9 +111,9 @@ def plot(pca_results):
 			category_indices = [i for i, sample_category in enumerate(color_column) if sample_category == category]
 			
 			# Create new trace
-			trace = go.Scatter3d(x=pca.components_[0][category_indices],
-								 y=pca.components_[1][category_indices],
-								 z=pca.components_[2][category_indices],
+			trace = go.Scatter3d(x=[tsne[0][x] for x in category_indices],
+								 y=[tsne[1][x] for x in category_indices],
+								 z=[tsne[2][x] for x in category_indices],
 								 mode='markers',
 								 hoverinfo='text',
 								 text=[sample_titles[x] for x in category_indices],
@@ -125,8 +124,8 @@ def plot(pca_results):
 			data.append(trace)
 	
 	colored = '' if str(color_by) == 'None' else '<i>, colored by {}</i>'.format(color_by)
-	layout = go.Layout(title='<b>PCA Analysis | Scatter Plot</b><br><i>Top {} variable genes</i>'.format(pca_results['nr_genes'])+colored, hovermode='closest', margin=go.Margin(l=0,r=0,b=0,t=50), width=900,
-		scene=dict(xaxis=dict(title=var_explained[0]), yaxis=dict(title=var_explained[1]),zaxis=dict(title=var_explained[2])))
+	layout = go.Layout(title='<b>t-SNE Analysis | Scatter Plot</b><br><i>Top {} variable genes</i>'.format(tsne_results['nr_genes'])+colored, hovermode='closest', margin=go.Margin(l=0,r=0,b=0,t=50), width=900,
+		scene=dict(xaxis=dict(title='t-SNE1'), yaxis=dict(title='t-SNE2'),zaxis=dict(title='t-SNE3')))
 	fig = go.Figure(data=data, layout=layout)
 
 	return iplot(fig)
