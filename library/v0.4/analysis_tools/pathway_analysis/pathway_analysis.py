@@ -92,7 +92,7 @@ def plot_library_barchart(enrichr_results, gene_set_library, nr_genesets, height
 		)
 		fig.append_trace(text, 1, i+1)
 
-	fig['layout'].update(height=height, title='<b>'+gene_set_library.replace('GO_Biological_Process_2017b', 'Biological Processes (Gene Ontology)').replace('KEGG_2016', 'Pathways (KEGG)').replace('WikiPathways_2016', 'Pathways (WikiPathways)')+'</b>', hovermode='closest')
+	fig['layout'].update(height=height, title='<b>'+gene_set_library.replace('GO_Biological_Process_2017b', 'Biological Process (Gene Ontology)').replace('KEGG_2016', 'Pathways (KEGG)').replace('WikiPathways_2016', 'Pathways (WikiPathways)')+'</b>', hovermode='closest')
 	fig['layout']['xaxis1'].update(domain=[0,0.5])
 	fig['layout']['xaxis2'].update(domain=[0.5,1])
 	fig['layout']['yaxis1'].update(showticklabels=False)

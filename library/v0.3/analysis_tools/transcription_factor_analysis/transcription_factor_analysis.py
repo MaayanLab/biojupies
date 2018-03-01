@@ -8,7 +8,8 @@
 ########## 1. Load libraries
 #############################################
 ##### 1. General support #####
-
+import qgrid
+import pandas as pd
 
 ##### 2. Other libraries #####
 
@@ -23,12 +24,12 @@
 ########## 1. Run
 #############################################
 
-def run(enrichr_results):
+def run(enrichr_results, signature_label):
 	pass
 
 #############################################
 ########## 2. Plot
 #############################################
 
-def plot(pathway_analysis_results):
-	pass
+def plot(transcription_factor_analysis_results):
+	return qgrid.show_grid(pd.DataFrame(np.random.randn(50, 4), columns=list('ABCD')))
