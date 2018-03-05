@@ -11,6 +11,7 @@
 import os
 import sys
 import glob
+import itertools
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -33,6 +34,7 @@ for script_dir in script_dirs:
 	for script_path in glob.glob(script_dir):
 		sys.path.append(script_path)
 		exec('import '+os.path.basename(script_path))
+exec('import signature as sig')
 
 ##### Variables
 # Notebook Variables
@@ -50,7 +52,7 @@ def normalize_dataset(method, **kwargs):
 
 # Compute Signature
 def generate_signature(method, **kwargs):
-	return eval('signature.{}'.format(method))(**kwargs)
+	return eval('sig.{}'.format(method))(**kwargs)
 	
 # Analyze
 def analyze(tool, **kwargs):

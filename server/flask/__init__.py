@@ -107,12 +107,21 @@ def generate():
 			# Get Configuration
 			notebook_configuration = request.json
 
-			# Generate and Execute
-			notebook = generate_notebook(notebook_configuration, annotations)
-			notebook = execute_notebook(notebook)
+			# Check if notebook exists
+			matching_notebook = pd.read_sql_query("SELECT * FROM notebooks WHERE notebook_configuration = '{}'".format(json.dumps(notebook_configuration)), engine).to_dict(orient='records')
+			if len(matching_notebook):
 
-			# Get URL
-			notebook_url = upload_notebook(notebook, notebook_configuration, engine)
+				# Get URL
+				notebook_url = matching_notebook[0]['notebook_url']
+
+			else:
+
+				# Generate and Execute
+				notebook = generate_notebook(notebook_configuration, annotations)
+				notebook = execute_notebook(notebook)
+
+				# Get URL
+				notebook_url = upload_notebook(notebook, notebook_configuration, engine)
 
 			# Return
 			return json.dumps({'notebook_url': 'http://nbviewer.jupyter.org/urls/'+notebook_url.split('://')[-1]})

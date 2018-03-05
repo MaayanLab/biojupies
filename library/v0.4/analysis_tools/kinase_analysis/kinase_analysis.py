@@ -11,7 +11,7 @@
 import qgrid, requests, json
 import pandas as pd
 import numpy as np
-from IPython.display import display, Markdown
+from IPython.display import display, Markdown, HTML
 
 ##### 2. Other libraries #####
 
@@ -52,11 +52,7 @@ def run(enrichr_results, signature_label, libraries=['KEA_2015']):
 		enrichment_dataframe = get_enrichr_results(enrichr_results[geneset]['userListId'], libraries)
 		enrichment_dataframe['geneset'] = geneset
 		results.append(enrichment_dataframe)
-	kinase_dataframe = pd.concat(results)
-	kinase_dataframe['Protein Kinase'] = [x.split('_')[0] for x in kinase_dataframe['term_name']]
-	kinase_dataframe = kinase_dataframe.sort_values('pvalue').rename(columns={'term_name': 'KEA Term', 'geneset': 'Direction', 'pvalue': 'P-value', 'overlapping_genes': 'Targets'}).drop_duplicates('Protein Kinase')
-	kinase_dataframe['Rank'] = [x+1 for x in range(len(kinase_dataframe.index))]
-	kinase_dataframe = kinase_dataframe[['Rank', 'Protein Kinase', 'P-value', 'FDR', 'Direction', 'Targets']]
+	kinase_dataframe = pd.concat(results).copy()
 	return {'kinase_dataframe': kinase_dataframe, 'signature_label': signature_label}
 
 #############################################
@@ -64,7 +60,16 @@ def run(enrichr_results, signature_label, libraries=['KEA_2015']):
 #############################################
 
 def plot(kinase_analysis_results):
-	kinase_dataframe = kinase_analysis_results['kinase_dataframe']
-	kinase_dataframe['Protein Kinase'] = ['<a href="#">{}</a>'.format(x) for x in kinase_dataframe['Protein Kinase']]
+	kinase_dataframe = kinase_analysis_results['kinase_dataframe'].copy()
+	kinase_dataframe['Protein_Kinase'] = [x.split('_')[0] for x in kinase_dataframe['term_name']]
+	kinase_dataframe = kinase_dataframe.sort_values('pvalue').rename(columns={'pvalue': 'P-value'}).drop_duplicates('Protein_Kinase')
+	kinase_dataframe['Rank'] = [x+1 for x in range(len(kinase_dataframe.index))]
+	kinase_dataframe['nr_overlapping_genes'] = [len(x) for x in kinase_dataframe['overlapping_genes']]
+	kinase_dataframe['overlapping_genes'] = [', '.join(x) for x in kinase_dataframe['overlapping_genes']]
+	kinase_dataframe['Substrates'] = ['<span class="gene-tooltip">{nr_overlapping_genes} {geneset} substrates<span class="gene-tooltip-text"></span></span>'.format(**rowData) for index, rowData in kinase_dataframe.iterrows()]
+	kinase_dataframe['Protein Kinase'] = ['<a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene={Protein_Kinase}" target="_blank">{Protein_Kinase}</a>'.format(**rowData) for index, rowData in kinase_dataframe.iterrows()]
+	kinase_dataframe['Protein Kinase'] = [rowData['Protein Kinase'].replace('target="_blank">', 'target="_blank"><b>').replace('</a>', '</b></a>') if rowData['FDR'] < 0.1 else rowData['Protein Kinase'] for index, rowData in kinase_dataframe.iterrows()]
+	kinase_dataframe = kinase_dataframe[['Rank', 'Protein Kinase', 'P-value', 'FDR', 'Substrates']]
+	# display(HTML('<style>.slick-cell{overflow: visible;}.gene-tooltip{text-decoration: underline; text-decoration-style: dotted;}.gene-tooltip .gene-tooltip-text{visibility: hidden; position: absolute; max-width: 150px; z-index: 1000; left: -135px; top: 1px; text-align: right; background-color: black; color: white; padding: 5px 10px; border-radius: 5px;} .gene-tooltip:hover .gene-tooltip-text{visibility: visible;}</style>'))
 	display(Markdown('### {signature_label} Signature:'.format(**kinase_analysis_results)))
-	return display(qgrid.show_grid(kinase_dataframe.drop('Targets', axis=1).set_index('Rank'), grid_options={'maxVisibleRows': 4, 'forceFitColumns': True}))
+	return display(qgrid.show_grid(kinase_dataframe.set_index('Rank'), grid_options={'maxVisibleRows': 4, 'forceFitColumns': True}))

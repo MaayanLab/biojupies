@@ -87,7 +87,7 @@ def upload_data():
 
 @app.route(entry_point+'/analyze/tools', methods=['GET', 'POST'])
 def add_tools():
-	t = pd.read_sql_table('tool', engine)
+	t = pd.read_sql_table('tool', engine).head(3)
 	d = {'gse': request.form.get('gse-gpl').split('-')[0], 'gpl': request.form.get('gse-gpl').split('-')[1]}
 	return render_template('add_tools.html', d=d, t=t)
 
@@ -98,14 +98,24 @@ def add_tools():
 @app.route(entry_point+'/analyze/configure', methods=['GET', 'POST'])
 def configure_analysis():
 	f=request.form
-	requires_signature = False if f.get('requires_signature') else True
+	requires_signature = False# if f.get('requires_signature') else True
 	if requires_signature:
 		j = pd.read_sql_query('SELECT CONCAT(gsm, "---", sample_title) AS sample_info, variable, value FROM sample s LEFT JOIN series g ON g.id=s.series_fk LEFT JOIN sample_metadata sm ON s.id=sm.sample_fk WHERE gse = "{}"'.format(f.get('gse')), engine).pivot(index='sample_info', columns='variable', values='value')
 		j = pd.concat([pd.DataFrame({'accession': [x.split('---')[0] for x in j.index], 'sample': [x.split('---')[1] for x in j.index]}, index=j.index), j], axis=1).reset_index(drop=True).fillna('')
 		j = j[[col for col, colData in j.iteritems() if len(colData.unique()) > 1]]
 		return render_template('configure_signature.html', f=f, j=j)
 	else:
-		return render_template('review_analysis.html', f=f)
+		tools = '("'+'","'.join([x for x in f.listvalues()][-1])+'")'
+		p = pd.read_sql_query('SELECT tool_name, parameter_name, parameter_description, parameter_string, value, `default` FROM parameter p LEFT JOIN tool t ON t.id=p.tool_fk LEFT JOIN parameter_value pv ON p.id=pv.parameter_fk WHERE t.tool_string IN {}'.format(tools), engine).set_index(['tool_name'])#.set_index(['tool_name', 'parameter_name', 'parameter_description', 'parameter_string'])
+		d = {}
+		for index, rowData in p.iterrows():
+			if index not in d.keys():
+				d[index] = {}
+			if rowData['parameter_string'] not in d[index].keys():
+				d[index][rowData['parameter_string']] = {x: rowData[x] for x in ['parameter_description', 'parameter_name']}
+				d[index][rowData['parameter_string']]['values'] = []
+			d[index][rowData['parameter_string']]['values'].append({'value': rowData['value'], 'default': rowData['default']})
+		return render_template('review_analysis.html', f=f, d=d)
 
 #############################################
 ########## 7. Generate Notebook

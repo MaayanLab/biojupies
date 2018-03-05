@@ -12,6 +12,20 @@ Review
 			{% endfor %}
 		{% endfor %}
 		<button type="submit">Continue</button>
+		<br>
+		{% for tool_name, parameters in d.items()%}
+		{{ tool_name }}<br>
+			{% for parameter_string, parameter_data in parameters.items() %}
+				{{ parameter_string }}<br>
+				<select>
+					{% for values in parameter_data['values'] %}
+						<option {{'selected' if values['default'] else ''}}>{{values['value']}}</option>
+					{% endfor %}					
+				</select>
+			{% endfor %}
+		{% endfor %}
 	</form>
+	<br>
+	{{d|safe}}
 
 {% endblock %}

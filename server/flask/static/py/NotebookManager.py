@@ -82,7 +82,8 @@ def upload_notebook(notebook, notebook_configuration, engine):
 	notebook_url = urllib.parse.unquote(blob.public_url)
 
 	# Upload to database
-	notebook_dataframe = pd.Series({'notebook_uid': notebook_uid, 'notebook_url': notebook_url, 'version': notebook_configuration['notebook']['version'], 'gse': notebook_configuration['data']['parameters'].get('gse')}).to_frame().T
+	notebook_dataframe = pd.Series({'notebook_uid': notebook_uid, 'notebook_url': notebook_url, 'notebook_configuration': json.dumps(notebook_configuration), 'version': notebook_configuration['notebook']['version'], 'gse': notebook_configuration['data']['parameters'].get('gse')}).to_frame().T
+	print(notebook_dataframe)
 	notebook_dataframe.to_sql('notebooks', engine, if_exists='append', index=False)
 
 	# Return
@@ -110,14 +111,15 @@ def log_error(notebook_configuration, error, annotations, engine):
 		error_response += ' running {}.<br><br>Please try again by removing the selected tool.'.format(tool_name)
 	else:
 		error_type = 'unspecified'
-		error_response = error_response.replace('error', 'unspecified error.')
+		error_response = error_response.replace('error', 'unspecified error')
+		raise
 	error_response += '.<br><br>The error has been logged and we will work on fixing it.<br>&nbsp</span>'
 
 	# Upload
 
 	# Upload to database
-	error_dataframe = pd.Series({'notebook_configuration': json.dumps(notebook_configuration), 'error': error, 'version': notebook_configuration['notebook']['version'], 'error_type': error_type, 'gse': notebook_configuration['data']['parameters'].get('gse')}).to_frame().T
-	error_dataframe.to_sql('error_log', engine, if_exists='append', index=False)
+	# error_dataframe = pd.Series({'notebook_configuration': json.dumps(notebook_configuration), 'error': error, 'version': notebook_configuration['notebook']['version'], 'error_type': error_type, 'gse': notebook_configuration['data']['parameters'].get('gse')}).to_frame().T
+	# error_dataframe.to_sql('error_log', engine, if_exists='append', index=False)
 
 
 	return error_response

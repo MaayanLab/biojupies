@@ -44,17 +44,17 @@
 		var $row = $(evt.target).parents('.sample-row'),
 			new_group,
 			new_group_label;
-		if ($row.attr('data-group') != 'none') {
-			new_group = 'none'
-			new_group_label = 'None'
-		} else {
 			if (evt.shiftKey) {
 				new_group = 'b'
 			} else {
-				new_group = 'a'
+				if ($row.attr('data-group') != 'none') {
+					new_group = 'none'
+					new_group_label = 'None'
+				} else {
+					new_group = 'a'
+				}
 			}
 			new_group_label = $('input[name="group_'+new_group+'_label"').val();
-		}
 		$row.attr('data-group', new_group);
 		$row.find('td').first().html(new_group_label);
 	}

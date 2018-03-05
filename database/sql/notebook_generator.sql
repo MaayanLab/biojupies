@@ -95,6 +95,7 @@ CREATE TABLE notebooks (
 	`id` INT AUTO_INCREMENT PRIMARY KEY,
 	`notebook_uid` VARCHAR(30),
 	`notebook_url` TEXT,
+	`notebook_configuration` TEXT,
 	`gse` VARCHAR(20),
 	`version` VARCHAR(10)
 );
