@@ -1,51 +1,32 @@
 {% extends 'base.html' %}
+{% import 'macros.html' as macros %}
 
 {% block content %}
-<button onclick="goBack()">Go Back</button>
-	<form id="dataset-search-form">
-		<input type="text" value="cancer">
-		<button type="submit">Search</button>
-	</form>
 
-	<form id="dataset-form" action="{{ url_for('add_tools') }}" method="post">
-		<div id="datasets"></div>
-		<button type="submit">Continue</button>
-	</form>
-	<button onclick="showMore()">Show More</button>
-
-{% endblock %}
-
-{% block footer %}
-
-<script type="text/javascript">
-
-$('#dataset-search-form').submit(function(evt) {
-	evt.preventDefault();
-	
-	$.ajax({
-		url: "{{ url_for('search_datasets', _external=True) }}",
-		method: "POST",
-		data: JSON.stringify({'search': $('#dataset-search-form').find('input').first().val()}),
-		contentType: "application/json; charset=utf-8",
-		dataType: 'json',
-		success: function(res) {
-			$('#datasets').html('');
-			$.each(res, function(index, elem) {
-				console.log(elem);
-				var id = elem['gse']+'-'+elem['gpl'];
-				$('#datasets').append($('<div>', {'class': index > 5 ? 'hidden' : ''}).append($('<input>', {'type': 'radio', 'required': 'true', 'name': 'gse-gpl', 'id': id, 'value': id})).append($('<label>', {'for': id}).html(elem['gse'])));
-			})
-
-
-		}
-	})
-
-})
-
-function showMore() {
-	$('#datasets .hidden:lt(5)').removeClass('hidden');
-}
-
-</script>
+<div class="container">
+	<div class="row">
+		<div class="col-10 step-title">Search Datasets</div>
+		<div class="col-2 continue-col"><button class="continue-link" form="dataset-form" type="submit" formaction="{{ url_for('add_tools') }}" formmethod="post">Continue&nbsp<i class="fa fa-angle-right"></i></button></div>
+	</div>
+	<div class="row">
+		<div class="col-12">
+			<form id="dataset-search-form">
+				<input type="text" name="q" value="{{request.args.get('q')}}">
+				<button><i class="fa fa-search"></i></button>
+			</form>
+		</div>
+	</div>
+	{% if d %}
+	<div class="row">
+		<div class="col-12">
+			<form id="dataset-form">
+				{% for dataset in d %}				
+					{{ macros.dataset_radio(dataset) }}
+				{% endfor %}				
+			</form>
+		</div>
+	</div>
+	{% endif %}
+</div>
 
 {% endblock %}

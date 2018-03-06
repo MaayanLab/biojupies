@@ -22,11 +22,14 @@ import random
 import requests
 import string
 import os
+import sys
 import json
 import urllib.parse
-from nbconvert.preprocessors import ExecutePreprocessor
 import nbformat as nbf
 import pandas as pd
+sys.path.append('static/py')
+from nbconvert.preprocessors import ExecutePreprocessor
+from nbconvert.preprocessors.execute import executenb
 
 #############################################
 ########## 2. Variables
@@ -56,6 +59,24 @@ def execute_notebook(notebook, execute=True, to_html=False):
 	# Execute
 	if execute:
 		ep.preprocess(notebook, {'metadata': {'path': './static/library'}})
+
+	if to_html:
+		notebook = html_exporter_with_figs.from_notebook_node(notebook)[0]
+
+	# Return
+	return notebook
+
+def execute_notebook_stream(notebook, execute=True, to_html=False):
+
+	# Execute
+	print('ExecutePreprocessor')
+	print(ExecutePreprocessor)
+	print(dir(ExecutePreprocessor))
+	print(executenb)
+	print(dir(executenb))
+	if execute:
+		notebook = executenb(notebook, cwd='./static/library')
+		# ep.preprocess(notebook, {'metadata': {'path': './static/library'}})
 
 	if to_html:
 		notebook = html_exporter_with_figs.from_notebook_node(notebook)[0]

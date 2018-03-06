@@ -3,13 +3,19 @@
 <head>
   <title>Notebook Generator</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   {% block head %}{% endblock %}
 </head>
 <body>
 
-  <nav class="navbar navbar-light bg-light">
-    <a class="navbar-brand" href="#">Navbar</a>
+  <nav class="navbar navbar-light">
+    <div id="nav-container" class="container">
+      <div class="row">
+        <div class="col-6"><a href="{{url_for('index')}}" id="logo">BioJupies</a></div>
+        <div class="col-6 text-right"><a href="#" id="about">About</a></div>
+      </div>
+    </div>
   </nav>
   <div class="container-fluid">
     {% block content %}{% endblock %}

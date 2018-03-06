@@ -1,0 +1,46 @@
+<!-- ###############################################  -->
+<!-- ##### Option Column ###########################  -->
+<!-- ###############################################  -->
+
+{% macro option_col(option, length) %}
+
+	{% set colsize=(12/length)|int %}
+	<div class="col-{{colsize}} text-center">
+			<a class="option-link" href="{{url_for(option['link'])}}">
+				<i class="fa fa-{{option['icon']}}"></i>
+			</a>
+		<div class="option-title">{{option['title']}}</div>
+		<div class="option-description">{{option['description']}}</div>
+	</div>
+	
+{% endmacro %}
+
+<!-- ###############################################  -->
+<!-- ##### Dataset Radio ###########################  -->
+<!-- ###############################################  -->
+
+{% macro dataset_radio(dataset) %}
+
+	{% set id = dataset['gse']+'-'+dataset['gpl'] %}
+
+	<div class="row">
+		<div class="col-12">
+			<input type="radio" required="true" name="gse-gpl" id="{{id}}" value="{{id}}" class="dataset-selection-radio">
+			<label for="{{id}}" class="dataset-selection-label">
+				<div class="row">
+					<div class="col-1">
+						<img class="dataset-icon" src="{{ url_for('static', filename='img/dataset_icon.png') }}">
+					</div>
+					<div class="col-11">
+						<div class="dataset-title">{{dataset['title']}}</div>
+						<div class="dataset-metadata">
+							<span class="dataset-metadata-span"><span class="dataset-metadata-value">{{dataset['nr_samples']}} samples</span></span>
+							<span class="dataset-metadata-span"><span class="dataset-metadata-key">Accession:</span><span class="dataset-metadata-value">{{dataset['gse']}}</span></span>
+						</div>
+					</div>
+				</div>
+			</label>
+		</div>
+	</div>
+
+{% endmacro %}

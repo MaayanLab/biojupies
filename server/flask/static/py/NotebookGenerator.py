@@ -24,11 +24,14 @@ import pandas as pd
 ########## 2. Variables
 #############################################
 ##### 1. Helper Function #####
-def addCell(notebook, content, celltype='code'):
+def addCell(notebook, content, celltype='code', task=None):
 	if celltype == 'code':
-		notebook['cells'].append(nbf.v4.new_code_cell(content))
+		cell = nbf.v4.new_code_cell(content)
 	elif celltype == 'markdown':
-		notebook['cells'].append(nbf.v4.new_markdown_cell(content))
+		cell = nbf.v4.new_markdown_cell(content)
+	if task:
+		cell.metadata.update({'task': task})
+	notebook['cells'].append(cell)
 	return notebook
 
 #################################################################
@@ -79,7 +82,7 @@ def load_data(notebook, data_configuration, core_options):
 	
 	# Intro text
 	cell = "---\n# Results\n## <span id='load_dataset'>1. Load Dataset</span>\n"+core_options[data_configuration['source']]['introduction'].format(**data_configuration['parameters'])
-	notebook = addCell(notebook, cell, 'markdown')
+	notebook = addCell(notebook, cell, 'markdown', 'load_dataset')
 
 	# Add Data
 	cell = "# Load dataset\ndataset = load_dataset(source='{}'".format(data_configuration['source'])+add_parameters(data_configuration['parameters'])+")\n\n# Preview expression data\ndataset['rawdata'].head()"
@@ -137,7 +140,7 @@ def generate_signature(notebook, signature_configuration, core_options):
 
 	# Generate Signature
 	cell = "# Configure signatures\ndataset['signature_metadata'] = {{\n    '{A[name]} vs {B[name]}': {{\n        'A': {A[samples]},\n        'B': {B[samples]}\n    }}\n}}\n\n# Generate signatures\nfor label, groups in dataset['signature_metadata'].items():\n    signatures[label] = generate_signature(group_A=groups['A'], group_B=groups['B'], method='{method}', dataset=dataset)".format(**signature_configuration)
-	return addCell(notebook, cell)
+	return addCell(notebook, cell, task='generate_signature')
 
 #############################################
 ########## 6. Add Tool
@@ -158,7 +161,7 @@ def add_tool(notebook, tool_configuration, tool_metadata, signature_configuratio
 		cell = "# Initialize results\nresults['{tool_string}'] = {{}}\n\n# Loop through signatures\nfor label, signature in signatures.items():\n\n    # Run analysis\n    results['{tool_string}'][label] = analyze(signature=signature, tool='{tool_string}', signature_label=label".format(**tool_configuration)+add_parameters(tool_configuration['parameters'])+")\n\n    # Display results\n    plot(results['{tool_string}'][label])".format(**tool_configuration)
 	else:
 		cell = "# Run analysis\nresults['{tool_string}'] = analyze(dataset=dataset, tool='{tool_string}'".format(**tool_configuration)+add_parameters(tool_configuration['parameters'])+")\n\n# Display results\nplot(results['{tool_string}'])".format(**tool_configuration)
-	return addCell(notebook, cell)
+	return addCell(notebook, cell, task=tool_configuration['tool_string'])
 
 #############################################
 ########## 7. Add Methods
