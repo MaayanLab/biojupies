@@ -21,6 +21,7 @@
 					{% for col in j.columns %}
 						<td>{{ rowData[col] }}</td>
 					{% endfor %}
+					<input type="hidden" name="{{rowData['accession']}}-group" value="none">
 				</tr>
 			{% endfor %}
 		</table>
@@ -44,19 +45,21 @@
 		var $row = $(evt.target).parents('.sample-row'),
 			new_group,
 			new_group_label;
-			if (evt.shiftKey) {
-				new_group = 'b'
-			} else {
-				if ($row.attr('data-group') != 'none') {
-					new_group = 'none'
-					new_group_label = 'None'
-				} else {
-					new_group = 'a'
-				}
-			}
+		if (evt.shiftKey) {
+			new_group = 'b';
 			new_group_label = $('input[name="group_'+new_group+'_label"').val();
+		} else {
+			if ($row.attr('data-group') != 'none') {
+				new_group = 'none';
+				new_group_label = 'None';
+			} else {
+				new_group = 'a';
+				new_group_label = $('input[name="group_'+new_group+'_label"').val();
+			}
+		}
 		$row.attr('data-group', new_group);
 		$row.find('td').first().html(new_group_label);
+		$row.find('input').first().val(new_group);
 	}
 
 	// Reset

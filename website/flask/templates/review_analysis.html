@@ -13,19 +13,18 @@ Review
 		{% endfor %}
 		<button type="submit">Continue</button>
 		<br>
-		{% for tool_name, parameters in d.items()%}
+		{% for tool_name, tool_data in d.items()%}
 		{{ tool_name }}<br>
-			{% for parameter_string, parameter_data in parameters.items() %}
-				{{ parameter_string }}<br>
-				<select>
+			{% for parameter_string, parameter_data in tool_data['parameters'].items() %}
+				{{ parameter_data['parameter_name'] }}
+				<select name="{{tool_data['tool_string']}}-{{parameter_string}}">
 					{% for values in parameter_data['values'] %}
-						<option {{'selected' if values['default'] else ''}}>{{values['value']}}</option>
+						<option {{'selected' if values['default'] else ''}} value="{{values['value']}}">{{values['value']}}</option>
 					{% endfor %}					
-				</select>
+				</select><br>
 			{% endfor %}
 		{% endfor %}
 	</form>
 	<br>
-	{{d|safe}}
 
 {% endblock %}

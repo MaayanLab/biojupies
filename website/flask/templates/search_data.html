@@ -31,6 +31,7 @@ $('#dataset-search-form').submit(function(evt) {
 		success: function(res) {
 			$('#datasets').html('');
 			$.each(res, function(index, elem) {
+				console.log(elem);
 				var id = elem['gse']+'-'+elem['gpl'];
 				$('#datasets').append($('<div>', {'class': index > 5 ? 'hidden' : ''}).append($('<input>', {'type': 'radio', 'required': 'true', 'name': 'gse-gpl', 'id': id, 'value': id})).append($('<label>', {'for': id}).html(elem['gse'])));
 			})
