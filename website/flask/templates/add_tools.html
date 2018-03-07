@@ -1,18 +1,29 @@
 {% extends 'base.html' %}
+{% import 'macros.html' as macros %}
 
 {% block content %}
-<button onclick="goBack()">Go Back</button>
-add tools
-<br>
-<form id="add-tools-form" action="{{ url_for('configure_analysis') }}" method="post">
-	<input type="hidden" name="gse" value="{{d.get('gse')}}">
-	<input type="hidden" name="gpl" value="{{d.get('gpl')}}">
-	<select name="tool" multiple="true">
-	{% for index, tool in t.iterrows() %}
-		<option value="{{ tool['tool_string'] }}" selected>{{ tool['tool_name'] }}</option>
-	{% endfor %}
-	</select>
-	<button type="submit">Continue</button>
-</form>
+
+<div class="container">
+	<div class="row">
+		<div class="col-8 step-title">Add Analysis Tools</div>
+		<div class="col-4 navigate-col text-right">
+			<button class="btn btn-primary navigate-link" onclick="goBack();"><i class="fa fa-angle-left"></i>&nbspBack</button>&nbsp&nbsp
+			<!-- <a class="btn btn-primary navigate-link" href="{{ url_for('search_data') }}"><i class="fa fa-angle-left"></i>&nbspBack</a>&nbsp&nbsp -->
+			<button class="btn btn-primary navigate-link" form="add-tools-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">Continue&nbsp<i class="fa fa-angle-right"></i></button>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-12">
+			<form id="add-tools-form">
+				<input type="hidden" name="gse" value="{{d.get('gse')}}">
+				<input type="hidden" name="gpl" value="{{d.get('gpl')}}">
+				{% for tool in t %}
+					{{ macros.tool_checkbox(tool) }}
+				{% endfor %}
+			</form>
+		</div>
+	</div>
+</div>
+
 
 {% endblock %}

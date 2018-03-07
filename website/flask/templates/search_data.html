@@ -5,14 +5,17 @@
 
 <div class="container">
 	<div class="row">
-		<div class="col-10 step-title">Search Datasets</div>
-		<div class="col-2 continue-col"><button class="continue-link" form="dataset-form" type="submit" formaction="{{ url_for('add_tools') }}" formmethod="post">Continue&nbsp<i class="fa fa-angle-right"></i></button></div>
+		<div class="col-8 step-title">Search Datasets</div>
+		<div class="col-4 navigate-col text-right">
+			<a class="btn btn-primary navigate-link" href="{{ url_for('analyze') }}"><i class="fa fa-angle-left"></i>&nbspBack</a>&nbsp&nbsp
+			<button class="btn btn-primary navigate-link" form="dataset-form" type="submit" formaction="{{ url_for('add_tools') }}" formmethod="post">Continue&nbsp<i class="fa fa-angle-right"></i></button>
+		</div>
 	</div>
 	<div class="row">
 		<div class="col-12">
 			<form id="dataset-search-form">
-				<input type="text" name="q" value="{{request.args.get('q')}}">
-				<button><i class="fa fa-search"></i></button>
+				<input type="text" name="q" value="{{request.args.get('q', '')}}">
+				<button type="button"><i class="fa fa-search"></i></button>
 			</form>
 		</div>
 	</div>

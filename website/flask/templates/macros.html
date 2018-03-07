@@ -23,19 +23,19 @@
 
 	{% set id = dataset['gse']+'-'+dataset['gpl'] %}
 
-	<div class="row">
+	<div class="row object-selection-row">
 		<div class="col-12">
-			<input type="radio" required="true" name="gse-gpl" id="{{id}}" value="{{id}}" class="dataset-selection-radio">
-			<label for="{{id}}" class="dataset-selection-label">
+			<input type="radio" required="true" name="gse-gpl" id="{{id}}" value="{{id}}">
+			<label for="{{id}}">
 				<div class="row">
 					<div class="col-1">
-						<img class="dataset-icon" src="{{ url_for('static', filename='img/dataset_icon.png') }}">
+						<img src="{{ url_for('static', filename='img/dataset_icon.png') }}">
 					</div>
 					<div class="col-11">
-						<div class="dataset-title">{{dataset['title']}}</div>
-						<div class="dataset-metadata">
-							<span class="dataset-metadata-span"><span class="dataset-metadata-value">{{dataset['nr_samples']}} samples</span></span>
-							<span class="dataset-metadata-span"><span class="dataset-metadata-key">Accession:</span><span class="dataset-metadata-value">{{dataset['gse']}}</span></span>
+						<div class="object-title">{{dataset['title']}}</div>
+						<div class="object-description">
+							<span class="object-metadata"><span class="object-metadata-value">{{dataset['nr_samples']}} samples</span></span>
+							<span class="object-metadata"><span class="object-metadata-key">Accession:</span><span class="object-metadata-value">{{dataset['gse']}}</span></span>
 						</div>
 					</div>
 				</div>
@@ -44,3 +44,29 @@
 	</div>
 
 {% endmacro %}
+
+<!-- ###############################################  -->
+<!-- ##### Tool Radio ##############################  -->
+<!-- ###############################################  -->
+
+{% macro tool_checkbox(tool) %}
+
+	<div class="row object-selection-row">
+		<div class="col-12">
+			<input type="checkbox" name="tool" id="{{tool['tool_string']}}" value="{{tool['tool_string']}}" {{'checked' if tool['default_selected'] else ''}}>
+			<label for="{{tool['tool_string']}}">
+				<div class="row">
+					<div class="col-1">
+						<img src="{{ url_for('static', filename='img/tool/{tool_string}.png'.format(**tool)) }}">
+					</div>
+					<div class="col-11">
+						<div class="object-title">{{tool['tool_name']}}</div>
+						<div class="object-description">{{tool['tool_description']}}</div>
+					</div>
+				</div>
+			</label>
+		</div>
+	</div>
+
+{% endmacro %}
+

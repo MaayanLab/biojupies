@@ -1,38 +1,59 @@
 {% extends 'base.html' %}
+{% import 'macros.html' as macros %}
 
 {% block content %}
 
-<button onclick="goBack()">Back</button>
-	<button onclick="reset_groups()">Reset</button>
-	<form id="configure-signature-form" action="{{ url_for('configure_analysis') }}" method="post">
-		<input type="text" name="group_a_label" value="control" class="group_label" data-group="a"> vs <input type="text" name="group_b_label" value="perturbation" class="group_label" data-group="b">
-		<table width="1500px;">
-			<tr>
-				<th>Group</th>
-				{% for col in j.columns %}
-					<th>{{ col.title() }}</th>
-				{% endfor %}
-			</tr>
-			{% for index, rowData in j.iterrows() %}
-				<tr class="sample-row" data-group="none">
-					<td>
-						None
-					</td>
-					{% for col in j.columns %}
-						<td>{{ rowData[col] }}</td>
+<div class="container">
+	<div class="row">
+		<div class="col-8 step-title">Generate Signature</div>
+		<div class="col-4 navigate-col text-right">
+			<button class="btn btn-primary navigate-link" onclick="goBack();"><i class="fa fa-angle-left"></i>&nbspBack</button>&nbsp&nbsp
+			<button class="btn btn-primary navigate-link" form="dataset-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">Continue&nbsp<i class="fa fa-angle-right"></i></button>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-12">
+			<form id="configure-signature-form" action="{{ url_for('configure_analysis') }}" method="post">
+				<div class="step-subtitle">Name the Groups</div>
+				<input type="text" name="group_a_label" value="control" class="group_label" data-group="a">&nbspvs&nbsp<input type="text" name="group_b_label" value="perturbation" class="group_label" data-group="b">
+				<div class="step-subtitle">Select the Samples</div>
+				<table id="sample-table">
+					<thead>
+						<tr>
+							<th>Group</th>
+							{% for col in j.columns %}
+								<th>{{ col.title() }}</th>
+							{% endfor %}
+						</tr>
+					</thead>
+					<tbody>
+						{% for index, rowData in j.iterrows() %}
+							<tr class="sample-row" data-group="none">
+								<td>
+									<select id="group-select">
+										<option value="none"></option>
+										<option value="a"></option>
+										<option value="b"></option>
+									</select>
+								</td>
+								{% for col in j.columns %}
+									<td>{{ rowData[col] }}</td>
+								{% endfor %}
+								<input type="hidden" name="{{rowData['accession']}}-group" value="none">
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+				{% for key, values in f.lists() %}
+					{% for value in values %}
+						<input type="hidden" name="{{ key }}" value="{{ value }}">
 					{% endfor %}
-					<input type="hidden" name="{{rowData['accession']}}-group" value="none">
-				</tr>
-			{% endfor %}
-		</table>
-		{% for key, values in f.lists() %}
-			{% for value in values %}
-				<input type="hidden" name="{{ key }}" value="{{ value }}">
-			{% endfor %}
-		{% endfor %}
-		<input type="hidden" name="requires_signature" value="False">
-		<button type="submit">Continue</button>
-	</form>
+				{% endfor %}
+				<input type="hidden" name="requires_signature" value="False">
+			</form>
+		</div>
+	</div>
+</div>
 
 {% endblock %}
 
@@ -40,44 +61,9 @@
 
 <script type="text/javascript">
 
-	// Cycle
-	function cycle_group(evt) {
-		var $row = $(evt.target).parents('.sample-row'),
-			new_group,
-			new_group_label;
-		if (evt.shiftKey) {
-			new_group = 'b';
-			new_group_label = $('input[name="group_'+new_group+'_label"').val();
-		} else {
-			if ($row.attr('data-group') != 'none') {
-				new_group = 'none';
-				new_group_label = 'None';
-			} else {
-				new_group = 'a';
-				new_group_label = $('input[name="group_'+new_group+'_label"').val();
-			}
-		}
-		$row.attr('data-group', new_group);
-		$row.find('td').first().html(new_group_label);
-		$row.find('input').first().val(new_group);
-	}
-
-	// Reset
-	function reset_groups() {
-		$('.sample-row').each(function(index, elem) {
-			$(elem).attr('data-group', 'none');
-			$(elem).find('td').first().html('None');
-		});
-	}
-
-	// Cycle listener
-	$('.sample-row').mousedown(function(evt) { cycle_group(evt); })
-	$('.sample-row').mouseenter(function(evt) { if (evt.buttons == 1) {cycle_group(evt);} })
-
-	// Name updater
-	$('.group_label').change(function(evt) {
-		$('tr[data-group="'+$(evt.target).attr('data-group')+'"]').each(function(index, elem) { $(elem).find('td').first().html($(evt.target).val()); })
-	})
+	$(document).ready(function(){
+	    $('#sample-table').DataTable();
+	});
 
 </script>
 

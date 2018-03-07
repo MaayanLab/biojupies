@@ -28,7 +28,7 @@ import pandas as pd
 ########## 1. Run
 #############################################
 
-def run(dataset, normalization='rawdata', normalize_cols=True, log=True, z_score=True, nr_genes=1500):
+def run(dataset, normalize_cols=True, log=True, z_score=True, nr_genes=1500, metadata_cols=None):
 
 	# Get tempfile
 	(fd, filename) = tempfile.mkstemp()
@@ -52,9 +52,14 @@ def run(dataset, normalization='rawdata', normalize_cols=True, log=True, z_score
 		if z_score:
 			data = data.apply(ss.zscore, axis=1)
 
+		# If metadata
+		sample_metadata = dataset['sample_metadata'].copy()
+		if metadata_cols:
+			sample_metadata = pd.concat([sample_metadata[metadata_cols].index.rename('Sample').to_frame(), sample_metadata[metadata_cols]], axis=1)
+
 		# Add metadata
 		data.index = ['Gene: '+x for x in data.index]
-		data.columns=pd.MultiIndex.from_tuples([tuple(['{key}: {value}'.format(**locals()) for key, value in rowData.items()]) for index, rowData in dataset['sample_metadata'].iterrows()])
+		data.columns=pd.MultiIndex.from_tuples([tuple(['{key}: {value}'.format(**locals()) for key, value in rowData.items()]) for index, rowData in sample_metadata.loc[data.columns].iterrows()])
 
 		# Write file and get link
 		data.to_csv(filename, sep='\t')
