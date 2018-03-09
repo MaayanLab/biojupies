@@ -1,30 +1,32 @@
 {% extends 'base.html' %}
+{% import 'macros.html' as macros %}
 
 {% block content %}
 
-<button onclick="goBack()">Go Back</button>
-Review
-	<form id="review-analysis-form" action="{{ url_for('generate_notebook') }}" method="post">
-		<input type="text" name="notebook_title" value="Notebook Title">
-		{% for key, values in f.lists() %}
-			{% for value in values %}
-				<input type="hidden" name="{{ key }}" value="{{ value }}">
-			{% endfor %}
-		{% endfor %}
-		<button type="submit">Continue</button>
-		<br>
-		{% for tool_name, tool_data in d.items()%}
-		{{ tool_name }}<br>
-			{% for parameter_string, parameter_data in tool_data['parameters'].items() %}
-				{{ parameter_data['parameter_name'] }}
-				<select name="{{tool_data['tool_string']}}-{{parameter_string}}">
-					{% for values in parameter_data['values'] %}
-						<option {{'selected' if values['default'] else ''}} value="{{values['value']}}">{{values['value']}}</option>
-					{% endfor %}					
-				</select><br>
-			{% endfor %}
-		{% endfor %}
-	</form>
-	<br>
+<div class="container">
+	<div class="row">
+		<div class="col-8 step-title">Review and Submit</div>
+		<div class="col-4 navigate-col text-right">
+			<button class="btn btn-primary navigate-link" onclick="goBack();"><i class="fa fa-angle-left"></i>&nbspBack</button>&nbsp&nbsp
+			<button class="btn btn-primary navigate-link" form="review-analysis-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">Continue&nbsp<i class="fa fa-angle-right"></i></button>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-12">
+			<div class="step-subtitle">Review optional parameters and submit the notebook.</div>
+			<form id="review-analysis-form" action="{{ url_for('generate_notebook') }}" method="post">
+				<!-- <input type="text" name="notebook_title" value="Notebook Title"> -->
+				{% for tool_string, tool_data in t.items() %}
+				{% endfor %}
+				{% for key, values in f.lists() %}
+					{% for value in values %}
+						<input type="hidden" name="{{ key }}" value="{{ value }}">
+					{% endfor %}
+				{% endfor %}
+				{{p|safe}}
+			</form>
+		</div>
+	</div>
+</div>
 
 {% endblock %}

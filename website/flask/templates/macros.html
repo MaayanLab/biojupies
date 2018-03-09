@@ -46,7 +46,7 @@
 {% endmacro %}
 
 <!-- ###############################################  -->
-<!-- ##### Tool Radio ##############################  -->
+<!-- ##### Tool Checkbox ###########################  -->
 <!-- ###############################################  -->
 
 {% macro tool_checkbox(tool) %}
@@ -62,6 +62,30 @@
 					<div class="col-11">
 						<div class="object-title">{{tool['tool_name']}}</div>
 						<div class="object-description">{{tool['tool_description']}}</div>
+					</div>
+				</div>
+			</label>
+		</div>
+	</div>
+
+{% endmacro %}
+
+<!-- ###############################################  -->
+<!-- ##### Parameters Card #########################  -->
+<!-- ###############################################  -->
+
+{% macro parameter_card(card_name, parameters) %}
+
+	<div class="row object-selection-row">
+		<div class="col-12">
+			<label>
+				<div class="row">
+					<div class="col-1">
+						<img src="{{ url_for('static', filename='img/tool/{}.png'.format(card_name)) }}">
+					</div>
+					<div class="col-11">
+						<div class="object-title">{{card_name}}</div>
+						<div class="object-description">{{card_name}}</div>
 					</div>
 				</div>
 			</label>

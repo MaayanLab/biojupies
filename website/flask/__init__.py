@@ -107,23 +107,28 @@ def configure_analysis():
 	signature_tools = pd.read_sql_query('SELECT tool_string FROM tool WHERE requires_signature = TRUE', engine)['tool_string'].values
 	requires_signature = any([x in signature_tools for x in [x for x in f.lists()][-1][-1]])
 	if requires_signature:
-		j = pd.read_sql_query('SELECT CONCAT(gsm, "---", sample_title) AS sample_info, variable, value FROM sample s LEFT JOIN series g ON g.id=s.series_fk LEFT JOIN sample_metadata sm ON s.id=sm.sample_fk WHERE gse = "{}"'.format(f.get('gse')), engine).pivot(index='sample_info', columns='variable', values='value')
+		j = pd.read_sql_query('SELECT DISTINCT CONCAT(gsm, "---", sample_title) AS sample_info, variable, value FROM sample s LEFT JOIN series g ON g.id=s.series_fk LEFT JOIN sample_metadata sm ON s.id=sm.sample_fk WHERE gse = "{}"'.format(f.get('gse')), engine).pivot(index='sample_info', columns='variable', values='value')
 		j = pd.concat([pd.DataFrame({'accession': [x.split('---')[0] for x in j.index], 'sample': [x.split('---')[1] for x in j.index]}, index=j.index), j], axis=1).reset_index(drop=True).fillna('')
 		j = j[[col for col, colData in j.iteritems() if len(colData.unique()) > 1]]
 		return render_template('configure_signature.html', f=f, j=j)
 	else:
-		tools = '("'+'","'.join([value for value, key in zip(f.listvalues(), f.keys()) if key == 'tool'][0])+'")'
-		p = pd.read_sql_query('SELECT tool_name, tool_string, parameter_name, parameter_description, parameter_string, value, `default` FROM parameter p LEFT JOIN tool t ON t.id=p.tool_fk LEFT JOIN parameter_value pv ON p.id=pv.parameter_fk WHERE t.tool_string IN {}'.format(tools), engine).set_index(['tool_name'])#.set_index(['tool_name', 'parameter_name', 'parameter_description', 'parameter_string'])
-		d = {}
-		for index, rowData in p.iterrows():
-			if index not in d.keys():
-				d[index] = {'parameters': {}, 'tool_string': rowData['tool_string']}
-			if rowData['parameter_string'] not in d[index]['parameters'].keys():
-				d[index]['parameters'][rowData['parameter_string']] = {x: rowData[x] for x in ['parameter_description', 'parameter_name']}
-				d[index]['parameters'][rowData['parameter_string']]['values'] = []
-			d[index]['parameters'][rowData['parameter_string']]['values'].append({'value': rowData['value'], 'default': rowData['default']})
-		print(tools)
-		return render_template('review_analysis.html', f=f, d=d, p=p)
+		tools = [value for value, key in zip(f.listvalues(), f.keys()) if key == 'tool'][0]
+		tool_query_string = '("'+'","'.join([value for value, key in zip(f.listvalues(), f.keys()) if key == 'tool'][0])+'")'
+		p = pd.read_sql_query('SELECT tool_name, tool_string, tool_description, parameter_name, parameter_description, parameter_string, value, `default` FROM tool t LEFT JOIN parameter p ON t.id=p.tool_fk LEFT JOIN parameter_value pv ON p.id=pv.parameter_fk WHERE t.tool_string IN {}'.format(tool_query_string), engine).set_index(['tool_string'])#.set_index(['tool_name', 'parameter_name', 'parameter_description', 'parameter_string'])
+		t = p[['tool_name', 'tool_description']].drop_duplicates().to_dict(orient='index')#.groupby('tool_string')[['tool_name', 'tool_description']]#.apply(tuple).to_frame()#drop_duplicates().to_dict(orient='index')
+		p = json.dumps({tool_string: p.drop(['tool_description', 'tool_name'], axis=1).loc[tool_string].to_dict(orient='records') if not isinstance(p.loc[tool_string], pd.Series) else [] for tool_string in tools})
+		# p_dict = p[['tool_name', 'tool_description']].drop_duplicates().to_dict(orient='index')
+		# p_dict = 
+		# parameters = [{'tool_string': tool_string, 'tool_description': p.loc[tool_string, 'tool_name'] if isinstance(p.loc[tool_string, 'tool_name'], str) else p.loc[tool_string, 'tool_name'].values[0]} for tool_string in tools]
+		# d = {}
+		# for index, rowData in p.iterrows():
+		# 	if index not in d.keys():
+		# 		d[index] = {'parameters': {}, 'tool_string': rowData['tool_string']}
+		# 	if rowData['parameter_string'] not in d[index]['parameters'].keys():
+		# 		d[index]['parameters'][rowData['parameter_string']] = {x: rowData[x] for x in ['parameter_description', 'parameter_name']}
+		# 		d[index]['parameters'][rowData['parameter_string']]['values'] = []
+		# 	d[index]['parameters'][rowData['parameter_string']]['values'].append({'value': rowData['value'], 'default': rowData['default']})
+		return str(p)#render_template('review_analysis.html', p=p, t=t, f=f)
 
 #############################################
 ########## 7. Generate Notebook

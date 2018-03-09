@@ -42,7 +42,9 @@ def run(dataset, gene_symbols, groups):
 ########## 2. Plot
 #############################################
 
-def plot(plot_dataframe):
+def plot(plot_dataframe, order=None):
 	sns.set_context('talk')
-	g = sns.factorplot(x='Group', y='logCPM', col='gene_symbol', data=plot_dataframe, sharex=False, sharey=False, kind='box', col_wrap=3)
+	if not order:
+		order = plot_dataframe['Group'].sort_values().unique()
+	g = sns.factorplot(x='Group', y='logCPM', col='gene_symbol', data=plot_dataframe, sharex=False, sharey=False, kind='box', col_wrap=3, order=order)
 	g.set_axis_labels("", "logCPM").set_titles("{col_name}");

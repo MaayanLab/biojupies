@@ -8,16 +8,19 @@
 		<div class="col-8 step-title">Generate Signature</div>
 		<div class="col-4 navigate-col text-right">
 			<button class="btn btn-primary navigate-link" onclick="goBack();"><i class="fa fa-angle-left"></i>&nbspBack</button>&nbsp&nbsp
-			<button class="btn btn-primary navigate-link" form="dataset-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">Continue&nbsp<i class="fa fa-angle-right"></i></button>
+			<button class="btn btn-primary navigate-link" form="configure-signature-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">Continue&nbsp<i class="fa fa-angle-right"></i></button>
 		</div>
 	</div>
 	<div class="row">
 		<div class="col-12">
-			<form id="configure-signature-form" action="{{ url_for('configure_analysis') }}" method="post">
+			<form id="configure-signature-form">
 				<div class="step-subtitle">Name the Groups</div>
-				<input type="text" name="group_a_label" value="control" class="group_label" data-group="a">&nbspvs&nbsp<input type="text" name="group_b_label" value="perturbation" class="group_label" data-group="b">
+				<input type="text" name="group_a_label" value="Control" class="group-label-input" data-group="a" maxlength="50">
+				&nbspvs&nbsp
+				<input type="text" name="group_b_label" value="Perturbation" class="group-label-input" data-group="b" maxlength="50">
+				<input type="hidden" value="Select..." class="group-label-input" data-group="none" maxlength="50">
 				<div class="step-subtitle">Select the Samples</div>
-				<table id="sample-table">
+				<table id="sample-table" class="stripe">
 					<thead>
 						<tr>
 							<th>Group</th>
@@ -30,11 +33,15 @@
 						{% for index, rowData in j.iterrows() %}
 							<tr class="sample-row" data-group="none">
 								<td>
-									<select id="group-select">
-										<option value="none"></option>
-										<option value="a"></option>
-										<option value="b"></option>
-									</select>
+									<div class="dropdown group-dropdown">
+										<button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-group="none">Select...&nbsp</button>
+										<div class="dropdown-menu">
+											<span class="dropdown-item" data-dropdown-group="a"><i class="fa fa-square-full"></i>&nbsp<span class="nostyle" data-group="a">Control</span></span>
+											<span class="dropdown-item" data-dropdown-group="b"><i class="fa fa-square-full"></i>&nbsp<span class="nostyle" data-group="b">Perturbation</span></span>
+											<span class="dropdown-item" data-dropdown-group="none"><i class="fa fa-square-full"></i>&nbsp<span class="nostyle" data-group="none">None</span></span>
+										</div>
+										<input type="hidden" name="{{rowData['accession']}}-group" value="none">
+									</div>
 								</td>
 								{% for col in j.columns %}
 									<td>{{ rowData[col] }}</td>
@@ -62,7 +69,60 @@
 <script type="text/javascript">
 
 	$(document).ready(function(){
-	    $('#sample-table').DataTable();
+	    $('#sample-table').DataTable({
+	    	"lengthMenu": [[-1, 10, 25, 50], ["All", 10, 25, 50]],
+	    	  "columnDefs": [
+				{ "orderable": false, "targets": 0 },
+				{ "searchable": false, "targets": 0 },
+			  ]
+	    });
+
+	    $('#sample-table_length').html('To proceed, select at least three samples to add to the <span class="group-description-label" data-group="a">Control</span> group, and at least three samples to add to the <span class="group-description-label" data-group="b">Perturbation</span> group.')
+
+	    $('.dropdown-item').click(function(evt) {
+	    	var $item = $(evt.target).hasClass('dropdown-item') ? $(evt.target) : $(evt.target).parents('.dropdown-item'),
+	    		new_group = $item.data('dropdown-group'),
+	    		new_label = $('.group-label-input[data-group="'+new_group+'"]').val();
+    		$(evt.target).parents('.dropdown').find('button').html(new_label+'&nbsp').attr('data-group', new_group);
+    		$(evt.target).parents('.dropdown').find('input').val(new_group);
+    		$(evt.target).parents('tr').attr('data-group', new_group);
+	    })
+
+	    function autoSelect(group, value) {
+	    	var hit = false;
+	    	if (value.length > 0) {
+		    	$('#sample-table tr').each(function(index, row) {
+		    		if ($(row).find('td:not(:first-child)').text().toLowerCase().indexOf(value.toLowerCase()) > -1) {
+		    			$(row).find('[data-dropdown-group="'+group+'"]').click();
+		    			hit = true;
+		    		} else {
+		    			if (group == $(row).find('.dropdown-toggle').attr('data-group')) {
+			    			$(row).find('[data-dropdown-group="none"]').click();
+		    			}
+		    		}
+		    	})
+	    	}
+	    	return hit
+	    }
+
+	    $('.group-label-input').change(function(evt) {
+	    	var value = $(evt.target).val(),
+	    		group = $(evt.target).data('group');
+	    	$('[data-group="'+group+'"]:not(tr)').text(value);
+	    	autoSelect(group, value);
+	    })
+
+	    var hit, terms=['Control', 'Ctl', 'Untreated', 'Vehicle', 'Normal', 'Non-specific', 'DMSO'];
+	    for (i = 0; i < terms.length; i++) {
+	    	hit = autoSelect('a', terms[i]);
+	    	if (hit) { 
+	    		$('input[name="group_a_label"]').val(terms[i]);
+	    		break
+	    	}
+	    }
+
+	    $('#sample-table_wrapper').doubleScroll();
+
 	});
 
 </script>
