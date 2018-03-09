@@ -22,7 +22,7 @@ r.source(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'signature.R'
 #######################################################
 #######################################################
 
-def make_design_matrix(expression_dataframe, group_A, group_B):
+def make_design_matrix(expression_dataframe, group_A, group_B, data):
 
 	# Sample names
 	group_A = [x.replace(':', '.').replace('-', '.') for x in group_A]
@@ -30,15 +30,15 @@ def make_design_matrix(expression_dataframe, group_A, group_B):
 	expression_dataframe.columns = [x.replace(':', '.').replace('-', '.') for x in expression_dataframe.columns]
 
 	# Get expression dataframe
-	expression_dataframe = expression_dataframe[group_B+group_A]
+	if data == 'subset':
+		expression_dataframe = expression_dataframe[group_A+group_B]
 
 	# Create design dataframe
-	sample_dict = {'A': group_B, 'B': group_A}
-	design_dataframe = pd.DataFrame({group_label: {sample:int(sample in group_samples) for sample in expression_dataframe.columns} for group_label, group_samples in sample_dict.items()})
+	sample_dict = {'A': group_A, 'B': group_B}
+	design_dataframe = pd.DataFrame([{'index': x, 'A': int(x in group_A), 'B': int(x in group_B)} for x in expression_dataframe.columns]).set_index('index')
 
 	# Return
 	return {'expression': expression_dataframe, 'design': design_dataframe}
-
 
 #######################################################
 #######################################################
@@ -50,10 +50,10 @@ def make_design_matrix(expression_dataframe, group_A, group_B):
 ########## 1. limma
 #############################################
 
-def limma(dataset, group_A, group_B):
+def limma(dataset, group_A, group_B, data):
 
 	# Get design
-	processed_data = make_design_matrix(dataset['rawdata'], group_A, group_B)
+	processed_data = make_design_matrix(dataset['rawdata'], group_A, group_B, data)
 
 	# Add
 	return pandas2ri.ri2py(r.limma(pandas2ri.py2ri(processed_data['expression']), pandas2ri.py2ri(processed_data['design']))).sort_values('logFC', ascending=False).set_index('gene_symbol')

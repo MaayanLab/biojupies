@@ -115,20 +115,15 @@ def configure_analysis():
 		tools = [value for value, key in zip(f.listvalues(), f.keys()) if key == 'tool'][0]
 		tool_query_string = '("'+'","'.join([value for value, key in zip(f.listvalues(), f.keys()) if key == 'tool'][0])+'")'
 		p = pd.read_sql_query('SELECT tool_name, tool_string, tool_description, parameter_name, parameter_description, parameter_string, value, `default` FROM tool t LEFT JOIN parameter p ON t.id=p.tool_fk LEFT JOIN parameter_value pv ON p.id=pv.parameter_fk WHERE t.tool_string IN {}'.format(tool_query_string), engine).set_index(['tool_string'])#.set_index(['tool_name', 'parameter_name', 'parameter_description', 'parameter_string'])
-		t = p[['tool_name', 'tool_description']].drop_duplicates().to_dict(orient='index')#.groupby('tool_string')[['tool_name', 'tool_description']]#.apply(tuple).to_frame()#drop_duplicates().to_dict(orient='index')
-		p = json.dumps({tool_string: p.drop(['tool_description', 'tool_name'], axis=1).loc[tool_string].to_dict(orient='records') if not isinstance(p.loc[tool_string], pd.Series) else [] for tool_string in tools})
-		# p_dict = p[['tool_name', 'tool_description']].drop_duplicates().to_dict(orient='index')
-		# p_dict = 
-		# parameters = [{'tool_string': tool_string, 'tool_description': p.loc[tool_string, 'tool_name'] if isinstance(p.loc[tool_string, 'tool_name'], str) else p.loc[tool_string, 'tool_name'].values[0]} for tool_string in tools]
-		# d = {}
-		# for index, rowData in p.iterrows():
-		# 	if index not in d.keys():
-		# 		d[index] = {'parameters': {}, 'tool_string': rowData['tool_string']}
-		# 	if rowData['parameter_string'] not in d[index]['parameters'].keys():
-		# 		d[index]['parameters'][rowData['parameter_string']] = {x: rowData[x] for x in ['parameter_description', 'parameter_name']}
-		# 		d[index]['parameters'][rowData['parameter_string']]['values'] = []
-		# 	d[index]['parameters'][rowData['parameter_string']]['values'].append({'value': rowData['value'], 'default': rowData['default']})
-		return str(p)#render_template('review_analysis.html', p=p, t=t, f=f)
+		t = p[['tool_name', 'tool_description']].drop_duplicates().reset_index().set_index('tool_string', drop=False).to_dict(orient='index')#.groupby('tool_string')[['tool_name', 'tool_description']]#.apply(tuple).to_frame()#drop_duplicates().to_dict(orient='index')
+		p_dict = {tool_string: p.drop(['tool_description', 'tool_name', 'value', 'default'], axis=1).loc[tool_string].drop_duplicates().to_dict(orient='records') if not isinstance(p.loc[tool_string], pd.Series) else [] for tool_string in tools}
+		for tool_string, parameters in p_dict.items():
+			for parameter in parameters:
+				parameter['values'] = p.reset_index().set_index(['tool_string', 'parameter_string'])[['value', 'default']].dropna().loc[(tool_string, parameter['parameter_string'])].to_dict(orient='records')
+		for tool_string in t.keys():
+			t[tool_string]['parameters'] = p_dict[tool_string]
+		t = [t[x] for x in tools]
+		return render_template('review_analysis.html', t=t, f=f)
 
 #############################################
 ########## 7. Generate Notebook
@@ -139,16 +134,17 @@ def generate_notebook():
 	d = {key:value if len(value) > 1 else value[0] for key, value in request.form.lists()}
 	p = {x:{} for x in d['tool']}
 	g = {x:[] for x in ['a', 'b', 'none']}
+	print(d)
 	for key, value in d.items():
 		if '-' in key:
 			if 'GSM' in key:
-				g[value].append(key.split('-')[0])
+				g[value[0]].append(key.split('-')[0])
 			else:
 				tool_string, parameter_string = key.split('-')
 				p[tool_string][parameter_string] = value
 
 	c = {
-		'notebook': {'title': d['notebook_title'], 'live': 'False', 'version': 'v0.3'},
+		'notebook': {'title': d.get('notebook_title'), 'live': 'False', 'version': 'v0.3'},
 		'tools': [{'tool_string': x, 'parameters': p.get(x, {})} for x in d['tool']],
 		'data': {'source': 'archs4', 'parameters': {'gse': d['gse'], 'platform': d['gpl']}},
 		'signature': {"method": "limma",

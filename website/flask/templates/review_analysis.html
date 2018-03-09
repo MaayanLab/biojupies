@@ -8,7 +8,7 @@
 		<div class="col-8 step-title">Review and Submit</div>
 		<div class="col-4 navigate-col text-right">
 			<button class="btn btn-primary navigate-link" onclick="goBack();"><i class="fa fa-angle-left"></i>&nbspBack</button>&nbsp&nbsp
-			<button class="btn btn-primary navigate-link" form="review-analysis-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">Continue&nbsp<i class="fa fa-angle-right"></i></button>
+			<button class="btn btn-primary navigate-link" form="review-analysis-form" type="submit" formaction="{{ url_for('generate_notebook') }}" formmethod="post">Continue&nbsp<i class="fa fa-angle-right"></i></button>
 		</div>
 	</div>
 	<div class="row">
@@ -16,14 +16,14 @@
 			<div class="step-subtitle">Review optional parameters and submit the notebook.</div>
 			<form id="review-analysis-form" action="{{ url_for('generate_notebook') }}" method="post">
 				<!-- <input type="text" name="notebook_title" value="Notebook Title"> -->
-				{% for tool_string, tool_data in t.items() %}
+				{% for tool in t %}
+					{{ macros.parameter_card(tool) }}
 				{% endfor %}
 				{% for key, values in f.lists() %}
 					{% for value in values %}
 						<input type="hidden" name="{{ key }}" value="{{ value }}">
 					{% endfor %}
 				{% endfor %}
-				{{p|safe}}
 			</form>
 		</div>
 	</div>

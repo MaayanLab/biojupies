@@ -74,21 +74,39 @@
 <!-- ##### Parameters Card #########################  -->
 <!-- ###############################################  -->
 
-{% macro parameter_card(card_name, parameters) %}
+{% macro parameter_card(tool) %}
 
 	<div class="row object-selection-row">
 		<div class="col-12">
 			<label>
 				<div class="row">
 					<div class="col-1">
-						<img src="{{ url_for('static', filename='img/tool/{}.png'.format(card_name)) }}">
+						<img src="{{ url_for('static', filename='img/tool/{}.png'.format(tool['tool_string'])) }}">
 					</div>
 					<div class="col-11">
-						<div class="object-title">{{card_name}}</div>
-						<div class="object-description">{{card_name}}</div>
+						<div class="object-title">{{tool.tool_name}}</div>
+						<div class="object-description">{{tool.tool_description}}</div>
 					</div>
 				</div>
 			</label>
+			<div class="row">
+				<div class="col-12">
+					{% for parameter in tool.parameters %}
+						<div class="row">
+							<div class="col-3">
+								{{parameter.parameter_name}}
+							</div>
+							<div class="col-9">
+								<select name="{{tool.tool_string}}-{{parameter.parameter_string}}">
+									{% for value in parameter['values'] %}
+										<option value="{{value.value}}" {{'selected' if value.default else ''}}>{{value.value}}</option>
+									{% endfor %}
+								</select>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
 		</div>
 	</div>
 

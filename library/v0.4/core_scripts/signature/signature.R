@@ -29,6 +29,7 @@ limma <- function(rawcount_dataframe, design_dataframe, adjust="BH") {
 
 	# Convert design matrix
 	design <- as.matrix(design_dataframe)
+	print(design)
 
 	# Create DGEList object
 	dge <- DGEList(counts=rawcount_dataframe)
@@ -43,7 +44,7 @@ limma <- function(rawcount_dataframe, design_dataframe, adjust="BH") {
 	fit <- lmFit(v, design)
 
 	# Make contrast matrix
-	cont.matrix <- makeContrasts(de=A-B, levels=design)
+	cont.matrix <- makeContrasts(de=B-A, levels=design)
 
 	# Fit
 	fit2 <- contrasts.fit(fit, cont.matrix)
