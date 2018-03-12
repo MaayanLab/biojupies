@@ -5,9 +5,10 @@
 
 <div class="container">
 	<div class="row">
-		<div class="col-12 text-center step-title">What data would you like to analyze?</div>
+		<div class="col-12 text-center very-large mt-5 mb-1">What data would you like to analyze?</div>
+		<hr width="100%" class="my-4">
 	</div>
-	<div class="row">
+	<div class="row mt-4">
 		{% for option in options %}
 			{{ macros.option_col(option, options|length) }}
 		{% endfor %}

@@ -1,27 +1,51 @@
 {% extends 'base.html' %}
 {% import 'macros.html' as macros %}
 
+{% block head %}
+	<link href="{{ url_for('static', filename='css/nouislider.min.css') }}" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
 
 <div class="container">
 	<div class="row">
-		<div class="col-8 step-title">Search Datasets</div>
-		<div class="col-4 navigate-col text-right">
-			<a class="btn btn-primary navigate-link" href="{{ url_for('analyze') }}"><i class="fa fa-angle-left"></i>&nbspBack</a>&nbsp&nbsp
-			<button class="btn btn-primary navigate-link" form="dataset-form" type="submit" formaction="{{ url_for('add_tools') }}" formmethod="post">Continue&nbsp<i class="fa fa-angle-right"></i></button>
+		<div class="col-8 large mt-5 pl-4">Search Datasets</div>
+		<div class="col-4 text-right mt-5">
+			<a class="btn btn-primary black border-black bg-white" href="{{ url_for('analyze') }}"><i class="fa fa-angle-left"></i>&nbspBack</a>&nbsp&nbsp
+			<button class="btn btn-primary navigate black border-black bg-white" form="dataset-form" type="submit" formaction="{{ url_for('add_tools') }}" formmethod="post">Continue&nbsp<i class="fa fa-angle-right"></i></button>
 		</div>
 	</div>
 	<div class="row">
 		<div class="col-12">
+			<hr width="100%" class="my-3">
 			<form id="dataset-search-form">
-				<input type="text" name="q" value="{{request.args.get('q', '')}}">
-				<button type="button"><i class="fa fa-search"></i></button>
+				<div class="border-custom rounded mt-4 mb-3">
+					<input type="text" name="q" value="{{request.args.get('q', '')}}" class="border-0 w-75 nodecoration px-3 py-2 small light">
+					<button type="submit" class="border-0 px-1 py-2 float-right bg-transparent cursor-pointer nodecoration"><i class="fa fa-search text-muted mr-2 medium mt-1"></i></button>
+				</div>
+				<div class="text-secondary form-inline mt-3 mb-3">
+<!-- 					<label class="very-small regular ml-2 mr-2" for="organism">Organism:</label>
+					<select class="form-control nodecoration" id="organism" name="organism">
+						<option value="all" {{'selected' if request.args.get('organism') == 'all' else ''}}>All</option>
+						<option value="human" {{'selected' if request.args.get('organism') == 'human' else ''}}>Human</option>
+						<option value="mouse" {{'selected' if request.args.get('organism') == 'mouse' else ''}}>Mouse</option>
+					</select>
+ -->					<label class="very-small regular ml-2 mr-3" for="samples">Samples:</label>
+					<div id="slider" class="ml-2"></div>
+					<input type="hidden" id="min-samples" name="min_samples" value="{{ min_samples }}">
+					<input type="hidden" id="max-samples" name="max_samples" value="{{ max_samples }}">
+					<label class="very-small regular ml-5 mr-2" for="sortby">Sort by:</label>
+					<select class="form-control nodecoration" id="sortby" name="sortby">
+						<option value="desc" {{'selected' if request.args.get('sortby') == 'desc' else ''}}>Samples (descending)</option>
+						<option value="asc" {{'selected' if request.args.get('sortby') == 'asc' else ''}}>Samples (ascending)</option>
+					</select>
+				</div>
 			</form>
 		</div>
 	</div>
 	{% if d %}
 	<div class="row">
-		<div class="col-12">
+		<div class="col-12 mx-1">
 			<form id="dataset-form">
 				{% for dataset in d %}				
 					{{ macros.dataset_radio(dataset) }}
@@ -32,4 +56,45 @@
 	{% endif %}
 </div>
 
+{% endblock %}
+
+
+{% block footer %}
+<script src="{{ url_for('static', filename='js/nouislider.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/wNumb.js') }}"></script>
+
+<script type="text/javascript">
+	var slider = noUiSlider.create(document.getElementById('slider'), {
+		start: [ {{ min_samples }}, {{ max_samples }} ], // 4 handles, starting at...
+		margin: 1, // Handles must be at least 300 apart
+		connect: true, // Display a colored bar between the handles
+		orientation: 'horizontal', // Orient the slider vertically
+		behaviour: 'tap-drag', // Move handle on tap, bar is draggable
+		step: 1,
+		format: wNumb({
+			decimals: 0
+		}),
+		tooltips: true,
+		range: {
+			'min': 6,
+			'max': 70
+		},
+		pips: { // Show a scale with the slider
+			mode: 'values',
+			values: [6, 35, 70],
+			density: 10
+		}
+	})
+	
+	$('.noUi-value').last().html($('.noUi-value').last().html()+'+');
+
+	slider.on('change', function(range) {
+		$('#min-samples').val(range[0]);
+		$('#max-samples').val(range[1]);
+	})
+
+	{% if request.args.get('min_samples') %}
+		slider.set([{{request.args.get('min_samples')}}, {{request.args.get('max_samples')}}])
+	{% endif %}
+</script>
 {% endblock %}

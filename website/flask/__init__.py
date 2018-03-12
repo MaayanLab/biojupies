@@ -63,9 +63,9 @@ def index():
 @app.route(entry_point+'/analyze')
 def analyze():
 	options = [
-		{'link': 'search_data', 'icon': 'search', 'title': 'Search', 'description': 'Search from over 5,000 preprocessed transcriptomics datasets'},
-		{'link': 'upload_data', 'icon': 'upload', 'title': 'Upload', 'description': 'Upload your own gene expression data'},
-		{'link': 'index', 'icon': 'table', 'title': 'Example', 'description': 'Try an example dataset'}
+		{'link': 'search_data', 'icon': 'search', 'title': 'Search', 'description': 'Search thousands of ready-to-analyze datasets'},
+		{'link': 'upload_data', 'icon': 'upload', 'title': 'Upload', 'description': 'Upload your own gene expression table or<br>RNA-seq reads'},
+		{'link': 'index', 'icon': 'table', 'title': 'Example', 'description': 'Learn to generate notebooks with a<br>step-by-step tutorial'}
 	]
 	return render_template('analyze.html', options=options)
 
@@ -76,8 +76,12 @@ def analyze():
 @app.route(entry_point+'/analyze/search')
 def search_data():
 	q = request.args.get('q', 'cancer')
-	d = pd.read_sql_query('SELECT gse, gpl, title, summary, COUNT(*) AS nr_samples FROM series se LEFT JOIN sample sa ON se.id=sa.series_fk LEFT JOIN platform p ON p.id=sa.platform_fk WHERE title LIKE "%%{q}%%" OR summary LIKE "%%{q}%%" GROUP BY gse LIMIT 50'.format(**locals()), engine).to_dict(orient='records')
-	return render_template('search_data.html', d=d)
+	min_samples = request.args.get('min_samples', 5)
+	max_samples = request.args.get('max_samples', 30)
+	max_samples_q = 500 if max_samples == '70' else max_samples
+	sortby = request.args.get('sortby', 'desc')
+	d = pd.read_sql_query('SELECT gse, gpl, title, summary, COUNT(*) AS nr_samples FROM series se LEFT JOIN sample sa ON se.id=sa.series_fk LEFT JOIN platform p ON p.id=sa.platform_fk WHERE title LIKE "%%{q}%%" OR summary LIKE "%%{q}%%" GROUP BY gse HAVING nr_samples >= {min_samples} AND nr_samples <= {max_samples_q} ORDER BY nr_samples {sortby}'.format(**locals()), engine).head(20).to_dict(orient='records')
+	return render_template('search_data.html', d=d, min_samples=min_samples, max_samples=max_samples)
 
 #############################################
 ########## 4. Upload Data

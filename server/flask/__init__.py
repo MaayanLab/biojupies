@@ -123,6 +123,8 @@ def generate():
 				# Get URL
 				notebook_url = upload_notebook(notebook, notebook_configuration, engine)
 
+				# for 
+
 			# Return
 			return json.dumps({'notebook_url': 'http://nbviewer.jupyter.org/urls/'+notebook_url.split('://')[-1]})
 

@@ -5,30 +5,56 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
   <link rel="stylesheet" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400" rel="stylesheet">
   {% block head %}{% endblock %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
-  <nav class="navbar navbar-light">
-    <div id="nav-container" class="container">
-      <div class="row">
-        <div class="col-6"><a href="{{url_for('index')}}" id="logo">BioJupies</a></div>
-        <div class="col-6 text-right"><a href="#" id="about">About</a></div>
+  <!-- Main Container -->
+  <div id="outer-container" class="container-fluid">
+    <div id="inner-container" class="container-fluid">
+
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-lg navbar-light px-4 rounded-bottom border-custom border-top-0">
+        <a class="navbar-brand mediun" href="{{ url_for('index') }}"><span class="medium">BioJupies</span></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle black" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Resources
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <a class="dropdown-item" href="#">Search data</a>
+                <a class="dropdown-item" href="#">Upload your data</a>
+                <a class="dropdown-item" href="#">Check alignment status</a>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link ml-2 black" href="#">About</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Container -->
+      <div class="container-fluid">
+        {% block content %}{% endblock %}
       </div>
-    </div>
-  </nav>
-  <div class="container-fluid">
-    {% block content %}{% endblock %}
-  </div>
+
+    </div> <!-- #inner-container -->
+  </div> <!-- #outer-container -->
 
   <div id="footer">
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
     {% block footer %}{% endblock %}
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
   </div>
 </body>
 </html>

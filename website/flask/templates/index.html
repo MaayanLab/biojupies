@@ -3,12 +3,12 @@
 {% block content %}
 
 <div class="container">
-	<div id="intro-row" class="row">
-		<div class="col-6"><img id="notebook-img" src="{{url_for('static', filename='img/notebook.png')}}"></div>
-		<div id="text-col" class="col-6 text-center">
-			<div id="intro-title">Generate Tailored<br>Bioinformatics Analysis Notebooks</div>
-			<div id="intro-description">BioJupies allows to easily generate tailored, reusable analysis notebooks of large biological datasets through a simple user interface</div>
-			<div id="get-started"><a href="{{ url_for('analyze') }}">Get Started</a></div>
+	<div id="intro-row" class="row mt-5">
+		<div class="col-6 mt-1"><img id="notebook-img" src="{{url_for('static', filename='img/notebook.png')}}" class="rounded mw-100 px-3 py-3 border-custom"></div>
+		<div id="text-col" class="col-6 text-center mt-4 px-4">
+			<div id="intro-title" class="bold large mt-5 mb-4">Generate Tailored<br>Bioinformatics Analysis Notebooks</div>
+			<div id="intro-description" class="light medium mb-5">BioJupies allows to easily generate customized, reusable analysis notebooks of large biological datasets through a simple user interface</div>
+			<div id="get-started" class="regular small"><a href="{{ url_for('analyze') }}" class="black px-4 py-3 border-black rounded nodecoration">Get Started</a></div>
 		</div>
 	</div>
 </div>

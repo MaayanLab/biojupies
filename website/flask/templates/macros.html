@@ -6,11 +6,11 @@
 
 	{% set colsize=(12/length)|int %}
 	<div class="col-{{colsize}} text-center">
-			<a class="option-link" href="{{url_for(option['link'])}}">
-				<i class="fa fa-{{option['icon']}}"></i>
+			<a class="display-1 px-5 py-4 black border-black-custom rounded d-inline-block" href="{{url_for(option['link'])}}">
+				<i class="fa fa-{{option['icon']}} my-3"></i>
 			</a>
-		<div class="option-title">{{option['title']}}</div>
-		<div class="option-description">{{option['description']}}</div>
+		<div class="large mt-3">{{option['title']}}</div>
+		<div class="light small mt-2 px-5">{{option['description']|safe}}</div>
 	</div>
 	
 {% endmacro %}
@@ -23,19 +23,19 @@
 
 	{% set id = dataset['gse']+'-'+dataset['gpl'] %}
 
-	<div class="row object-selection-row">
+	<div class="row">
 		<div class="col-12">
-			<input type="radio" required="true" name="gse-gpl" id="{{id}}" value="{{id}}">
-			<label for="{{id}}">
+			<input type="radio" required="true" name="gse-gpl" id="{{id}}" value="{{id}}" class="hidden">
+			<label for="{{id}}" class="object-label mt-3 px-3 py-3 w-100 border-custom rounded cursor-pointer">
 				<div class="row">
-					<div class="col-1">
-						<img src="{{ url_for('static', filename='img/dataset_icon.png') }}">
+					<div class="col-1 my-auto">
+						<img src="{{ url_for('static', filename='img/dataset_icon.png') }}" class="w-100">
 					</div>
 					<div class="col-11">
-						<div class="object-title">{{dataset['title']}}</div>
-						<div class="object-description">
-							<span class="object-metadata"><span class="object-metadata-value">{{dataset['nr_samples']}} samples</span></span>
-							<span class="object-metadata"><span class="object-metadata-key">Accession:</span><span class="object-metadata-value">{{dataset['gse']}}</span></span>
+						<div class="very-small regular pb-2">{{dataset['title']}}</div>
+						<div class="row tiny light text-muted">
+							<div class="col-2"><span class="font-italic">{{dataset['nr_samples']}} samples</span></div>
+							<div class="col-10"><span>Accession: </span><span class="font-italic">{{dataset['gse']}}</span></div>
 						</div>
 					</div>
 				</div>
