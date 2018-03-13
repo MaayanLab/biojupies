@@ -13,34 +13,51 @@
 	</div>
 	<div class="row">
 		<hr width="100%">
-		<div class="col-12">
+		<div class="col-12 px-4">
 			<form id="configure-signature-form">
 				<div class="medium regular mb-2">Name the Groups</div>
-				<div class="very-small light mb-3">First, name the two groups you wish to compare in the analysis.</div>
-				<input type="text" name="group_a_label" class="mr-2 rounded border-grey px-2 py-1 light very-small" data-group="a" value="Control" maxlength="50">vs
-				<input type="text" name="group_b_label" class="ml-2 rounded border-grey px-2 py-1 light very-small" data-group="b" value="Perturbation" maxlength="50">
-				<input type="hidden" value="Select..." class="group-label-input" data-group="none" maxlength="50">
+				<div class="very-small light mb-3">First, name the two groups you wish to compare in the analysis. </div>
+				<div class="row">
+					<div class="col-6">
+						<input type="text" name="group_a_label" class="group-label-input mr-2 rounded border-grey px-2 py-1 light very-small nodecoration" data-group="a" value="Control" maxlength="50">vs
+						<input type="text" name="group_b_label" class="group-label-input ml-2 rounded border-grey px-2 py-1 light very-small nodecoration" data-group="b" value="Perturbation" maxlength="50">
+						<input type="hidden" value="Select..." class="group-label-input" data-group="none" maxlength="50">
+					</div>
+					<div class="col-5 my-auto">
+						<div class="d-table">
+							<div class="d-table-cell">
+								<div class="onoffswitch">
+								    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="predict-groups" checked>
+								    <label class="onoffswitch-label" for="predict-groups"></label>
+								</div>
+							</div>
+							<div class="d-table-cell pl-2 very-small regular">
+								Predict Groups <sup><i class="fa fa-question-circle" data-toggle="tooltip" title="Automatically predicts the samples belonging to each group by querying the metdata."></i></sup>
+							</div>
+						</div>
+					</div>
+				</div>
 				<div class="medium regular mt-4 mb-2">Select the Samples</div>
-				<div class="very-small light mb-3">To proceed, select at least three samples to add to the <span class="group-description-label" data-group="a">Control</span> group, and at least three samples to add to the <span class="group-description-label" data-group="b">Perturbation</span> group.</div>
+				<div class="very-small light mb-3">To proceed, select at least three samples to add to the <span class="px-2 py-1 rounded border-grey" data-group="a">Control</span> group, and at least three samples to add to the <span class="px-2 py-1 rounded border-grey" data-group="b">Perturbation</span> group.</div>
 				<table id="sample-table" class="stripe mb-5">
 					<thead>
 						<tr>
-							<th>Group</th>
+							<th class="text-center very-small regular">Group</th>
 							{% for col in j.columns %}
-								<th>{{ col.title() }}</th>
+								<th class="text-center very-small regular">{{ col.title() }}</th>
 							{% endfor %}
 						</tr>
 					</thead>
 					<tbody>
 						{% for index, rowData in j.iterrows() %}
-							<tr class="sample-row" data-group="none">
+							<tr class="sample-row very-small light text-center px-2 py-1" data-group="none">
 								<td>
 									<div class="dropdown group-dropdown">
-										<button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-group="none">Select...&nbsp</button>
+										<button class="btn btn-secondary dropdown-toggle black border-black nodecoration regular very-small pr-2" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-group="none">Select...</button>
 										<div class="dropdown-menu">
-											<span class="dropdown-item" data-dropdown-group="a"><i class="fa fa-square-full"></i>&nbsp<span class="nostyle" data-group="a">Control</span></span>
-											<span class="dropdown-item" data-dropdown-group="b"><i class="fa fa-square-full"></i>&nbsp<span class="nostyle" data-group="b">Perturbation</span></span>
-											<span class="dropdown-item" data-dropdown-group="none"><i class="fa fa-square-full"></i>&nbsp<span class="nostyle" data-group="none">None</span></span>
+											<span class="dropdown-item" data-dropdown-group="a"><div class="dropdown-square border-grey rounded cursor-pointer"></div><span class="bg-transparent cursor-pointer" data-group="a">Control</span></span>
+											<span class="dropdown-item" data-dropdown-group="b"><div class="dropdown-square border-grey rounded cursor-pointer"></div><span class="bg-transparent cursor-pointer" data-group="b">Perturbation</span></span>
+											<span class="dropdown-item" data-dropdown-group="none"><div class="dropdown-square border-grey rounded cursor-pointer"></div><span class="bg-transparent cursor-pointer" data-group="none">None</span></span>
 										</div>
 										<input type="hidden" name="{{rowData['accession']}}-group" value="none">
 									</div>
@@ -71,6 +88,8 @@
 <script type="text/javascript">
 
 	$(document).ready(function(){
+
+		// Data Table
 	    $('#sample-table').DataTable({
 	    	"lengthMenu": [[-1, 10, 25, 50], ["All", 10, 25, 50]],
 	    	  "columnDefs": [
@@ -79,8 +98,7 @@
 			  ]
 	    });
 
-	    // $('#sample-table_length').html('To proceed, select at least three samples to add to the <span class="group-description-label" data-group="a">Control</span> group, and at least three samples to add to the <span class="group-description-label" data-group="b">Perturbation</span> group.')
-
+	    // Manual Class Selection
 	    $('.dropdown-item').click(function(evt) {
 	    	var $item = $(evt.target).hasClass('dropdown-item') ? $(evt.target) : $(evt.target).parents('.dropdown-item'),
 	    		new_group = $item.data('dropdown-group'),
@@ -90,6 +108,7 @@
     		$(evt.target).parents('tr').attr('data-group', new_group);
 	    })
 
+	    // Automated Class Selection
 	    function autoSelect(group, value) {
 	    	var hit = false;
 	    	if (value.length > 0) {
@@ -106,14 +125,16 @@
 	    	}
 	    	return hit
 	    }
-
 	    $('.group-label-input').change(function(evt) {
 	    	var value = $(evt.target).val(),
 	    		group = $(evt.target).data('group');
 	    	$('[data-group="'+group+'"]:not(tr)').text(value);
-	    	autoSelect(group, value);
+	    	if ($('#predict-groups').prop('checked')) {
+		    	autoSelect(group, value);
+	    	}
 	    })
 
+	    // Predict Control Classes
 	    var hit, terms=['Control', 'Ctl', 'Untreated', 'Vehicle', 'Normal', 'Non-specific', 'DMSO'];
 	    for (i = 0; i < terms.length; i++) {
 	    	hit = autoSelect('a', terms[i]);
@@ -122,6 +143,19 @@
 	    		break
 	    	}
 	    }
+
+	    // Remove Predicted Groups
+	    $('#predict-groups').change(function(evt) {
+	    	if (!$('#predict-groups').prop('checked')) {
+	    		$('[data-dropdown-group="none"]').click();
+	    	} else {
+	    		autoSelect('a', $('[name="group_a_label"]').val());
+	    		autoSelect('b', $('[name="group_b_label"]').val());
+	    	}
+	    })
+
+	    // Tooltip
+	    $('[data-toggle="tooltip"]').tooltip(); 
 
 	});
 
