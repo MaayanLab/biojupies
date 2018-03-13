@@ -29,7 +29,6 @@ limma <- function(rawcount_dataframe, design_dataframe, adjust="BH") {
 
 	# Convert design matrix
 	design <- as.matrix(design_dataframe)
-	print(design)
 
 	# Create DGEList object
 	dge <- DGEList(counts=rawcount_dataframe)

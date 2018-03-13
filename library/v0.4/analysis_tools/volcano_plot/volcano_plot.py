@@ -47,7 +47,8 @@ def run(signature, signature_label=''):
 		text.append('<b>'+index+'</b><br>Avg Expression = '+str(round(rowData['AveExpr'], ndigits=2))+'<br>logFC = '+str(round(rowData['logFC'], ndigits=2))+'<br>p = '+'{:.2e}'.format(rowData['P.Value'])+'<br>FDR = '+'{:.2e}'.format(rowData['adj.P.Val']))
 
 		# Color
-		if rowData['adj.P.Val'] < 0.05:
+		if rowData['P.Value'] < 0.05:
+		# if rowData['adj.P.Val'] < 0.05:
 			if rowData['logFC'] < -1.5:
 				color.append('blue')
 			elif rowData['logFC'] > 1.5:

@@ -19,27 +19,45 @@
 <!-- ##### Dataset Radio ###########################  -->
 <!-- ###############################################  -->
 
-{% macro dataset_radio(dataset) %}
+{% macro dataset_radio(dataset, i) %}
 
 	{% set id = dataset['gse']+'-'+dataset['gpl'] %}
 
 	<div class="row">
 		<div class="col-12">
-			<input type="radio" required="true" name="gse-gpl" id="{{id}}" value="{{id}}" class="hidden">
-			<label for="{{id}}" class="object-label mt-3 px-3 py-3 w-100 border-custom rounded cursor-pointer">
+			<input type="radio" required="true" name="gse-gpl" id="{{id}}" value="{{id}}" class="hidden" {{'checked' if i==1 else ''}}>
+			<label for="{{id}}" class="object-label mt-3 mb-0 px-3 py-3 w-100 border-custom rounded cursor-pointer">
 				<div class="row">
 					<div class="col-1 my-auto">
 						<img src="{{ url_for('static', filename='img/dataset_icon.png') }}" class="w-100">
 					</div>
 					<div class="col-11">
-						<div class="very-small regular pb-2">{{dataset['title']}}</div>
+						<div class="float-right rounded-circle bg-white border-grey px-2 py-1 cursor-pointer mt-2 info-toggle"><i class="fa fa-chevron-down text-muted"></i></div>
+						<div class="very-small regular pb-2 pr-5">{{ dataset['title']|safe }}</div>
 						<div class="row tiny light text-muted">
 							<div class="col-2"><span class="font-italic">{{dataset['nr_samples']}} samples</span></div>
-							<div class="col-10"><span>Accession: </span><span class="font-italic">{{dataset['gse']}}</span></div>
+							<div class="col-3"><span>Accession: </span><span class="font-italic">{{dataset['gse']}}</span></div>
+							<div class="col-3"><span>Published </span><span class="font-italic">{{dataset['date'].strftime('%B %Y')}}</span></div>
 						</div>
 					</div>
 				</div>
 			</label>
+			<div id="{{id}}-info" class="collapse border-grey mx-2 border-top-0 rounded-bottom tiny">
+				<div class="py-3">
+					<div class="row px-3">
+						<div class="col-1 bold">Summary</div>
+						<div class="col-11 text-muted light pl-4">{{ dataset['summary']|safe }}</div>
+					</div>
+					<div class="row px-3 pt-3">
+						<div class="col-1 bold">Source</div>
+						<div class="col-11 text-muted light pl-4"><a target="_blank" href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={{ dataset['gse'] }}">https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={{ dataset['gse'] }}</a></div>
+					</div>
+					<div class="row px-3 pt-3">
+						<div class="col-1 bold">Repository</div>
+						<div class="col-11 text-muted light pl-4"><a target="_blank" href="https://www.ncbi.nlm.nih.gov/gds">Gene Expression Omnibus</a></div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 
@@ -51,20 +69,37 @@
 
 {% macro tool_checkbox(tool) %}
 
-	<div class="row object-selection-row">
+	<div class="row">
 		<div class="col-12">
-			<input type="checkbox" name="tool" id="{{tool['tool_string']}}" value="{{tool['tool_string']}}" {{'checked' if tool['default_selected'] else ''}}>
-			<label for="{{tool['tool_string']}}">
+			<input type="checkbox" name="tool" id="{{tool['tool_string']}}" value="{{tool['tool_string']}}" {{'checked' if tool['default_selected'] else ''}} class="hidden">
+			<label for="{{tool['tool_string']}}" class="object-label mt-3 mb-0 px-3 py-3 w-100 border-custom rounded cursor-pointer">
 				<div class="row">
 					<div class="col-1">
-						<img src="{{ url_for('static', filename='img/tool/{tool_string}.png'.format(**tool)) }}">
+						<img src="{{ url_for('static', filename='img/tool/{tool_string}.png'.format(**tool)) }}" class="w-100 px-1 py-1 rounded bg-white border-grey">
 					</div>
 					<div class="col-11">
-						<div class="object-title">{{tool['tool_name']}}</div>
-						<div class="object-description">{{tool['tool_description']}}</div>
+						<div class="float-right rounded-circle bg-white border-grey px-2 py-1 cursor-pointer mt-2 info-toggle"><i class="fa fa-chevron-down text-muted"></i></div>
+						<div class="very-small regular pb-2 pr-5">{{tool['tool_name']}}</div>
+						<div class="tiny light text-muted"><span>{{tool['tool_description']}}</span></div>
 					</div>
 				</div>
 			</label>
+			<div id="{{tool['tool_string']}}-info" class="collapse border-grey mx-2 border-top-0 rounded-bottom tiny">
+				<div class="py-3">
+					<div class="row px-3">
+						<div class="col-2 bold text-right">Summary</div>
+						<div class="col-10 text-muted light pl-4">{{tool['introduction']|safe}}</div>
+					</div>
+					<div class="row px-3 pt-3">
+						<div class="col-2 bold text-right">Source Code</div>
+						<div class="col-10 text-muted light pl-4"><a href="{{tool['tool_documentation']}}" target="_blank">{{tool['tool_documentation']}}</a></div>
+					</div>
+					<div class="row px-3 pt-3">
+						<div class="col-2 bold text-right">Reference</div>
+						<div class="col-10 text-muted light pl-4">{{tool['reference']|safe}} (<span class="bold">{{'DOI' if 'doi' in tool['reference_link'] else 'Link'}}: </span><a href="{{tool['reference_link']}}" target="_blank">{{tool['reference_link'].replace('https://doi.org/', '')}}</a>)</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 

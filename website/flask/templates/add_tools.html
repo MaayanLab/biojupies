@@ -5,20 +5,23 @@
 
 <div class="container">
 	<div class="row">
-		<div class="col-8 step-title">Add Analysis Tools</div>
-		<div class="col-4 navigate-col text-right">
-			<button class="btn btn-primary navigate-link" onclick="goBack();"><i class="fa fa-angle-left"></i>&nbspBack</button>&nbsp&nbsp
-			<!-- <a class="btn btn-primary navigate-link" href="{{ url_for('search_data') }}"><i class="fa fa-angle-left"></i>&nbspBack</a>&nbsp&nbsp -->
-			<button class="btn btn-primary navigate-link" form="add-tools-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">Continue&nbsp<i class="fa fa-angle-right"></i></button>
+		<div class="col-8 large mt-5 pl-4">Add Analysis Tools</div>
+		<div class="col-4 text-right mt-5">
+			<button class="btn btn-primary black border-black bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
+			<button class="btn btn-primary navigate black border-black bg-white nodecoration" form="add-tools-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">Continue<i class="fa fa-angle-right ml-2"></i></button>
 		</div>
 	</div>
 	<div class="row">
-		<div class="col-12">
+		<hr width="100%" class="mt-3 mb-0">
+		<div class="col-12 px-3 mb-5">
 			<form id="add-tools-form">
 				<input type="hidden" name="gse" value="{{d.get('gse')}}">
 				<input type="hidden" name="gpl" value="{{d.get('gpl')}}">
-				{% for tool in t %}
-					{{ macros.tool_checkbox(tool) }}
+				{% for section, tools in s.items() %}
+					<div class="large medium mt-4">{{section}}</div>
+					{% for tool in tools %}
+						{{ macros.tool_checkbox(tool) }}
+					{% endfor %}
 				{% endfor %}
 			</form>
 		</div>

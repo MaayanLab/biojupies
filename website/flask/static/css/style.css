@@ -45,6 +45,7 @@ body {
 
 /* Borders */
 .border-black { border: 1px solid black !important;}
+.border-grey { border: 1px solid #c9c9c9; }
 .border-custom { border: 1px solid #c9c9c9; border-bottom: 2px solid #d5d5d5; }
 .border-black-custom { border: 1px solid black; border-bottom: 2px solid #8a8a8a; }
 
@@ -52,6 +53,7 @@ body {
 .cursor-pointer { cursor: pointer; }
 .nodecoration { text-decoration: none !important; outline: none !important; box-shadow: none !important; }
 .bg-transparent { background-color: transparent; }
+.highlight { font-weight: 500; font-style: italic; color: #525dff; }
 
 /********************************/
 /***** INDEX ********************/
@@ -109,14 +111,23 @@ input:checked + .object-label span {
 	background: #525dff;
 }
 
-
 /********************************/
 /***** Configure Signature ******/
 /********************************/
 
-#configure-signature-form {
-	margin-top: 10px;
+#sample-table_length, #sample-table_info, #sample-table_paginate { display: none; }
+#sample-table_filter { float: left; }
+
+#sample-table_filter input {
+	border: 1px solid #c9c9c9;
+	border-radius: 3px;
+	outline: none !important;
+	box-shadow: none !important;
+	font-size: 11pt;
+	padding: 5px 7px;
+	font-weight: 300;
 }
+/**/
 
 	.group-label-input {
 		font-family: "Helvetica Neue";
@@ -131,8 +142,6 @@ input:checked + .object-label span {
 	}
 
 #sample-table {
-	padding-top: 25px;
-	padding-bottom: 25px;
 	border-bottom: none;
 }
 

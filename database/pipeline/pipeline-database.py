@@ -87,7 +87,7 @@ def getSeriesAnnotations(infile, outfiles, outfile_root):
 			try:
 				geoId = ET.fromstring(urllib.request.urlopen('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gds&term={}%5BAccession%20ID%5D'.format(gse)).read()).findall('IdList')[0][0].text
 				root = ET.fromstring(urllib.request.urlopen('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gds&id={geoId}'.format(**locals())).read())
-				annotated_dataset = {x.attrib['Name']: x.text for x in root.find('DocSum') if 'Name' in x.attrib.keys() and x.attrib['Name'] in ['title', 'summary']}
+				annotated_dataset = {x.attrib['Name'].replace('PDAT', 'date'): x.text for x in root.find('DocSum') if 'Name' in x.attrib.keys() and x.attrib['Name'] in ['title', 'summary', 'PDAT']}
 				print('Done')
 			except:
 				annotated_dataset = {x: '' for x in ['title', 'summary']}
@@ -133,7 +133,7 @@ def getSeriesTable(infiles, outfile):
 			results[gse] = json.loads(openfile.read())
 	result_dataframe = pd.DataFrame(results).T.reset_index().rename(columns={'index': 'gse'})
 	result_dataframe['id'] = [x+1 for x in range(len(result_dataframe.index))]
-	result_dataframe = result_dataframe[['id', 'gse', 'title', 'summary']]
+	result_dataframe = result_dataframe[['id', 'gse', 'title', 'summary', 'date']]
 	result_dataframe.to_csv(outfile,index=False)
 
 #############################################

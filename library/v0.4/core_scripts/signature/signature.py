@@ -50,7 +50,7 @@ def make_design_matrix(expression_dataframe, group_A, group_B, data):
 ########## 1. limma
 #############################################
 
-def limma(dataset, group_A, group_B, data):
+def limma(dataset, group_A, group_B, data='subset'):
 
 	# Get design
 	processed_data = make_design_matrix(dataset['rawdata'], group_A, group_B, data)

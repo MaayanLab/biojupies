@@ -6,7 +6,8 @@ CREATE TABLE series (
 	`id` INT AUTO_INCREMENT PRIMARY KEY,
 	`gse` VARCHAR(35) UNIQUE,
 	`title` TEXT,
-	`summary` TEXT
+	`summary` TEXT,
+	`date` DATETIME
 );
 
 CREATE TABLE platform (

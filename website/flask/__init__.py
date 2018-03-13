@@ -21,7 +21,7 @@ from flask import Flask, request, render_template, Response, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 ##### 2. Python modules #####
-import sys, os, json, requests
+import sys, os, json, requests, re
 import pandas as pd
 import pymysql
 pymysql.install_as_MySQLdb()
@@ -41,6 +41,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 engine = db.engine
+
+# Notebook Generation
+version = 'v0.3'
 
 #######################################################
 #######################################################
@@ -80,8 +83,13 @@ def search_data():
 	max_samples = request.args.get('max_samples', 30)
 	max_samples_q = 500 if max_samples == '70' else max_samples
 	sortby = request.args.get('sortby', 'desc')
-	d = pd.read_sql_query('SELECT gse, gpl, title, summary, COUNT(*) AS nr_samples FROM series se LEFT JOIN sample sa ON se.id=sa.series_fk LEFT JOIN platform p ON p.id=sa.platform_fk WHERE title LIKE "%%{q}%%" OR summary LIKE "%%{q}%%" GROUP BY gse HAVING nr_samples >= {min_samples} AND nr_samples <= {max_samples_q} ORDER BY nr_samples {sortby}'.format(**locals()), engine).head(20).to_dict(orient='records')
-	return render_template('search_data.html', d=d, min_samples=min_samples, max_samples=max_samples)
+	sortby = 'ORDER BY nr_samples '+sortby if sortby in ['desc', 'asc'] else 'ORDER BY `date` DESC'
+	d = pd.read_sql_query('SELECT gse, gpl, title, summary, `date`, COUNT(*) AS nr_samples FROM series se LEFT JOIN sample sa ON se.id=sa.series_fk LEFT JOIN platform p ON p.id=sa.platform_fk WHERE title LIKE "%% {q} %%" OR summary LIKE "%% {q} %%" OR gse LIKE "{q}%%" GROUP BY gse HAVING nr_samples >= {min_samples} AND nr_samples <= {max_samples_q} {sortby}'.format(**locals()), engine).head(20)
+	h = lambda x: '<span class="highlight">{}</span>'.format(x)
+	for col in ['title', 'summary']:
+		d[col] = [x.replace(q, h(q)).replace(q.title(), h(q.title())).replace(q.lower(), h(q.lower())).replace(q.upper(), h(q.upper())) for x in d[col]]
+	d = d.to_dict(orient='records')
+	return render_template('search_data.html', d=d, min_samples=min_samples, max_samples=max_samples, q=q)	
 
 #############################################
 ########## 4. Upload Data
@@ -97,9 +105,13 @@ def upload_data():
 
 @app.route(entry_point+'/analyze/tools', methods=['GET', 'POST'])
 def add_tools():
-	t = pd.read_sql_table('tool', engine).to_dict(orient='records')
+	t = pd.read_sql_query('SELECT * FROM tool t LEFT JOIN section s ON s.id=t.section_fk', engine)
+	t['tool_documentation'] = ['https://github.com/denis-torre/notebook-generator/tree/master/library/{version}/analysis_tools/'.format(**globals())+x for x in t['tool_string']]
+	t_data = t.set_index('tool_string', drop=False).to_dict(orient='index')
+	t['tool_data'] = [t_data[x] for x in t['tool_string']]
+	s = t.groupby('section_name')['tool_data'].apply(tuple).reindex(['Dimensionality Reduction', 'Data Visualization', 'Differential Expression Analysis', 'Signature Analysis'])
 	d = {'gse': request.form.get('gse-gpl').split('-')[0], 'gpl': request.form.get('gse-gpl').split('-')[1]}
-	return render_template('add_tools.html', d=d, t=t)
+	return render_template('add_tools.html', d=d, s=s)
 
 #############################################
 ########## 6. Configure Analysis
@@ -148,7 +160,7 @@ def generate_notebook():
 				p[tool_string][parameter_string] = value
 
 	c = {
-		'notebook': {'title': d.get('notebook_title'), 'live': 'False', 'version': 'v0.3'},
+		'notebook': {'title': d.get('notebook_title'), 'live': 'False', 'version': version},
 		'tools': [{'tool_string': x, 'parameters': p.get(x, {})} for x in d['tool']],
 		'data': {'source': 'archs4', 'parameters': {'gse': d['gse'], 'platform': d['gpl']}},
 		'signature': {"method": "limma",

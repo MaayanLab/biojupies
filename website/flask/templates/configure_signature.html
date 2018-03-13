@@ -5,22 +5,24 @@
 
 <div class="container">
 	<div class="row">
-		<div class="col-8 step-title">Generate Signature</div>
-		<div class="col-4 navigate-col text-right">
-			<button class="btn btn-primary navigate-link" onclick="goBack();"><i class="fa fa-angle-left"></i>&nbspBack</button>&nbsp&nbsp
-			<button class="btn btn-primary navigate-link" form="configure-signature-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">Continue&nbsp<i class="fa fa-angle-right"></i></button>
+		<div class="col-8 large mt-5 pl-4">Generate Signature</div>
+		<div class="col-4 text-right mt-5">
+			<button class="btn btn-primary black border-black bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
+			<button class="btn btn-primary navigate black border-black bg-white nodecoration" form="configure-signature-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">Continue<i class="fa fa-angle-right ml-2"></i></button>
 		</div>
 	</div>
 	<div class="row">
+		<hr width="100%">
 		<div class="col-12">
 			<form id="configure-signature-form">
-				<div class="step-subtitle">Name the Groups</div>
-				<input type="text" name="group_a_label" value="Control" class="group-label-input" data-group="a" maxlength="50">
-				&nbspvs&nbsp
-				<input type="text" name="group_b_label" value="Perturbation" class="group-label-input" data-group="b" maxlength="50">
+				<div class="medium regular mb-2">Name the Groups</div>
+				<div class="very-small light mb-3">First, name the two groups you wish to compare in the analysis.</div>
+				<input type="text" name="group_a_label" class="mr-2 rounded border-grey px-2 py-1 light very-small" data-group="a" value="Control" maxlength="50">vs
+				<input type="text" name="group_b_label" class="ml-2 rounded border-grey px-2 py-1 light very-small" data-group="b" value="Perturbation" maxlength="50">
 				<input type="hidden" value="Select..." class="group-label-input" data-group="none" maxlength="50">
-				<div class="step-subtitle">Select the Samples</div>
-				<table id="sample-table" class="stripe">
+				<div class="medium regular mt-4 mb-2">Select the Samples</div>
+				<div class="very-small light mb-3">To proceed, select at least three samples to add to the <span class="group-description-label" data-group="a">Control</span> group, and at least three samples to add to the <span class="group-description-label" data-group="b">Perturbation</span> group.</div>
+				<table id="sample-table" class="stripe mb-5">
 					<thead>
 						<tr>
 							<th>Group</th>
@@ -77,7 +79,7 @@
 			  ]
 	    });
 
-	    $('#sample-table_length').html('To proceed, select at least three samples to add to the <span class="group-description-label" data-group="a">Control</span> group, and at least three samples to add to the <span class="group-description-label" data-group="b">Perturbation</span> group.')
+	    // $('#sample-table_length').html('To proceed, select at least three samples to add to the <span class="group-description-label" data-group="a">Control</span> group, and at least three samples to add to the <span class="group-description-label" data-group="b">Perturbation</span> group.')
 
 	    $('.dropdown-item').click(function(evt) {
 	    	var $item = $(evt.target).hasClass('dropdown-item') ? $(evt.target) : $(evt.target).parents('.dropdown-item'),
@@ -120,8 +122,6 @@
 	    		break
 	    	}
 	    }
-
-	    $('#sample-table_wrapper').doubleScroll();
 
 	});
 

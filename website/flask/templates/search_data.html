@@ -11,8 +11,8 @@
 	<div class="row">
 		<div class="col-8 large mt-5 pl-4">Search Datasets</div>
 		<div class="col-4 text-right mt-5">
-			<a class="btn btn-primary black border-black bg-white" href="{{ url_for('analyze') }}"><i class="fa fa-angle-left"></i>&nbspBack</a>&nbsp&nbsp
-			<button class="btn btn-primary navigate black border-black bg-white" form="dataset-form" type="submit" formaction="{{ url_for('add_tools') }}" formmethod="post">Continue&nbsp<i class="fa fa-angle-right"></i></button>
+			<a class="btn btn-primary black border-black bg-white nodecoration mr-2" href="{{ url_for('analyze') }}"><i class="fa fa-angle-left mr-2"></i>Back</a>
+			<button class="btn btn-primary navigate black border-black bg-white nodecoration" form="dataset-form" type="submit" formaction="{{ url_for('add_tools') }}" formmethod="post">Continue<i class="fa fa-angle-right ml-2"></i></button>
 		</div>
 	</div>
 	<div class="row">
@@ -20,22 +20,17 @@
 			<hr width="100%" class="my-3">
 			<form id="dataset-search-form">
 				<div class="border-custom rounded mt-4 mb-3">
-					<input type="text" name="q" value="{{request.args.get('q', '')}}" class="border-0 w-75 nodecoration px-3 py-2 small light">
+					<input type="text" name="q" value="{{ q }}" class="border-0 w-75 nodecoration px-3 py-2 small light">
 					<button type="submit" class="border-0 px-1 py-2 float-right bg-transparent cursor-pointer nodecoration"><i class="fa fa-search text-muted mr-2 medium mt-1"></i></button>
 				</div>
 				<div class="text-secondary form-inline mt-3 mb-3">
-<!-- 					<label class="very-small regular ml-2 mr-2" for="organism">Organism:</label>
-					<select class="form-control nodecoration" id="organism" name="organism">
-						<option value="all" {{'selected' if request.args.get('organism') == 'all' else ''}}>All</option>
-						<option value="human" {{'selected' if request.args.get('organism') == 'human' else ''}}>Human</option>
-						<option value="mouse" {{'selected' if request.args.get('organism') == 'mouse' else ''}}>Mouse</option>
-					</select>
- -->					<label class="very-small regular ml-2 mr-3" for="samples">Samples:</label>
+					<label class="tiny regular ml-2 mr-3" for="samples">Samples:</label>
 					<div id="slider" class="ml-2"></div>
 					<input type="hidden" id="min-samples" name="min_samples" value="{{ min_samples }}">
 					<input type="hidden" id="max-samples" name="max_samples" value="{{ max_samples }}">
-					<label class="very-small regular ml-5 mr-2" for="sortby">Sort by:</label>
-					<select class="form-control nodecoration" id="sortby" name="sortby">
+					<label class="tiny regular ml-5 mr-2" for="sortby">Sort by:</label>
+					<select class="form-control nodecoration tiny" id="sortby" name="sortby">
+						<option value="new" {{'selected' if request.args.get('sortby') == 'new' else ''}}>Newest</option>
 						<option value="desc" {{'selected' if request.args.get('sortby') == 'desc' else ''}}>Samples (descending)</option>
 						<option value="asc" {{'selected' if request.args.get('sortby') == 'asc' else ''}}>Samples (ascending)</option>
 					</select>
@@ -45,10 +40,10 @@
 	</div>
 	{% if d %}
 	<div class="row">
-		<div class="col-12 mx-1">
+		<div class="col-12 mx-1 mb-5">
 			<form id="dataset-form">
 				{% for dataset in d %}				
-					{{ macros.dataset_radio(dataset) }}
+					{{ macros.dataset_radio(dataset, loop.index) }}
 				{% endfor %}				
 			</form>
 		</div>
