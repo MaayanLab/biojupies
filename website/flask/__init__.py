@@ -84,7 +84,10 @@ def search_data():
 	max_samples_q = 500 if max_samples == '70' else max_samples
 	sortby = request.args.get('sortby', '')
 	sortby = 'ORDER BY nr_samples {}, date DESC'.format(sortby) if sortby in ['desc', 'asc'] else 'ORDER BY `date` DESC'
-	d = pd.read_sql_query('SELECT gse, gpl, title, summary, `date`, COUNT(*) AS nr_samples FROM series se LEFT JOIN sample sa ON se.id=sa.series_fk LEFT JOIN platform p ON p.id=sa.platform_fk WHERE title LIKE "%% {q} %%" OR summary LIKE "%% {q} %%" OR gse LIKE "{q}%%" GROUP BY gse HAVING nr_samples >= {min_samples} AND nr_samples <= {max_samples_q} {sortby}'.format(**locals()), engine).head(20)
+	organism = request.args.get('organism', 'all')
+	organism_q = '", "'.join([x for x in ['Human', 'Mouse'] if organism == 'all' or x == organism.title()])
+	d = pd.read_sql_query('SELECT gse, gpl, organism, title, summary, `date`, COUNT(*) AS nr_samples FROM series se LEFT JOIN sample sa ON se.id=sa.series_fk LEFT JOIN platform p ON p.id=sa.platform_fk WHERE title LIKE "%% {q} %%" OR summary LIKE "%% {q} %%" OR gse LIKE "{q}%%" GROUP BY gse HAVING organism IN ("{organism_q}") AND nr_samples >= {min_samples} AND nr_samples <= {max_samples_q} {sortby}'.format(**locals()), engine).head(20)
+	print(d)
 	h = lambda x: '<span class="highlight">{}</span>'.format(x)
 	for col in ['title', 'summary']:
 		d[col] = [x.replace(q, h(q)).replace(q.title(), h(q.title())).replace(q.lower(), h(q.lower())).replace(q.upper(), h(q.upper())) for x in d[col]]

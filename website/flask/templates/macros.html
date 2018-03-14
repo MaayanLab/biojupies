@@ -37,6 +37,7 @@
 						<div class="row tiny light text-muted">
 							<div class="col-2"><span class="font-italic">{{dataset['nr_samples']}} samples</span></div>
 							<div class="col-3"><span>Accession: </span><span class="font-italic">{{dataset['gse']}}</span></div>
+							<!-- <div class="col-3"><span>Organism: </span><span class="font-italic">{{dataset['organism']}}</span></div> -->
 							<div class="col-3"><span>Published </span><span class="font-italic">{{dataset['date'].strftime('%B %Y')}}</span></div>
 						</div>
 					</div>
@@ -47,6 +48,10 @@
 					<div class="row px-3">
 						<div class="col-1 bold">Summary</div>
 						<div class="col-11 text-muted light pl-4">{{ dataset['summary']|safe }}</div>
+					</div>
+					<div class="row px-3 pt-3">
+						<div class="col-1 bold">Organism</div>
+						<div class="col-11 text-muted light pl-4 font-italic">{{ dataset['organism'].replace('Human', 'Homo sapiens').replace('Mouse', 'Mus musculus') }}</div>
 					</div>
 					<div class="row px-3 pt-3">
 						<div class="col-1 bold">Source</div>

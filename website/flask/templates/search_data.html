@@ -29,6 +29,12 @@
 					<div id="slider" class="ml-2"></div>
 					<input type="hidden" id="min-samples" name="min_samples" value="{{ min_samples }}">
 					<input type="hidden" id="max-samples" name="max_samples" value="{{ max_samples }}">
+					<label class="tiny regular ml-5 mr-2" for="sortby">Organism:</label>
+					<select class="form-control nodecoration tiny" id="organism" name="organism">
+						<option value="all" {{'selected' if request.args.get('organism') == 'all' else ''}}>All</option>
+						<option value="human" {{'selected' if request.args.get('organism') == 'human' else ''}}>Human</option>
+						<option value="mouse" {{'selected' if request.args.get('organism') == 'mouse' else ''}}>Mouse</option>
+					</select>
 					<label class="tiny regular ml-5 mr-2" for="sortby">Sort by:</label>
 					<select class="form-control nodecoration tiny" id="sortby" name="sortby">
 						<option value="new" {{'selected' if request.args.get('sortby') == 'new' else ''}}>Newest</option>

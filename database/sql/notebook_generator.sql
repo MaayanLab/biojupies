@@ -12,7 +12,8 @@ CREATE TABLE series (
 
 CREATE TABLE platform (
 	`id` INT AUTO_INCREMENT PRIMARY KEY,
-	`gpl` VARCHAR(15) UNIQUE
+	`gpl` VARCHAR(15) UNIQUE,
+	`organism` VARCHAR(15)
 );
 
 CREATE TABLE sample (
