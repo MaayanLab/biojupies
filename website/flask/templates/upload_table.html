@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% import 'macros.html' as macros %}
+
+{% block head %}
+<title>Notebook Generator | Upload</title>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+	<div class="row">
+		<div class="col-8 large mt-5 pl-4">Upload Data</div>
+		<div class="col-4 text-right mt-5">
+			<button class="btn btn-primary black border-black bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
+			<button class="btn btn-primary navigate black border-black bg-white nodecoration" form="configure-signature-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">Continue<i class="fa fa-angle-right ml-2"></i></button>
+		</div>
+	</div>
+	<div class="row">
+		<hr width="100%">
+		<div class="col-12 px-4">
+			<div class="medium regular mb-2">Upload Expression File</div>
+			<div class="very-small light mb-3">First, upload the gene expression data file using the form below.</div>
+			<div id="dropzone" class="px-5 py-5 border-grey rounded text-center">Drop files here or click to upload.</div>
+			<div class="mt-3 tiny light pl-1">
+				Supported formats include: <span class="font-italic">.txt, .csv, .tsv, .xls, .xlsx</span>.
+				<a href="{{ url_for('static', filename='data/example.txt') }}" class="btn bg-white border-black black nodecoration tiny regular my-auto float-right" download>Example</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
+
+{% block footer %}
+
+<script type="text/javascript">
+
+$("#dropzone").dropzone({ 
+	url: "{{ url_for('upload_expression_api') }}"
+});
+
+</script>
+
+{% endblock %}

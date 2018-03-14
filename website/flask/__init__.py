@@ -95,15 +95,7 @@ def search_data():
 	return render_template('search_data.html', d=d, min_samples=min_samples, max_samples=max_samples, q=q)	
 
 #############################################
-########## 4. Upload Data
-#############################################
-
-@app.route(entry_point+'/analyze/upload')
-def upload_data():
-	return render_template('upload_data.html')
-
-#############################################
-########## 5. Add Tools
+########## 4. Add Tools
 #############################################
 
 @app.route(entry_point+'/analyze/tools', methods=['GET', 'POST'])
@@ -117,7 +109,7 @@ def add_tools():
 	return render_template('add_tools.html', d=d, s=s)
 
 #############################################
-########## 6. Configure Analysis
+########## 5. Configure Analysis
 #############################################
 
 @app.route(entry_point+'/analyze/configure', methods=['GET', 'POST'])
@@ -145,7 +137,7 @@ def configure_analysis():
 		return render_template('review_analysis.html', t=t, f=f)
 
 #############################################
-########## 7. Generate Notebook
+########## 6. Generate Notebook
 #############################################
 
 @app.route(entry_point+'/analyze/results', methods=['GET', 'POST'])
@@ -176,13 +168,70 @@ def generate_notebook():
 	return render_template('results.html', notebook_configuration=json.dumps(c))
 
 #############################################
-########## 9. Search Datasets
+########## 7. Upload Data
 #############################################
 
-@app.route(entry_point+'/api/search_datasets', methods=['POST'])
-def search_datasets():
-	d = pd.read_sql_query('SELECT gse, gpl, title, summary, COUNT(*) AS nr_samples FROM series se LEFT JOIN sample sa ON se.id=sa.series_fk LEFT JOIN platform p ON p.id=sa.platform_fk WHERE title LIKE "%%{search}%%" OR summary LIKE "%%{search}%%" GROUP BY gse LIMIT 50'.format(**request.json), engine)
-	return json.dumps(d.to_dict(orient='records'))
+@app.route(entry_point+'/upload')
+def upload_data():
+	options = [
+		{'link': 'upload_table', 'icon': 'table', 'title': 'Expression Table', 'description': 'Text file containing numeric<br>gene expression values'},
+		{'link': 'upload_reads', 'icon': 'dna', 'title': 'RNA-seq Reads', 'description': 'Read files generated from<br>an RNA-seq analysis'}
+	]
+	return render_template('upload_data.html', options=options)
+
+#############################################
+########## 8. Upload Table
+#############################################
+
+@app.route(entry_point+'/upload/table')
+def upload_table():
+	return render_template('upload_table.html')
+
+#############################################
+########## 9. Upload Table API
+#############################################
+
+@app.route(entry_point+'/api/upload/expression', methods=['POST'])
+def upload_expression_api():
+
+	# Get file
+	f = request.files.get('file')
+
+	# Read file
+	f_format = f.filename.split('.')[-1]
+	if f_format in ['txt', 'tsv']:
+		dataframe = pd.read_table(f)
+	elif f_format == 'csv':
+		dataframe = pd.read_csv(f)
+	elif f_format in ['xls', 'xlsx']:
+		dataframe = pd.read_excel(f)
+
+	# Set index
+	dataframe.set_index(dataframe.columns[0], inplace=True)
+	dataframe.index.name = ''
+	print(dataframe.head())
+
+	# Convert to JSON
+	dataframe_json = json.dumps(dataframe.head().to_dict(orient='split'))
+	return dataframe_json
+
+#############################################
+########## 10. Upload Reads
+#############################################
+
+@app.route(entry_point+'/upload/reads')
+def upload_reads():
+	return render_template('upload_reads.html')
+
+
+#############################################
+########## 11. Upload ReadsAPI
+#############################################
+
+@app.route(entry_point+'/api/upload/reads', methods=['POST'])
+def upload_reads_api():
+	return ''
+
 
 #######################################################
 #######################################################

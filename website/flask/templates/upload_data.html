@@ -1,8 +1,16 @@
 {% extends 'base.html' %}
+{% import 'macros.html' as macros %}
 
 {% block content %}
-
-	<a href="{{ url_for('search_data') }}">Search</a>
-	<a href="{{ url_for('upload_data') }}">Upload</a>
-
+<div class="container">
+	<div class="row">
+		<div class="col-12 text-center very-large mt-5 mb-1">What type of data do you wish to upload?</div>
+		<hr width="100%" class="my-4">
+	</div>
+	<div class="row mt-4 px-5 mx-5">
+		{% for option in options %}
+			{{ macros.option_col(option, options|length) }}
+		{% endfor %}
+	</div>
+</div>
 {% endblock %}
