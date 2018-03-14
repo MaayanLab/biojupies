@@ -82,8 +82,8 @@ def search_data():
 	min_samples = request.args.get('min_samples', 5)
 	max_samples = request.args.get('max_samples', 30)
 	max_samples_q = 500 if max_samples == '70' else max_samples
-	sortby = request.args.get('sortby', 'desc')
-	sortby = 'ORDER BY nr_samples '+sortby if sortby in ['desc', 'asc'] else 'ORDER BY `date` DESC'
+	sortby = request.args.get('sortby', '')
+	sortby = 'ORDER BY nr_samples {}, date DESC'.format(sortby) if sortby in ['desc', 'asc'] else 'ORDER BY `date` DESC'
 	d = pd.read_sql_query('SELECT gse, gpl, title, summary, `date`, COUNT(*) AS nr_samples FROM series se LEFT JOIN sample sa ON se.id=sa.series_fk LEFT JOIN platform p ON p.id=sa.platform_fk WHERE title LIKE "%% {q} %%" OR summary LIKE "%% {q} %%" OR gse LIKE "{q}%%" GROUP BY gse HAVING nr_samples >= {min_samples} AND nr_samples <= {max_samples_q} {sortby}'.format(**locals()), engine).head(20)
 	h = lambda x: '<span class="highlight">{}</span>'.format(x)
 	for col in ['title', 'summary']:
@@ -145,19 +145,21 @@ def configure_analysis():
 ########## 7. Generate Notebook
 #############################################
 
-@app.route(entry_point+'/analyze/generate', methods=['GET', 'POST'])
+@app.route(entry_point+'/analyze/results', methods=['GET', 'POST'])
 def generate_notebook():
 	d = {key:value if len(value) > 1 else value[0] for key, value in request.form.lists()}
 	p = {x:{} for x in d['tool']}
 	g = {x:[] for x in ['a', 'b', 'none']}
 	print(d)
 	for key, value in d.items():
-		if '-' in key:
-			if 'GSM' in key:
-				g[value[0]].append(key.split('-')[0])
-			else:
-				tool_string, parameter_string = key.split('-')
-				p[tool_string][parameter_string] = value
+		if key not in ['sample-table_length']:
+			if '-' in key:
+				if 'GSM' in key:
+					g[value[0]].append(key.split('-')[0])
+				else:
+					print(key)
+					tool_string, parameter_string = key.split('-')
+					p[tool_string][parameter_string] = value
 
 	c = {
 		'notebook': {'title': d.get('notebook_title'), 'live': 'False', 'version': version},
@@ -167,8 +169,8 @@ def generate_notebook():
 			"A": {"name": d.get('group_a_label'), "samples": g['a']},
 			"B": {"name": d.get('group_b_label'), "samples": g['b']}}
 	}
-	r = requests.post('http://amp.pharm.mssm.edu/notebook-generator-server/api/generate', data=json.dumps(c), headers={'content-type':'application/json'})
-	return r.text
+	# r = requests.post('http://amp.pharm.mssm.edu/notebook-generator-server/api/generate', data=json.dumps(c), headers={'content-type':'application/json'})
+	return render_template('results.html', notebook_configuration=json.dumps(c))
 
 #############################################
 ########## 9. Search Datasets

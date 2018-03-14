@@ -1,24 +1,33 @@
 {% extends 'base.html' %}
 {% import 'macros.html' as macros %}
 
+{% block head %}<title>Notebook Generator | Review</title>{% endblock %}
+
 {% block content %}
 
 <div class="container">
 	<div class="row">
-		<div class="col-8 step-title">Review and Submit</div>
-		<div class="col-4 navigate-col text-right">
-			<button class="btn btn-primary navigate-link" onclick="goBack();"><i class="fa fa-angle-left"></i>&nbspBack</button>&nbsp&nbsp
-			<button class="btn btn-primary navigate-link" form="review-analysis-form" type="submit" formaction="{{ url_for('generate_notebook') }}" formmethod="post">Continue&nbsp<i class="fa fa-angle-right"></i></button>
+		<div class="col-8 large mt-5 pl-4">Review and Submit</div>
+		<div class="col-4 text-right mt-5">
+			<button class="btn btn-primary black border-black bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
+			<button class="btn btn-primary navigate black border-black bg-white nodecoration" form="review-analysis-form" type="submit" formaction="{{ url_for('generate_notebook') }}" formmethod="post">Continue<i class="fa fa-angle-right ml-2"></i></button>
 		</div>
 	</div>
 	<div class="row">
+		<hr width="100%" class="mt-3 mb-0">
 		<div class="col-12">
-			<div class="step-subtitle">Review optional parameters and submit the notebook.</div>
 			<form id="review-analysis-form" action="{{ url_for('generate_notebook') }}" method="post">
-				<!-- <input type="text" name="notebook_title" value="Notebook Title"> -->
+				<!-- Notebook Settings -->
+				{{ macros.notebook_settings(f['gse']) }}
+
+				<!-- Tool Settings -->
 				{% for tool in t %}
-					{{ macros.parameter_card(tool) }}
+					{% if tool.parameters|length %}				
+						{{ macros.parameter_card(tool) }}
+					{% endif %}				
 				{% endfor %}
+
+				<!-- Form -->
 				{% for key, values in f.lists() %}
 					{% for value in values %}
 						<input type="hidden" name="{{ key }}" value="{{ value }}">

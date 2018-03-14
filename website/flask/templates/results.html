@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% import 'macros.html' as macros %}
+
+{% block head %}<title>Notebook Generator | Results</title>{% endblock %}
+
+{% block content %}
+
+<div class="container">
+	<div class="row">
+		<div class="col-8 large mt-5 pl-4">Results</div>
+		<div class="col-4 text-right mt-5">
+			<button class="btn btn-primary black border-black bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
+			<a class="btn btn-primary black border-black bg-white nodecoration mr-2" href="{{url_for('analyze')}}">New Notebook</a>
+		</div>
+	</div>
+	<div class="row">
+		<hr width="100%" class="mt-3 mb-0">
+		<div class="col-12 text-center pb-5" style="overflow: hidden;">
+			<div id="status" class="mt-5 medium">Your Jupyter Notebook is being generated.</div>
+			<div class="loader">Loading...</div>
+			<div class="mt-5"> 
+				<a id="notebook-link" class="btn btn-primary border-black nodecoration bg-white black hidden small px-3 py-2" href="#" target="_blank" data-notebook_configuration="{{notebook_configuration}}">Open Notebook</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript">
+	
+	$.ajax({	
+		url: "http://amp.pharm.mssm.edu/notebook-generator-server/api/generate",
+		method: "POST",
+		data: $('#notebook-link').attr('data-notebook_configuration'),
+		contentType: "application/json; charset=utf-8",
+		dataType: 'json',
+		success: function(res) {
+			$('#status').html('Your Jupyter Notebook is available at the following link:');
+			$('#notebook-link').show();
+			$('#notebook-link').attr('href', res['notebook_url']);
+			$('.loader').hide();
+		},
+		error: function(e) {
+			$('#status').html('Sorry, there has been an error.');
+			$('.loader').hide();
+			console.log(e);
+		}
+	})
+
+</script>
+{% endblock %}

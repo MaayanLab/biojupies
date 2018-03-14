@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% import 'macros.html' as macros %}
 
+{% block head %}<title>Notebook Generator | Signature</title>{% endblock %}
+
 {% block content %}
 
 <div class="container">
@@ -32,7 +34,7 @@
 								</div>
 							</div>
 							<div class="d-table-cell pl-2 very-small regular">
-								Predict Groups <sup><i class="fa fa-question-circle" data-toggle="tooltip" title="Automatically predicts the samples belonging to each group by querying the metdata."></i></sup>
+								Predict Groups <sup><i class="fa fa-question-circle" data-toggle="tooltip" title="Automatically predicts the samples belonging to each group based on the assigned names."></i></sup>
 							</div>
 						</div>
 					</div>
@@ -153,9 +155,6 @@
 	    		autoSelect('b', $('[name="group_b_label"]').val());
 	    	}
 	    })
-
-	    // Tooltip
-	    $('[data-toggle="tooltip"]').tooltip(); 
 
 	});
 

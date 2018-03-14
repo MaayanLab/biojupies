@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Notebook Generator</title>
+  <!-- <title>Notebook Generator</title> -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <!-- <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script> -->
   <link href="https://use.fontawesome.com/releases/v5.0.2/css/all.css" rel="stylesheet">
@@ -26,12 +26,12 @@
           <ul class="navbar-nav ml-auto">
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle black" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Resources
+                Analyze
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                <a class="dropdown-item" href="#">Search data</a>
-                <a class="dropdown-item" href="#">Upload your data</a>
-                <a class="dropdown-item" href="#">Check alignment status</a>
+                <a class="dropdown-item" href="{{ url_for('search_data') }}">Search data</a>
+                <a class="dropdown-item" href="#">Upload data</a>
+                <a class="dropdown-item" href="#">Align RNA-seq reads</a>
               </div>
             </li>
             <li class="nav-item">

@@ -111,35 +111,74 @@
 
 {% macro parameter_card(tool) %}
 
-	<div class="row object-selection-row">
+	<div class="row">
 		<div class="col-12">
-			<label>
+			<label class="object-label mt-3 mb-0 px-3 py-3 w-100 border-custom rounded cursor-pointer" for="{{tool.tool_string}}">
 				<div class="row">
 					<div class="col-1">
-						<img src="{{ url_for('static', filename='img/tool/{}.png'.format(tool['tool_string'])) }}">
+						<img src="{{ url_for('static', filename='img/tool/{}.png'.format(tool['tool_string'])) }}" class="w-100 px-1 py-1 rounded bg-white border-grey">
 					</div>
 					<div class="col-11">
-						<div class="object-title">{{tool.tool_name}}</div>
-						<div class="object-description">{{tool.tool_description}}</div>
+						<div class="float-right rounded-circle bg-white border-grey px-2 py-1 cursor-pointer mt-2 info-toggle"><i class="fa fa-chevron-down text-muted"></i></div>
+						<div class="very-small regular pb-2 pr-5">{{tool.tool_name}}</div>
+						<div class="tiny light text-muted">Optional configuration parameters for the {{tool.tool_name}} tool</div>
 					</div>
 				</div>
 			</label>
-			<div class="row">
-				<div class="col-12">
+			<div id="{{tool.tool_string}}-info" class="collapse border-grey mx-2 border-top-0 rounded-bottom tiny">
+				<div class="pt-3">
 					{% for parameter in tool.parameters %}
-						<div class="row">
-							<div class="col-3">
-								{{parameter.parameter_name}}
+						<div class="row px-3 pb-3">
+							<div class="col-2 bold text-right tiny my-auto">
+								<div>{{parameter.parameter_name}}<sup><i class="fa fa-question-circle ml-1" data-toggle="tooltip" title="{{parameter.parameter_description}}."></i></sup></div>
 							</div>
-							<div class="col-9">
-								<select name="{{tool.tool_string}}-{{parameter.parameter_string}}">
+							<div class="col-3">
+								<select name="{{tool.tool_string}}-{{parameter.parameter_string}}" class="form-control nodecoration tiny bg-white px-2 py-1">
 									{% for value in parameter['values'] %}
-										<option value="{{value.value}}" {{'selected' if value.default else ''}}>{{value.value}}</option>
+										<option class="px-2 py-1" value="{{value.value}}" {{'selected' if value.default else ''}}>{{value.value}}</option>
 									{% endfor %}
 								</select>
 							</div>
 						</div>
 					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endmacro %}
+
+
+<!-- ###############################################  -->
+<!-- ##### Notebook Settings Card ##################  -->
+<!-- ###############################################  -->
+
+{% macro notebook_settings(gse) %}
+
+	<div class="row">
+		<div class="col-12">
+			<label class="object-label mt-3 mb-0 px-3 py-3 w-100 border-custom rounded cursor-pointer" for="notebook_settings">
+				<div class="row">
+					<div class="col-1">
+						<img src="{{ url_for('static', filename='img/tool/notebook.png') }}" class="w-100 px-1 py-1 rounded bg-white border-grey">
+					</div>
+					<div class="col-11">
+						<div class="float-right rounded-circle bg-white border-grey px-2 py-1 cursor-pointer mt-2 info-toggle"><i class="fa fa-chevron-up text-muted"></i></div>
+						<div class="very-small regular pb-2 pr-5">Notebook Configuration</div>
+						<div class="tiny light text-muted">Optional configuration parameters for the notebook</div>
+					</div>
+				</div>
+			</label>
+			<div id="notebook_settings-info" class="collapse show border-grey mx-2 border-top-0 rounded-bottom tiny">
+				<div class="pt-3">
+					<div class="row px-3 pb-3">
+						<div class="col-2 bold text-right my-auto">
+							<div>Notebook Title<sup><i class="fa fa-question-circle ml-1" data-toggle="tooltip" title="Name of the Jupyter Notebook."></i></sup></div>
+						</div>
+						<div class="col-5">
+							<input class="form-control tiny" type="text" name="notebook_title" value="{{gse}} Analysis Notebook">
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

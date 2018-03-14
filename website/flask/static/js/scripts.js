@@ -6,6 +6,8 @@ function goBack() {
     window.history.back();
 }
 
+$('[data-toggle="tooltip"]').tooltip(); 
+
 $('.info-toggle').click(function(evt) {
 	evt.preventDefault();
 	var $button = $(evt.target),
