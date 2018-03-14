@@ -183,9 +183,15 @@ def upload_data():
 ########## 8. Upload Table
 #############################################
 
-@app.route(entry_point+'/upload/table')
+@app.route(entry_point+'/upload/table', methods=['GET', 'POST'])
 def upload_table():
-	return render_template('upload_table.html')
+	f = request.form
+	if not len(f):
+		return render_template('upload_table.html')
+	else:
+		samples = json.loads(f.to_dict()['expression-data'])['columns']
+		samples.sort()
+		return render_template('annotate_table.html', samples=samples)
 
 #############################################
 ########## 9. Upload Table API

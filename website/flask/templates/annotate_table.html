@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% import 'macros.html' as macros %}
+
+{% block head %}
+<title>Notebook Generator | Upload</title>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+	<div class="row">
+		<div class="col-8 large mt-5 pl-4">Upload Data</div>
+		<div class="col-4 text-right mt-5">
+			<button class="btn btn-primary black border-black bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
+			<button class="btn btn-primary navigate black border-black bg-white nodecoration" form="upload-expression-form" type="submit" formaction="{{ url_for('upload_table') }}" formmethod="post">Continue<i class="fa fa-angle-right ml-2"></i></button>
+		</div>
+	</div>
+	<div class="row">
+		<hr width="100%">
+		<div class="col-12 px-4">
+			<div class="medium regular mb-3">Annotate Samples</div>
+			<div class="very-small light mb-3">The uploaded dataset contains <span class="bold">{{samples|length}} samples</span>. To proceed, add metadata by filling in the form below, or by upload a metadata file. </div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-12">
+			<table id="sample-annotation-table" class="tiny text-center table-striped border-grey">
+				<thead class="very-small">
+					<tr class="border-grey border-left-0 border-right-0">
+						<th>Sample</th>
+						<th class="px-3 py-1"><input type="text" class="form-control very-small bold nodecoration text-center" value="Group"></th>
+						<th class="px-2 py-1 border-grey cursor-pointer bg-light"><i class="fa fa-plus tiny"></i></th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for sample in samples %}
+						<tr>
+							<td class="px-3 py-2 bold tiny">{{sample}}</td>
+							<td class="px-3 py-2"><input class="form-control nodecoration tiny" type="text" name="{{sample}}-group"></td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
+
+{% block footer %}
+
+<script type="text/javascript">
+
+
+	$('.fa-plus').click(function(evt) {
+		// Get number
+		var nr_cols = $('thead th').length;
+		console.log(nr_cols);
+
+		if (nr_cols < 7) {
+
+			// Add header
+			$('<th>', {'class': 'px-3 py-2'}).html($('<input>', {'class': 'form-control nodecoration tiny bold text-center', 'type': 'text', 'name': 'col'+(nr_cols+1)+'-name'})).insertAfter($('th:not(.cursor-pointer)').last());
+
+			// Add rows
+			$('tr td:last-child').each(function(index, elem) {
+				var rowname = $(elem).parents('tr').find('td').first().html();
+				$('<td>', {'class': 'px-3 py-2'}).html($('<input>', {'class': 'form-control nodecoration tiny', 'type': 'text', 'name': 'col'+(nr_cols+1)+'-'+rowname})).insertAfter($(elem));
+			})
+
+		}
+	})
+
+// $("#dropzone").dropzone({ 
+// 	url: "{{ url_for('upload_expression_api') }}",
+//     success: function(file, response){
+//         $('#expression-data').val(response);
+//     }
+// });
+
+// $('table').DataTable({
+// 	"lengthMenu": [[-1, 10, 25, 50], ["All", 10, 25, 50]],
+// });
+
+</script>
+
+{% endblock %}

@@ -7,6 +7,7 @@ function goBack() {
 }
 
 $('[data-toggle="tooltip"]').tooltip(); 
+$('[data-toggle="popover"]').popover(); 
 
 $('.info-toggle').click(function(evt) {
 	evt.preventDefault();

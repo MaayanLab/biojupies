@@ -261,3 +261,15 @@ input:checked + .object-label span {
     transform: rotate(360deg);
   }
 }
+
+/********************************/
+/***** Configure Signature ******/
+/********************************/
+
+/* Dropzone */
+.dropzone .dz-preview .dz-progress .dz-upload { background: #007bff; }
+
+/* Sample Annotation Table */
+#sample-annotation-table tr td:last-child {
+  border-right: 1px solid #c9c9c9;
+}
