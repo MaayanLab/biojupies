@@ -66,8 +66,11 @@ def add_introduction(notebook, notebook_configuration, tool_metadata):
 	sections_str = ''.join(['<li><b><a href="#{id}">{name}</a></b> - <i>{description}</i></li>'.format(**x) for x in sections])
 
 	# Add Intro
-	cell = """# {notebook[title]}\n---\n# Introduction\nThis notebook contains an analyis of GEO dataset {data[parameters][gse]} (https://www.ncbi.nlm.nih.gov/gds/?term={data[parameters][gse]}) created using the BioJupies Generator.""".format(**notebook_configuration) + \
-			"""\n### Table of Contents\nThe notebook is divided into the following sections:\n<ol>{}</ol>""".format(sections_str)
+	if 'gse' in notebook_configuration['data']['parameters'].keys():
+		cell = """# {notebook[title]}\n---\n# Introduction\nThis notebook contains an analyis of GEO dataset {data[parameters][gse]} (https://www.ncbi.nlm.nih.gov/gds/?term={data[parameters][gse]}) created using the BioJupies Generator.""".format(**notebook_configuration)
+	else:
+		cell = """# {notebook[title]}\n---\n# Introduction\nThis notebook contains an analyis of a user-submitted dataset created using the BioJupies Generator.""".format(**notebook_configuration)
+	cell += """\n### Table of Contents\nThe notebook is divided into the following sections:\n<ol>{}</ol>""".format(sections_str)
 	return addCell(notebook, cell, 'markdown')
 
 #############################################

@@ -90,7 +90,7 @@ def buildH5(data, dataset_uid):
 
 		# Add sample metadata
 		samples = data['expression']['columns']
-		metadata_dataframe = pd.DataFrame(index=data['metadata']['index'], columns=data['metadata']['columns'], data=data['metadata']['data']).loc[samples].reset_index().rename(columns={'index': 'Sample'})
+		metadata_dataframe = pd.DataFrame(index=data['metadata']['index'], columns=data['metadata']['columns'], data=data['metadata']['data']).loc[samples].reset_index().rename(columns={'index': 'Sample'}) #####
 		sample_metadata_grp = f.create_group('meta/sample')
 		for col in metadata_dataframe.columns:
 			sample_metadata_grp.create_dataset(col, data=[x.encode('utf-8') for x in metadata_dataframe[col]], dtype=h5py.special_dtype(vlen=str))
