@@ -263,7 +263,7 @@ input:checked + .object-label span {
 }
 
 /********************************/
-/***** Configure Signature ******/
+/***** Upload Data ******/
 /********************************/
 
 /* Dropzone */
@@ -272,4 +272,8 @@ input:checked + .object-label span {
 /* Sample Annotation Table */
 #sample-annotation-table tr td:last-child {
   border-right: 1px solid #c9c9c9;
+}
+
+#preview {
+  overflow-x: auto;
 }

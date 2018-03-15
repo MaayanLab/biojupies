@@ -188,17 +188,19 @@ def upload_table():
 	f = request.form
 	if not len(f):
 		return render_template('upload_table.html')
-	else:
-		samples = json.loads(f.to_dict()['expression-data'])['columns']
+	elif 'metadata' not in f.to_dict().keys():
+		samples = json.loads(f.to_dict()['expression'])['columns']
 		samples.sort()
-		return render_template('annotate_table.html', samples=samples)
+		return render_template('annotate_table.html', samples=samples, f=f)
+	else:
+		return render_template('upload_table_complete.html', f=f)
 
 #############################################
 ########## 9. Upload Table API
 #############################################
 
-@app.route(entry_point+'/api/upload/expression', methods=['POST'])
-def upload_expression_api():
+@app.route(entry_point+'/api/upload/table', methods=['POST'])
+def upload_table_api():
 
 	# Get file
 	f = request.files.get('file')
@@ -215,23 +217,48 @@ def upload_expression_api():
 	# Set index
 	dataframe.set_index(dataframe.columns[0], inplace=True)
 	dataframe.index.name = ''
-	print(dataframe.head())
 
 	# Convert to JSON
 	dataframe_json = json.dumps(dataframe.head().to_dict(orient='split'))
 	return dataframe_json
 
 #############################################
-########## 10. Upload Reads
+########## 10. Upload Metadata API
+#############################################
+
+@app.route(entry_point+'/api/upload/metadata', methods=['POST'])
+def upload_metadata_api():
+
+	# Get file
+	f = request.files.get('file')
+
+	# Read file
+	f_format = f.filename.split('.')[-1]
+	if f_format in ['txt', 'tsv']:
+		dataframe = pd.read_table(f)
+	elif f_format == 'csv':
+		dataframe = pd.read_csv(f)
+	elif f_format in ['xls', 'xlsx']:
+		dataframe = pd.read_excel(f)
+
+	# Set index
+	dataframe.set_index(dataframe.columns[0], inplace=True)
+	dataframe.index.name = ''
+
+	# Convert to JSON
+	dataframe_json = json.dumps(dataframe.to_dict(orient='split'))
+	return dataframe_json
+
+#############################################
+########## 11. Upload Reads
 #############################################
 
 @app.route(entry_point+'/upload/reads')
 def upload_reads():
 	return render_template('upload_reads.html')
 
-
 #############################################
-########## 11. Upload ReadsAPI
+########## 12. Upload Reads API
 #############################################
 
 @app.route(entry_point+'/api/upload/reads', methods=['POST'])

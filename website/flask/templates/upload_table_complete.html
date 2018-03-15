@@ -11,22 +11,15 @@
 	<div class="row">
 		<div class="col-8 large mt-5 pl-4">Upload Data</div>
 		<div class="col-4 text-right mt-5">
-			<button class="btn btn-primary black border-black bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
-			<button class="btn btn-primary navigate black border-black bg-white nodecoration" form="upload-expression-form" type="submit" formaction="{{ url_for('upload_table') }}" formmethod="post" disabled="true">Continue<i class="fa fa-angle-right ml-2"></i></button>
+			<!-- <button class="btn btn-primary black border-black bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button> -->
+			<!-- <button class="btn btn-primary navigate black border-black bg-white nodecoration" form="upload-expression-form" type="submit" formaction="{{ url_for('upload_table') }}" formmethod="post" disabled="true">Continue<i class="fa fa-angle-right ml-2"></i></button> -->
 		</div>
 	</div>
 	<div class="row">
 		<hr width="100%">
 		<div class="col-12 px-4">
-			<div class="medium regular mb-2">Upload Expression File</div>
-			<div id="intro" class="very-small light mb-3">First, upload the gene expression data file using the form below.</div>
-			<div id="dropzone" class="dropzone border-grey rounded"></div>
-			<form id="upload-expression-form"><input type="hidden" id="expression" name="expression" value=""></form>
-			<div id="preview" class="mt-2"></div>
-			<div id="formats" class="mt-2 tiny light pl-1">
-				Supported formats: <span class="font-italic">.txt, .csv, .tsv, .xls, .xlsx</span>.
-				<a href="{{ url_for('static', filename='data/example.txt') }}" class="btn bg-white border-black black nodecoration tiny regular my-auto float-right" download>Example</a>
-			</div>
+			<div class="medium regular mb-2">Finished</div>
+			<div class="tiny regular mb-2">{{f.to_dict()}}</div>
 		</div>
 	</div>
 </div>
