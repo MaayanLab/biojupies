@@ -29,3 +29,5 @@ database/.ruffus_history.sqlite
 server/example.json
 
 biojupies*
+
+*.h5

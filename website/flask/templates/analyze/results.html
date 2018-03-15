@@ -16,7 +16,7 @@
 	<div class="row">
 		<hr width="100%" class="mt-3 mb-0">
 		<div class="col-12 text-center pb-5" style="overflow: hidden;">
-			<div id="status" class="mt-5 medium">Your Jupyter Notebook is being generated.</div>
+			<div id="status" class="mt-5 medium">Generating your Jupyter Notebook...</div>
 			<div class="loader">Loading...</div>
 			<div class="mt-5"> 
 				<a id="notebook-link" class="btn btn-primary border-black nodecoration bg-white black hidden small px-3 py-2" href="#" target="_blank" data-notebook_configuration="{{notebook_configuration}}">Open Notebook</a>
@@ -45,7 +45,6 @@
 		error: function(e) {
 			$('#status').html('Sorry, there has been an error.');
 			$('.loader').hide();
-			console.log(e);
 		}
 	})
 

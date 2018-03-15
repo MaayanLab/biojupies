@@ -61,13 +61,12 @@
 											<span class="dropdown-item" data-dropdown-group="b"><div class="dropdown-square border-grey rounded cursor-pointer"></div><span class="bg-transparent cursor-pointer" data-group="b">Perturbation</span></span>
 											<span class="dropdown-item" data-dropdown-group="none"><div class="dropdown-square border-grey rounded cursor-pointer"></div><span class="bg-transparent cursor-pointer" data-group="none">None</span></span>
 										</div>
-										<input type="hidden" name="{{rowData['accession']}}-group" value="none">
+										<input type="hidden" name="{{rowData.get('accession') if rowData.get('accession') else rowData.get('sample') }}-group" value="none">
 									</div>
 								</td>
 								{% for col in j.columns %}
 									<td>{{ rowData[col] }}</td>
 								{% endfor %}
-								<input type="hidden" name="{{rowData['accession']}}-group" value="none">
 							</tr>
 						{% endfor %}
 					</tbody>
@@ -137,7 +136,7 @@
 	    })
 
 	    // Predict Control Classes
-	    var hit, terms=['Control', 'Ctl', 'Ctrl', 'Untreated', 'Vehicle', 'Normal', 'Non-specific', 'DMSO'];
+	    var hit, terms=['Control', 'Ctl', 'Ctrl', 'Untreated', 'Vehicle', 'Normal', 'Non-specific', 'DMSO', 'WT'];
 	    for (i = 0; i < terms.length; i++) {
 	    	hit = autoSelect('a', terms[i]);
 	    	if (hit) { 

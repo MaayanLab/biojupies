@@ -101,3 +101,24 @@ CREATE TABLE notebooks (
 	`gse` VARCHAR(20),
 	`version` VARCHAR(10)
 );
+
+CREATE TABLE user_dataset (
+	`id` INT AUTO_INCREMENT PRIMARY KEY,
+	`dataset_uid` VARCHAR(30),
+	`date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE user_sample (
+	`id` INT AUTO_INCREMENT PRIMARY KEY,
+	`sample_name` VARCHAR(255),
+	`user_dataset_fk` INT,
+	FOREIGN KEY (user_dataset_fk) REFERENCES user_dataset(id)
+);
+
+CREATE TABLE user_sample_metadata (
+	`id` INT AUTO_INCREMENT PRIMARY KEY,
+	`variable` TEXT,
+	`value` TEXT,
+	`user_sample_fk` INT,
+	FOREIGN KEY (user_sample_fk) REFERENCES user_sample(id)
+);

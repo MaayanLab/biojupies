@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% import 'macros.html' as macros %}
+
+{% block head %}
+<title>Notebook Generator | Upload</title>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+	<div class="row">
+		<div class="col-8 large mt-5 pl-4">Upload Data</div>
+	</div>
+	<div class="row">
+		<hr width="100%">
+		<div class="col-12 text-center pb-5" style="overflow: hidden;">
+			<div id="status" class="mt-5 medium">Uploading your dataset...</div>
+			<div id="link" class="mt-4 hidden"><a class="btn btn-primary border-black nodecoration bg-white black small px-3 py-2" href="{{ url_for('uploaded_datasets', _external=True) }}" target="_blank">Start Analyzing</a></div>
+			<div id="info" class="mt-4 very-small">You will be redirected as soon as the process is complete.</div>
+			<div class="loader">Loading...</div>
+			<div class="mt-5"> 
+				<a id="notebook-link" class="btn btn-primary border-black nodecoration bg-white black hidden small px-3 py-2" href="#" target="_blank" data-notebook_configuration="{{notebook_configuration}}">Open Notebook</a>
+			</div>
+			<input type="hidden" id="data" value="{{f}}">
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
+
+{% block footer %}
+
+<script type="text/javascript">
+
+	$.ajax({	
+		url: "{{ url_for('upload_table_api') }}",
+		method: "POST",
+		data: $('#data').val(),
+		contentType: "application/json; charset=utf-8",
+		dataType: 'json',
+		success: function(res) {
+			window.location.replace("{{ url_for('add_tools') }}"+"?uid="+res['dataset_uid']);
+		},
+		error: function(e) {
+			$('#status').html('Sorry, there has been an error.');
+			$('#info').hide();
+			$('.loader').hide();
+			console.log(e);
+		}
+	})
+
+
+</script>
+
+{% endblock %}

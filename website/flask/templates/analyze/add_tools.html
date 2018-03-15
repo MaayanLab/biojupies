@@ -17,8 +17,9 @@
 		<hr width="100%" class="mt-3 mb-0">
 		<div class="col-12 px-3 mb-5">
 			<form id="add-tools-form">
-				<input type="hidden" name="gse" value="{{d.get('gse')}}">
-				<input type="hidden" name="gpl" value="{{d.get('gpl')}}">
+				{% for key, value in d.items() %}
+					<input type="hidden" name="{{ key }}" value="{{ value }}">
+				{% endfor %}
 				{% for section, tools in s.items() %}
 					<div class="large medium mt-4">{{section}}</div>
 					{% for tool in tools %}

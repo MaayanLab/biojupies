@@ -19,7 +19,7 @@
 		<hr width="100%">
 		<div class="col-12 px-4">
 			<div class="medium regular mb-3">Annotate Samples</div>
-			<div id="intro" class="very-small light mb-3">The uploaded dataset contains <span class="highlight">{{samples|length}} samples</span>. To proceed, annotate the samples by manually specifying the groups, or upload a metadata file. </div>
+			<div id="intro" class="very-small light mb-3">The uploaded dataset contains <span class="highlight">{{samples|length}} samples</span>. To proceed, annotate the samples manually, or upload a metadata file. </div>
 		</div>
 	</div>
 	<div id="options" class="row mt-2 px-2">
@@ -70,22 +70,44 @@
 
 <script type="text/javascript">
 
+// Dropzone handler
 $("#dropzone").dropzone({ 
 	url: "{{ url_for('upload_metadata_api') }}",
     success: function(file, response){
     	// Parse response
-    	response = JSON.parse(response);
+    	var response = JSON.parse(response);
 
-    	// Interfaces
-        $('button[form="upload-metadata-form"]').prop('disabled', false);
-    	$('#options').addClass('hidden');
-    	$('#sample-annotation-table').addClass('hidden');
-    	$('#preview').removeClass('hidden');
-        $('#intro').html('The uploaded metadata file contains <span class="highlight">'+response['columns'].length+' fields</span> and <span class="highlight">'+response['index'].length+' rows</span>. Check that the preview below is correct, then click Continue to proceed.');
-    	addPreviewTable(response, false);
+    	// Check if sample names match
+    	var expression_sample_names = JSON.parse($('#expression').val())['columns'],
+    		metadata_sample_names = response['index'],
+    		extra_names = metadata_sample_names.diff(expression_sample_names),
+    		missing_names = expression_sample_names.diff(metadata_sample_names);
+
+    	// Remove extra names
+    	if (extra_names.length) {
+    		$.each(extra_names, function(i, extra_name) {
+    			var extra_index = metadata_sample_names.indexOf(extra_name);
+    			response['index'].splice(extra_index, 1);
+    			response['data'].splice(extra_index, 1);
+    		})
+    	}
+
+    	// Alert if missing names
+		if (missing_names.length) {
+			alert('The following samples are missing from the metadata file:\n\t• '+missing_names.join('\n\t• ')+'\n\nPlease make sure that the rows of the metadata file match the number samples in the expression file.');
+    		console.log('missing');
+    	} else {
+	    	// Interfaces
+	        $('button[form="upload-metadata-form"]').prop('disabled', false);
+	    	$('#options').addClass('hidden');
+	    	$('#sample-annotation-table').addClass('hidden');
+	        $('#intro').html('The uploaded metadata file contains <span class="highlight">'+response['columns'].length+' fields</span> and <span class="highlight">'+response['index'].length+' rows</span>. Check that the preview below is correct, then click Continue to proceed.');
+	    	addPreviewTable(response, false);
+    	}
     }
 });
 
+// Check if all rows of input have been completed
 $('#sample-annotation-table input').change(function(evt) {
 	var complete = true;
 	$('#sample-annotation-table input').each(function(i, input) {
@@ -98,6 +120,7 @@ $('#sample-annotation-table input').change(function(evt) {
 	}
 })
 
+// Submit metadata
 $('button[form="upload-metadata-form"]').click(function(evt) {
 	var $table = $('table:not(.hidden)'),
 		metadata = serializeTable($table);
@@ -105,9 +128,7 @@ $('button[form="upload-metadata-form"]').click(function(evt) {
 	$('#upload-metadata-form').submit();
 })
 
-// $('table').DataTable({
-// 	"lengthMenu": [[-1, 10, 25, 50], ["All", 10, 25, 50]],
-// });
+
 
 </script>
 
