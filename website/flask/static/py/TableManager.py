@@ -1,6 +1,6 @@
 #################################################################
 #################################################################
-############### Data Manager API ################################
+############### Table Manager API ###############################
 #################################################################
 #################################################################
 ##### Author: Denis Torre
@@ -51,12 +51,10 @@ def getUID(engine, idtype='table'):
 
 		# Random UID
 		uid = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(9))
-
-		# Dataset
 		if idtype == 'table':
 			uid = 'ET'+uid
 		elif idtype == 'reads':
-			uid = 'RR'+uid
+			uid = 'RT'+uid
 
 		# Check if exists
 		duplicate = len(pd.read_sql_query('SELECT * FROM user_dataset WHERE dataset_uid = "{}"'.format(uid), engine).index)
@@ -71,13 +69,12 @@ def getUID(engine, idtype='table'):
 def buildH5(data, dataset_uid):
 
 	# Get outfile
-	outfile = os.path.join('static/h5', dataset_uid+'.h5')
+	outfile = os.path.join('static/uploads/h5', dataset_uid+'.h5')
 
 	# Try
 	try:
 
 		# Get outfile
-		outfile = os.path.join('static/h5', dataset_uid+'.h5')
 		f = h5py.File(outfile, 'w')
 
 		# Add data
@@ -121,6 +118,9 @@ def uploadH5(h5_file, dataset_uid):
 	blob.upload_from_filename(h5_file, content_type='text/html')
 	blob.make_public()
 
+	# Remove file
+	os.unlink(h5_file)
+
 #############################################
 ########## 4. Upload to Database
 #############################################
@@ -128,7 +128,7 @@ def uploadH5(h5_file, dataset_uid):
 def uploadToDatabase(data, dataset_uid, engine):
 
 	# Upload dataset and get FK
-	dataset_id = engine.execute('INSERT INTO user_dataset(dataset_uid) VALUES ("{}")'.format(dataset_uid)).lastrowid
+	dataset_id = engine.execute('INSERT INTO user_dataset(dataset_uid, dataset_type, status) VALUES ("{}", "expression_table", "complete")'.format(dataset_uid)).lastrowid
 
 	# Get metadata
 	metadata_dataframe = pd.DataFrame(index=data['metadata']['index'], columns=data['metadata']['columns'], data=data['metadata']['data']).rename(columns={'index': 'Sample'})

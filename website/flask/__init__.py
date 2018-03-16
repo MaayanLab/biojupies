@@ -29,6 +29,7 @@ pymysql.install_as_MySQLdb()
 ##### 3. Custom modules #####
 sys.path.append('static/py')
 import TableManager as TM
+import ReadManager as RM
 
 #############################################
 ########## 2. App Setup
@@ -206,7 +207,7 @@ def upload_table():
 	elif 'metadata' not in f.to_dict().keys():
 		samples = json.loads(f.to_dict()['expression'])['columns']
 		samples.sort()
-		return render_template('upload/upload_metadata.html', samples=samples, f=f)
+		return render_template('upload/upload_metadata.html', samples=samples, f=f, uploadtype='table')
 	else:
 		# Process metadata dataframe
 		metadata_dataframe = pd.DataFrame(json.loads(f['metadata'])).set_index(0)
@@ -223,11 +224,11 @@ def upload_table():
 		return render_template('upload/upload_table_loading.html', f=f)
 
 #############################################
-########## 9. Upload Table API
+########## 9. Upload Dataframe API
 #############################################
 
-@app.route(entry_point+'/api/upload/expression', methods=['POST'])
-def upload_expression_api():
+@app.route(entry_point+'/api/upload/dataframe', methods=['POST'])
+def upload_dataframe_api():
 
 	# Get file
 	f = request.files.get('file')
@@ -250,34 +251,7 @@ def upload_expression_api():
 	return dataframe_json
 
 #############################################
-########## 10. Upload Metadata API
-#############################################
-
-@app.route(entry_point+'/api/upload/metadata', methods=['POST'])
-def upload_metadata_api():
-
-	# Get file
-	f = request.files.get('file')
-
-	# Read file
-	f_format = f.filename.split('.')[-1]
-	if f_format in ['txt', 'tsv']:
-		dataframe = pd.read_table(f)
-	elif f_format == 'csv':
-		dataframe = pd.read_csv(f)
-	elif f_format in ['xls', 'xlsx']:
-		dataframe = pd.read_excel(f)
-
-	# Set index
-	dataframe.set_index(dataframe.columns[0], inplace=True)
-	dataframe.index.name = ''
-
-	# Convert to JSON
-	dataframe_json = json.dumps(dataframe.to_dict(orient='split'))
-	return dataframe_json
-
-#############################################
-########## 11. Upload Table API
+########## 10. Upload Table API
 #############################################
 
 @app.route(entry_point+'/api/upload/table', methods=['POST'])
@@ -289,37 +263,100 @@ def upload_table_api():
 	return results
 
 #############################################
-########## 12. Upload Reads
+########## 11. Upload Reads
 #############################################
 
-@app.route(entry_point+'/upload/reads')
+@app.route(entry_point+'/upload/reads', methods=['GET', 'POST'])
 def upload_reads():
-	return render_template('upload/upload_reads.html')
+
+	# Get form
+	f = request.form
+
+	# Initial upload screen
+	if not len(f):
+		return render_template('upload/upload_reads.html')
+
+	# Sample annotation
+	elif 'reads' in f.to_dict().keys():
+
+		# Get samples and expression info
+		f = f.to_dict()
+		f.pop('reads')
+		samples = [x for x in f.values()]
+		f = {'expression': json.dumps([os.path.join(key, value) for key, value in f.items()])}
+		return render_template('upload/upload_metadata.html', samples=samples, f=f, uploadtype='reads')
+
+	# Check status
+	elif 'uid' in request.args.keys():
+		return ''
+
+	# Redirect
+	else:
+
+		# Process metadata dataframe
+		metadata_dataframe = pd.DataFrame(json.loads(f['metadata'])).set_index(0)
+		metadata_dataframe.columns = metadata_dataframe.iloc[0]
+		metadata_dataframe = metadata_dataframe[1:]
+		metadata_dataframe.index.name = 'Sample'
+		metadata_dataframe.columns.name = ''
+
+		# Add to form
+		f = f.to_dict()
+		f['metadata'] = metadata_dataframe.to_dict(orient='split')
+		f['dataset_uid'] = TM.getUID(engine, idtype='reads')
+		f = json.dumps(f)
+		return render_template('upload/upload_reads_loading.html', f=f)
 
 #############################################
-########## 13. Upload Reads API
+########## 12. Upload Reads API
 #############################################
 
 @app.route(entry_point+'/api/upload/reads', methods=['POST'])
 def upload_reads_api():
-	return ''
+
+	# Get files
+	files = [x for x in request.files.values()]
+
+	# Results
+	results = []
+
+	# Loop through files
+	for f in files:
+		
+		# Get UID
+		read_uid = RM.getUID()
+
+		# Get directory
+		outdir = os.path.join('static/uploads/reads', read_uid)
+		os.makedirs(outdir)
+
+		# Save outfile
+		outfile = os.path.join(outdir, f.filename)
+		f.save(outfile)
+
+		# Append to results
+		results.append({'uid': read_uid, 'filename': f.filename})
+
+	# Return
+	return json.dumps(results)
 
 #############################################
-########## 14. Upload Results
+########## 13. Alignment API
 #############################################
 
-@app.route(entry_point+'/upload/results', methods=['GET', 'POST'])
-def upload_results():
-	f = request.form
-	return render_template('upload/upload_table_results.html', f=f)
+@app.route(entry_point+'/api/align', methods=['POST'])
+def alignment_api():
 
-#############################################
-########## 15. Uploaded Data
-#############################################
+	# Get ID
+	# results = RM.alignFile(request.data, engine)
+	# upload dataset to database, add processing status
+	# upload samples to database, add processing status
+	# launch containers
+	# check status every minute or so
+	# once complete, load reads and create file
+	# upload file and return completed
 
-@app.route(entry_point+'/analyze/uploaded_datasets', methods=['GET', 'POST'])
-def uploaded_datasets():
-	return render_template('upload/uploaded_datasets.html')
+	return results
 
 #######################################################
 #######################################################

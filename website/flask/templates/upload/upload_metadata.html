@@ -12,7 +12,7 @@
 		<div class="col-8 large mt-5 pl-4">Upload Data</div>
 		<div class="col-4 text-right mt-5">
 			<button class="btn btn-primary black border-black bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
-			<button class="btn btn-primary navigate black border-black bg-white nodecoration" form="upload-metadata-form" type="submit" formaction="{{ url_for('upload_table') }}" formmethod="post" disabled="true">Continue<i class="fa fa-angle-right ml-2"></i></button>
+			<button class="btn btn-primary navigate black border-black bg-white nodecoration" form="upload-metadata-form" type="submit" formaction="{{ url_for('upload_'+uploadtype) }}" formmethod="post" disabled="true">Continue<i class="fa fa-angle-right ml-2"></i></button>
 		</div>
 	</div>
 	<div class="row">
@@ -47,8 +47,8 @@
 		<div class="col-5 px-0">
 			<div class="very-small light mb-2">Upload a metadata file:</div>
 			<div id="dropzone" class="dropzone border-grey rounded"></div>
-			<form id="upload-metadata-form" action="{{ url_for('upload_table') }}" method="post">
-				<input type="hidden" id="expression" name="expression" value="{{f['expression']}}">
+			<form id="upload-metadata-form" action="{{ url_for('upload_'+uploadtype) }}" method="post">
+				<input type="hidden" id="expression" name="expression" value="{{f.get('expression')}}">
 				<input type="hidden" id="metadata" name="metadata" value="">
 			</form>
 			<div class="tiny mt-2">
@@ -72,7 +72,7 @@
 
 // Dropzone handler
 $("#dropzone").dropzone({ 
-	url: "{{ url_for('upload_metadata_api') }}",
+	url: "{{ url_for('upload_dataframe_api') }}",
     success: function(file, response){
     	// Parse response
     	var response = JSON.parse(response);

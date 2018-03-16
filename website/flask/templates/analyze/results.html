@@ -21,6 +21,10 @@
 			<div class="mt-5"> 
 				<a id="notebook-link" class="btn btn-primary border-black nodecoration bg-white black hidden small px-3 py-2" href="#" target="_blank" data-notebook_configuration="{{notebook_configuration}}">Open Notebook</a>
 			</div>
+			<div id="reanalyze" class="mt-5 small light pt-3 hidden">
+				<div>Use the link below to re-analyze the uploaded dataset:</div>
+				<div class="mt-2 very-small"><a href="{{ url_for('add_tools', _external=True) }}?uid=" class="nodecoration" target="_blank">{{ url_for('add_tools', _external=True) }}?uid=</a></div>
+			</div>
 		</div>
 	</div>
 </div>
@@ -41,6 +45,14 @@
 			$('#notebook-link').show();
 			$('#notebook-link').attr('href', res['notebook_url']);
 			$('.loader').hide();
+
+			// Add link for uploaded data
+			var dataset_uid = JSON.parse($('#notebook-link').attr('data-notebook_configuration'))['data']['parameters']['uid'];
+			if (dataset_uid) {
+				$('#reanalyze a').html($('#reanalyze a').html()+dataset_uid);
+				$('#reanalyze a').attr('href', $('#reanalyze a').attr('href')+dataset_uid);
+				$('#reanalyze').removeClass('hidden');
+			}
 		},
 		error: function(e) {
 			$('#status').html('Sorry, there has been an error.');

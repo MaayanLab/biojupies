@@ -105,6 +105,8 @@ CREATE TABLE notebooks (
 CREATE TABLE user_dataset (
 	`id` INT AUTO_INCREMENT PRIMARY KEY,
 	`dataset_uid` VARCHAR(30),
+	`dataset_type` VARCHAR(30),
+	`status` VARCHAR(30),
 	`date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 

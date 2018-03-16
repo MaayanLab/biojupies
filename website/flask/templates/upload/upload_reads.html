@@ -1,11 +1,61 @@
 {% extends 'base.html' %}
 {% import 'macros.html' as macros %}
 
+{% block head %}
+<title>Notebook Generator | Upload</title>
+{% endblock %}
+
 {% block content %}
+
 <div class="container">
 	<div class="row">
-		<div class="col-12 text-center very-large mt-5 mb-1">Upload Reads</div>
-		<hr width="100%" class="my-4">
+		<div class="col-8 large mt-5 pl-4">Upload Data</div>
+		<div class="col-4 text-right mt-5">
+			<button class="btn btn-primary black border-black bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
+			<button class="btn btn-primary navigate black border-black bg-white nodecoration" form="reads" type="submit" formaction="{{ url_for('upload_reads') }}" formmethod="post" disabled="true">Continue<i class="fa fa-angle-right ml-2"></i></button>
+		</div>
+	</div>
+	<div class="row">
+		<hr width="100%">
+		<div class="col-12 px-4">
+			<div class="medium regular mb-2">Upload RNA-seq Reads</div>
+			<div id="intro" class="very-small light mb-3">First, upload the raw read files using the form below.</div>
+			<div id="dropzone" class="dropzone border-grey rounded"></div>
+			<form id="upload-expression-form"><input type="hidden" id="expression" name="expression" value=""></form>
+			<div id="preview" class="mt-2"></div>
+			<div id="formats" class="mt-2 tiny light pl-1">
+				Supported formats: <span class="font-italic">.fastq, .fastq.gz</span>.
+			</div>
+			<form id="reads"><input type="hidden" name="reads" value="true"></form>
+		</div>
 	</div>
 </div>
+
+{% endblock %}
+
+
+{% block footer %}
+
+<script type="text/javascript">
+
+$("#dropzone").dropzone({ 
+	url: "{{ url_for('upload_reads_api') }}",
+	maxFilesize: 50000,
+	chunking: false,
+	timeout: 500000,
+	parallelUploads: 3,
+	uploadMultiple: true,
+    success: function(file, response){
+    	var response = JSON.parse(response);
+    	$.each(response, function(i, e) {
+    		if ($('#'+e['uid']).length === 0){
+		    	$('#reads').append($('<input>', {'type': 'hidden', 'id': e['uid'], 'name': e['uid'], 'value': e['filename']}));
+    		}
+    	})
+    	$('button[disabled="true"]').prop('disabled', false);
+    }
+});
+
+</script>
+
 {% endblock %}
