@@ -124,3 +124,11 @@ CREATE TABLE user_sample_metadata (
 	`user_sample_fk` INT,
 	FOREIGN KEY (user_sample_fk) REFERENCES user_sample(id)
 );
+
+CREATE TABLE alignment_job (
+	`id` INT AUTO_INCREMENT PRIMARY KEY,
+	`job_uid` VARCHAR(30),
+	`status` TEXT,
+	`user_sample_fk` INT,
+	FOREIGN KEY (user_sample_fk) REFERENCES user_sample(id)
+);

@@ -19,7 +19,7 @@
 			<div id="status" class="mt-5 medium">Generating your Jupyter Notebook...</div>
 			<div class="loader">Loading...</div>
 			<div class="mt-5"> 
-				<a id="notebook-link" class="btn btn-primary border-black nodecoration bg-white black hidden small px-3 py-2" href="#" target="_blank" data-notebook_configuration="{{notebook_configuration}}">Open Notebook</a>
+				<a id="notebook-link" class="btn btn-primary border-black nodecoration bg-white black hidden small px-3 py-2" href="{{ url_for('view_notebook', notebook_uid='') }}" target="_blank" data-notebook_configuration="{{notebook_configuration}}">Open Notebook</a>
 			</div>
 			<div id="reanalyze" class="mt-5 small light pt-3 hidden">
 				<div>Use the link below to re-analyze the uploaded dataset:</div>
@@ -41,9 +41,11 @@
 		contentType: "application/json; charset=utf-8",
 		dataType: 'json',
 		success: function(res) {
+			console.log(res);
 			$('#status').html('Your Jupyter Notebook is available at the following link:');
 			$('#notebook-link').show();
-			$('#notebook-link').attr('href', res['notebook_url']);
+			var notebook_uid = res['notebook_url'].split('/')[6];
+			$('#notebook-link').attr('href', $('#notebook-link').attr('href')+notebook_uid);
 			$('.loader').hide();
 
 			// Add link for uploaded data

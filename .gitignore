@@ -1,8 +1,4 @@
 *-checkpoint.ipynb
-*.pyc
-web/flask/static/py/__pycache__/KubernetesAPI.cpython-36.pyc
-
-*.pyc
 
 *.pyc
 
@@ -10,24 +6,14 @@ web/flask/static/py/__pycache__/KubernetesAPI.cpython-36.pyc
 
 *.dir
 
-*.sqlite
-
-database/.ruffus_history.sqlite
-
-database/.ruffus_history.sqlite
-
 jupyterhub/setup.txt
 
 jupyterhub/config.yaml
-
-*.sqlite
-
-database/.ruffus_history.sqlite
-
-database/.ruffus_history.sqlite
 
 server/example.json
 
 biojupies*
 
 *.h5
+
+website/flask/static/uploads

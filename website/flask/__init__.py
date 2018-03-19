@@ -21,7 +21,7 @@ from flask import Flask, request, render_template, Response, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 ##### 2. Python modules #####
-import sys, os, json, requests, re
+import sys, os, json, requests, re, time
 import pandas as pd
 import pymysql
 pymysql.install_as_MySQLdb()
@@ -273,7 +273,7 @@ def upload_reads():
 	f = request.form
 
 	# Initial upload screen
-	if not len(f):
+	if not len(f) and 'uid' not in request.args.keys():
 		return render_template('upload/upload_reads.html')
 
 	# Sample annotation
@@ -288,7 +288,14 @@ def upload_reads():
 
 	# Check status
 	elif 'uid' in request.args.keys():
-		return ''
+
+		# Get Dataset UID
+		dataset_uid = request.args.get('uid')
+
+		# Get Alignment Status
+		alignment_data = pd.read_sql_query('SELECT sample_name, aj.status FROM user_dataset ud LEFT JOIN user_sample us ON ud.id = us.user_dataset_fk LEFT JOIN alignment_job aj ON us.id=aj.user_sample_fk WHERE dataset_uid = "{}"'.format(dataset_uid), engine).to_dict(orient='records')
+
+		return render_template('upload/alignment_status.html', dataset_uid=dataset_uid, alignment_data=alignment_data)
 
 	# Redirect
 	else:
@@ -304,8 +311,9 @@ def upload_reads():
 		f = f.to_dict()
 		f['metadata'] = metadata_dataframe.to_dict(orient='split')
 		f['dataset_uid'] = TM.getUID(engine, idtype='reads')
+		dataset_uid = f['dataset_uid']
 		f = json.dumps(f)
-		return render_template('upload/upload_reads_loading.html', f=f)
+		return render_template('upload/upload_reads_loading.html', f=f, dataset_uid=dataset_uid)
 
 #############################################
 ########## 12. Upload Reads API
@@ -347,16 +355,36 @@ def upload_reads_api():
 @app.route(entry_point+'/api/align', methods=['POST'])
 def alignment_api():
 
-	# Get ID
-	# results = RM.alignFile(request.data, engine)
-	# upload dataset to database, add processing status
-	# upload samples to database, add processing status
-	# launch containers
-	# check status every minute or so
-	# once complete, load reads and create file
-	# upload file and return completed
+	# Get data
+	data = request.json
 
-	return results
+	# Upload dataset to database, add processing status
+	dataset_id = engine.execute('INSERT IGNORE INTO user_dataset(dataset_uid, dataset_type, status) VALUES ("{dataset_uid}", "rnaseq", "submitted");'.format(**data)).lastrowid
+
+	# Upload samples to database, add processing status
+	sample_dataframe = pd.DataFrame([{'job_uid': os.path.dirname(x), 'sample_name': os.path.basename(x)[:-len('.txt')]} for x in json.loads(data['expression'])])
+	sample_dataframe['user_dataset_fk'] = dataset_id
+	sample_dataframe[['user_dataset_fk', 'sample_name']].to_sql('user_sample', engine, if_exists='append', index=False)
+
+	# Get sample FKs
+	samples_string = '", "'.join(sample_dataframe['sample_name'])
+	sample_id_dataframe = pd.read_sql_query('SELECT id AS user_sample_fk, sample_name FROM user_sample WHERE user_dataset_fk = {dataset_id} AND sample_name in ("{samples_string}")'.format(**locals()), engine)
+
+	# Upload jobs to database, add processing status
+	job_dataframe = sample_dataframe.merge(sample_id_dataframe, on='sample_name')[['job_uid', 'user_sample_fk']]
+	job_dataframe['status'] = 'submitted'
+	job_dataframe.to_sql('alignment_job', engine, if_exists='append', index=False)
+
+	# Launch containers
+	time.sleep(5)
+
+	# Check status every minute or so
+	# Once complete, load reads and create file
+	# Upload file and return completed
+	engine.execute('UPDATE user_dataset SET status = "complete" WHERE dataset_uid = "{}"'.format(data['dataset_uid']))
+	engine.execute('UPDATE alignment_job SET status = "complete" WHERE job_uid IN ("{}")'.format('", "'.join(job_dataframe['job_uid'])))
+
+	return json.dumps({'status': 'complete'})
 
 #############################################
 ########## 13. View Notebook
@@ -366,10 +394,11 @@ def alignment_api():
 def view_notebook(notebook_uid):
 
 	# Get notebook data
-	notebook_url = pd.read_sql_query('SELECT notebook_url FROM notebooks WHERE notebook_uid="{notebook_uid}"'.format(**locals()), engine).iloc[0,0]
-	nbviewer_url = 'http://nbviewer.jupyter.org/urls/'+notebook_url.replace('https://', '')
+	notebook_data = pd.read_sql_query('SELECT notebook_url, notebook_configuration FROM notebooks WHERE notebook_uid="{notebook_uid}"'.format(**locals()), engine).to_dict(orient='index')[0]
+	nbviewer_url = 'http://nbviewer.jupyter.org/urls/'+notebook_data['notebook_url'].replace('https://', '')
+	title = json.loads(notebook_data['notebook_configuration'])['notebook']['title']
 
-	return render_template('notebook.html', nbviewer_url=nbviewer_url)
+	return render_template('notebook.html', nbviewer_url=nbviewer_url, title=title)
 
 #######################################################
 #######################################################

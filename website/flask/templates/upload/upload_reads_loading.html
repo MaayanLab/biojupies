@@ -29,7 +29,7 @@
 
 <script type="text/javascript">
 
-	$.ajax({	
+	$.ajax({
 		url: "{{ url_for('alignment_api') }}",
 		method: "POST",
 		data: $('#data').val(),
@@ -45,6 +45,17 @@
 			console.log(e);
 		}
 	})
+
+	function sleep(ms) {
+	  return new Promise(resolve => setTimeout(resolve, ms));
+	}
+
+	async function demo() {
+	  await sleep(5000);
+		window.location.replace('{{ url_for("upload_reads", uid=dataset_uid) }}')
+	}
+
+	demo();
 
 </script>
 
