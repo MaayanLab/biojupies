@@ -21,15 +21,16 @@ from flask import Flask, request, render_template, Response, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 ##### 2. Python modules #####
-import sys, os, json, requests, re, time
+import sys, os, json, requests, re, math
 import pandas as pd
 import pymysql
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import MetaData, or_, and_, func
 pymysql.install_as_MySQLdb()
 
 ##### 3. Custom modules #####
 sys.path.append('static/py')
 import TableManager as TM
-import ReadManager as RM
 
 #############################################
 ########## 2. App Setup
@@ -44,19 +45,30 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 engine = db.engine
+Session = sessionmaker(bind=engine)
+metadata = MetaData()
+metadata.reflect(bind=engine)
+tables = metadata.tables
 
 # Notebook Generation
 version = 'v0.3'
 
 #######################################################
 #######################################################
-########## 2. Server
+########## 2. Notebook Generation
 #######################################################
 #######################################################
+##### Handles routes used to generate notebooks.
+
+##################################################
+########## 2.1 Webpages
+##################################################
 
 #############################################
 ########## 1. Home
 #############################################
+### Landing page for the website. Links to analyze() endpoint.
+### Links to: analyze().
 
 @app.route(entry_point)
 def index():
@@ -65,82 +77,167 @@ def index():
 #############################################
 ########## 2. Analyze
 #############################################
+### Provides users with three different options to use the resource.
+### Links to: search_data(), upload_table(), and tutorial().
+### Accessible from: index().
 
 @app.route(entry_point+'/analyze')
 def analyze():
+
+	# Get options
 	options = [
 		{'link': 'search_data', 'icon': 'search', 'title': 'Search', 'description': 'Search thousands of ready-to-analyze datasets'},
-		{'link': 'upload_data', 'icon': 'upload', 'title': 'Upload', 'description': 'Upload your own gene expression table or<br>RNA-seq reads'},
-		{'link': 'index', 'icon': 'table', 'title': 'Example', 'description': 'Learn to generate notebooks with a<br>step-by-step tutorial'}
+		{'link': 'upload_table', 'icon': 'upload', 'title': 'Upload', 'description': 'Upload your own data gene expression table<br>for analysis'},
+		{'link': 'index', 'icon': 'question-circle', 'title': 'Tutorial', 'description': 'Learn to generate notebooks with a<br>sample dataset'}
 	]
+	
+	# Return result
 	return render_template('analyze/analyze.html', options=options)
 
 #############################################
 ########## 3. Search Data
 #############################################
+### Allows users to search indexed GEO datasets using text-based queries and other filtering parameters and to select them for notebook generation.
+### Links to: add_tools().
+### Accessible from: analyze(), navbar.
 
 @app.route(entry_point+'/analyze/search')
 def search_data():
-	# Search Datasets
+
+	# Get Search Parameters
 	q = request.args.get('q', 'cancer')
-	min_samples = request.args.get('min_samples', 5)
+	min_samples = request.args.get('min_samples', 6)
 	max_samples = request.args.get('max_samples', 30)
-	max_samples_q = 500 if max_samples == '70' else max_samples
-	sortby = request.args.get('sortby', '')
-	sortby = 'ORDER BY nr_samples {}, date DESC'.format(sortby) if sortby in ['desc', 'asc'] else 'ORDER BY `date` DESC'
+	max_samples = 500 if max_samples == '70' else max_samples
+	sortby = request.args.get('sortby', 'new')
 	organism = request.args.get('organism', 'all')
-	organism_q = '", "'.join([x for x in ['Human', 'Mouse'] if organism == 'all' or x == organism.title()])
-	d = pd.read_sql_query('SELECT gse, gpl, organism, title, summary, `date`, COUNT(*) AS nr_samples FROM series se LEFT JOIN sample sa ON se.id=sa.series_fk LEFT JOIN platform p ON p.id=sa.platform_fk WHERE title LIKE "%% {q} %%" OR summary LIKE "%% {q} %%" OR gse LIKE "{q}%%" GROUP BY gse HAVING organism IN ("{organism_q}") AND nr_samples >= {min_samples} AND nr_samples <= {max_samples_q} {sortby}'.format(**locals()), engine).head(20)
+	organisms = [x for x in ['Human', 'Mouse'] if organism == 'all' or x == organism.title()]
+	page = int(request.args.get('page', '1'))
+
+	###
+	# Initialize database query
+	session = Session()
+	db_query = session.query(tables['series'], tables['platform'], func.count(tables['sample'].columns['gsm']).label('nr_samples')) \
+					.join(tables['sample']) \
+					.join(tables['platform']) \
+					.filter(or_( \
+						tables['series'].columns['title'].like('% '+q+' %'), \
+						tables['series'].columns['summary'].like('% '+q+' %'), \
+						tables['series'].columns['gse'].like(q) \
+					)) \
+					.group_by(tables['series'].columns['gse']) \
+					.having(and_( \
+						tables['platform'].columns['organism'].in_(organisms), \
+						func.count(tables['sample'].columns['gsm']) >= min_samples, \
+						func.count(tables['sample'].columns['gsm']) <= max_samples \
+					))
+
+	# Sort query results
+	if sortby == 'asc':
+		db_query = db_query.order_by(func.count(tables['sample'].columns['gsm']).asc())
+	elif sortby == 'desc':
+		db_query = db_query.order_by(func.count(tables['sample'].columns['gsm']).desc())
+	elif sortby == 'new':
+		db_query = db_query.order_by(tables['series'].columns['date'].desc())
+
+	# Finish query
+	query_dataframe = pd.DataFrame(db_query.all())
+	session.close()
+
+	# Filter dataset
+	nr_results = len(query_dataframe.index)
+	query_dataframe = query_dataframe.iloc[(page-1)*10:page*10]
+	nr_results_displayed = len(query_dataframe.index)
+
+	# Get pages
+	nr_pages = math.ceil(nr_results/10)
+	if page == 1:
+		pages = [x+1 for x in range(nr_pages)][:3]
+	elif page == nr_pages:
+		pages = [x+1 for x in range(nr_pages-3, nr_pages) if x>-1][-3:]
+	else:
+		pages = [page-1, page, page+1]
+
 	# Highlight searched term
 	h = lambda x: '<span class="highlight">{}</span>'.format(x)
 	for col in ['title', 'summary']:
-		d[col] = [x.replace(q, h(q)).replace(q.title(), h(q.title())).replace(q.lower(), h(q.lower())).replace(q.upper(), h(q.upper())) for x in d[col]]
-	d = d.to_dict(orient='records')
-	return render_template('analyze/search_data.html', d=d, min_samples=min_samples, max_samples=max_samples, q=q)	
+		query_dataframe[col] = [x.replace(q, h(q)).replace(q.title(), h(q.title())).replace(q.lower(), h(q.lower())).replace(q.upper(), h(q.upper())) for x in query_dataframe[col]]
+
+	# Convert to dictionary
+	d = query_dataframe.head(10).to_dict(orient='records')
+	
+	# Return result
+	return render_template('analyze/search_data.html', d=d, min_samples=min_samples, max_samples=max_samples, q=q, nr_results=nr_results, nr_results_displayed=nr_results_displayed, pages=pages, page=page, organism=organism, sortby=sortby, nr_pages=nr_pages)
 
 #############################################
 ########## 4. Add Tools
 #############################################
+### Allows users to select one or more tools to add to the notebook.
+### Links to: configure_analysis().
+### Accessible from: search_data(), .
 
 @app.route(entry_point+'/analyze/tools', methods=['GET', 'POST'])
 def add_tools():
-	# Get dataset
+
+	# Get dataset information from request
 	d = {'uid': request.args.get('uid'), 'source': 'upload'} if 'uid' in request.args.keys() else {'gse': request.form.get('gse-gpl').split('-')[0], 'gpl': request.form.get('gse-gpl').split('-')[1], 'source': 'archs4'}
-	# Get tool data
+
+	# Perform tool query from database
 	t = pd.read_sql_query('SELECT * FROM tool t LEFT JOIN section s ON s.id=t.section_fk', engine)
+
+	# Fix tool data structure
 	t['tool_documentation'] = ['https://github.com/denis-torre/notebook-generator/tree/master/library/{version}/analysis_tools/'.format(**globals())+x for x in t['tool_string']]
 	t_data = t.set_index('tool_string', drop=False).to_dict(orient='index')
 	t['tool_data'] = [t_data[x] for x in t['tool_string']]
 	s = t.groupby('section_name')['tool_data'].apply(tuple).reindex(['Dimensionality Reduction', 'Data Visualization', 'Differential Expression Analysis', 'Signature Analysis'])
+	
+	# Return result
 	return render_template('analyze/add_tools.html', d=d, s=s)
 
 #############################################
 ########## 5. Configure Analysis
 #############################################
+### Responsible for handling the definition of the parameters for notebook configuration:
+### - Defining groups, if tools require signature.
+### - Defining optiona notebook and tool parameters.
+### Links to: generate_notebook().
+### Accessible from: add_tools().
 
 @app.route(entry_point+'/analyze/configure', methods=['GET', 'POST'])
 def configure_analysis():
+
 	# Get form
 	f=request.form
+
 	# Check if requires signature
 	signature_tools = pd.read_sql_query('SELECT tool_string FROM tool WHERE requires_signature = TRUE', engine)['tool_string'].values
 	requires_signature = any([x in signature_tools for x in [x for x in f.lists()][-1][-1]])
+
+	# Signature generation
 	if requires_signature:
-		# Get samples
+
+		# Get metatada for processed datasets
 		if 'gse' in request.form.keys():
 			j = pd.read_sql_query('SELECT DISTINCT CONCAT(gsm, "---", sample_title) AS sample_info, variable, value FROM sample s LEFT JOIN series g ON g.id=s.series_fk LEFT JOIN sample_metadata sm ON s.id=sm.sample_fk WHERE gse = "{}"'.format(f.get('gse')), engine).pivot(index='sample_info', columns='variable', values='value')
 			j = pd.concat([pd.DataFrame({'accession': [x.split('---')[0] for x in j.index], 'sample': [x.split('---')[1] for x in j.index]}, index=j.index), j], axis=1).reset_index(drop=True).fillna('')
 			j = j[[col for col, colData in j.iteritems() if len(colData.unique()) > 1]]
+
+		# Get metadata for user-submitted dataset
 		else:
 			j = pd.read_sql_query('SELECT DISTINCT sample_name AS sample, variable, value FROM user_dataset ud LEFT JOIN user_sample us ON ud.id=us.user_dataset_fk LEFT JOIN user_sample_metadata usm ON us.id=usm.user_sample_fk WHERE ud.dataset_uid="{}"'.format(request.form.get('uid')), engine)
 			j = j.pivot(index='sample', columns='variable', values='value').reset_index()
-			print(j.head())
+	
+		# Return result
 		return render_template('analyze/configure_signature.html', f=f, j=j)
+
 	else:
-		# Get tool parameters
+
+		# Get tool query
 		tools = [value for value, key in zip(f.listvalues(), f.keys()) if key == 'tool'][0]
 		tool_query_string = '("'+'","'.join([value for value, key in zip(f.listvalues(), f.keys()) if key == 'tool'][0])+'")'
 		p = pd.read_sql_query('SELECT tool_name, tool_string, tool_description, parameter_name, parameter_description, parameter_string, value, `default` FROM tool t LEFT JOIN parameter p ON t.id=p.tool_fk LEFT JOIN parameter_value pv ON p.id=pv.parameter_fk WHERE t.tool_string IN {}'.format(tool_query_string), engine).set_index(['tool_string'])#.set_index(['tool_name', 'parameter_name', 'parameter_description', 'parameter_string'])
+
+		# Fix tool parameter data structure
 		t = p[['tool_name', 'tool_description']].drop_duplicates().reset_index().set_index('tool_string', drop=False).to_dict(orient='index')#.groupby('tool_string')[['tool_name', 'tool_description']]#.apply(tuple).to_frame()#drop_duplicates().to_dict(orient='index')
 		p_dict = {tool_string: p.drop(['tool_description', 'tool_name', 'value', 'default'], axis=1).loc[tool_string].drop_duplicates().to_dict(orient='records') if not isinstance(p.loc[tool_string], pd.Series) else [] for tool_string in tools}
 		for tool_string, parameters in p_dict.items():
@@ -149,16 +246,23 @@ def configure_analysis():
 		for tool_string in t.keys():
 			t[tool_string]['parameters'] = p_dict[tool_string]
 		t = [t[x] for x in tools]
+	
+		# Return result
 		return render_template('analyze/review_analysis.html', t=t, f=f)
 
 #############################################
 ########## 6. Generate Notebook
 #############################################
+### Displays the loading screen during notebook generation, and the link to the generated notebook once the process is complete.
+### Links to: view_notebook().
+### Accessible from: configure_analysis().
 
 @app.route(entry_point+'/analyze/results', methods=['GET', 'POST'])
 def generate_notebook():
+
 	# Get form
 	d = {key:value if len(value) > 1 else value[0] for key, value in request.form.lists()}
+
 	# Get parameters and groups
 	p = {x:{} for x in d['tool']}
 	g = {x:[] for x in ['a', 'b', 'none']}
@@ -172,6 +276,7 @@ def generate_notebook():
 					if value != 'none':
 						g[value[0]].append(key.rpartition('-')[0])
 
+	# Generate notebook configuration
 	c = {
 		'notebook': {'title': d.get('notebook_title'), 'live': 'False', 'version': version},
 		'tools': [{'tool_string': x, 'parameters': p.get(x, {})} for x in d['tool']],
@@ -180,36 +285,76 @@ def generate_notebook():
 			"A": {"name": d.get('group_a_label'), "samples": g['a']},
 			"B": {"name": d.get('group_b_label'), "samples": g['b']}}
 	}
-	# r = requests.post('http://amp.pharm.mssm.edu/notebook-generator-server/api/generate', data=json.dumps(c), headers={'content-type':'application/json'})
+	
+	# Return result
 	return render_template('analyze/results.html', notebook_configuration=json.dumps(c))
 
 #############################################
-########## 7. Upload Data
+########## 10. View Notebook
 #############################################
+### Displays the generated notebook to the user using nbviewer.
+### Links to: none.
+### Accessible from: generate_notebook().
 
-@app.route(entry_point+'/upload')
-def upload_data():
-	options = [
-		{'link': 'upload_table', 'icon': 'table', 'title': 'Expression Table', 'description': 'Text file containing numeric<br>gene expression values'},
-		{'link': 'upload_reads', 'icon': 'dna', 'title': 'RNA-seq Reads', 'description': 'Read files generated from<br>an RNA-seq analysis'}
-	]
-	return render_template('upload/upload.html', options=options)
+@app.route(entry_point+'/notebooks/<notebook_uid>')
+def view_notebook(notebook_uid):
+
+	# Get notebook data
+	notebook_data = pd.read_sql_query('SELECT notebook_url, notebook_configuration FROM notebooks WHERE notebook_uid="{notebook_uid}"'.format(**locals()), engine).to_dict(orient='index')[0]
+
+	# Get Nbviewer URL and Title
+	nbviewer_url = 'http://nbviewer.jupyter.org/urls/'+notebook_data['notebook_url'].replace('https://', '')
+	title = json.loads(notebook_data['notebook_configuration'])['notebook']['title']
+	
+	# Return result
+	return render_template('analyze/notebook.html', nbviewer_url=nbviewer_url, title=title)
+
+#######################################################
+#######################################################
+########## 3. Data Upload
+#######################################################
+#######################################################
+##### Handles routes used to handle expression tables uploaded by users.
+
+##################################################
+########## 3.1 Webpages
+##################################################
 
 #############################################
-########## 8. Upload Table
+########## 1. Upload Table Interface
 #############################################
+### Allows users to upload a gene expression table. Renders three templates:
+### 1. upload_table.html, which contains a form to upload tabular gene expression data.
+### 2. upload_metadata.html, which contains a form to upload metadata.
+### 3. upload_table_loading.html, which contains a loader indicating that the data is being loaded.
+### Links to: add_tools().
+### Accessible from: analyze(), navbar.
+### APIs called: upload_dataframe_api(), upload_table_api().
 
 @app.route(entry_point+'/upload/table', methods=['GET', 'POST'])
 def upload_table():
+
+	# Get form
 	f = request.form
+	
+	# Return upload expression table form
 	if not len(f):
 		return render_template('upload/upload_table.html')
+	
+	# Return upload dataset metadata form
 	elif 'metadata' not in f.to_dict().keys():
+
+		# Get samples for group table
 		samples = json.loads(f.to_dict()['expression'])['columns']
 		samples.sort()
+			
+		# Return result
 		return render_template('upload/upload_metadata.html', samples=samples, f=f, uploadtype='table')
+
+	# Process metadata dataframe
 	else:
-		# Process metadata dataframe
+
+		# Get metadata dataframe
 		metadata_dataframe = pd.DataFrame(json.loads(f['metadata'])).set_index(0)
 		metadata_dataframe.columns = metadata_dataframe.iloc[0]
 		metadata_dataframe = metadata_dataframe[1:]
@@ -221,11 +366,21 @@ def upload_table():
 		f = f.to_dict()
 		f['metadata'] = metadata_dataframe.to_dict(orient='split')
 		f = json.dumps(f)
+	
+		# Return result
 		return render_template('upload/upload_table_loading.html', f=f)
 
+##################################################
+########## 3.2 APIs
+##################################################
+
 #############################################
-########## 9. Upload Dataframe API
+########## 1. Upload Dataframe API
 #############################################
+### Handles the uploading of any dataframe to the server backend.
+### Input: a table-formatted file uploaded by the user.  Supports txt, tsv, csv, xls, xlsx
+### Output: the data contained in the uploaded table, provided as a JSON-formatted string generated using pd.to_dict(orient='split')
+### Called by: upload_table().
 
 @app.route(entry_point+'/api/upload/dataframe', methods=['POST'])
 def upload_dataframe_api():
@@ -248,161 +403,89 @@ def upload_dataframe_api():
 
 	# Convert to JSON
 	dataframe_json = json.dumps(dataframe.to_dict(orient='split'))
+	
+	# Return result
 	return dataframe_json
 
 #############################################
-########## 10. Upload Table API
+########## 2. Upload Table API
 #############################################
+### Packages the uploaded gene expression data/metadata and uploads it to the cloud.
+### Input: a JSON-formatted string containing two keys: 'expression' and 'metadata'. These contain respectively user-submitted expression and metadata, processed using upload_dataframe_api().
+### Output: the data contained in the uploaded table, provided as a JSON-formatted string generated using pd.to_dict(orient='split')
+### Called by: upload_table().
 
 @app.route(entry_point+'/api/upload/table', methods=['POST'])
 def upload_table_api():
 
-	# Get ID
-	results = TM.uploadTable(request.data, engine)
-
-	return results
-
-#############################################
-########## 11. Upload Reads
-#############################################
-
-@app.route(entry_point+'/upload/reads', methods=['GET', 'POST'])
-def upload_reads():
-
-	# Get form
-	f = request.form
-
-	# Initial upload screen
-	if not len(f) and 'uid' not in request.args.keys():
-		return render_template('upload/upload_reads.html')
-
-	# Sample annotation
-	elif 'reads' in f.to_dict().keys():
-
-		# Get samples and expression info
-		f = f.to_dict()
-		f.pop('reads')
-		samples = [x for x in f.values()]
-		f = {'expression': json.dumps([os.path.join(key, value) for key, value in f.items()])}
-		return render_template('upload/upload_metadata.html', samples=samples, f=f, uploadtype='reads')
-
-	# Check status
-	elif 'uid' in request.args.keys():
-
-		# Get Dataset UID
-		dataset_uid = request.args.get('uid')
-
-		# Get Alignment Status
-		alignment_data = pd.read_sql_query('SELECT sample_name, aj.status FROM user_dataset ud LEFT JOIN user_sample us ON ud.id = us.user_dataset_fk LEFT JOIN alignment_job aj ON us.id=aj.user_sample_fk WHERE dataset_uid = "{}"'.format(dataset_uid), engine).to_dict(orient='records')
-
-		return render_template('upload/alignment_status.html', dataset_uid=dataset_uid, alignment_data=alignment_data)
-
-	# Redirect
-	else:
-
-		# Process metadata dataframe
-		metadata_dataframe = pd.DataFrame(json.loads(f['metadata'])).set_index(0)
-		metadata_dataframe.columns = metadata_dataframe.iloc[0]
-		metadata_dataframe = metadata_dataframe[1:]
-		metadata_dataframe.index.name = 'Sample'
-		metadata_dataframe.columns.name = ''
-
-		# Add to form
-		f = f.to_dict()
-		f['metadata'] = metadata_dataframe.to_dict(orient='split')
-		f['dataset_uid'] = TM.getUID(engine, idtype='reads')
-		dataset_uid = f['dataset_uid']
-		f = json.dumps(f)
-		return render_template('upload/upload_reads_loading.html', f=f, dataset_uid=dataset_uid)
-
-#############################################
-########## 12. Upload Reads API
-#############################################
-
-@app.route(entry_point+'/api/upload/reads', methods=['POST'])
-def upload_reads_api():
-
-	# Get files
-	files = [x for x in request.files.values()]
-
-	# Results
-	results = []
-
-	# Loop through files
-	for f in files:
-		
-		# Get UID
-		read_uid = RM.getUID()
-
-		# Get directory
-		outdir = os.path.join('static/uploads/reads', read_uid)
-		os.makedirs(outdir)
-
-		# Save outfile
-		outfile = os.path.join(outdir, f.filename)
-		f.save(outfile)
-
-		# Append to results
-		results.append({'uid': read_uid, 'filename': f.filename})
-
-	# Return
-	return json.dumps(results)
-
-#############################################
-########## 13. Alignment API
-#############################################
-
-@app.route(entry_point+'/api/align', methods=['POST'])
-def alignment_api():
-
-	# Get data
+	# Read data
 	data = request.json
+	data['expression'] = json.loads(data['expression'])
 
-	# Upload dataset to database, add processing status
-	dataset_id = engine.execute('INSERT IGNORE INTO user_dataset(dataset_uid, dataset_type, status) VALUES ("{dataset_uid}", "rnaseq", "submitted");'.format(**data)).lastrowid
+	# Get UID
+	dataset_uid = TM.getUID(engine)
 
-	# Upload samples to database, add processing status
-	sample_dataframe = pd.DataFrame([{'job_uid': os.path.dirname(x), 'sample_name': os.path.basename(x)[:-len('.txt')]} for x in json.loads(data['expression'])])
-	sample_dataframe['user_dataset_fk'] = dataset_id
-	sample_dataframe[['user_dataset_fk', 'sample_name']].to_sql('user_sample', engine, if_exists='append', index=False)
+	# Build H5
+	h5_file = TM.buildH5(data, dataset_uid)
 
-	# Get sample FKs
-	samples_string = '", "'.join(sample_dataframe['sample_name'])
-	sample_id_dataframe = pd.read_sql_query('SELECT id AS user_sample_fk, sample_name FROM user_sample WHERE user_dataset_fk = {dataset_id} AND sample_name in ("{samples_string}")'.format(**locals()), engine)
+	# Upload to Bucket
+	TM.uploadH5(h5_file, dataset_uid)
 
-	# Upload jobs to database, add processing status
-	job_dataframe = sample_dataframe.merge(sample_id_dataframe, on='sample_name')[['job_uid', 'user_sample_fk']]
-	job_dataframe['status'] = 'submitted'
-	job_dataframe.to_sql('alignment_job', engine, if_exists='append', index=False)
+	# Upload to database
+	TM.uploadToDatabase(data, dataset_uid, engine)
 
-	# Launch containers
-	time.sleep(5)
-
-	# Check status every minute or so
-	# Once complete, load reads and create file
-	# Upload file and return completed
-	engine.execute('UPDATE user_dataset SET status = "complete" WHERE dataset_uid = "{}"'.format(data['dataset_uid']))
-	engine.execute('UPDATE alignment_job SET status = "complete" WHERE job_uid IN ("{}")'.format('", "'.join(job_dataframe['job_uid'])))
-
-	return json.dumps({'status': 'complete'})
-
-#############################################
-########## 13. View Notebook
-#############################################
-
-@app.route(entry_point+'/notebooks/<notebook_uid>')
-def view_notebook(notebook_uid):
-
-	# Get notebook data
-	notebook_data = pd.read_sql_query('SELECT notebook_url, notebook_configuration FROM notebooks WHERE notebook_uid="{notebook_uid}"'.format(**locals()), engine).to_dict(orient='index')[0]
-	nbviewer_url = 'http://nbviewer.jupyter.org/urls/'+notebook_data['notebook_url'].replace('https://', '')
-	title = json.loads(notebook_data['notebook_configuration'])['notebook']['title']
-
-	return render_template('notebook.html', nbviewer_url=nbviewer_url, title=title)
+	# Get results
+	dataset_uid_json = json.dumps({'dataset_uid': dataset_uid})
+	
+	# Return result
+	return dataset_uid_json
 
 #######################################################
 #######################################################
-########## Run App
+########## 4. Contribution
+#######################################################
+#######################################################
+##### Handles plugins uploaded by users.
+
+##################################################
+########## 3.1 Webpages
+##################################################
+
+#############################################
+########## 1. Contribute Plugin Interface
+#############################################
+### Allows users to upload a plugin for evaluation.
+### Accessible from: navbar.
+### APIs called: upload_dataframe_api(), upload_table_api().
+
+@app.route(entry_point+'/contribute')
+def contribute():
+	return ''
+
+#######################################################
+#######################################################
+########## 5. About
+#######################################################
+#######################################################
+##### Help center.
+
+##################################################
+########## 3.1 Webpages
+##################################################
+
+#############################################
+########## 1. Contribute Plugin Interface
+#############################################
+### User manual.
+### Accessible from: navbar.
+
+@app.route(entry_point+'/about')
+def about():
+	return ''
+
+#######################################################
+#######################################################
+########## 6. Run App
 #######################################################
 #######################################################
 

@@ -29,6 +29,7 @@ body {
 .blue { color: rgba(0, 106, 230, 1) !important; }
 .grey { color: rgba(0,0,0,.5) !important; }
 .black { color: rgba(0,0,0,1) !important; }
+.white { color: white !important; }
 
 /* Font Weight */
 .light { font-weight: 200; }
@@ -54,6 +55,7 @@ body {
 .nodecoration { text-decoration: none !important; outline: none !important; box-shadow: none !important; }
 .bg-transparent { background-color: transparent; }
 .highlight { font-weight: 500; font-style: normal; color: #525dff; }
+.bg-blue { background-color: #007bff !important; }
 
 /********************************/
 /***** INDEX ********************/

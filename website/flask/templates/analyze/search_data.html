@@ -25,21 +25,22 @@
 					<button type="submit" class="border-0 px-1 py-2 float-right bg-transparent cursor-pointer nodecoration"><i class="fa fa-search text-muted mr-2 medium mt-1"></i></button>
 				</div>
 				<div class="text-secondary form-inline mt-3 mb-3">
-					<label class="tiny regular ml-2 mr-3" for="samples">Samples:</label>
+					<label class="very-small ml-2 mr-4 pr-4 light font-italic mt-1 border-grey border-top-0 border-bottom-0 border-left-0">Displaying {{nr_results_displayed}} of {{nr_results}} results</label>
+					<label class="tiny regular mr-3" for="samples">Samples:</label>
 					<div id="slider" class="ml-2"></div>
 					<input type="hidden" id="min-samples" name="min_samples" value="{{ min_samples }}">
 					<input type="hidden" id="max-samples" name="max_samples" value="{{ max_samples }}">
 					<label class="tiny regular ml-5 mr-2" for="sortby">Organism:</label>
 					<select class="form-control nodecoration tiny" id="organism" name="organism">
-						<option value="all" {{'selected' if request.args.get('organism') == 'all' else ''}}>All</option>
-						<option value="human" {{'selected' if request.args.get('organism') == 'human' else ''}}>Human</option>
-						<option value="mouse" {{'selected' if request.args.get('organism') == 'mouse' else ''}}>Mouse</option>
+						<option value="all" {{'selected' if organism == 'all' else ''}}>All</option>
+						<option value="human" {{'selected' if organism == 'human' else ''}}>Human</option>
+						<option value="mouse" {{'selected' if organism == 'mouse' else ''}}>Mouse</option>
 					</select>
 					<label class="tiny regular ml-5 mr-2" for="sortby">Sort by:</label>
 					<select class="form-control nodecoration tiny" id="sortby" name="sortby">
-						<option value="new" {{'selected' if request.args.get('sortby') == 'new' else ''}}>Newest</option>
-						<option value="desc" {{'selected' if request.args.get('sortby') == 'desc' else ''}}>Samples (descending)</option>
-						<option value="asc" {{'selected' if request.args.get('sortby') == 'asc' else ''}}>Samples (ascending)</option>
+						<option value="new" {{'selected' if sortby == 'new' else ''}}>Newest</option>
+						<option value="desc" {{'selected' if sortby == 'desc' else ''}}>Samples (descending)</option>
+						<option value="asc" {{'selected' if sortby == 'asc' else ''}}>Samples (ascending)</option>
 					</select>
 				</div>
 			</form>
@@ -47,12 +48,25 @@
 	</div>
 	{% if d %}
 	<div class="row">
-		<div class="col-12 mx-1 mb-5">
+		<div class="col-12 mx-1 mb-4">
 			<form id="dataset-form">
 				{% for dataset in d %}				
 					{{ macros.dataset_radio(dataset, loop.index) }}
-				{% endfor %}				
+				{% endfor %}		
 			</form>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-12 px-4 mb-5">
+			<div class="light float-left d-table light">
+				<a href="{{ url_for('search_data', q=q, min_samples=min_samples, max_samples=max_samples, sortby=sortby, organism=organism, page=1) }}" class="nodecoration black border-grey px-2 py-1 border-right-0 d-table-cell rounded-left"> << </a>
+				<a href="{{ url_for('search_data', q=q, min_samples=min_samples, max_samples=max_samples, sortby=sortby, organism=organism, page=page-1 if page-1 > 1 else 1) }}" class="nodecoration black border-grey px-2 py-1 border-right-0 d-table-cell"> < </a>
+				{% for page_nr in pages %}
+				<a href="{{ url_for('search_data', q=q, min_samples=min_samples, max_samples=max_samples, sortby=sortby, organism=organism, page=page_nr) }}" class="nodecoration border-grey px-2 py-1 border-right-0 d-table-cell {{ 'bg-blue white regular' if page_nr == page else 'black' }}">{{page_nr}}</a>
+				{% endfor %}
+				<a href="{{ url_for('search_data', q=q, min_samples=min_samples, max_samples=max_samples, sortby=sortby, organism=organism, page=page+1 if page+1 < nr_pages else nr_pages) }}" class="nodecoration black border-grey px-2 py-1 border-right-0 d-table-cell"> > </a>
+				<a href="{{ url_for('search_data', q=q, min_samples=min_samples, max_samples=max_samples, sortby=sortby, organism=organism, page=nr_pages) }}" class="nodecoration black border-grey px-2 py-1 d-table-cell rounded-right"> >> </a>
+			</div>
 		</div>
 	</div>
 	{% endif %}
