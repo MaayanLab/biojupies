@@ -358,6 +358,19 @@ def alignment_api():
 
 	return results
 
+#############################################
+########## 13. View Notebook
+#############################################
+
+@app.route(entry_point+'/notebooks/<notebook_uid>')
+def view_notebook(notebook_uid):
+
+	# Get notebook data
+	notebook_url = pd.read_sql_query('SELECT notebook_url FROM notebooks WHERE notebook_uid="{notebook_uid}"'.format(**locals()), engine).iloc[0,0]
+	nbviewer_url = 'http://nbviewer.jupyter.org/urls/'+notebook_url.replace('https://', '')
+
+	return render_template('notebook.html', nbviewer_url=nbviewer_url)
+
 #######################################################
 #######################################################
 ########## Run App
