@@ -36,7 +36,8 @@ CREATE TABLE sample_metadata (
 
 CREATE TABLE section (
 	`id` INT AUTO_INCREMENT PRIMARY KEY,
-	`section_name` VARCHAR(255)
+	`section_name` VARCHAR(255),
+	`section_description` TEXT
 );
 
 CREATE TABLE tool (

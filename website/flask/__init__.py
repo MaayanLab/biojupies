@@ -159,15 +159,16 @@ def search_data():
 		pages = [page-1, page, page+1]
 
 	# Highlight searched term
-	h = lambda x: '<span class="highlight">{}</span>'.format(x)
-	for col in ['title', 'summary']:
-		query_dataframe[col] = [x.replace(q, h(q)).replace(q.title(), h(q.title())).replace(q.lower(), h(q.lower())).replace(q.upper(), h(q.upper())) for x in query_dataframe[col]]
+	if len(query_dataframe.index):
+		h = lambda x: '<span class="highlight">{}</span>'.format(x)
+		for col in ['title', 'summary']:
+			query_dataframe[col] = [x.replace(q, h(q)).replace(q.title(), h(q.title())).replace(q.lower(), h(q.lower())).replace(q.upper(), h(q.upper())) for x in query_dataframe[col]]
 
 	# Convert to dictionary
-	d = query_dataframe.head(10).to_dict(orient='records')
+	datasets = query_dataframe.to_dict(orient='records')
 	
 	# Return result
-	return render_template('analyze/search_data.html', d=d, min_samples=min_samples, max_samples=max_samples, q=q, nr_results=nr_results, nr_results_displayed=nr_results_displayed, pages=pages, page=page, organism=organism, sortby=sortby, nr_pages=nr_pages)
+	return render_template('analyze/search_data.html', datasets=datasets, min_samples=min_samples, max_samples=max_samples, q=q, nr_results=nr_results, nr_results_displayed=nr_results_displayed, pages=pages, page=page, organism=organism, sortby=sortby, nr_pages=nr_pages)
 
 #############################################
 ########## 4. Add Tools
@@ -180,19 +181,20 @@ def search_data():
 def add_tools():
 
 	# Get dataset information from request
-	d = {'uid': request.args.get('uid'), 'source': 'upload'} if 'uid' in request.args.keys() else {'gse': request.form.get('gse-gpl').split('-')[0], 'gpl': request.form.get('gse-gpl').split('-')[1], 'source': 'archs4'}
+	selected_data = {'uid': request.args.get('uid'), 'source': 'upload'} if 'uid' in request.args.keys() else {'gse': request.form.get('gse-gpl').split('-')[0], 'gpl': request.form.get('gse-gpl').split('-')[1], 'source': 'archs4'}
 
-	# Perform tool query from database
-	t = pd.read_sql_query('SELECT * FROM tool t LEFT JOIN section s ON s.id=t.section_fk', engine)
+	# Perform tool and section query from database
+	tools, sections = [pd.read_sql_table(x, engine).to_dict(orient='records') for x in ['tool', 'section']]
 
-	# Fix tool data structure
-	t['tool_documentation'] = ['https://github.com/denis-torre/notebook-generator/tree/master/library/{version}/analysis_tools/'.format(**globals())+x for x in t['tool_string']]
-	t_data = t.set_index('tool_string', drop=False).to_dict(orient='index')
-	t['tool_data'] = [t_data[x] for x in t['tool_string']]
-	s = t.groupby('section_name')['tool_data'].apply(tuple).reindex(['Dimensionality Reduction', 'Data Visualization', 'Differential Expression Analysis', 'Signature Analysis'])
+	# Combine tools and sections
+	for section in sections:
+		section.update({'tools': [x for x in tools if x['section_fk'] == section['id']]})
+
+	# Number of tools
+	nr_tools = len(tools)
 	
 	# Return result
-	return render_template('analyze/add_tools.html', d=d, s=s)
+	return render_template('analyze/add_tools.html', selected_data=selected_data, sections=sections, nr_tools=nr_tools)
 
 #############################################
 ########## 5. Configure Analysis
@@ -210,8 +212,8 @@ def configure_analysis():
 	f=request.form
 
 	# Check if requires signature
-	signature_tools = pd.read_sql_query('SELECT tool_string FROM tool WHERE requires_signature = TRUE', engine)['tool_string'].values
-	requires_signature = any([x in signature_tools for x in [x for x in f.lists()][-1][-1]])
+	signature_tools = pd.read_sql_query('SELECT tool_string FROM tool WHERE requires_signature = 1', engine)['tool_string'].values
+	requires_signature = any([x in signature_tools for x in [x for x in f.lists()][0][-1]])
 
 	# Signature generation
 	if requires_signature:

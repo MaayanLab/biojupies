@@ -43,12 +43,14 @@ body {
 .small { font-size: 15pt;}
 .very-small { font-size: 12pt;}
 .tiny { font-size: 11pt;}
+.micro { font-size: 10pt;}
 
 /* Borders */
 .border-black { border: 1px solid black !important;}
 .border-grey { border: 1px solid #c9c9c9; }
 .border-custom { border: 1px solid #c9c9c9; border-bottom: 2px solid #d5d5d5; }
-.border-black-custom { border: 1px solid black; border-bottom: 2px solid #8a8a8a; }
+.border-black-custom { border: 1px solid black !important; border-bottom: 2px solid #8a8a8a !important; }
+/*.border-black-custom:focus { border-bottom: 1px solid black !important; }*/
 
 /* Decoration */
 .cursor-pointer { cursor: pointer; }
@@ -56,6 +58,7 @@ body {
 .bg-transparent { background-color: transparent; }
 .highlight { font-weight: 500; font-style: normal; color: #525dff; }
 .bg-blue { background-color: #007bff !important; }
+.line-height-2 { line-height: 2; }
 
 /********************************/
 /***** INDEX ********************/
@@ -119,7 +122,7 @@ input:checked + .object-label span {
 /********************************/
 
 #sample-table_length, #sample-table_info, #sample-table_paginate { display: none; }
-#sample-table_filter { float: left; }
+#sample-table_filter { float: left; display: none; }
 
 #sample-table_filter input {
 	border: 1px solid #c9c9c9;

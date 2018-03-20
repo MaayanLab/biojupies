@@ -9,22 +9,36 @@
 	<div class="row">
 		<div class="col-8 large mt-5 pl-4">Generate Signature</div>
 		<div class="col-4 text-right mt-5">
-			<button class="btn btn-primary black border-black bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
-			<button class="btn btn-primary navigate black border-black bg-white nodecoration" form="configure-signature-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">Continue<i class="fa fa-angle-right ml-2"></i></button>
+			<button class="btn btn-primary black border-black-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
+			<button class="btn btn-primary navigate black border-black-custom bg-white nodecoration" form="configure-signature-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">Continue<i class="fa fa-angle-right ml-2"></i></button>
 		</div>
 	</div>
 	<div class="row">
 		<hr width="100%">
 		<div class="col-12 px-4">
 			<form id="configure-signature-form">
-				<div class="medium regular mb-2">Name the Groups</div>
-				<div class="very-small light mb-3">First, name the two groups you wish to compare in the analysis. </div>
+
+				<!-- Add introduction -->
+				<div class="text-justify">
+					<div class="mt-2 light"><b>Gene expression signatures</b> are alterations in the patterns of gene expression that occur as a result of cellular perturbations such as drug treatments, gene knock-downs or diseases.</div>
+					<div class="mt-3 light">They can be used to identify <b>differentially expressed genes</b> and <b>biological processes</b> (such as signaling, transcriptional or metabolic pathways) which are altered as a result of such perturbations.</div>
+					<div class="mt-3 light">One or more of the selected tools requires a signature as an input. To generate one, define <b>two groups of samples</b> using the instructions below. </div>
+					<hr width="100%" class="my-4">
+				</div>
+
+				<!-- Name Groups -->
+				<div class="medium regular mb-2">Define Sample Groups</div>
+				<div class="very-small light mb-3">First, <b>name the conditions</b> you wish to compare using the input boxes below.</div>
 				<div class="row">
-					<div class="col-6">
+
+					<!-- Group Labels -->
+					<div class="col-6 pl-4">
 						<input type="text" name="group_a_label" class="group-label-input mr-2 rounded border-grey px-2 py-1 light very-small nodecoration" data-group="a" value="Control" maxlength="50">vs
 						<input type="text" name="group_b_label" class="group-label-input ml-2 rounded border-grey px-2 py-1 light very-small nodecoration" data-group="b" value="Perturbation" maxlength="50">
 						<input type="hidden" value="Select..." class="group-label-input" data-group="none" maxlength="50">
 					</div>
+
+					<!-- Group Prediction -->
 					<div class="col-5 my-auto">
 						<div class="d-table">
 							<div class="d-table-cell">
@@ -39,8 +53,12 @@
 						</div>
 					</div>
 				</div>
-				<div class="medium regular mt-4 mb-2">Select the Samples</div>
-				<div class="very-small light mb-3">To proceed, select at least three samples to add to the <span class="px-2 py-1 rounded border-grey" data-group="a">Control</span> group, and at least three samples to add to the <span class="px-2 py-1 rounded border-grey" data-group="b">Perturbation</span> group.</div>
+				<div class="tiny text-secondary mt-4 mb-3"><b>Example</b>: <span class="font-italic">WT, DMSO, Vehicle</span> for the <b>Control</b> group; <span class="font-italic">Metastatic, p53 KO, Dasatinib-6h</span> for the <b>Perturbation</b> group.</div>
+
+				<!-- Sample Selection -->
+				<div class="very-small light mb-4 mt-3 text-justify">Second, <b>select the samples</b> you wish to assign to the groups using the dropdown menus below. In order to improve the statistical validity of the results, groups are required to contain <span class="font-italic">at least three samples</span>.</div>
+
+				<!-- Sample Table -->
 				<table id="sample-table" class="stripe mb-5">
 					<thead>
 						<tr>
@@ -126,6 +144,7 @@
 	    	}
 	    	return hit
 	    }
+
 	    $('.group-label-input').change(function(evt) {
 	    	var value = $(evt.target).val(),
 	    		group = $(evt.target).data('group');
@@ -141,6 +160,7 @@
 	    	hit = autoSelect('a', terms[i]);
 	    	if (hit) { 
 	    		$('input[name="group_a_label"]').val(terms[i]);
+	    		$('[data-group="a"]:not(tr)').text(terms[i]);
 	    		break
 	    	}
 	    }
@@ -152,6 +172,20 @@
 	    	} else {
 	    		autoSelect('a', $('[name="group_a_label"]').val());
 	    		autoSelect('b', $('[name="group_b_label"]').val());
+	    	}
+	    })
+
+	    // Check Group Size on Submission
+	    $('#configure-signature-form').submit(function(evt) {
+	    	var a_samples = $('#sample-table button[data-group="a"]').length,
+	    		b_samples = $('#sample-table button[data-group="b"]').length;
+	    	if (a_samples < 3) {
+		    	evt.preventDefault();
+		    	alert('Please add more samples to the '+$('[name="group_a_label"]').val()+' group.\n\nGroups are required to contain at least 3 samples. However, the group has '+a_samples+'.')
+	    	} else if (b_samples < 3) {
+		    	evt.preventDefault();
+		    	alert('Please add more samples to the '+$('[name="group_b_label"]').val()+' group.\n\nGroups are required to contain at least 3 samples. However, the group has '+b_samples+'.')
+
 	    	}
 	    })
 
