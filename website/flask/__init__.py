@@ -287,9 +287,13 @@ def generate_notebook():
 			"A": {"name": d.get('group_a_label'), "samples": g['a']},
 			"B": {"name": d.get('group_b_label'), "samples": g['b']}}
 	}
+
+	# Get tools
+	tools = pd.read_sql_query('SELECT tool_string, tool_name FROM tool', engine).set_index('tool_string').to_dict()['tool_name']
+	tool_string = ', '.join([tools[x['tool_string']] for x in c['tools']])
 	
 	# Return result
-	return render_template('analyze/results.html', notebook_configuration=json.dumps(c))
+	return render_template('analyze/results.html', notebook_configuration=json.dumps(c), notebook_configuration_dict=c, tool_string=tool_string)
 
 #############################################
 ########## 10. View Notebook

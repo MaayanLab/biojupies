@@ -39,8 +39,8 @@
 						<div class="float-right rounded-circle bg-white border-grey px-2 py-1 cursor-pointer mt-2 info-toggle"><i class="fa fa-chevron-{{'up' if i == 0 else 'down'}} text-muted"></i></div>
 						<div class="very-small regular pb-2 pr-5">{{ dataset['title']|safe }}</div>
 						<div class="row tiny light text-muted">
+							<div class="col-2"><span></span><span class="font-italic">{{dataset['gse']}}</span></div>
 							<div class="col-2"><span class="font-italic">{{dataset['nr_samples']}} samples</span></div>
-							<div class="col-3"><span>Accession: </span><span class="font-italic">{{dataset['gse']}}</span></div>
 							<!-- <div class="col-3"><span>Organism: </span><span class="font-italic">{{dataset['organism']}}</span></div> -->
 							<div class="col-3"><span>Published </span><span class="font-italic">{{dataset['date'].strftime('%B %Y')}}</span></div>
 						</div>

@@ -267,6 +267,39 @@ input:checked + .object-label span {
   }
 }
 
+/* Notebook Preview Image */
+#notebook-preview-image {
+  filter: blur(3px);
+  opacity: 0.5;
+}
+#notebook-link:hover #notebook-preview-image {
+  opacity: 0.3;
+}
+#notebook-link::before {
+  content: "Open Notebook";
+  position: absolute;
+  z-index: 10;
+  color: black !important;
+  width: 150px;
+  top: 75px;
+  left: 60px;
+  font-size: 22pt;
+  text-align: center;
+  font-weight: 200;
+}
+
+#share-email {
+  background: rgb(230, 73, 62);
+  padding: 5px 10px;
+}
+
+#copy-link {
+  background: rgb(50, 70, 90);
+  padding: 5px 10px;
+  margin-left: 20px;
+}
+
+
 /********************************/
 /***** Upload Data ******/
 /********************************/
