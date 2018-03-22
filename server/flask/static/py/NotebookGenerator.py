@@ -58,8 +58,8 @@ def add_introduction(notebook, notebook_configuration, tool_metadata):
 	sections = [{'id': 'load_dataset', 'name': 'Load Dataset', 'description': 'Loads and previews the input dataset in the notebook environment.'}]
 	# if len(set([tool_configuration['parameters']['normalization'] for tool_configuration in notebook_configuration['tools'] if 'normalization' in tool_configuration['parameters'].keys()])):
 		# sections.append({'id': 'normalize_dataset', 'name': 'Normalize Dataset', 'description': 'Normalize the dataset prior to downstream analysis.'})
-	if len(notebook_configuration['signature']):
-		sections.append({'id': 'generate_signature', 'name': 'Generate Signature', 'description': 'Generates differential gene expression signatures by comparing gene expression between the two groups.'})
+	# if len(notebook_configuration['signature']):
+		# sections.append({'id': 'generate_signature', 'name': 'Generate Signature', 'description': 'Generates differential gene expression signatures by comparing gene expression between the two groups.'})
 	for tool_configuration in notebook_configuration['tools']:
 		tool_meta = tool_metadata[tool_configuration['tool_string']]
 		sections.append({'id': tool_configuration['tool_string'], 'name': tool_meta['tool_name'], 'description': tool_meta['tool_description']})
@@ -106,19 +106,19 @@ def load_data(notebook, data_configuration, core_options):
 def generate_signature(notebook, signature_configuration, core_options):
 
 	# Section
-	global section_nr
-	section_nr += 1
+	# global section_nr
+	# section_nr += 1
 
 	# Get signature dataframe
-	signature_dataframe = pd.DataFrame(signature_configuration).T.drop('method').rename(columns={'name': 'Group', 'samples': 'Samples'})
-	signature_dataframe['Samples'] = [', '.join(x) for x in signature_dataframe['Samples']]
-	pd.set_option('max.colwidth', -1)
-	signature_table= signature_dataframe.to_html(index=False)
+	# signature_dataframe = pd.DataFrame(signature_configuration).T.drop('method').rename(columns={'name': 'Group', 'samples': 'Samples'})
+	# signature_dataframe['Samples'] = [', '.join(x) for x in signature_dataframe['Samples']]
+	# pd.set_option('max.colwidth', -1)
+	# signature_table= signature_dataframe.to_html(index=False)
 
 	# Intro text
-	cell = "---\n ## <span id='generate_signature'>{section_nr}. Generate Signature</span>\nHere, differential gene expression analysis is performed in order to identify a signature by comparing the following two groups:".format(**globals()) + "<br>{}".format(signature_table)
+	# cell = "---\n ## <span id='generate_signature'>{section_nr}. Generate Signature</span>\nHere, differential gene expression analysis is performed in order to identify a signature by comparing the following two groups:".format(**globals()) + "<br>{}".format(signature_table)
 	# cell += core_options[signature_configuration['method']]['introduction'].format(**signature_configuration)
-	notebook = addCell(notebook, cell, 'markdown')
+	# notebook = addCell(notebook, cell, 'markdown')
 
 	# Generate Signature
 	cell = "# Configure signatures\ndataset['signature_metadata'] = {{\n    '{A[name]} vs {B[name]}': {{\n        'A': {A[samples]},\n        'B': {B[samples]}\n    }}\n}}\n\n# Generate signatures\nfor label, groups in dataset['signature_metadata'].items():\n    signatures[label] = generate_signature(group_A=groups['A'], group_B=groups['B'], method='{method}', dataset=dataset)".format(**signature_configuration)
