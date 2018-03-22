@@ -50,6 +50,7 @@ body {
 .border-grey { border: 1px solid #c9c9c9; }
 .border-custom { border: 1px solid #c9c9c9; border-bottom: 2px solid #d5d5d5; }
 .border-black-custom { border: 1px solid black !important; border-bottom: 2px solid #8a8a8a !important; }
+.border-grey-light { border: 1px solid rgba(0,0,0,0.1); }
 /*.border-black-custom:focus { border-bottom: 1px solid black !important; }*/
 
 /* Decoration */
@@ -297,6 +298,7 @@ input:checked + .object-label span {
   background: rgb(50, 70, 90);
   padding: 5px 10px;
   margin-left: 20px;
+  cursor: pointer;
 }
 
 

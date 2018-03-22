@@ -35,7 +35,14 @@
 					</div>
 					<div class="col-7 text-left pl-4">
 						<div class="regular medium mt-2">{{ notebook_configuration_dict['notebook']['title'] }}</div>
-						<div class="text-muted regular very-small mt-3">Dataset:<span class="light font-italic"> <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={{ notebook_configuration_dict['data']['parameters']['gse'] }}" target="_blank">{{ notebook_configuration_dict['data']['parameters']['gse'] }}</a></span></div>
+						<div class="text-muted regular very-small mt-3">
+							Dataset:<span class="light font-italic">
+								{% if notebook_configuration_dict['data']['parameters']['gse'] %}
+									<a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={{ notebook_configuration_dict['data']['parameters']['gse'] }}" target="_blank">{{ notebook_configuration_dict['data']['parameters']['gse'] }}</a>
+								{% else %}
+									User-submitted
+								{% endif %}
+						</div>
 						<div class="text-muted regular very-small mt-2">Analysis Tools:<span class="light font-italic"> {{ tool_string }}</span></div>
 							{% if notebook_configuration_dict['signature']|length %}
 								<div class="text-muted regular very-small mt-2 light">Signature:
@@ -44,7 +51,7 @@
 									<span class="light font-italic">{{ notebook_configuration_dict['signature']['B']['name'] }}</span>
 								</div>
 							{% endif %}
-						<div class="row mt-3">
+						<div class="row mt-4">
 							<div class="col-2">
 								<span id="tweet" class="d-inline-block"></span>
 							</div>
@@ -54,7 +61,7 @@
 										<i class="fa fa-envelope mr-2"></i>E-mail
 									</a>
 								</div>
-								<div id="copy-link" class="rounded micro bold d-inline-block white">
+								<div id="copy-link" class="rounded micro bold d-inline-block white" data-toggle="tooltip" title="Copied!" data-placement="bottom">
 									<i class="fa fa-copy mr-2"></i>Copy Link
 								</div>
 							</div>
@@ -78,6 +85,10 @@
 {% block footer %}
 
 <script type="text/javascript">
+
+	console.log($('#notebook-link').attr('data-notebook_configuration'));
+
+	$('#copy-link').tooltip('disable');
 	
 	$.ajax({	
 		url: "http://amp.pharm.mssm.edu/notebook-generator-server/api/generate",
@@ -133,6 +144,18 @@
 
 			  return t;
 			}(document, "script", "twitter-wjs"));
+
+			// Add Copy Listener
+			$('#copy-link').click(function(evt) {
+				var $temp = $("<input>");
+				$("body").append($temp);
+				$temp.val("{{ url_for('view_notebook', notebook_uid='', _external=True)}}"+notebook_uid).select();
+				document.execCommand("copy");
+				$temp.remove();
+			    $('#copy-link').tooltip('enable');
+			    $('#copy-link').tooltip('show');
+			    $('#copy-link').tooltip('disable');
+			})
 
 		},
 		error: function(e) {

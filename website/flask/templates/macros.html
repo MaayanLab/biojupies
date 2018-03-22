@@ -191,7 +191,7 @@
 							<div>Notebook Title<sup><i class="fa fa-question-circle ml-1" data-toggle="tooltip" title="Name of the Jupyter Notebook."></i></sup>:</div>
 						</div>
 						<div class="col-5">
-							<input class="form-control tiny" type="text" name="notebook_title" value="{{ ' v '.join([group_a_label, group_b_label])+' | ' if group_a_label and group_b_label else '' }}{{gse+' ' if gse else ''}}Analysis Notebook">
+							<input class="form-control tiny nodecoration" type="text" name="notebook_title" value="{{ ' vs '.join([group_a_label, group_b_label]) if group_a_label and group_b_label else gse }} Analysis Notebook | BioJupies">
 						</div>
 					</div>
 				</div>

@@ -51,6 +51,7 @@ CREATE TABLE tool (
 	`reference_link` TEXT,
 	`default_selected` BOOL,
 	`requires_signature` BOOL,
+	`input` VARCHAR(20),
 	`section_fk` INT,
 	FOREIGN KEY (section_fk) REFERENCES section(id)
 );

@@ -7,7 +7,7 @@
 
 <div class="container">
 	<div class="row">
-		<div class="col-8 large mt-5 pl-4">Generate Signature</div>
+		<div class="col-8 large mt-5 pl-4">Generate Signature<sup><i class="fa fa-question-circle small ml-1 text-muted cursor-pointer" data-toggle="collapse" data-target="#info"></i></sup></div>
 		<div class="col-4 text-right mt-5">
 			<button class="btn btn-primary black border-black-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
 			<button class="btn btn-primary navigate black border-black-custom bg-white nodecoration" form="configure-signature-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">Continue<i class="fa fa-angle-right ml-2"></i></button>
@@ -19,21 +19,24 @@
 			<form id="configure-signature-form">
 
 				<!-- Add introduction -->
-				<div class="text-justify">
+				<div id="info" class="text-justify collapse px-2">
 					<div class="mt-2 light"><b>Gene expression signatures</b> are alterations in the patterns of gene expression that occur as a result of cellular perturbations such as drug treatments, gene knock-downs or diseases.</div>
 					<div class="mt-3 light">They can be used to identify <b>differentially expressed genes</b> and <b>biological processes</b> (such as signaling, transcriptional or metabolic pathways) which are altered as a result of such perturbations.</div>
-					<div class="mt-3 light">One or more of the selected tools requires a signature as an input. To generate one, define <b>two groups of samples</b> using the instructions below. </div>
-					<hr width="100%" class="my-4">
+					<div class="mt-3 light">One or more of the selected tools requires a signature as an input. To generate one, define <b>two groups of samples</b> to compare using the instructions below. Once you have selected the desired groups, click Continue to proceed. </div>
+					<div class="pt-4 pb-3">
+						<hr width="100%" class="my-0">
+					</div>
 				</div>
 
 				<!-- Name Groups -->
-				<div class="medium regular mb-2">Define Sample Groups</div>
-				<div class="very-small light mb-3">First, <b>name the conditions</b> you wish to compare using the input boxes below.</div>
+				<div class="medium regular mt-2 mb-2">Define Sample Groups</div>
+				<div class="very-small light mb-3">First, <b>name the conditions</b> you wish to compare using the text boxes below.</div>
 				<div class="row">
 
 					<!-- Group Labels -->
 					<div class="col-6 pl-4">
-						<input type="text" name="group_a_label" class="group-label-input mr-2 rounded border-grey px-2 py-1 light very-small nodecoration" data-group="a" value="Control" maxlength="50">vs
+						<input type="text" name="group_a_label" class="group-label-input mr-2 rounded border-grey px-2 py-1 light very-small nodecoration" data-group="a" value="Control" maxlength="50">
+						<span class="ml-1 mr-1">vs</span>
 						<input type="text" name="group_b_label" class="group-label-input ml-2 rounded border-grey px-2 py-1 light very-small nodecoration" data-group="b" value="Perturbation" maxlength="50">
 						<input type="hidden" value="Select..." class="group-label-input" data-group="none" maxlength="50">
 					</div>
@@ -56,7 +59,7 @@
 				<div class="tiny text-secondary mt-4 mb-3"><b>Example</b>: <span class="font-italic">WT, DMSO, Vehicle</span> for the <b>Control</b> group; <span class="font-italic">Metastatic, p53 KO, Dasatinib-6h</span> for the <b>Perturbation</b> group.</div>
 
 				<!-- Sample Selection -->
-				<div class="very-small light mb-4 mt-3 text-justify">Second, <b>select the samples</b> you wish to assign to the groups using the dropdown menus below. In order to improve the statistical validity of the results, groups are required to contain <span class="font-italic">at least three samples</span>.</div>
+				<div class="very-small light mb-4 mt-3 text-justify">Second, <b>select the samples</b> you wish to assign to each group by using the dropdown menus below. In order to improve the statistical validity of the results, each group is required to contain <span class="font-italic">at least three samples</span>.</div>
 
 				<!-- Sample Table -->
 				<table id="sample-table" class="stripe mb-5">

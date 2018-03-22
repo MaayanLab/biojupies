@@ -100,28 +100,7 @@ def load_data(notebook, data_configuration, core_options):
 	return addCell(notebook, cell, 'markdown')
 
 #############################################
-########## 4. Normalize Data
-#############################################
-
-def normalize_data(notebook, normalization_methods, core_options):
-
-	# # Section
-	# global section_nr
-	# section_nr += 1
-
-	# # Intro text
-	# cell = "---\n ## <span id='normalize_data'>{section_nr}. Normalize Data</span>\nHere the RNA-seq data is normalized in preparation for downstream analysis.".format(**globals()) + "The following methods are used:<ul>"+''.join(['<li>{}</li>'.format(x) for x in normalization_methods])+"</ul>"
-	# notebook = addCell(notebook, cell, 'markdown')
-
-	# Loop through methods
-	for normalization_method in normalization_methods:
-		cell = "# Normalize dataset\ndataset['{normalization_method}'] = normalize_dataset(dataset=dataset, method='{normalization_method}')".format(**locals())
-		notebook = addCell(notebook, cell)
-
-	return notebook
-
-#############################################
-########## 5. Generate Signature
+########## 4. Generate Signature
 #############################################
 
 def generate_signature(notebook, signature_configuration, core_options):
@@ -146,28 +125,54 @@ def generate_signature(notebook, signature_configuration, core_options):
 	return addCell(notebook, cell, task='generate_signature')
 
 #############################################
-########## 6. Add Tool
+########## 5. Add Tool
 #############################################
 
-def add_tool(notebook, tool_configuration, tool_metadata, signature_configuration):
+def add_tool(notebook, tool_configuration, tool_metadata, signature_configuration, annotate=True):
 
-	# Section
-	global section_nr
-	section_nr += 1
+	# Get Tool input
+	tool_string = tool_configuration['tool_string']
+	tool_input = tool_metadata[tool_string]['input']
 
-	# Intro text
-	cell = "---\n ## <span id='{}'>".format(tool_configuration['tool_string'])+str(section_nr)+". {tool_name}</span>\n".format(**tool_metadata[tool_configuration['tool_string']])+tool_metadata[tool_configuration['tool_string']]['introduction'].format(**signature_configuration, **tool_configuration['parameters'])#+annotations[tool_configuration['tool_string']]['introduction']
-	notebook = addCell(notebook, cell, 'markdown')
+	# Markdown annotation
+	if annotate:
 
-	# Add Tool
-	if tool_metadata[tool_configuration['tool_string']]['requires_signature']:
-		cell = "# Initialize results\nresults['{tool_string}'] = {{}}\n\n# Loop through signatures\nfor label, signature in signatures.items():\n\n    # Run analysis\n    results['{tool_string}'][label] = analyze(signature=signature, tool='{tool_string}', signature_label=label".format(**tool_configuration)+add_parameters(tool_configuration['parameters'])+")\n\n    # Display results\n    plot(results['{tool_string}'][label])".format(**tool_configuration)
+		# Section
+		global section_nr
+		section_nr += 1
+
+		# Intro text
+		cell = "---\n ## <span id='{}'>".format(tool_string)+str(section_nr)+". {tool_name}</span>\n".format(**tool_metadata[tool_string])+tool_metadata[tool_string]['introduction'].format(**signature_configuration, **tool_configuration['parameters'])#+annotations[tool_configuration['tool_string']]['introduction']
+		notebook = addCell(notebook, cell, 'markdown')
+
+	# Tools with dataset input
+	if tool_input == 'dataset':
+		cell = "# Run analysis\nresults['{tool_string}'] = analyze(dataset=dataset, tool='{tool_string}'".format(**tool_configuration)+add_parameters(tool_configuration['parameters'])+")"
+		if annotate:
+			cell += "\n\n# Display results\nplot(results['{tool_string}'])".format(**tool_configuration)
+
+	# Tools with signature input
+	elif tool_input == 'signature':
+		cell = "# Initialize results\nresults['{tool_string}'] = {{}}\n\n# Loop through signatures\nfor label, signature in signatures.items():\n\n    # Run analysis\n    results['{tool_string}'][label] = analyze(signature=signature, tool='{tool_string}', signature_label=label".format(**tool_configuration)+add_parameters(tool_configuration['parameters'])+")"
+		if annotate:
+			cell += "\n\n    # Display results\n    plot(results['{tool_string}'][label])".format(**tool_configuration)
+
+	# Tools with other tools as input
 	else:
-		cell = "# Run analysis\nresults['{tool_string}'] = analyze(dataset=dataset, tool='{tool_string}'".format(**tool_configuration)+add_parameters(tool_configuration['parameters'])+")\n\n# Display results\nplot(results['{tool_string}'])".format(**tool_configuration)
+
+		# Add prerequisite
+		notebook = add_tool(notebook, {'tool_string': tool_input, 'parameters': {}}, tool_metadata, signature_configuration, annotate=False)
+
+		# Add tool
+		if tool_metadata[tool_input]['input'] == 'signature':
+			tool_configuration.update({'tool_input': tool_input})
+			cell = "# Initialize results\nresults['{tool_string}'] = {{}}\n\n# Loop through results\nfor label, {tool_input}_results in results['{tool_input}'].items():\n\n    # Run analysis\n    results['{tool_string}'][label] = analyze({tool_input}_results={tool_input}_results['results'], tool='{tool_string}', signature_label=label".format(**tool_configuration)+add_parameters(tool_configuration['parameters'])+")\n\n    # Display results\n    plot(results['{tool_string}'][label])".format(**tool_configuration)
+		else:
+			cell = "# Run analysis\nresults['{tool_string}'] = analyze({tool_input}_results=results['{tool_input}']['results']".format(**locals())+", tool='{tool_string}'".format(**tool_configuration)+add_parameters(tool_configuration['parameters'])+")\n\n# Display results\nplot(results['{tool_string}'])".format(**tool_configuration)
 	return addCell(notebook, cell, task=tool_configuration['tool_string'])
 
 #############################################
-########## 7. Add Methods
+########## 6. Add Methods
 #############################################
 
 def add_methods(notebook, notebook_configuration, normalization_methods, annotations):
@@ -208,7 +213,7 @@ def add_methods(notebook, notebook_configuration, normalization_methods, annotat
 	return addCell(notebook, cell, 'markdown')
 
 #############################################
-########## 8. Add References
+########## 7. Add References
 #############################################
 
 def add_references(notebook, notebook_configuration, normalization_methods, annotations):
@@ -222,7 +227,7 @@ def add_references(notebook, notebook_configuration, normalization_methods, anno
 	return addCell(notebook, cell, 'markdown')
 
 #############################################
-########## 9. Add Footer
+########## 8. Add Footer
 #############################################
 
 def add_footer(notebook):
@@ -257,11 +262,6 @@ def generate_notebook(notebook_configuration, annotations):
 	# Load Data
 	notebook = load_data(notebook=notebook, data_configuration=notebook_configuration['data'], core_options=annotations['core_options'])
 
-	# Normalize Data
-	normalization_methods = set([tool_configuration['parameters']['normalization'] for tool_configuration in notebook_configuration['tools'] if 'normalization' in tool_configuration['parameters'].keys() and tool_configuration['parameters']['normalization'] != 'rawdata'])
-	if normalization_methods:
-		notebook = normalize_data(notebook=notebook, normalization_methods=normalization_methods, core_options=annotations['core_options'])
-
 	# Generate Signature
 	if len(notebook_configuration['signature']):
 		notebook = generate_signature(notebook=notebook, signature_configuration=notebook_configuration['signature'], core_options=annotations['core_options'])
@@ -271,6 +271,7 @@ def generate_notebook(notebook_configuration, annotations):
 		notebook = add_tool(notebook=notebook, tool_configuration=tool_configuration, tool_metadata=annotations['tools'], signature_configuration=notebook_configuration['signature'])
 
 	# Add Methods
+	normalization_methods = set([tool_configuration['parameters']['normalization'] for tool_configuration in notebook_configuration['tools'] if 'normalization' in tool_configuration['parameters'].keys() and tool_configuration['parameters']['normalization'] != 'rawdata'])
 	notebook = add_methods(notebook, notebook_configuration=notebook_configuration, normalization_methods=normalization_methods, annotations=annotations)
 
 	# Add References

@@ -21,7 +21,7 @@ from flask import Flask, request, render_template, Response, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 ##### 2. Python modules #####
-import sys, os, json, requests, re, math
+import sys, os, json, requests, re, math, itertools
 import pandas as pd
 import pymysql
 from sqlalchemy.orm import sessionmaker
@@ -41,7 +41,7 @@ entry_point = '/notebook-generator-website'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'static'))
 
 # Database
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']+'-dev'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 engine = db.engine
@@ -52,6 +52,17 @@ tables = metadata.tables
 
 # Notebook Generation
 version = 'v0.3'
+
+##### 2. Functions #####
+# Longest common substring
+def common_start(sa, sb):
+	def _iter():
+		for a, b in zip(sa, sb):
+			if a == b:
+				yield a
+			else:
+				return
+	return ''.join(_iter()).rstrip('-').rstrip('.').rstrip('_')
 
 #######################################################
 #######################################################
@@ -353,9 +364,18 @@ def upload_table():
 		# Get samples for group table
 		samples = json.loads(f.to_dict()['expression'])['columns']
 		samples.sort()
+
+		# Get groups
+		groups = [x for x in set([common_start(x, y) for x, y in itertools.combinations(samples, 2)]) if len(x)]
+		groups.sort(key=len)
+
+		# Assign groups
+		matches = {sample: [group for group in groups if group in sample] for sample in samples}
+		print(matches)
+		sample_groups = [{'sample': sample, 'group': matches[sample][-1] if len(matches[sample]) else ''} for sample in samples]
 			
 		# Return result
-		return render_template('upload/upload_metadata.html', samples=samples, f=f, uploadtype='table')
+		return render_template('upload/upload_metadata.html', sample_groups=sample_groups, f=f, uploadtype='table')
 
 	# Process metadata dataframe
 	else:

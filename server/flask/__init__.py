@@ -40,7 +40,7 @@ entry_point = '/notebook-generator-server'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'static'))
 
 # Database
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']+'-dev'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 engine = db.engine
@@ -96,6 +96,7 @@ def generate():
 				notebook_configuration = json.loads(openfile.read())
 
 			# Generate, Execute and Convert to HTML
+			print('generating notebook...')
 			notebook = generate_notebook(notebook_configuration, annotations)
 			notebook = execute_notebook(notebook, execute=True,to_html=True)
 		

@@ -10,23 +10,25 @@
 
 <div class="container">
 	<div class="row">
-		<div class="col-8 large mt-5 pl-4">Search Datasets</div>
+		<div class="col-8 large mt-5 pl-4">Search Datasets<sup><i class="fa fa-question-circle small ml-1 text-muted cursor-pointer" data-toggle="collapse" data-target="#info"></i></sup></div>
 		<div class="col-4 text-right mt-5">
 			<a class="btn black border-black-custom bg-white nodecoration mr-2" href="{{ url_for('analyze') }}"><i class="fa fa-angle-left mr-2"></i>Back</a>
 			<button class="btn black border-black-custom bg-white nodecoration" form="dataset-form" type="submit" formaction="{{ url_for('add_tools') }}" formmethod="post">Continue<i class="fa fa-angle-right ml-2"></i></button>
 		</div>
 	</div>
 	<div class="row">
-		<hr width="100%" class="my-3">
+		<hr width="100%" class="mt-3 mb-0">
 		<div class="col-12">
 			<form id="dataset-search-form">
 
 				<!-- Add introduction -->
-				<div class="text-justify hidden">
-					<div class="mt-3 light">The first step of the notebook generation process is to <b>select a dataset</b> to analyze.</div>
-					<div class="mt-3 light">The form below can be used to <b>search over 3,000 RNA-seq datasets</b> which have been published in the <a href="https://www.ncbi.nlm.nih.gov/geo/" target="_blank">Gene Expression Omnibus</a> and processed by <a href="https://amp.pharm.mssm.edu/archs4/" target="_blank">ARCHS4</a>. To toggle more information on each dataset, click on the <i class="fa fa-chevron-down text-muted border-grey rounded-circle px-1 py-1 mx-1"></i> icon on the right of its card.</div>
-					<div class="mt-3 light">Click on the desired dataset to select it - the card will be highlighted in blue. Then click <b>Continue</b> to proceed.</div>
-					<hr width="100%" class="my-4">
+				<div id="info" class="text-justify collapse px-2">
+					<div class="mt-4 light">To start building your notebook, <b>select a dataset</b> you wish to analyze.</div>
+					<div class="mt-3 light">The form below allows to <b>search over 3,000 RNA-seq datasets</b> which have been published in the <a href="https://www.ncbi.nlm.nih.gov/geo/" target="_blank">Gene Expression Omnibus</a> and processed by <a href="https://amp.pharm.mssm.edu/archs4/" target="_blank">ARCHS4</a>. To toggle more information on each dataset, click on the <i class="fa fa-chevron-down text-muted border-grey rounded-circle px-1 py-1 mx-1"></i> icon on the right of its card.</div>
+					<div class="mt-3 light">Once you identify a dataset you wish to analyze, click on it to select it. Then click <b>Continue</b> to proceed.</div>
+					<div class="pt-4 pb-3">
+						<hr width="100%" class="my-0">
+					</div>
 				</div>
 
 				<!-- Search bar -->
