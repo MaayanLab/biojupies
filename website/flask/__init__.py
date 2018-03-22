@@ -41,7 +41,7 @@ entry_point = '/notebook-generator-website'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'static'))
 
 # Database
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']+'-dev'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']#+'-dev'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 engine = db.engine
@@ -125,6 +125,10 @@ def search_data():
 	organisms = [x for x in ['Human', 'Mouse'] if organism == 'all' or x == organism.title()]
 	page = int(request.args.get('page', '1'))
 
+	# Get counts
+	dataset_nr = pd.read_sql_query('SELECT COUNT(DISTINCT gse) FROM series', engine).iloc[0,0]
+	sample_nr = pd.read_sql_query('SELECT COUNT(DISTINCT gsm) FROM sample', engine).iloc[0,0]
+
 	###
 	# Initialize database query
 	session = Session()
@@ -179,7 +183,7 @@ def search_data():
 	datasets = query_dataframe.to_dict(orient='records')
 	
 	# Return result
-	return render_template('analyze/search_data.html', datasets=datasets, min_samples=min_samples, max_samples=max_samples, q=q, nr_results=nr_results, nr_results_displayed=nr_results_displayed, pages=pages, page=page, organism=organism, sortby=sortby, nr_pages=nr_pages)
+	return render_template('analyze/search_data.html', datasets=datasets, min_samples=min_samples, max_samples=max_samples, q=q, nr_results=nr_results, nr_results_displayed=nr_results_displayed, pages=pages, page=page, organism=organism, sortby=sortby, nr_pages=nr_pages, dataset_nr=dataset_nr, sample_nr=sample_nr)
 
 #############################################
 ########## 4. Add Tools

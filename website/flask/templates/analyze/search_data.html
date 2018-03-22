@@ -24,7 +24,7 @@
 				<!-- Add introduction -->
 				<div id="info" class="text-justify collapse px-2">
 					<div class="mt-4 light">To start building your notebook, <b>select a dataset</b> you wish to analyze.</div>
-					<div class="mt-3 light">The form below allows to <b>search over 3,000 RNA-seq datasets</b> which have been published in the <a href="https://www.ncbi.nlm.nih.gov/geo/" target="_blank">Gene Expression Omnibus</a> and processed by <a href="https://amp.pharm.mssm.edu/archs4/" target="_blank">ARCHS4</a>. To toggle more information on each dataset, click on the <i class="fa fa-chevron-down text-muted border-grey rounded-circle px-1 py-1 mx-1"></i> icon on the right of its card.</div>
+					<div class="mt-3 light">The form below allows to <b>search {{ "{:,d}".format(dataset_nr) }} datasets</b> containing a total of <b>{{ "{:,d}".format(sample_nr) }} RNA-seq samples</b> which have been published in the <a href="https://www.ncbi.nlm.nih.gov/geo/" target="_blank">Gene Expression Omnibus</a> and processed by <a href="https://amp.pharm.mssm.edu/archs4/" target="_blank">ARCHS4</a>. To toggle more information on each dataset, click on the <i class="fa fa-chevron-down text-muted border-grey rounded-circle px-1 py-1 mx-1"></i> icon on the right of its card.</div>
 					<div class="mt-3 light">Once you identify a dataset you wish to analyze, click on it to select it. Then click <b>Continue</b> to proceed.</div>
 					<div class="pt-4 pb-3">
 						<hr width="100%" class="my-0">

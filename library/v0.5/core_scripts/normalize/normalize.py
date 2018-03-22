@@ -25,32 +25,29 @@ r.source(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'normalize.R'
 #######################################################
 
 #############################################
-########## 1. Z-score
+########## 1. logCPM
 #############################################
 
-def zscore(dataset, normalization='rawdata', normalize_cols=True, log=True):
+def logCPM(dataset):
 
 	# Get raw data
-	rawdata = dataset[normalization]
+	data = dataset['rawdata'].copy()
 
 	# Z-score without warnings
 	with warnings.catch_warnings():
 		warnings.simplefilter("ignore")
-		if normalize_cols:
-			rawdata = rawdata/rawdata.sum()
-			rawdata = rawdata.fillna(0)
-		if log:
-			rawdata = np.log10(rawdata+1)
-		zscore = rawdata.apply(ss.zscore, axis=1)#.dropna()
+		data = data/data.sum()
+		data = data.fillna(0)
+		data = np.log10(data+1)
 
 	# Return
-	return zscore
+	return data
 
 #############################################
 ########## 2. VST
 #############################################
 
-def vst(dataset):
+def VST(dataset):
 
 	return pandas2ri.ri2py(r.vst(pandas2ri.py2ri(dataset['rawdata'])))
 

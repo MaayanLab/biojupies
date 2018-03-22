@@ -36,7 +36,7 @@ def plot_2D_scatter(x, y, text='', title='', xlab='', ylab='', hoverinfo='text',
 ########## 1. Run
 #############################################
 
-def run(signature, signature_label):
+def run(signature, signature_label='', pvalue_threshold=0.05, logfc_threshold=1.5):
 
 	# Loop through signature
 	color = []
@@ -47,10 +47,10 @@ def run(signature, signature_label):
 		text.append('<b>'+index+'</b><br>Avg Expression = '+str(round(rowData['AveExpr'], ndigits=2))+'<br>logFC = '+str(round(rowData['logFC'], ndigits=2))+'<br>p = '+'{:.2e}'.format(rowData['P.Value'])+'<br>FDR = '+'{:.2e}'.format(rowData['adj.P.Val']))
 
 		# Color
-		if rowData['adj.P.Val'] < 0.05:
-			if rowData['logFC'] < -1.5:
+		if rowData['adj.P.Val'] < pvalue_threshold:
+			if rowData['logFC'] < -logfc_threshold:
 				color.append('blue')
-			elif rowData['logFC'] > 1.5:
+			elif rowData['logFC'] > logfc_threshold:
 				color.append('red')
 			else:
 				color.append('black')

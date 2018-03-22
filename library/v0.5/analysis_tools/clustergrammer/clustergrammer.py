@@ -28,22 +28,15 @@ import pandas as pd
 ########## 1. Run
 #############################################
 
-def run(dataset, normalize_cols=True, log=True, z_score=True, nr_genes=1500, metadata_cols=None):
+def run(dataset, normalization='logCPM', z_score=True, nr_genes=1500, metadata_cols=None):
+
+	# Get data
+	data = dataset[normalization].copy()
 
 	# Get tempfile
 	(fd, filename) = tempfile.mkstemp()
 	filename = filename+'.txt'
 	try:
-		# Get data
-		data = dataset['rawdata']
-
-		# Normalize columns
-		if normalize_cols:
-			data = data/data.sum()
-
-		# Log-transform
-		if log:
-			data = np.log10(data+1)
 
 		# Get variable subset
 		data = data.loc[data.var(axis=1).sort_values(ascending=False).index[:nr_genes]]

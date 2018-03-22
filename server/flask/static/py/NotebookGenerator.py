@@ -46,7 +46,7 @@ def addCell(notebook, content, celltype='code', task=None):
 
 def add_parameters(configuration_dict):
 	parameters = ", " if len(configuration_dict) else ""
-	return parameters+", ".join(['='.join([str(key), str(value) if str(value).isnumeric() or not value else "'"+str(value)+"'"]) for key, value in configuration_dict.items()])
+	return parameters+", ".join(['='.join([str(key), str(value) if str(value).isnumeric() or not value or '.' in str(value) else "'"+str(value)+"'"]) for key, value in configuration_dict.items()])
 
 #############################################
 ########## 2. Add Introduction
@@ -182,23 +182,23 @@ def add_methods(notebook, notebook_configuration, normalization_methods, annotat
 
 	# Add Data Methods
 	data_configuration = notebook_configuration['data']
-	data_methods = '### Data Processing\n'+annotations['core_options'][data_configuration['source']]['methods'].format(**data_configuration['parameters'])
+	data_methods = '### Data \n##### Data Source\n'+annotations['core_options'][data_configuration['source']]['methods'].format(**data_configuration['parameters'])
 	methods.append(data_methods)
+
+	# Add Normalization Methods
+	if len(normalization_methods):
+		normalization_methods_section = '##### Data Normalization\n'
+		for normalization_method in normalization_methods:
+			normalization_methods_section += '##### {}\n'.format(annotations['core_options'][normalization_method]['option_name'])+annotations['core_options'][normalization_method]['methods']
+		# normalization_methods_section += '<br><br>Source code and additional information is available on GitHub: <a href="https://github.com/denis-torre/notebook-generator/tree/master/library/{notebook_configuration[notebook][version]}/core_scripts/normalize" target="_blank">https://github.com/denis-torre/notebook-generator/tree/master/library/{notebook_configuration[notebook][version]}/core_scripts/normalize</a>.'.format(**locals())
+		# normalization_methods_section += '<br><br>Source code and additional information are publicly available on <a href="https://github.com/denis-torre/notebook-generator/tree/master/library/{notebook_configuration[notebook][version]}/core_scripts/normalize" target="_blank">GitHub</a>.'.format(**locals())
+		methods.append(normalization_methods_section)
 
 	# Add Signature Methods
 	if len(notebook_configuration['signature']):
 		signature_configuration = notebook_configuration['signature']
 		signature_methods = '### Signature Generation\n'+annotations['core_options'][signature_configuration['method']]['methods'].format(**signature_configuration)
 		methods.append(signature_methods)
-
-	# Add Normalization Methods
-	if len(normalization_methods):
-		normalization_methods_section = '### Data Normalization\n'
-		for normalization_method in normalization_methods:
-			normalization_methods_section += '##### {}\n'.format(annotations['core_options'][normalization_method]['option_name'])+annotations['core_options'][normalization_method]['methods']
-		# normalization_methods_section += '<br><br>Source code and additional information is available on GitHub: <a href="https://github.com/denis-torre/notebook-generator/tree/master/library/{notebook_configuration[notebook][version]}/core_scripts/normalize" target="_blank">https://github.com/denis-torre/notebook-generator/tree/master/library/{notebook_configuration[notebook][version]}/core_scripts/normalize</a>.'.format(**locals())
-		# normalization_methods_section += '<br><br>Source code and additional information are publicly available on <a href="https://github.com/denis-torre/notebook-generator/tree/master/library/{notebook_configuration[notebook][version]}/core_scripts/normalize" target="_blank">GitHub</a>.'.format(**locals())
-		methods.append(normalization_methods_section)
 
 	# Add Tool Methods
 	for tool_configuration in notebook_configuration['tools']:

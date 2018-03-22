@@ -11,6 +11,8 @@
 from sklearn.manifold import TSNE
 import plotly.graph_objs as go
 from plotly.offline import iplot
+import scipy.stats as ss
+import warnings
 
 ##### 2. Other libraries #####
 
@@ -24,13 +26,19 @@ from plotly.offline import iplot
 ########## 1. Run
 #############################################
 
-def run(dataset, dimensions=3, nr_genes=2500, normalization='zscore'):
+def run(dataset, normalization='logCPM', nr_genes=2500, z_score=True, color_by=None, color_type='categorical'):
 
-	# Get expression
-	expression_dataframe = dataset[normalization]
+	# Get data
+	expression_dataframe = dataset[normalization].copy()
 
 	# Filter
 	expression_dataframe = expression_dataframe.loc[expression_dataframe.var(axis=1).sort_values(ascending=False).index[:nr_genes]]
+
+	# Z-score
+	if z_score == 'True' or z_score == True:
+		with warnings.catch_warnings():
+			warnings.simplefilter("ignore")
+			expression_dataframe = expression_dataframe.apply(ss.zscore, axis=1)
 
 	# Run tsne
 	tsne=TSNE(n_components=3).fit_transform(expression_dataframe.T)
@@ -50,9 +58,6 @@ def run(dataset, dimensions=3, nr_genes=2500, normalization='zscore'):
 				col.append('Other')
 		dataset['sample_metadata']['Group'] = col
 		color_by = 'Group'
-		color_type = 'categorical'
-	else:
-		color_by = None
 		color_type = 'categorical'
 
 	# Return

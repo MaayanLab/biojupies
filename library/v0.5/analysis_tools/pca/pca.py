@@ -11,6 +11,8 @@
 from sklearn.decomposition import PCA
 import plotly.graph_objs as go
 from plotly.offline import iplot
+import scipy.stats as ss
+import warnings
 
 ##### 2. Other libraries #####
 
@@ -24,13 +26,19 @@ from plotly.offline import iplot
 ########## 1. Run
 #############################################
 
-def run(dataset, dimensions=3, nr_genes=2500, normalization='zscore', color_by=None, color_type='categorical'):
+def run(dataset, normalization='logCPM', nr_genes=2500, z_score=True, color_by=None, color_type='categorical'):
 
-	# Get expression
-	expression_dataframe = dataset[normalization]
-
+	# Get data
+	expression_dataframe = dataset[normalization].copy()
+	
 	# Filter
 	expression_dataframe = expression_dataframe.loc[expression_dataframe.var(axis=1).sort_values(ascending=False).index[:nr_genes]]
+
+	# Z-score
+	if z_score == 'True' or z_score == True:
+		with warnings.catch_warnings():
+			warnings.simplefilter("ignore")
+			expression_dataframe = expression_dataframe.apply(ss.zscore, axis=1)
 
 	# Run PCA
 	pca=PCA(n_components=3)

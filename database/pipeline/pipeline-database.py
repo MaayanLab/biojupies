@@ -115,7 +115,7 @@ def getPlatformTable(infile, outfile):
 	platform_df = pd.read_table(infile).drop_duplicates('gpl')
 	platform_df['id'] = [x+1 for x in range(len(platform_df.index))]
 	platform_df = platform_df[['id', 'gpl']]
-	organisms = {'GPL13112': 'Mouse', 'GPL11154': 'Human', 'GPL17021': 'Mouse', 'GPL16791': 'Human', 'GPL18460': 'Human', 'GPL15103': 'Mouse'}
+	organisms = {'GPL13112': 'Mouse', 'GPL11154': 'Human', 'GPL17021': 'Mouse', 'GPL16791': 'Human', 'GPL18460': 'Human', 'GPL15103': 'Mouse', 'GPL18573': 'Human', 'GPL19057': 'Mouse'}
 	platform_df['organism'] = [organisms[gpl] for gpl in platform_df['gpl']]
 	platform_df.to_csv(outfile, index=False)
 
