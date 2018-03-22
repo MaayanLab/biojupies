@@ -45,6 +45,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 engine = db.engine
 
+##### 2. Variables #####
+# Latest library version
+latest_library_version = 'v0.5'
+
 #######################################################
 #######################################################
 ########## 2. Server
@@ -58,21 +62,6 @@ engine = db.engine
 @app.route(entry_point, methods=['GET', 'POST'])
 def index():
 	return render_template('index.html')
-
-#############################################
-########## 2. Test
-#############################################
-import time
-
-@app.route(entry_point+'/test', methods=['GET', 'POST'])
-def test():
-	def generate():
-		a = []
-		for i in range(50):
-			time.sleep(1)
-			a.append(i)
-			yield str(a)
-	return Response(generate())
 
 #############################################
 ########## 2. Generate API
@@ -136,6 +125,9 @@ def generate():
 			raise
 		else:
 
+			# Get Configuration
+			notebook_configuration = request.json
+
 			# Get error message
 			ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
 
@@ -144,29 +136,6 @@ def generate():
 
 			return error_response
 
-#############################################
-########## 2. Generate API
-#############################################
-
-@app.route(entry_point+'/api/generate_stream', methods=['GET', 'POST'])
-def generate_stream():
-
-	# Get tool metadata
-	tool_metadata = pd.read_sql_table('tool', engine).set_index('tool_string').to_dict(orient='index')
-	core_script_metadata = pd.read_sql_table('core_scripts', engine).set_index('option_string').to_dict(orient='index')
-	annotations = {'tools': tool_metadata, 'core_options': core_script_metadata}
-
-	# Open example.json
-	with open('../example.json', 'r') as openfile:
-		notebook_configuration = json.loads(openfile.read())
-
-	# Generate, Execute and Convert to HTML
-	notebook = generate_notebook(notebook_configuration, annotations)
-	notebook = execute_notebook_stream(notebook, execute=True,to_html=True)
-
-	# Return
-	return notebook
-
 #######################################################
 #######################################################
 ########## 3. Extension API
@@ -174,7 +143,15 @@ def generate_stream():
 #######################################################
 
 #############################################
-########## 1. Samples API
+########## 1. Version API
+#############################################
+
+@app.route(entry_point+'/api/version', methods=['GET', 'POST'])
+def version():
+	return json.dumps({'latest_library_version': latest_library_version})
+
+#############################################
+########## 2. Samples API
 #############################################
 
 @app.route(entry_point+'/api/samples', methods=['GET', 'POST'])
@@ -206,7 +183,7 @@ def samples():
 	return json.dumps(result)
 
 #############################################
-########## 2. Tools API
+########## 3. Tools API
 #############################################
 
 @app.route(entry_point+'/api/tools', methods=['GET', 'POST'])
