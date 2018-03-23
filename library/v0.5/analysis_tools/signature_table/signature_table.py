@@ -34,6 +34,9 @@ def run(signature, signature_label=''):
 
 def plot(signature):
 	# signature.index = ['<a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene={x}" target="_blank">{x}</a>'.format(**locals()) for x in signature.index] # human
-	signature.index = ['<a href="http://www.informatics.jax.org/searchtool/Search.do?query={x}" target="_blank">{x}</a>'.format(**locals()) for x in signature.index] # mouse
+	signature.index = ['<a href="http://amp.pharm.mssm.edu/Harmonizome/gene/{x}" target="_blank">{x}</a>'.format(**locals()) for x in signature.index] # mouse
 	signature.index.name = 'Gene'
-	display(qgrid.show_grid(signature.rename(columns={'gene_symbol': 'Gene', 'P.Value': 'P-value', 'adj.P.Val': 'FDR'}).drop(['t', 'B'], axis=1), grid_options={'maxVisibleRows': 4}))
+	html_table = signature.rename(columns={'gene_symbol': 'Gene', 'P.Value': 'P-value', 'adj.P.Val': 'FDR'}).drop(['t', 'B'], axis=1).sort_values('P-value').head(50).to_html(escape=False)
+	html_results = '<div style="max-height: 200px; overflow-y: scroll;">{}</div>'.format(html_table)
+	# display(qgrid.show_grid(signature.rename(columns={'gene_symbol': 'Gene', 'P.Value': 'P-value', 'adj.P.Val': 'FDR'}).drop(['t', 'B'], axis=1), grid_options={'maxVisibleRows': 4}))
+	display(HTML(html_results))

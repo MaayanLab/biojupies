@@ -197,7 +197,8 @@ def createDb(infile, outfile):
 
 # @follows(createDb)
 
-@transform(glob.glob('s3-tables.dir/*-table.*'),
+# @transform(glob.glob('s3-tables.dir/*-table.*'),
+@transform(glob.glob('s3-tables.dir/sample_metadata-table.csv'),
 		   regex(r'.*/(.*)-table.*'),
 		   r's4-upload.dir/\1-upload.txt')
 

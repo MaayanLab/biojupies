@@ -84,11 +84,12 @@ def results_table(enrichment_dataframe, source_label, target_label):
 	# Add overlapping genes with tooltip
 	enrichment_dataframe['nr_overlapping_genes'] = [len(x) for x in enrichment_dataframe['overlapping_genes']]
 	enrichment_dataframe['overlapping_genes'] = [', '.join(x) for x in enrichment_dataframe['overlapping_genes']]
-	enrichment_dataframe[target_label.title()] = ['<span class="gene-tooltip">{nr_overlapping_genes} {geneset} '.format(**rowData)+target_label+'s<div class="gene-tooltip-text">{overlapping_genes}</div></span>'.format(**rowData) for index, rowData in enrichment_dataframe.iterrows()]
+	enrichment_dataframe[target_label.title()] = ['{nr_overlapping_genes} {geneset} '.format(**rowData)+target_label+'s' for index, rowData in enrichment_dataframe.iterrows()]
+	# enrichment_dataframe[target_label.title()] = ['<span class="gene-tooltip">{nr_overlapping_genes} {geneset} '.format(**rowData)+target_label+'s<div class="gene-tooltip-text">{overlapping_genes}</div></span>'.format(**rowData) for index, rowData in enrichment_dataframe.iterrows()]
 
 	# Convert to HTML
 	pd.set_option('max.colwidth', -1)
-	html_table = enrichment_dataframe.head(20)[['Rank', source_label, 'P-value', 'FDR', target_label.title()]].to_html(escape=False, index=False, classes='w-100 text-left')
+	html_table = enrichment_dataframe.head(20)[['Rank', source_label, 'P-value', 'FDR', target_label.title()]].to_html(escape=False, index=False, classes='w-100')
 	html_results = '<div style="max-height: 200px; overflow-y: scroll;">{}</div>'.format(html_table)
 
 	# Add CSS
