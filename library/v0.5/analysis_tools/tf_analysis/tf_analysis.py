@@ -76,7 +76,7 @@ def results_table(enrichment_dataframe, source_label, target_label):
 
 	# Add links and bold for significant results
 	enrichment_dataframe[source_label] = ['<a href="http://amp.pharm.mssm.edu/Harmonizome/gene/{x}" target="_blank">{x}</a>'.format(**locals()) for x in enrichment_dataframe[source_label]]
-	enrichment_dataframe[source_label] = [rowData['Transcription Factor'].replace('target="_blank">', 'target="_blank"><b>').replace('</a>', '</b></a>') if rowData['FDR'] < 0.1 else rowData[source_label] for index, rowData in enrichment_dataframe.iterrows()]
+	enrichment_dataframe[source_label] = [rowData[source_label].replace('target="_blank">', 'target="_blank"><b>').replace('</a>', '</b></a>') if rowData['FDR'] < 0.1 else rowData[source_label] for index, rowData in enrichment_dataframe.iterrows()]
 
 	# Add rank
 	enrichment_dataframe['Rank'] = ['<b>'+str(x+1)+'</b>' for x in range(len(enrichment_dataframe.index))]

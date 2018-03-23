@@ -6,16 +6,44 @@
 
 function main() {
 
-	library_version = 'v0.3';
-	addModal();
-	addButtons();
-	addEventListeners();
+	 $.ajax({	
+		url: "http://amp.pharm.mssm.edu/notebook-generator-server/api/version",
+		method: "POST",
+		dataType: 'json',
+		success: function(res) {
+
+			// Get library version
+			library_version = res['latest_library_version'];
+
+			addModal();
+			addButtons();
+			addEventListeners();
+		}
+	});
 
 }
 
 //////////////////////////////////////////////////////////////////////
 ///////// 2. Define Functions ////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
+
+function getVersion() {
+	var return_first;
+	function callback(response) {
+	  return_first = response;
+	}
+
+	$.ajax({
+	  'type': "POST",
+	  'global': false,
+	  'dataType': 'html',
+	  'url': "ajax.php?first",
+	  'data': { 'request': "", 'target': arrange_url, 'method': method_target },
+	  'success': function(data){
+	       callback(data);
+	  },
+	});
+}
 
 //////////////////////////////////////////////////
 ////////// 1. modal /////////////////////////
@@ -306,7 +334,7 @@ function addConfiguration(selected_tools, groups) {
 	$.each(selected_tools['tools'], function(index, tool) {
 		// if (tool['parameters'].length > 0) {
 		display = tool['parameters'].length > 0 ? 'block' : 'none'
-		$('#configuration-form').append(modal.Section(tool['tool_name'], tool['tool_string'], display, {'url': 'https://github.com/denis-torre/notebook-generator/tree/master/library/'+library_version+'/analysis_tools/'+tool['tool_string'], 'text': 'Documentation'}, true));
+		$('#configuration-form').append(modal.Section(tool['tool_name'], tool['tool_string'], display, {'url': 'https://github.com/denis-torre/notebook-generator/tree/master/library/'+'library_version'+'/analysis_tools/'+tool['tool_string'], 'text': 'Documentation'}, true));
 		$.each(tool['parameters'], function(parameter_id, parameter) {
 			var value, options = [];
 			$.each(parameter['values'], function(index, option) { options.push(option["value"]); if (option["default"]){value = option["value"]}; });
@@ -355,6 +383,8 @@ function getConfiguration() {
 
 	// Add data
 	configuration['data'] = {'source': 'archs4', 'parameters': {'gse': $('#notebook-generator-modal').data('gse'), 'platform': $('#notebook-generator-modal').data('gpl')}}
+
+	// Get version
 	configuration['notebook']['version'] = library_version
 
 	// Return
