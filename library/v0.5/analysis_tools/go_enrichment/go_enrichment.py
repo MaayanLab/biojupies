@@ -20,12 +20,12 @@ from IPython.display import display, Markdown
 
 #######################################################
 #######################################################
-########## S1. Function
+########## Support
 #######################################################
 #######################################################
 
 #############################################
-########## 1. Run
+########## 1. Get Enrichr Results
 #############################################
 
 def get_enrichr_results(user_list_id, gene_set_libraries, overlappingGenes=True):
@@ -48,13 +48,8 @@ def get_enrichr_results(user_list_id, gene_set_libraries, overlappingGenes=True)
 	concatenatedDataframe = pd.concat(results)
 	return concatenatedDataframe
 
-def run(enrichr_results, signature_label, libraries=['GO_Biological_Process_2017b', 'KEGG_2016', 'WikiPathways_2016']):
-	pathway_analysis_results = {geneset: get_enrichr_results(enrichr_results[geneset]['userListId'], libraries) for geneset in ['upregulated', 'downregulated']}
-	pathway_analysis_results['signature_label'] = signature_label
-	return pathway_analysis_results
-
 #############################################
-########## 2. Plot
+########## 2. Plot Enrichment Barchart
 #############################################
 
 def plot_library_barchart(enrichr_results, gene_set_library, signature_label, nr_genesets, height):
@@ -101,7 +96,7 @@ def plot_library_barchart(enrichr_results, gene_set_library, signature_label, nr
 	] if signature_label else []
 
 	# Get title
-	title = gene_set_library.replace('GO_Biological_Process_2017b', 'Biological Process (Gene Ontology)').replace('KEGG_2016', 'Pathways (KEGG)').replace('WikiPathways_2016', 'Pathways (WikiPathways)')
+	title = gene_set_library.replace('GO_', '').replace('_2017b', '').replace('_', ' ')
 
 	fig['layout'].update(height=height, title='<b>{}</b>'.format(title), hovermode='closest', annotations=annotations)
 	fig['layout']['xaxis1'].update(domain=[0,0.5])
@@ -111,9 +106,28 @@ def plot_library_barchart(enrichr_results, gene_set_library, signature_label, nr
 	fig['layout']['margin'].update(l=0, t=65, r=0, b=30)
 	return iplot(fig)
 
+#######################################################
+#######################################################
+########## S1. Function
+#######################################################
+#######################################################
+
+#############################################
+########## 1. Run
+#############################################
+
+def run(enrichr_results, signature_label, libraries=['GO_Biological_Process_2017b', 'GO_Molecular_Function_2017b', 'GO_Cellular_Component_2017b']):
+	pathway_analysis_results = {geneset: get_enrichr_results(enrichr_results[geneset]['userListId'], libraries) for geneset in ['upregulated', 'downregulated']}
+	pathway_analysis_results['signature_label'] = signature_label
+	return pathway_analysis_results
+
+#############################################
+########## 2. Plot
+#############################################
+
 def plot(pathway_analysis_results):
 	if pathway_analysis_results['signature_label']:
-		display(Markdown('### {signature_label} signature:'.format(**pathway_analysis_results)))
+		pass# display(Markdown('### {signature_label} signature:'.format(**pathway_analysis_results)))
 	enrichment_dataframe = pd.concat([pathway_analysis_results['upregulated'], pathway_analysis_results['downregulated']])
 	for gene_set_library in enrichment_dataframe['gene_set_library'].unique():
 		plot_library_barchart(pathway_analysis_results, gene_set_library, pathway_analysis_results['signature_label'], 10, 300)

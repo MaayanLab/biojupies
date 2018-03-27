@@ -15,15 +15,14 @@ from IPython.display import display, Markdown, HTML
 
 ##### 2. Other libraries #####
 
-
 #######################################################
 #######################################################
-########## S1. Function
+########## Support
 #######################################################
 #######################################################
 
 #############################################
-########## 1. Run
+########## 1. Get Enrichr Results
 #############################################
 
 def get_enrichr_results(user_list_id, gene_set_libraries, overlappingGenes=True):
@@ -46,26 +45,8 @@ def get_enrichr_results(user_list_id, gene_set_libraries, overlappingGenes=True)
 	concatenatedDataframe = pd.concat(results)
 	return concatenatedDataframe
 
-def run(enrichr_results, signature_label):
-
-	# Initialize results
-	results = []
-
-	# Loop through genesets
-	for geneset in ['upregulated', 'downregulated']:
-
-		# Append ChEA results
-		enrichment_dataframe = get_enrichr_results(enrichr_results[geneset]['userListId'], gene_set_libraries=['ChEA_2016', 'ARCHS4_TFs_Coexp'])
-		enrichment_dataframe['geneset'] = geneset
-		results.append(enrichment_dataframe)
-
-	# Concatenate results
-	tf_dataframe = pd.concat(results)
-
-	return {'tf_dataframe': tf_dataframe, 'signature_label': signature_label}
-
 #############################################
-########## 2. Plot
+########## 2. Display Result Table
 #############################################
 
 def results_table(enrichment_dataframe, source_label, target_label):
@@ -103,11 +84,43 @@ def results_table(enrichment_dataframe, source_label, target_label):
 		display(HTML('<style>.slick-cell{overflow: visible;}.gene-tooltip{text-decoration: underline; text-decoration-style: dotted;}.gene-tooltip .gene-tooltip-text{visibility: hidden; position: absolute; left: 60%; width: 250px; z-index: 1000; text-align: center; background-color: black; color: white; padding: 5px 10px; border-radius: 5px;} .gene-tooltip:hover .gene-tooltip-text{visibility: visible;} .gene-tooltip .gene-tooltip-text::after {content: " ";position: absolute;bottom: 100%;left: 50%;margin-left: -5px;border-width: 5px;border-style: solid;border-color: transparent transparent black transparent;}</style>'))
 
 		# Display gene set
-		display(Markdown('### ChEA - experimentally validated targets' if gene_set_library == 'ChEA_2016' else '### ARCHS4 - top coexpressed genes'))
+		display(Markdown('### A. KEA (experimentally validated substrates)' if gene_set_library == 'KEA_2015' else '### B. ARCHS4 (coexpressed genes)'))
 
 		# Display table
 		display(HTML(html_results))
 
-def plot(tf_analysis_results):
+#######################################################
+#######################################################
+########## S1. Function
+#######################################################
+#######################################################
 
-	results_table(tf_analysis_results['tf_dataframe'].copy(), source_label='Transcription Factor', target_label='target')
+#############################################
+########## 1. Run
+#############################################
+
+def run(enrichr_results, signature_label):
+
+	# Initialize results
+	results = []
+
+	# Loop through genesets
+	for geneset in ['upregulated', 'downregulated']:
+
+		# Append ChEA results
+		enrichment_dataframe = get_enrichr_results(enrichr_results[geneset]['userListId'], gene_set_libraries=['KEA_2015', 'ARCHS4_Kinases_Coexp'])
+		enrichment_dataframe['geneset'] = geneset
+		results.append(enrichment_dataframe)
+
+	# Concatenate results
+	tf_dataframe = pd.concat(results)
+
+	return {'tf_dataframe': tf_dataframe, 'signature_label': signature_label}
+
+#############################################
+########## 2. Plot
+#############################################
+
+def plot(kinase_enrichment_results):
+
+	results_table(kinase_enrichment_results['tf_dataframe'].copy(), source_label='Kinase', target_label='substrate')
