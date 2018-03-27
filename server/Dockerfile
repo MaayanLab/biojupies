@@ -36,6 +36,8 @@ RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("edgeR")
 
 RUN apt-get update && apt-get install -y wget
 
+RUN pip3 install matplotlib-venn
+
 RUN mkdir notebook-generator-server
 COPY . /notebook-generator-server
 WORKDIR /notebook-generator-server/flask
