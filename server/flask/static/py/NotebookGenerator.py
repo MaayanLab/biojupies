@@ -128,7 +128,7 @@ def generate_signature(notebook, signature_configuration, core_options):
 ########## 5. Add Tool
 #############################################
 
-def add_tool(notebook, tool_configuration, tool_metadata, signature_configuration, annotate=True):
+def add_tool(notebook, tool_configuration, tool_metadata, signature_configuration, tools=[], annotate=True):
 
 	# Get Tool input
 	tool_string = tool_configuration['tool_string']
@@ -161,7 +161,8 @@ def add_tool(notebook, tool_configuration, tool_metadata, signature_configuratio
 	else:
 
 		# Add prerequisite
-		notebook = add_tool(notebook, {'tool_string': tool_input, 'parameters': {}}, tool_metadata, signature_configuration, annotate=False)
+		if tool_input not in [x['tool_string'] for x in tools]:
+			notebook = add_tool(notebook, {'tool_string': tool_input, 'parameters': {}}, tool_metadata, signature_configuration, annotate=False)
 
 		# Add tool
 		if tool_metadata[tool_input]['input'] == 'signature':
@@ -268,7 +269,7 @@ def generate_notebook(notebook_configuration, annotations):
 
 	# Add Tools
 	for tool_configuration in notebook_configuration['tools']:
-		notebook = add_tool(notebook=notebook, tool_configuration=tool_configuration, tool_metadata=annotations['tools'], signature_configuration=notebook_configuration['signature'])
+		notebook = add_tool(notebook=notebook, tool_configuration=tool_configuration, tool_metadata=annotations['tools'], signature_configuration=notebook_configuration['signature'], tools=notebook_configuration['tools'])
 
 	# Add Methods
 	normalization_methods = set([tool_configuration['parameters']['normalization'] for tool_configuration in notebook_configuration['tools'] if 'normalization' in tool_configuration['parameters'].keys() and tool_configuration['parameters']['normalization'] != 'rawdata'])
