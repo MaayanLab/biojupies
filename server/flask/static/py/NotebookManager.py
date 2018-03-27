@@ -129,6 +129,7 @@ def log_error(notebook_configuration, error, annotations, engine):
 		error_response += ' normalizing the dataset.<br><br>Please try again with different normalization method.'
 	elif 'run' in error:
 		tool_name = annotations['tools'][error.split("tool='")[-1].split("'")[0]]['tool_name']
+		error_type = tool_name
 		error_response += ' running {}.<br><br>Please try again by removing the selected tool.'.format(tool_name)
 	else:
 		error_type = 'unspecified'
