@@ -128,8 +128,8 @@ def plot(tsne_results):
 			# Append trace to data list
 			data.append(trace)
 	
-	colored = '' if str(color_by) == 'None' else '<i>, colored by {}</i>'.format(color_by)
-	layout = go.Layout(title='<b>t-SNE Analysis | Scatter Plot</b><br><i>Top {} variable genes</i>'.format(tsne_results['nr_genes'])+colored, hovermode='closest', margin=go.Margin(l=0,r=0,b=0,t=50), width=900,
+	colored = '' if str(color_by) == 'None' else 'Colored by {}'.format(color_by)
+	layout = go.Layout(title='<b>t-SNE Analysis | Scatter Plot</b><br><i>{}</i>'.format(colored), hovermode='closest', margin=go.Margin(l=0,r=0,b=0,t=50), width=900,
 		scene=dict(xaxis=dict(title='t-SNE1'), yaxis=dict(title='t-SNE2'),zaxis=dict(title='t-SNE3')))
 	fig = go.Figure(data=data, layout=layout)
 

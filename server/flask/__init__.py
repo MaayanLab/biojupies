@@ -74,12 +74,14 @@ def generate():
 	tool_metadata = pd.read_sql_table('tool', engine).set_index('tool_string').to_dict(orient='index')
 	core_script_metadata = pd.read_sql_table('core_scripts', engine).set_index('option_string').to_dict(orient='index')
 	annotations = {'tools': tool_metadata, 'core_options': core_script_metadata}
+	print('generating notebook...')
 
 	# Set development
 	development = os.environ['DEVELOPMENT'] == 'True'
 	try:
+		### Development
 		if development:
-			### Development
+
 			# Open example.json
 			with open('../example.json', 'r') as openfile:
 				notebook_configuration = json.loads(openfile.read())
@@ -92,18 +94,23 @@ def generate():
 			# Return
 			return notebook
 
+		### Production
 		else:
-			### Production
 			# Get Configuration
 			notebook_configuration = request.json
 
 			# Check if notebook exists
 			matching_notebook = pd.read_sql_query("SELECT * FROM notebooks WHERE notebook_configuration = '{}'".format(json.dumps(notebook_configuration)), engine).to_dict(orient='records')
+			print('matching_notebook')
+			print(matching_notebook)
+
+			# Return existing notebook
 			if len(matching_notebook):
 
 				# Get URL
 				notebook_url = matching_notebook[0]['notebook_url']
 
+			# Generte new notebook
 			else:
 
 				# Generate and Execute

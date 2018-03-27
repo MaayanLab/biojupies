@@ -21,14 +21,18 @@ from plotly.offline import iplot
 #######################################################
 #######################################################
 
-def plot_2D_scatter(x, y, text='', title='', xlab='', ylab='', hoverinfo='text', color='black', colorscale='Blues', size=8, showscale=False, symmetric_x=False, symmetric_y=False, pad=0.5, hline=False, vline=False, return_trace=False):
+def plot_2D_scatter(x, y, text='', title='', xlab='', ylab='', hoverinfo='text', color='black', colorscale='Blues', size=8, showscale=False, symmetric_x=False, symmetric_y=False, pad=0.5, hline=False, vline=False, return_trace=False, labels=False):
 	range_x = [-max(abs(x))-pad, max(abs(x))+pad]if symmetric_x else []
 	range_y = [-max(abs(y))-pad, max(abs(y))+pad]if symmetric_y else []
 	trace = go.Scattergl(x=x, y=y, mode='markers', text=text, hoverinfo=hoverinfo, marker={'color': color, 'colorscale': colorscale, 'showscale': showscale, 'size': size})
 	if return_trace:
 		return trace
 	else:
-		layout = go.Layout(title=title, xaxis={'title': xlab, 'range': range_x}, yaxis={'title': ylab, 'range': range_y}, hovermode='closest')
+		annotations = [
+			{'x': 0.25, 'y': 1.07, 'text':'<span style="color: blue; font-size: 10pt; font-weight: 600;">Down-regulated in '+labels[-1]+'</span>', 'showarrow': False, 'xref': 'paper', 'yref': 'paper', 'xanchor': 'center'},
+			{'x': 0.75, 'y': 1.07, 'text':'<span style="color: red; font-size: 10pt; font-weight: 600;">Up-regulated in '+labels[-1]+'</span>', 'showarrow': False, 'xref': 'paper', 'yref': 'paper', 'xanchor': 'center'}
+		] if labels else []
+		layout = go.Layout(title=title, xaxis={'title': xlab, 'range': range_x}, yaxis={'title': ylab, 'range': range_y}, hovermode='closest', annotations=annotations)
 		fig = go.Figure(data=[trace], layout=layout)
 		return iplot(fig)
 
@@ -68,6 +72,7 @@ def run(signature, signature_label='', pvalue_threshold=0.05, logfc_threshold=1.
 #############################################
 
 def plot(volcano_plot_results):
+	spacer = ' '*50
 	plot_2D_scatter(
 		x=volcano_plot_results['x'],
 		y=volcano_plot_results['y'],
@@ -76,5 +81,6 @@ def plot(volcano_plot_results):
 		symmetric_x=True,
 		xlab='logFC',
 		ylab='log10P',
-		title='<b>{volcano_plot_results[signature_label]} Signature | Volcano Plot</b><br><i>logFC vs. log10P, colored by expression</i>'.format(**locals())
+		title='<b>{volcano_plot_results[signature_label]} Signature | Volcano Plot</b>'.format(**locals()),
+		labels=volcano_plot_results['signature_label'].split(' vs ')
 	)

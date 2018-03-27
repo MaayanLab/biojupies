@@ -57,7 +57,7 @@ def run(enrichr_results, signature_label, libraries=['GO_Biological_Process_2017
 ########## 2. Plot
 #############################################
 
-def plot_library_barchart(enrichr_results, gene_set_library, nr_genesets, height):
+def plot_library_barchart(enrichr_results, gene_set_library, signature_label, nr_genesets, height):
 	fig = tools.make_subplots(rows=1, cols=2, print_grid=False);
 	for i, geneset in enumerate(['upregulated', 'downregulated']):
 		# Get dataframe
@@ -73,6 +73,7 @@ def plot_library_barchart(enrichr_results, gene_set_library, nr_genesets, height
 			y=plot_dataframe['term_name'],
 			orientation='h',
 			name=geneset.title(),
+			showlegend=False,
 			hovertext=['<b>{term_name}</b><br><b>P-value</b>: <i>{pvalue:.2}</i><br><b>FDR</b>: <i>{FDR:.2}</i><br><b>Z-score</b>: <i>{zscore:.3}</i><br><b>Combined score</b>: <i>{combined_score:.3}</i><br><b>Genes</b>: <i>{overlapping_genes}</i><br>'.format(**rowData) for index, rowData in plot_dataframe.iterrows()],
 			hoverinfo='text',
 			marker={'color': '#FA8072' if geneset=='upregulated' else '	#87CEFA'}
@@ -92,12 +93,22 @@ def plot_library_barchart(enrichr_results, gene_set_library, nr_genesets, height
 		)
 		fig.append_trace(text, 1, i+1)
 
-	fig['layout'].update(height=height, title='<b>'+gene_set_library.replace('GO_Biological_Process_2017b', 'Biological Process (Gene Ontology)').replace('KEGG_2016', 'Pathways (KEGG)').replace('WikiPathways_2016', 'Pathways (WikiPathways)')+'</b>', hovermode='closest')
+	# Get annotations
+	labels = signature_label.split('vs ')
+	annotations = [
+		{'x': 0.25, 'y': 1.12, 'text':'<span style="color: #FA8072; font-size: 10pt; font-weight: 600;">Up-regulated in '+labels[-1]+'</span>', 'showarrow': False, 'xref': 'paper', 'yref': 'paper', 'xanchor': 'center'},
+		{'x': 0.75, 'y': 1.12, 'text':'<span style="color: #87CEFA; font-size: 10pt; font-weight: 600;">Down-regulated in '+labels[-1]+'</span>', 'showarrow': False, 'xref': 'paper', 'yref': 'paper', 'xanchor': 'center'}
+	] if signature_label else []
+
+	# Get title
+	title = gene_set_library.replace('GO_Biological_Process_2017b', 'Biological Process (Gene Ontology)').replace('KEGG_2016', 'Pathways (KEGG)').replace('WikiPathways_2016', 'Pathways (WikiPathways)')
+
+	fig['layout'].update(height=height, title='<b>{}</b>'.format(title), hovermode='closest', annotations=annotations)
 	fig['layout']['xaxis1'].update(domain=[0,0.5])
 	fig['layout']['xaxis2'].update(domain=[0.5,1])
 	fig['layout']['yaxis1'].update(showticklabels=False)
 	fig['layout']['yaxis2'].update(showticklabels=False)
-	fig['layout']['margin'].update(l=0, t=40, r=0, b=30)
+	fig['layout']['margin'].update(l=0, t=65, r=0, b=30)
 	return iplot(fig)
 
 def plot(pathway_analysis_results):
@@ -105,4 +116,4 @@ def plot(pathway_analysis_results):
 		display(Markdown('### {signature_label} signature:'.format(**pathway_analysis_results)))
 	enrichment_dataframe = pd.concat([pathway_analysis_results['upregulated'], pathway_analysis_results['downregulated']])
 	for gene_set_library in enrichment_dataframe['gene_set_library'].unique():
-		plot_library_barchart(pathway_analysis_results, gene_set_library, 10, 300)
+		plot_library_barchart(pathway_analysis_results, gene_set_library, pathway_analysis_results['signature_label'], 10, 300)

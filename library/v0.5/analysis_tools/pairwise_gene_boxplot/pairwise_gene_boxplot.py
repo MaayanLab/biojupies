@@ -38,38 +38,40 @@ def run(datasets, gene_symbols, signatures):
 def plot(results, order=None):
 
 	# Loop through genes 
-	for gene_symbol in results['gene_symbols']:
-
-		# Plot
-		fig, axes = plt.subplots(ncols=2, figsize=(8.5, 4), sharey=True)
-		fig.tight_layout()
-		for i, dataset in enumerate(results['datasets']):
-
-			# Normalize
-			normdata = np.log10(dataset['data']['rawdata']/dataset['data']['rawdata'].sum()*10**6+1)
-
-			# Get group dataframe
-			group_dataframe = pd.DataFrame([{'Group': group, 'sample': sample} for group, samples in dataset['groups'].items() for sample in samples]).set_index('sample')
-
-			# Get plot dataframe
-			plot_dataframe = normdata.loc[gene_symbol].rename('logCPM').to_frame().merge(group_dataframe, left_index=True, right_index=True)
-
-			# Add label
-			plot_dataframe['dataset'] = dataset['label']
-
-			# Order
-			order = ('LEAN', 'ALOall', 'OIOall') if 'LEAN' in group_dataframe['Group'].unique() else ('WT', 'LepDB', 'LepDBWR')
+	for geneset_label, gene_symbols in results['gene_symbols'].items():
+		display(Markdown('### '+geneset_label.title()))
+		for gene_symbol in list(gene_symbols):
 
 			# Plot
-			ax = sns.boxplot(x='Group', y='logCPM', data=plot_dataframe, ax=axes[i], order=order)
-			ax.set(xlabel='', ylabel='logCPM' if not i else '', title='logFC={logFC:.2f}, P-value={FDR:.2e}'.format(**results['signatures'][dataset['label']].rename(columns={'adj.P.Val': 'FDR'}).loc[gene_symbol]))
-			ax.set(xlabel='', ylabel='logCPM' if not i else '')
-		plt.suptitle(gene_symbol)
-		fig.subplots_adjust(top=0.82)
-		plt.show()
-		gene_symbol_upper = gene_symbol.upper()
-		display(Markdown('**{gene_symbol}**: [MGI](http://www.informatics.jax.org/searchtool/Search.do?query={gene_symbol}), [Harmonizome](http://amp.pharm.mssm.edu/Harmonizome/gene/{gene_symbol_upper})'.format(**locals())))
-		display(Markdown(''))
-			# g.set_axis_labels("", "logCPM").set_titles("{gene_symbol}".format(**locals()));
+			fig, axes = plt.subplots(ncols=2, figsize=(8.5, 4), sharey=True)
+			fig.tight_layout()
+			for i, dataset in enumerate(results['datasets']):
+
+				# Normalize
+				normdata = np.log10(dataset['data']['rawdata']/dataset['data']['rawdata'].sum()*10**6+1)
+
+				# Get group dataframe
+				group_dataframe = pd.DataFrame([{'Group': group, 'sample': sample} for group, samples in dataset['groups'].items() for sample in samples]).set_index('sample')
+
+				# Get plot dataframe
+				plot_dataframe = normdata.loc[gene_symbol].rename('logCPM').to_frame().merge(group_dataframe, left_index=True, right_index=True)
+
+				# Add label
+				plot_dataframe['dataset'] = dataset['label']
+
+				# Order
+				order = ('LEAN', 'ALOall', 'OIOall') if 'LEAN' in group_dataframe['Group'].unique() else ('WT', 'LepDB', 'LepDBWR')
+
+				# Plot
+				ax = sns.boxplot(x='Group', y='logCPM', data=plot_dataframe, ax=axes[i], order=order)
+				ax.set(xlabel='', ylabel='logCPM' if not i else '', title='logFC={logFC:.2f}, P-value={FDR:.2e}'.format(**results['signatures'][dataset['label']].rename(columns={'adj.P.Val': 'FDR'}).loc[gene_symbol]))
+				ax.set(xlabel='', ylabel='logCPM' if not i else '')
+			plt.suptitle(gene_symbol)
+			fig.subplots_adjust(top=0.82)
+			plt.show()
+			gene_symbol_upper = gene_symbol.upper()
+			display(Markdown('**{gene_symbol}**: [MGI](http://www.informatics.jax.org/searchtool/Search.do?query={gene_symbol}), [Harmonizome](http://amp.pharm.mssm.edu/Harmonizome/gene/{gene_symbol_upper})'.format(**locals())))
+			display(Markdown(''))
+				# g.set_axis_labels("", "logCPM").set_titles("{gene_symbol}".format(**locals()));
 
 

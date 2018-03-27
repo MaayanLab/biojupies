@@ -61,5 +61,5 @@ def run(genesets, libraries=['GO_Biological_Process_2017b', 'ENCODE_TF_ChIP-seq_
 #############################################
 
 def plot(enrichr_ids):
-	return display(Markdown('##### Enrichment Results:\n'+''.join([' * *{key}*: https://amp.pharm.mssm.edu/Enrichr/enrich?dataset={value}'.format(**locals()) for key, value in enrichr_ids.items()])))
+	return display(Markdown('##### Enrichment Results:'+''.join(['\n * *{key}*: https://amp.pharm.mssm.edu/Enrichr/enrich?dataset={value[shortId]}'.format(**locals()) for key, value in enrichr_ids.items()])))
 

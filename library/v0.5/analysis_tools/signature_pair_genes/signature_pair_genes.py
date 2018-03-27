@@ -27,33 +27,23 @@ from IPython.display import display, HTML
 ########## 1. Run
 #############################################
 
-def run(signature_A, signature_B, signatures, col='logFC'):
+def run(signature_A, signature_B, signatures, fdr_threshold=0.05, logfc_threshold=1.5):
 
-	# Merge signatures
-	dataframes = []
-	for signature in [signature_A, signature_B]:
-		signature_dataframe = signatures[signature]
-		signature_dataframe['signature'] = signature
-		dataframes.append(signature_dataframe)
-	merged_dataframe = pd.concat(dataframes)
+	# Get tables
+	merged_dataframe = signatures[signature_A].rename(columns={'adj.P.Val': 'FDR'}).merge(signatures[signature_B].rename(columns={'adj.P.Val': 'FDR'}), left_index=True, right_index=True, suffixes=[signature_A, signature_B])
 
-	# Add logP
-	merged_dataframe['logP'] = -np.log10(merged_dataframe['adj.P.Val'])
-
-	# Get significant genes in both signatures
-	significant_genes = (merged_dataframe.reset_index().pivot_table(index='gene_symbol', columns='signature', values='adj.P.Val') < 0.05).replace(False, np.nan).dropna().index
-	up_genes = (abs(merged_dataframe.reset_index().pivot_table(index='gene_symbol', columns='signature', values='logFC')) > 1.5).replace(False, np.nan).dropna().index
-	dn_genes = (abs(merged_dataframe.reset_index().pivot_table(index='gene_symbol', columns='signature', values='logFC')) < -1.5).replace(False, np.nan).dropna().index
-
-	# Get gene sets
-	top_genes = set(significant_genes).intersection(set(up_genes))
-	bottom_genes = set(significant_genes).intersection(set(dn_genes))
-	# top_genes = merged_dataframe.loc[significant_genes].reset_index().groupby('gene_symbol')['logP'].sum().rename('logP').sort_values(ascending=False).to_frame().index[:15]
-
-	# display(HTML(merged_dataframe.loc[top_genes].to_html()))
+	# Loop through directions
+	results = {}
+	for direction in ['upregulated', 'downregulated']:
+		subsets = {}
+		for signature in [signature_A, signature_B]:
+			subsets[signature] = (merged_dataframe['FDR'+signature] < fdr_threshold) & (merged_dataframe['logFC'+signature] > logfc_threshold if direction == 'upregulated' else merged_dataframe['logFC'+signature] < -logfc_threshold)
+		tab = pd.crosstab(subsets[signature_A], subsets[signature_B])
+		sets = [set(merged_dataframe[value].index) for value in subsets.values()]
+		results[direction] = sets[0].intersection(sets[1])
 
 	# Get results
-	return {'upregulated': top_genes, 'downregulated': bottom_genes}
+	return results
 
 #############################################
 ########## 2. Plot
