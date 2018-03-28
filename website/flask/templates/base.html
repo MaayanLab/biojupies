@@ -12,20 +12,20 @@
   {% block head %}{% endblock %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body>
+<body class="bg-grey">
 
-  <!-- Main Container -->
-  <div id="outer-container" class="container-fluid">
-    <div id="inner-container" class="container-fluid">
+  <!-- Outer Container -->
+  <div id="outer-container" class="container">
 
-      <!-- Navbar -->
-      <nav class="navbar navbar-expand-lg navbar-light px-4 rounded-bottom border-custom border-top-0">
-        <a class="navbar-brand mediun" href="{{ url_for('index') }}"><span class="medium">BioJupies</span></a>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light px-4 pt-3">
+      <div class="container px-4">
+        <a class="navbar-brand" href="{{ url_for('index') }}"><span class="medium-large">BioJupies</span></a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
-          <ul class="navbar-nav ml-auto">
+          <ul class="navbar-nav ml-3"> <!-- ml-auto -->
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle black" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Analyze
@@ -35,26 +35,58 @@
                 <a class="dropdown-item" href="{{ url_for('upload_table') }}">Upload data</a>
               </div>
             </li>
-<!--             <li class="nav-item">
+  <!--             <li class="nav-item">
               <a class="nav-link ml-3 black" href="{{ url_for('contribute') }}">Contribute</a>
             </li>
- -->            <li class="nav-item">
+  -->            <li class="nav-item">
               <a class="nav-link ml-3 black" href="{{ url_for('about') }}">About</a>
               <!-- <a class="nav-link ml-2 black" href="{{ url_for('about') }}"><i class="fa fa-question-circle"></i></a> -->
             </li>
           </ul>
         </div>
-      </nav>
-
-      <!-- Container -->
-      <div class="container-fluid">
-        {% block content %}{% endblock %}
       </div>
+    </nav>
 
+    <!-- Container -->
+    <div id="inner-container" class="container bg-white px-5">
+        {% block content %}{% endblock %}
     </div> <!-- #inner-container -->
-
   </div> <!-- #outer-container -->
 
+  <!-- Footer -->
+  <footer class="footer bg-grey">
+    <div class="container bg-white border-bottom-0 border-left-0 border-right-0 pt-3 px-4">
+      <div class="row px-3">
+        <div class="col-4">
+          <div class="very-small bold mb-1">Affiliations</div>
+          <div class="micro">
+            <div><a class="black" href="http://icahn.mssm.edu/research/labs/maayan-laboratory" target="_blank">The Ma'ayan Lab</a></div>
+            <div><a class="black" href="http://www.lincs-dcic.org/" target="_blank">BD2K-LINCS Data Coordination and Integration Center (DCIC)</a></div>
+            <div><a class="black" href="http://www.lincsproject.org/">NIH LINCS program</a></div>
+            <div><a class="black" href="http://bd2k.nih.gov/" target="_blank">NIH Big Data to Knowledge (BD2K)</a></div>
+            <div><a class="black" href="https://commonfund.nih.gov/idg/index" target="_blank">NIH Illuminating the Druggable Genome (IDG) Program</a></div>
+            <div><a class="black" href="http://icahn.mssm.edu/" target="_blank">Icahn School of Medicine at Mount Sinai</a></div>
+          </div>
+        </div>
+        <div class="col-4">
+            <div class="very-small bold mb-1">Share</div>
+            <div class="addthis_inline_share_toolbox"></div>
+            <div class="very-small bold mb-1 mt-2">License</div>
+            <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+              <img alt="Creative Commons License" style="border-width:0;" src="https://i.creativecommons.org/l/by/4.0/88x31.png">
+            </a>
+            <div class="micro mt-2">All contents on this site are covered by the <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</div>
+        </div>
+        <div class="col-4 px-5 my-auto">
+            <a href="http://icahn.mssm.edu/research/bioinformatics" target="_blank">
+              <img src="https://amp.pharm.mssm.edu/archs4/images/mountsinai.png" class="w-100 px-3">
+            </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
   <div id="scripts">
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -66,5 +98,8 @@
     {% block footer %}{% endblock %}
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
   </div>
+  <!-- Go to www.addthis.com/dashboard to customize your tools -->
+<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5abbf0fee97b42e1"></script>
+
 </body>
 </html>

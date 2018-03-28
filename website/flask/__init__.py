@@ -21,7 +21,7 @@ from flask import Flask, request, render_template, Response, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 ##### 2. Python modules #####
-import sys, os, json, requests, re, math, itertools
+import sys, os, json, requests, re, math, itertools, glob
 import pandas as pd
 import pymysql
 from sqlalchemy.orm import sessionmaker
@@ -83,7 +83,13 @@ def common_start(sa, sb):
 
 @app.route(entry_point)
 def index():
-	return render_template('index.html')
+
+	# Get Carousel Images
+	carousel_images = [os.path.basename(x).split('.')[0] for x in glob.glob('static/img/carousel/*.png')]#['notebook', 'pca', 'clustergrammer', 'volcano_plot', 'go_enrichment']
+	carousel_images.sort()
+	print(carousel_images)
+
+	return render_template('index.html', carousel_images=carousel_images)
 
 #############################################
 ########## 2. Analyze
@@ -98,7 +104,7 @@ def analyze():
 	# Get options
 	options = [
 		{'link': 'search_data', 'icon': 'search', 'title': 'Search', 'description': 'Search thousands of ready-to-analyze datasets'},
-		{'link': 'upload_table', 'icon': 'upload', 'title': 'Upload', 'description': 'Upload your own data gene expression table<br>for analysis'},
+		{'link': 'upload_table', 'icon': 'upload', 'title': 'Upload', 'description': 'Upload your own<br>gene expression data<br>for analysis'},
 		{'link': 'index', 'icon': 'question-circle', 'title': 'Tutorial', 'description': 'Learn to generate notebooks with a<br>sample dataset'}
 	]
 	

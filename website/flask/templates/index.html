@@ -1,18 +1,63 @@
 {% extends 'base.html' %}
 
-{% block head %}<title>Notebook Generator | Home</title>{% endblock %}
+{% block head %}
+	<title>BioJupies | Home</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/slick.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/slick-theme.css') }}">
+{% endblock %}
 
 {% block content %}
 
-<div class="container">
-	<div id="intro-row" class="row mt-5">
-		<div class="col-6 mt-1"><img id="notebook-img" src="{{ url_for('static', filename='img/notebook.png') }}" class="rounded mw-100 px-3 py-3 border-custom"></div>
-		<div id="text-col" class="col-6 text-center mt-4 px-4">
-			<div id="intro-title" class="bold large mt-5 mb-4">Generate Tailored<br>Bioinformatics Analysis Notebooks</div>
-			<div id="intro-description" class="light medium mb-5">BioJupies allows to easily generate customized, reusable analysis notebooks of large biological datasets through a simple user interface</div>
-			<div id="get-started" class="regular small"><a href="{{ url_for('analyze') }}" class="black px-4 py-3 border-black rounded nodecoration">Get Started</a></div>
+<div id="intro-row" class="row py-3">
+	<div class="col-6 mt-3">
+		<div id="carousel">
+			{% for carousel_image in carousel_images %}
+				<div style="background: url({{ url_for('static', filename='img/carousel/'+carousel_image+'.png') }})" class="mw-100 nodecoration px-3 py-3 mx-1"></div>
+			{% endfor %}
 		</div>
+	</div>
+	<div id="text-col" class="col-6 text-center mt-2">
+		<div id="intro-title" class="bold large mt-5 mb-4 px-3">Generate Tailored<br>Bioinformatics Analysis Notebooks</div>
+		<div id="intro-description" class="light medium mb-5 px-3">BioJupies allows for easy generation of customized, reusable analysis notebooks of biological data through a simple user interface</div>
+		<div id="get-started" class="regular small"><a href="{{ url_for('analyze') }}" class="black px-4 py-3 border-black rounded nodecoration">Get Started</a></div>
 	</div>
 </div>
 
+<div class="row text-center mt-5 mb-3 pb-3">
+	<div class="col-12 medium-large bold">
+		Generate your Jupyter Notebook
+		<hr width="75%" class="mt-3 mb-0">
+	</div>
+</div>
+
+<div class="row text-center pb-5">
+	<div class="col-4">
+		<div class="mb-4"><i class="fa fa-database fa-5x"></i></div>
+		<div class="small bold mb-2">1. Add Data</div>
+		<div class="very-small light px-5">Select from thousands of ready-to-analyze RNA-seq datasets, or upload your own data</div>
+	</div>
+	<div class="col-4">
+		<div class="mb-4"><i class="fa fa-cogs fa-5x"></i></div>
+		<div class="small bold mb-2">2. Add Tools</div>
+		<div class="very-small light px-5">Choose from over 15 data analysis and visualization tools, or contribute your own code</div>
+	</div>
+	<div class="col-4">
+		<div class="mb-4"><i class="fa fa-book fa-5x"></i></div>
+		<div class="small bold mb-2">3. Generate Notebook</div>
+		<div class="very-small light px-5">Access and share your analysis results through a permanent, public URL</div>
+	</div>
+</div>
+
+{% endblock %}
+
+{% block footer %}
+<script src="{{ url_for('static', filename='js/slick.min.js') }}"></script>
+<script type="text/javascript">
+  $('#carousel').slick({
+  	infinite: true,
+  	dots: true,
+  	autoplay: true,
+  	autoplaySpeed: 10000
+  });
+</script>
 {% endblock %}

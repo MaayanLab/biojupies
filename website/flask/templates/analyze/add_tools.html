@@ -5,46 +5,44 @@
 
 {% block content %}
 
-<div class="container">
-	<div class="row">
-		<div class="col-8 large mt-5 pl-4">Add Analysis Tools<sup><i class="fa fa-question-circle small ml-1 text-muted cursor-pointer" data-toggle="collapse" data-target="#info"></i></sup></div>
-		<div class="col-4 text-right mt-5">
-			<button class="btn btn-primary black border-black-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
-			<button class="btn btn-primary navigate black border-black-custom bg-white nodecoration" form="add-tools-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">Continue<i class="fa fa-angle-right ml-2"></i></button>
-		</div>
+<div class="row pt-4">
+	<div class="col-8 large pl-4">Add Analysis Tools<sup><i class="fa fa-question-circle small ml-1 text-muted cursor-pointer" data-toggle="collapse" data-target="#info"></i></sup></div>
+	<div class="col-4 text-right">
+		<button class="btn btn-primary black border-black-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
+		<button class="btn btn-primary navigate black border-black-custom bg-white nodecoration" form="add-tools-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">Continue<i class="fa fa-angle-right ml-2"></i></button>
 	</div>
-	<div class="row">
-		<hr width="100%" class="mt-3 mb-0">
-		<div class="col-12 px-3 mb-5">
-			<form id="add-tools-form">
+</div>
+<div class="row">
+	<hr width="100%" class="mt-3 mb-0">
+	<div class="col-12 px-3 mb-5">
+		<form id="add-tools-form">
 
-				<!-- Add introduction -->
-				<div id="info" class="text-justify collapse px-2">
-					<div class="mt-4 light">To continue generating your notebook, <b>add one or more computational tools</b> using the form below.</div>
-					<div class="mt-3 light">The selected tools will <b>analyze the selected dataset</b> and display the results by embedding <b>interactive widgets and visualizations</b> in the generated notebook. For more information on each tool, click on the <i class="fa fa-chevron-down text-muted border-grey rounded-circle px-1 py-1 mx-1"></i> icon on the right of each card.</div>
-					<div class="mt-3 light">Click on a tool to add or remove it from the notebook. Once you have selected the desired tools, click <b>Continue</b> to proceed.</div>
-					<div class="mt-3 light tiny text-muted"><b>Note:</b> Users are welcome to submit their own tools for integration as plug-ins. If you are interested in submitting your tool, please visit the <a href="{{ url_for('contribute') }}">Contribute</a> page. </div>
-					<div class="pt-4 pb-3">
-						<hr width="100%" class="my-0">
-					</div>
+			<!-- Add introduction -->
+			<div id="info" class="text-justify collapse px-2">
+				<div class="mt-4 light">To continue generating your notebook, <b>add one or more computational tools</b> using the form below.</div>
+				<div class="mt-3 light">The selected tools will <b>analyze the selected dataset</b> and display the results by embedding <b>interactive widgets and visualizations</b> in the generated notebook. For more information on each tool, click on the <i class="fa fa-chevron-down text-muted border-grey rounded-circle px-1 py-1 mx-1"></i> icon on the right of each card.</div>
+				<div class="mt-3 light">Click on a tool to add or remove it from the notebook. Once you have selected the desired tools, click <b>Continue</b> to proceed.</div>
+				<div class="mt-3 light tiny text-muted"><b>Note:</b> Users are welcome to submit computational tools for integration. If you are interested in submitting your tool, please visit the <a href="{{ url_for('contribute') }}">Contribute</a> page. </div>
+				<div class="pt-4 pb-3">
+					<hr width="100%" class="my-0">
 				</div>
-				
-				<!-- Add tool selection -->
-				{% for section in sections %}
-					<div class="medium {{ 'mt-3' if loop.index == 1 else 'mt-4' }} pt-2">{{ section.section_name }}</div>
-					<div class="very-small light mt-2">{{ section.section_description }}</div>
-					{% for tool in section['tools'] %}
-						{{ macros.tool_checkbox(tool) }}
-					{% endfor %}
+			</div>
+			
+			<!-- Add tool selection -->
+			{% for section in sections %}
+				<div class="medium {{ 'mt-3' if loop.index == 1 else 'mt-4' }} pt-2">{{ section.section_name }}</div>
+				<div class="very-small light mt-2">{{ section.section_description }}</div>
+				{% for tool in section['tools'] %}
+					{{ macros.tool_checkbox(tool) }}
 				{% endfor %}
+			{% endfor %}
 
-				<!-- Add selected dataset -->
-				{% for key, value in selected_data.items() %}
-					<input type="hidden" name="{{ key }}" value="{{ value }}">
-				{% endfor %}
+			<!-- Add selected dataset -->
+			{% for key, value in selected_data.items() %}
+				<input type="hidden" name="{{ key }}" value="{{ value }}">
+			{% endfor %}
 
-			</form>
-		</div>
+		</form>
 	</div>
 </div>
 
