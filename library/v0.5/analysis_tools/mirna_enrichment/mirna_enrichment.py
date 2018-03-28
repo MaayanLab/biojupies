@@ -121,6 +121,9 @@ def run(enrichr_results, signature_label):
 ########## 2. Plot
 #############################################
 
-def plot(mirna_enrichment_results):
+def plot(mirna_enrichment_results, plot_counter):
 
 	results_table(mirna_enrichment_results['tf_dataframe'].copy(), source_label='miRNA', target_label='target')
+
+	# Figure Legend
+	display(Markdown('** Table '+plot_counter('table')+' | **'.format(**locals())))

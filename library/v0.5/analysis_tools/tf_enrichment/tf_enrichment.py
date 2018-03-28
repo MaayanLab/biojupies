@@ -121,6 +121,9 @@ def run(enrichr_results, signature_label):
 ########## 2. Plot
 #############################################
 
-def plot(tf_analysis_results):
+def plot(tf_analysis_results, plot_counter):
 
 	results_table(tf_analysis_results['tf_dataframe'].copy(), source_label='Transcription Factor', target_label='target')
+
+	# Figure Legend
+	display(Markdown('** Table '+plot_counter('table')+' | **'.format(**locals())))

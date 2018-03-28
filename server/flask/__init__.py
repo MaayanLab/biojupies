@@ -87,7 +87,6 @@ def generate():
 				notebook_configuration = json.loads(openfile.read())
 
 			# Generate, Execute and Convert to HTML
-			print('generating notebook...')
 			notebook = generate_notebook(notebook_configuration, annotations)
 			notebook = execute_notebook(notebook, execute=True,to_html=True)
 		
@@ -101,8 +100,6 @@ def generate():
 
 			# Check if notebook exists
 			matching_notebook = pd.read_sql_query("SELECT * FROM notebooks WHERE notebook_configuration = '{}'".format(json.dumps(notebook_configuration)), engine).to_dict(orient='records')
-			print('matching_notebook')
-			print(matching_notebook)
 
 			# Return existing notebook
 			if len(matching_notebook):

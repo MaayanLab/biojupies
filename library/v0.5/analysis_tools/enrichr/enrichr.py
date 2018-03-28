@@ -64,6 +64,9 @@ def run(signature, geneset_size=500, libraries=['GO_Biological_Process_2017b', '
 ########## 2. Plot
 #############################################
 
-def plot(enrichr_results):
-	return display(Markdown('##### {signature_label} Signature:\n * Upregulated: https://amp.pharm.mssm.edu/Enrichr/enrich?dataset={upregulated[shortId]} \n * Downregulated: https://amp.pharm.mssm.edu/Enrichr/enrich?dataset={downregulated[shortId]}'.format(**enrichr_results)))
+def plot(enrichr_results, plot_counter):
+	display(Markdown('##### {signature_label} Signature:\n * Upregulated: https://amp.pharm.mssm.edu/Enrichr/enrich?dataset={upregulated[shortId]} \n * Downregulated: https://amp.pharm.mssm.edu/Enrichr/enrich?dataset={downregulated[shortId]}'.format(**enrichr_results)))
+
+	# Figure Legend
+	display(Markdown('** Table '+plot_counter('table')+' | **'.format(**locals())))
 

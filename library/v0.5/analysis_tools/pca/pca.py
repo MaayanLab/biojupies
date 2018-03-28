@@ -13,6 +13,7 @@ import plotly.graph_objs as go
 from plotly.offline import iplot
 import scipy.stats as ss
 import warnings
+from IPython.display import display, Markdown
 
 ##### 2. Other libraries #####
 
@@ -71,7 +72,7 @@ def run(dataset, normalization='logCPM', nr_genes=2500, z_score=True, color_by=N
 ########## 2. Plot
 #############################################
 
-def plot(pca_results):
+def plot(pca_results, plot_counter):
 
 	# Get results
 	pca = pca_results['pca']
@@ -137,4 +138,9 @@ def plot(pca_results):
 		scene=dict(xaxis=dict(title=var_explained[0]), yaxis=dict(title=var_explained[1]),zaxis=dict(title=var_explained[2])))
 	fig = go.Figure(data=data, layout=layout)
 
-	return iplot(fig)
+	# Plot
+	iplot(fig)
+
+	# Add Figure Legend
+	display(Markdown('** Figure '+plot_counter()+' | Principal Component Analysis **'.format(**locals())))
+

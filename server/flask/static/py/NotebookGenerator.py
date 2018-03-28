@@ -269,7 +269,7 @@ def generate_notebook(notebook_configuration, annotations):
 
 	# Add Tools
 	for tool_configuration in notebook_configuration['tools']:
-		notebook = add_tool(notebook=notebook, tool_configuration=tool_configuration, tool_metadata=annotations['tools'], signature_configuration=notebook_configuration['signature'], tools=notebook_configuration['tools'])
+		notebook = add_tool(notebook=notebook, tool_configuration=tool_configuration.copy(), tool_metadata=annotations['tools'], signature_configuration=notebook_configuration['signature'], tools=notebook_configuration['tools'])
 
 	# Add Methods
 	normalization_methods = set([tool_configuration['parameters']['normalization'] for tool_configuration in notebook_configuration['tools'] if 'normalization' in tool_configuration['parameters'].keys() and tool_configuration['parameters']['normalization'] != 'rawdata'])

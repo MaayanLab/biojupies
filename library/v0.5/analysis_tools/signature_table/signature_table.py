@@ -10,7 +10,7 @@
 ##### 1. General support #####
 import pandas as pd
 import qgrid
-from IPython.display import display, HTML
+from IPython.display import display, Markdown, HTML
 
 ##### 2. Other libraries #####
 
@@ -32,7 +32,7 @@ def run(signature, signature_label=''):
 ########## 2. Plot
 #############################################
 
-def plot(signature):
+def plot(signature, plot_counter):
 	# signature.index = ['<a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene={x}" target="_blank">{x}</a>'.format(**locals()) for x in signature.index] # human
 	signature.index = ['<a href="http://amp.pharm.mssm.edu/Harmonizome/gene/'+x.upper()+'" target="_blank">'+x+'</a>' for x in signature.index] # mouse
 	signature.index = [index.replace('target="_blank">', 'target="_blank"><b>*').replace('</a>', '</b></a>') if rowData['adj.P.Val'] < 0.05 else index for index, rowData in signature.iterrows()] # mouse
@@ -44,3 +44,6 @@ def plot(signature):
 	display(HTML('<style>.w-100{width: 100%;}</style>'))
 	# display(qgrid.show_grid(signature.rename(columns={'gene_symbol': 'Gene', 'P.Value': 'P-value', 'adj.P.Val': 'FDR'}).drop(['t', 'B'], axis=1), grid_options={'maxVisibleRows': 4}))
 	display(HTML(html_results))
+
+	# Figure Legend
+	display(Markdown('** Table '+plot_counter('table')+' | **'.format(**locals())))

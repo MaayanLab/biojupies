@@ -42,6 +42,12 @@ data = {}
 signatures = {}
 results = {}
 
+# Plot counter
+plot_number = {'figure': 0, 'table': 2}
+def plot_counter(plot_type='figure', plot_number=plot_number):
+	plot_number[plot_type] += 1
+	return str(plot_number[plot_type])
+
 # Load Dataset
 def load_dataset(source, **kwargs):
 	return eval('load.{}'.format(source))(**kwargs)
@@ -66,4 +72,4 @@ def analyze(tool, **kwargs):
 
 # Plot
 def plot(results, **kwargs):
-	return eval(results['tool']).plot(results['results'], **kwargs)
+	return eval(results['tool']).plot(results['results'], plot_counter=plot_counter, **kwargs)

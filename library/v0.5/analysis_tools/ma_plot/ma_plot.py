@@ -11,6 +11,7 @@
 import numpy as np
 import plotly.graph_objs as go
 from plotly.offline import iplot
+from IPython.display import display, Markdown
 
 ##### 2. Other libraries #####
 
@@ -70,7 +71,7 @@ def run(signature, signature_label='', pvalue_threshold=0.05, logfc_threshold=1.
 ########## 2. Plot
 #############################################
 
-def plot(volcano_plot_results):
+def plot(volcano_plot_results, plot_counter):
 	plot_2D_scatter(
 		x=volcano_plot_results['x'],
 		y=volcano_plot_results['y'],
@@ -82,3 +83,6 @@ def plot(volcano_plot_results):
 		title='<b>{volcano_plot_results[signature_label]} Signature | MA Plot</b>'.format(**locals()),
 		labels=volcano_plot_results['signature_label'].split(' vs ')
 	)
+
+	# Figure Legend
+	display(Markdown('** Figure '+plot_counter()+' | **'.format(**locals())))

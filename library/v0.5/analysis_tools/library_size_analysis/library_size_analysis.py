@@ -10,6 +10,7 @@
 ##### 1. General support #####
 import plotly.graph_objs as go
 from plotly.offline import iplot
+from IPython.display import display, Markdown
 
 ##### 2. Other libraries #####
 
@@ -32,7 +33,7 @@ def run(dataset, color_by=None):
 ########## 2. Plot
 #############################################
 
-def plot(library_size_results):
+def plot(library_size_results, plot_counter):
 	colors = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928']
 	color_by = library_size_results['color_by']
 	sample_metadata = library_size_results['sample_metadata']
@@ -52,4 +53,9 @@ def plot(library_size_results):
 	data = [go.Bar(x=library_size_results['library_sizes'], y=sample_metadata.index, orientation='h', text=text, hoverinfo='text', marker={'color': color})]
 	layout = go.Layout(margin={'l': 100, 't': 75, 'r': 0, 'b': 50, 'pad': 5}, title='<b>Library Size Analysis | Bar Plot</b><br><i>Million reads per sample</i>'+colored_string, xaxis={'title': 'Million Reads'})
 	fig = go.Figure(data=data, layout=layout)
-	return iplot(fig)
+
+	# Plot
+	iplot(fig)
+
+	# Figure Legend
+	display(Markdown('** Figure '+plot_counter()+' | **'.format(**locals())))

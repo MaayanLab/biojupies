@@ -61,7 +61,7 @@ def run(signature, nr_genes=500, signature_label=''):
 ########## 2. Plot
 #############################################
 
-def plot(l1000cds2_results, nr_drugs=7, height=300):
+def plot(l1000cds2_results, plot_counter, nr_drugs=7, height=300):
 	# Links
 	if l1000cds2_results['signature_label']:
 		display(Markdown('\n### {signature_label} signature:'.format(**l1000cds2_results)))
@@ -107,5 +107,8 @@ def plot(l1000cds2_results, nr_drugs=7, height=300):
 	fig['layout']['yaxis1'].update(showticklabels=False)
 	fig['layout']['yaxis2'].update(showticklabels=False)
 	fig['layout']['margin'].update(l=10, t=95, r=0, b=45, pad=5)
-	return iplot(fig)
+	iplot(fig)
+
+	# Figure Legend
+	display(Markdown('** Figure '+plot_counter()+' | **'.format(**locals())))
 

@@ -96,11 +96,11 @@ def plot_library_barchart(enrichr_results, gene_set_library, signature_label, nr
 	] if signature_label else []
 
 	# Get title
-	title = gene_set_library.replace('GO_', '').replace('_2017b', '').replace('_', ' ')
+	title = gene_set_library.replace('GO_', 'Gene Ontology | ').replace('_2017b', '').replace('_', ' ')
 
 	fig['layout'].update(height=height, title='<b>{}</b>'.format(title), hovermode='closest', annotations=annotations)
-	fig['layout']['xaxis1'].update(domain=[0,0.5])
-	fig['layout']['xaxis2'].update(domain=[0.5,1])
+	fig['layout']['xaxis1'].update(domain=[0,0.49], title='')
+	fig['layout']['xaxis2'].update(domain=[0.51,1], title='')
 	fig['layout']['yaxis1'].update(showticklabels=False)
 	fig['layout']['yaxis2'].update(showticklabels=False)
 	fig['layout']['margin'].update(l=0, t=65, r=0, b=30)
@@ -125,9 +125,12 @@ def run(enrichr_results, signature_label, libraries=['GO_Biological_Process_2017
 ########## 2. Plot
 #############################################
 
-def plot(pathway_analysis_results):
+def plot(pathway_analysis_results, plot_counter):
 	if pathway_analysis_results['signature_label']:
 		pass# display(Markdown('### {signature_label} signature:'.format(**pathway_analysis_results)))
 	enrichment_dataframe = pd.concat([pathway_analysis_results['upregulated'], pathway_analysis_results['downregulated']])
 	for gene_set_library in enrichment_dataframe['gene_set_library'].unique():
 		plot_library_barchart(pathway_analysis_results, gene_set_library, pathway_analysis_results['signature_label'], 10, 300)
+
+	# Figure Legend
+	display(Markdown('** Figure '+plot_counter()+' | **'.format(**locals())))

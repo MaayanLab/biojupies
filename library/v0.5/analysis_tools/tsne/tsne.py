@@ -13,6 +13,7 @@ import plotly.graph_objs as go
 from plotly.offline import iplot
 import scipy.stats as ss
 import warnings
+from IPython.display import display, Markdown
 
 ##### 2. Other libraries #####
 
@@ -68,7 +69,7 @@ def run(dataset, normalization='logCPM', nr_genes=2500, z_score=True, color_by=N
 ########## 2. Plot
 #############################################
 
-def plot(tsne_results):
+def plot(tsne_results, plot_counter):
 
 	# Get results
 	tsne = tsne_results['tsne']
@@ -128,9 +129,15 @@ def plot(tsne_results):
 			# Append trace to data list
 			data.append(trace)
 	
+	# Prepare figure
 	colored = '' if str(color_by) == 'None' else 'Colored by {}'.format(color_by)
 	layout = go.Layout(title='<b>t-SNE Analysis | Scatter Plot</b><br><i>{}</i>'.format(colored), hovermode='closest', margin=go.Margin(l=0,r=0,b=0,t=50), width=900,
 		scene=dict(xaxis=dict(title='t-SNE1'), yaxis=dict(title='t-SNE2'),zaxis=dict(title='t-SNE3')))
 	fig = go.Figure(data=data, layout=layout)
 
-	return iplot(fig)
+	# Plot
+	iplot(fig)
+
+	# Add Figure Legend
+	display(Markdown('** Figure '+plot_counter()+' | t-SNE **'.format(**locals())))
+

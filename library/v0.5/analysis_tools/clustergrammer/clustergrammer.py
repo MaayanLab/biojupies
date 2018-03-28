@@ -11,7 +11,7 @@
 import requests
 import os
 import numpy as np
-from IPython.display import display, IFrame
+from IPython.display import display, Markdown, IFrame
 import tempfile
 import scipy.stats as ss
 import pandas as pd
@@ -65,5 +65,10 @@ def run(dataset, normalization='logCPM', z_score=True, nr_genes=1500, metadata_c
 ########## 2. Plot
 #############################################
 
-def plot(clustergrammer_url):
-	return display(IFrame(clustergrammer_url, width="1000", height="1000"))
+def plot(clustergrammer_url, plot_counter):
+
+	# Embed
+	display(IFrame(clustergrammer_url, width="1000", height="1000"))
+
+	# Figure Legend
+	display(Markdown('** Figure '+plot_counter()+' | **'.format(**locals())))
