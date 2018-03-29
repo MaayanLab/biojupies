@@ -338,6 +338,25 @@ input:checked + .object-label span {
 
 
 /********************************/
+/***** Add Tools ******/
+/********************************/
+
+#imagemodal .modal-dialog {
+  max-width: 900px;
+}
+
+.pop {
+  overflow: hidden;
+}
+
+.pop img {
+  /*transition: all 0.3s;*/
+}
+.pop img:hover {
+  /*transform: scale(1.05);*/
+}
+
+/********************************/
 /***** Upload Data ******/
 /********************************/
 

@@ -206,7 +206,9 @@ def add_tools():
 	selected_data = {'uid': request.args.get('uid'), 'source': 'upload'} if 'uid' in request.args.keys() else {'gse': request.form.get('gse-gpl').split('-')[0], 'gpl': request.form.get('gse-gpl').split('-')[1], 'source': 'archs4'}
 
 	# Perform tool and section query from database
-	tools, sections = [pd.read_sql_table(x, engine).to_dict(orient='records') for x in ['tool', 'section']]
+	tools, sections = [pd.read_sql_table(x, engine) for x in ['tool', 'section']]
+	tools = tools[tools['display'] == True]
+	tools, sections = [x.to_dict(orient='records') for x in [tools, sections]]
 
 	# Combine tools and sections
 	for section in sections:
