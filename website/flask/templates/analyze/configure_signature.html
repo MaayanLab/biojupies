@@ -4,100 +4,101 @@
 {% block head %}<title>Notebook Generator | Signature</title>{% endblock %}
 
 {% block content %}
-
-<div class="row pt-4">
-	<div class="col-8 large pl-4">Generate Signature<sup><i class="fa fa-question-circle small ml-1 text-muted cursor-pointer" data-toggle="collapse" data-target="#info"></i></sup></div>
-	<div class="col-4 text-right">
-		<button class="btn btn-primary black border-black-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
-		<button class="btn btn-primary navigate black border-black-custom bg-white nodecoration" form="configure-signature-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">Continue<i class="fa fa-angle-right ml-2"></i></button>
+<div class="px-6">
+	<div class="row pt-4">
+		<div class="col-8 large pl-4">Generate Signature<sup><i class="fa fa-question-circle small ml-1 text-muted cursor-pointer" data-toggle="collapse" data-target="#info"></i></sup></div>
+		<div class="col-4 text-right">
+			<button class="btn btn-primary black border-black-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
+			<button class="btn btn-primary navigate black border-black-custom bg-white nodecoration" form="configure-signature-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">Continue<i class="fa fa-angle-right ml-2"></i></button>
+		</div>
 	</div>
-</div>
-<div class="row">
-	<hr width="100%">
-	<div class="col-12 px-4">
-		<form id="configure-signature-form">
+	<div class="row">
+		<hr width="100%">
+		<div class="col-12 px-4">
+			<form id="configure-signature-form">
 
-			<!-- Add introduction -->
-			<div id="info" class="text-justify collapse px-2">
-				<div class="mt-2 light"><b>Gene expression signatures</b> are alterations in the patterns of gene expression that occur as a result of cellular perturbations such as drug treatments, gene knock-downs or diseases.</div>
-				<div class="mt-3 light">They can be used to identify <b>differentially expressed genes</b> and <b>biological processes</b> (such as signaling, transcriptional or metabolic pathways) which are altered as a result of such perturbations.</div>
-				<div class="mt-3 light">One or more of the selected tools requires a signature as an input. To generate one, define <b>two groups of samples</b> to compare using the instructions below. Once you have selected the desired groups, click Continue to proceed. </div>
-				<div class="pt-4 pb-3">
-					<hr width="100%" class="my-0">
-				</div>
-			</div>
-
-			<!-- Name Groups -->
-			<div class="medium regular mt-2 mb-2">Set Sample Groups</div>
-			<div class="very-small light mb-3">First, <b>name the conditions</b> you wish to compare using the text boxes below.</div>
-			<div class="row">
-
-				<!-- Group Labels -->
-				<div class="col-6 pl-4">
-					<input type="text" name="group_a_label" class="group-label-input mr-2 rounded border-grey px-2 py-1 light very-small nodecoration" data-group="a" value="Control" maxlength="50">
-					<span class="ml-1 mr-1">vs</span>
-					<input type="text" name="group_b_label" class="group-label-input ml-2 rounded border-grey px-2 py-1 light very-small nodecoration" data-group="b" value="Perturbation" maxlength="50">
-					<input type="hidden" value="Select..." class="group-label-input" data-group="none" maxlength="50">
+				<!-- Add introduction -->
+				<div id="info" class="text-justify collapse px-2">
+					<div class="mt-2 light"><b>Gene expression signatures</b> are alterations in the patterns of gene expression that occur as a result of cellular perturbations such as drug treatments, gene knock-downs or diseases.</div>
+					<div class="mt-3 light">They can be used to identify <b>differentially expressed genes</b> and <b>biological processes</b> (such as signaling, transcriptional or metabolic pathways) which are altered as a result of such perturbations.</div>
+					<div class="mt-3 light">One or more of the selected tools requires a signature as an input. To generate one, define <b>two groups of samples</b> to compare using the instructions below. Once you have selected the desired groups, click Continue to proceed. </div>
+					<div class="pt-4 pb-3">
+						<hr width="100%" class="my-0">
+					</div>
 				</div>
 
-				<!-- Group Prediction -->
-				<div class="col-5 my-auto">
-					<div class="d-table">
-						<div class="d-table-cell">
-							<div class="onoffswitch">
-							    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="predict-groups" checked>
-							    <label class="onoffswitch-label" for="predict-groups"></label>
+				<!-- Name Groups -->
+				<div class="medium regular mt-2 mb-2">Set Sample Groups</div>
+				<div class="very-small light mb-3">First, <b>name the conditions</b> you wish to compare using the text boxes below.</div>
+				<div class="row">
+
+					<!-- Group Labels -->
+					<div class="col-6 pl-4">
+						<input type="text" name="group_a_label" class="group-label-input mr-2 rounded border-grey px-2 py-1 light very-small nodecoration" data-group="a" value="Control" maxlength="50">
+						<span class="ml-1 mr-1">vs</span>
+						<input type="text" name="group_b_label" class="group-label-input ml-2 rounded border-grey px-2 py-1 light very-small nodecoration" data-group="b" value="Perturbation" maxlength="50">
+						<input type="hidden" value="Select..." class="group-label-input" data-group="none" maxlength="50">
+					</div>
+
+					<!-- Group Prediction -->
+					<div class="col-5 my-auto">
+						<div class="d-table">
+							<div class="d-table-cell">
+								<div class="onoffswitch">
+								    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="predict-groups" checked>
+								    <label class="onoffswitch-label" for="predict-groups"></label>
+								</div>
 							</div>
-						</div>
-						<div class="d-table-cell pl-2 very-small regular">
-							Predict Groups <sup><i class="fa fa-question-circle" data-toggle="tooltip" title="Automatically predicts the samples belonging to each group based on the assigned names."></i></sup>
+							<div class="d-table-cell pl-2 very-small regular">
+								Predict Groups <sup><i class="fa fa-question-circle" data-toggle="tooltip" title="Automatically predicts the samples belonging to each group based on the assigned names."></i></sup>
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<div class="tiny text-secondary mt-4 mb-3"><b>Example</b>: <span class="font-italic">WT, DMSO, Vehicle</span> for the <b>Control</b> group; <span class="font-italic">Metastatic, p53 KO, Dasatinib-6h</span> for the <b>Perturbation</b> group.</div>
+				<div class="tiny text-secondary mt-4 mb-3"><b>Example</b>: <span class="font-italic">WT, DMSO, Vehicle</span> for the <b>Control</b> group; <span class="font-italic">Metastatic, p53 KO, Dasatinib-6h</span> for the <b>Perturbation</b> group.</div>
 
-			<!-- Sample Selection -->
-			<div class="very-small light mb-4 mt-3 text-justify">Second, <b>select the samples</b> you wish to assign to each group by using the dropdown menus below.</div>
+				<!-- Sample Selection -->
+				<div class="very-small light mb-4 mt-3 text-justify">Second, <b>select the samples</b> you wish to assign to each group by using the dropdown menus below.</div>
 
-			<!-- Sample Table -->
-			<table id="sample-table" class="stripe mb-5">
-				<thead>
-					<tr>
-						<th class="text-center very-small regular">Group</th>
-						{% for col in j.columns %}
-							<th class="text-center very-small regular">{{ col.title() }}</th>
-						{% endfor %}
-					</tr>
-				</thead>
-				<tbody>
-					{% for index, rowData in j.iterrows() %}
-						<tr class="sample-row very-small light text-center px-2 py-1" data-group="none">
-							<td>
-								<div class="dropdown group-dropdown">
-									<button class="btn btn-secondary dropdown-toggle black border-black nodecoration regular very-small pr-2" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-group="none">Select...</button>
-									<div class="dropdown-menu">
-										<span class="dropdown-item" data-dropdown-group="a"><div class="dropdown-square border-grey rounded cursor-pointer"></div><span class="bg-transparent cursor-pointer" data-group="a">Control</span></span>
-										<span class="dropdown-item" data-dropdown-group="b"><div class="dropdown-square border-grey rounded cursor-pointer"></div><span class="bg-transparent cursor-pointer" data-group="b">Perturbation</span></span>
-										<span class="dropdown-item" data-dropdown-group="none"><div class="dropdown-square border-grey rounded cursor-pointer"></div><span class="bg-transparent cursor-pointer" data-group="none">None</span></span>
-									</div>
-									<input type="hidden" name="{{rowData.get('accession') if rowData.get('accession') else rowData.get('sample') }}-group" value="none">
-								</div>
-							</td>
+				<!-- Sample Table -->
+				<table id="sample-table" class="stripe mb-5">
+					<thead>
+						<tr>
+							<th class="text-center very-small regular">Group</th>
 							{% for col in j.columns %}
-								<td>{{ rowData[col] }}</td>
+								<th class="text-center very-small regular">{{ col.title() }}</th>
 							{% endfor %}
 						</tr>
+					</thead>
+					<tbody>
+						{% for index, rowData in j.iterrows() %}
+							<tr class="sample-row very-small light text-center px-2 py-1" data-group="none">
+								<td>
+									<div class="dropdown group-dropdown">
+										<button class="btn btn-secondary dropdown-toggle black border-black nodecoration regular very-small pr-2" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-group="none">Select...</button>
+										<div class="dropdown-menu">
+											<span class="dropdown-item" data-dropdown-group="a"><div class="dropdown-square border-grey rounded cursor-pointer"></div><span class="bg-transparent cursor-pointer" data-group="a">Control</span></span>
+											<span class="dropdown-item" data-dropdown-group="b"><div class="dropdown-square border-grey rounded cursor-pointer"></div><span class="bg-transparent cursor-pointer" data-group="b">Perturbation</span></span>
+											<span class="dropdown-item" data-dropdown-group="none"><div class="dropdown-square border-grey rounded cursor-pointer"></div><span class="bg-transparent cursor-pointer" data-group="none">None</span></span>
+										</div>
+										<input type="hidden" name="{{rowData.get('accession') if rowData.get('accession') else rowData.get('sample') }}-group" value="none">
+									</div>
+								</td>
+								{% for col in j.columns %}
+									<td>{{ rowData[col] }}</td>
+								{% endfor %}
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+				{% for key, values in f.lists() %}
+					{% for value in values %}
+						<input type="hidden" name="{{ key }}" value="{{ value }}">
 					{% endfor %}
-				</tbody>
-			</table>
-			{% for key, values in f.lists() %}
-				{% for value in values %}
-					<input type="hidden" name="{{ key }}" value="{{ value }}">
 				{% endfor %}
-			{% endfor %}
-			<input type="hidden" name="requires_signature" value="False">
-		</form>
+				<input type="hidden" name="requires_signature" value="False">
+			</form>
+		</div>
 	</div>
 </div>
 

@@ -87,6 +87,7 @@ def index():
 	# Get Carousel Images
 	carousel_images = [os.path.basename(x).split('.')[0] for x in glob.glob('static/img/carousel/*.png')]#['notebook', 'pca', 'clustergrammer', 'volcano_plot', 'go_enrichment']
 	carousel_images.sort()
+	carousel_images.remove('template')
 	print(carousel_images)
 
 	return render_template('index.html', carousel_images=carousel_images)
@@ -287,7 +288,7 @@ def generate_notebook():
 	d = {key:value if len(value) > 1 else value[0] for key, value in request.form.lists()}
 
 	# Get parameters and groups
-	p = {x:{} for x in d['tool']}
+	p = {x:{} for x in d['tool']} if isinstance(d['tool'], list) else {d['tool']: {}}
 	g = {x:[] for x in ['a', 'b', 'none']}
 	for key, value in d.items():
 		if key not in ['sample-table_length']:
@@ -302,7 +303,7 @@ def generate_notebook():
 	# Generate notebook configuration
 	c = {
 		'notebook': {'title': d.get('notebook_title'), 'live': 'False', 'version': version},
-		'tools': [{'tool_string': x, 'parameters': p.get(x, {})} for x in d['tool']],
+		'tools': [{'tool_string': x, 'parameters': p.get(x, {})} for x in p.keys()],
 		'data': {'source': d['source'], 'parameters': {'gse': d['gse'], 'platform': d['gpl']} if 'gse' in d.keys() and 'gpl' in d.keys() else {'uid': d['uid']}},
 		'signature': {"method": "limma",
 			"A": {"name": d.get('group_a_label'), "samples": g['a']},
@@ -496,6 +497,27 @@ def upload_table_api():
 
 @app.route(entry_point+'/contribute')
 def contribute():
+	return render_template('contribute/contribute.html')
+
+#######################################################
+#######################################################
+########## 5. Docker
+#######################################################
+#######################################################
+##### Handles information about Docker containers.
+
+##################################################
+########## 3.1 Webpages
+##################################################
+
+#############################################
+########## 1. Docker Containers
+#############################################
+### Allows users to re-run notebooks using Docker containers.
+### Accessible from: navbar.
+
+@app.route(entry_point+'/docker')
+def docker():
 	return ''
 
 #######################################################

@@ -8,76 +8,78 @@
 
 {% block content %}
 
-<div class="row pt-4">
-	<div class="col-8 large pl-4">Results</div>
-	<div class="col-4 text-right">
-		<button class="btn btn-primary black border-black-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
-		<a class="btn btn-primary black border-black-custom bg-white nodecoration mr-2" href="{{url_for('analyze')}}">New Notebook</a>
+<div class="px-6">
+	<div class="row pt-4">
+		<div class="col-8 large pl-4">Results</div>
+		<div class="col-4 text-right">
+			<button class="btn btn-primary black border-black-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
+			<a class="btn btn-primary black border-black-custom bg-white nodecoration mr-2" href="{{url_for('analyze')}}">New Notebook</a>
+		</div>
 	</div>
-</div>
-<div class="row">
-	<hr width="100%" class="mt-3 mb-0">
-	<div class="col-12 text-center pb-5" style="overflow: hidden;">
+	<div class="row">
+		<hr width="100%" class="mt-3 mb-0">
+		<div class="col-12 text-center pb-5" style="overflow: hidden;">
 
-		<!-- Status and Loader -->
-		<div id="status" class="mt-5 medium">Generating your Jupyter Notebook...</div>
-		<div id="description" class="mt-4 very-small light">A link will be displayed below when the notebook is ready.</div>
-		<div class="loader">Loading...</div>
+			<!-- Status and Loader -->
+			<div id="status" class="mt-5 medium">Generating your Jupyter Notebook...</div>
+			<div id="description" class="mt-4 very-small light">A link will be displayed below when the notebook is ready.</div>
+			<div class="loader">Loading...</div>
 
-		<!-- Notebook Link -->
-		<div id="results" class="hidden">
-			<!-- <hr width="50%" class="mb-4"> -->
-			<div class="row mt-5">
-				<div class="col-3">
-					<a id="notebook-link" href="{{ url_for('view_notebook', notebook_uid='') }}" target="_blank" data-notebook_configuration="{{ notebook_configuration }}">
-						<div class="border-custom rounded px-3 py-3">
-							<img src="{{ url_for('static', filename='img/notebook.png') }}" class="w-100" id="notebook-preview-image">
-						</div>
-					</a>
-				</div>
-				<div class="col-9 text-left pl-4">
-					<div class="regular medium mt-2">{{ notebook_configuration_dict['notebook']['title'] }}</div>
-					<div class="text-muted regular very-small mt-3">
-						Dataset:<span class="light font-italic">
-							{% if notebook_configuration_dict['data']['parameters']['gse'] %}
-								<a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={{ notebook_configuration_dict['data']['parameters']['gse'] }}" target="_blank">{{ notebook_configuration_dict['data']['parameters']['gse'] }}</a>
-							{% else %}
-								User-submitted
-							{% endif %}
+			<!-- Notebook Link -->
+			<div id="results" class="hidden">
+				<!-- <hr width="50%" class="mb-4"> -->
+				<div class="row mt-5">
+					<div class="col-3">
+						<a id="notebook-link" href="{{ url_for('view_notebook', notebook_uid='') }}" target="_blank" data-notebook_configuration="{{ notebook_configuration }}">
+							<div class="border-custom rounded px-3 py-3">
+								<img src="{{ url_for('static', filename='img/notebook.png') }}" class="w-100" id="notebook-preview-image">
+							</div>
+						</a>
 					</div>
-					<div class="text-muted regular very-small mt-2">Analysis Tools:<span class="light font-italic"> {{ tool_string|safe }}</span></div>
-						{% if notebook_configuration_dict['signature']|length %}
-							<div class="text-muted regular very-small mt-2 light">Signature:
-								<span class="light font-italic">{{ notebook_configuration_dict['signature']['A']['name'] }}</span>
-								<span class="light">vs</span>
-								<span class="light font-italic">{{ notebook_configuration_dict['signature']['B']['name'] }}</span>
-							</div>
-						{% endif %}
-					<div class="row mt-4">
-						<div class="col-2 pr-0">
-							<span id="tweet" class="d-inline-block"></span>
+					<div class="col-9 text-left pl-4">
+						<div class="regular medium mt-2">{{ notebook_configuration_dict['notebook']['title'] }}</div>
+						<div class="text-muted regular very-small mt-3">
+							Dataset:<span class="light font-italic">
+								{% if notebook_configuration_dict['data']['parameters']['gse'] %}
+									<a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={{ notebook_configuration_dict['data']['parameters']['gse'] }}" target="_blank">{{ notebook_configuration_dict['data']['parameters']['gse'] }}</a>
+								{% else %}
+									User-submitted
+								{% endif %}
 						</div>
-						<div class="col-5 pl-0">
-							<div id="share-email" class="rounded micro bold d-inline-block">
-								<a href="" title="Share by Email" class="white nodecoration">
-									<i class="fa fa-envelope mr-2"></i>E-mail
-								</a>
+						<div class="text-muted regular very-small mt-2">Analysis Tools:<span class="light font-italic"> {{ tool_string|safe }}</span></div>
+							{% if notebook_configuration_dict['signature']|length %}
+								<div class="text-muted regular very-small mt-2 light">Signature:
+									<span class="light font-italic">{{ notebook_configuration_dict['signature']['A']['name'] }}</span>
+									<span class="light">vs</span>
+									<span class="light font-italic">{{ notebook_configuration_dict['signature']['B']['name'] }}</span>
+								</div>
+							{% endif %}
+						<div class="row mt-4">
+							<div class="col-2 pr-0">
+								<span id="tweet" class="d-inline-block"></span>
 							</div>
-							<div id="copy-link" class="rounded micro bold d-inline-block white" data-toggle="tooltip" title="Copied!" data-placement="bottom">
-								<i class="fa fa-copy mr-2"></i>Copy Link
+							<div class="col-5 pl-0">
+								<div id="share-email" class="rounded micro bold d-inline-block">
+									<a href="" title="Share by Email" class="white nodecoration">
+										<i class="fa fa-envelope mr-2"></i>E-mail
+									</a>
+								</div>
+								<div id="copy-link" class="rounded micro bold d-inline-block white" data-toggle="tooltip" title="Copied!" data-placement="bottom">
+									<i class="fa fa-copy mr-2"></i>Copy Link
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
 
-		<!-- Reanalyze User-submitted Dataset -->
-		<div id="reanalyze" class="mt-5 small light pt-3 hidden">
-			<div>Use the link below to re-analyze the uploaded dataset:</div>
-			<div class="mt-2 very-small"><a href="{{ url_for('add_tools', _external=True) }}?uid=" class="nodecoration" target="_blank">{{ url_for('add_tools', _external=True) }}?uid=</a></div>
+			<!-- Reanalyze User-submitted Dataset -->
+			<div id="reanalyze" class="mt-5 small light pt-3 hidden">
+				<div>Use the link below to re-analyze the uploaded dataset:</div>
+				<div class="mt-2 very-small"><a href="{{ url_for('add_tools', _external=True) }}?uid=" class="nodecoration" target="_blank">{{ url_for('add_tools', _external=True) }}?uid=</a></div>
+			</div>
+			<!-- <input id="notebook-configuration" type="hidden" value="{{ notebook_configuration }}"> -->
 		</div>
-		<!-- <input id="notebook-configuration" type="hidden" value="{{ notebook_configuration }}"> -->
 	</div>
 </div>
 

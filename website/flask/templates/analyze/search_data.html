@@ -8,101 +8,103 @@
 
 {% block content %}
 
-<div class="row pt-4">
-	<div class="col-8 large pl-4">Search Datasets<sup><i class="fa fa-question-circle small ml-1 text-muted cursor-pointer" data-toggle="collapse" data-target="#info"></i></sup></div>
-	<div class="col-4 text-right">
-		<a class="btn black border-black-custom bg-white nodecoration mr-2" href="{{ url_for('analyze') }}"><i class="fa fa-angle-left mr-2"></i>Back</a>
-		<button class="btn black border-black-custom bg-white nodecoration" form="dataset-form" type="submit" formaction="{{ url_for('add_tools') }}" formmethod="post">Continue<i class="fa fa-angle-right ml-2"></i></button>
-	</div>
-</div>
-<div class="row">
-	<hr width="100%" class="mt-3 mb-0">
-	<div class="col-12">
-		<form id="dataset-search-form">
-
-			<!-- Add introduction -->
-			<div id="info" class="text-justify collapse px-2">
-				<div class="mt-4 light">To start building your notebook, <b>select a dataset</b> you wish to analyze.</div>
-				<div class="mt-3 light">The form below allows to <b>search {{ "{:,d}".format(dataset_nr) }} datasets</b> containing a total of <b>{{ "{:,d}".format(sample_nr) }} RNA-seq samples</b> which have been published in the <a href="https://www.ncbi.nlm.nih.gov/geo/" target="_blank">Gene Expression Omnibus</a> and processed by <a href="https://amp.pharm.mssm.edu/archs4/" target="_blank">ARCHS4</a>. To toggle more information on each dataset, click on the <i class="fa fa-chevron-down text-muted border-grey rounded-circle px-1 py-1 mx-1"></i> icon on the right of its card.</div>
-				<div class="mt-3 light">Once you identify a dataset you wish to analyze, click on it to select it. Then click <b>Continue</b> to proceed.</div>
-				<div class="pt-4 pb-3">
-					<hr width="100%" class="my-0">
-				</div>
-			</div>
-
-			<!-- Search bar -->
-			<div class="border-custom rounded mt-4 mb-3">
-				<input type="text" name="q" value="{{ q }}" class="border-0 w-75 nodecoration px-3 py-2 small light">
-				<button type="submit" class="border-0 px-1 py-2 float-right bg-transparent cursor-pointer nodecoration"><i class="fa fa-search text-muted mr-2 medium mt-1"></i></button>
-			</div>
-
-			<!-- Search Options -->
-			<div class="text-secondary form-inline mt-3 mb-3">
-
-				<!-- Number of results -->
-				<label class="very-small ml-2 mr-4 pr-4 light font-italic mt-1 border-grey border-top-0 border-bottom-0 border-left-0">Displaying {{nr_results_displayed*page+1}}-{{nr_results_displayed*(page+1)}} of {{nr_results}} results</label>
-
-				<!-- Samples Filter -->
-				<label class="tiny regular mr-3" for="samples">Samples<sup><i class="fa fa-question-circle" data-toggle="tooltip" title="The number of RNA-seq samples contained in the dataset."></i></sup>:</label>
-				<div id="slider" class="ml-2"></div>
-				<input type="hidden" id="min-samples" name="min_samples" value="{{ min_samples }}">
-				<input type="hidden" id="max-samples" name="max_samples" value="{{ max_samples }}">
-
-				<!-- Organism Filter -->
-				<label class="tiny regular ml-4 mr-2" for="sortby">Organism<sup><i class="fa fa-question-circle" data-toggle="tooltip" title="The organism from which the RNA-seq samples were generated."></i></sup>:</label>
-				<select class="form-control nodecoration tiny" id="organism" name="organism">
-					<option value="all" {{'selected' if organism == 'all' else ''}}>All</option>
-					<option value="human" {{'selected' if organism == 'human' else ''}}>Human</option>
-					<option value="mouse" {{'selected' if organism == 'mouse' else ''}}>Mouse</option>
-				</select>
-
-				<!-- Sort By -->
-				<label class="tiny regular ml-4 mr-2" for="sortby">Sort by<sup><i class="fa fa-question-circle" data-toggle="tooltip" title="Sorting method used to display the search results."></i></sup>:</label>
-				<select class="form-control nodecoration tiny" id="sortby" name="sortby">
-					<option value="new" {{'selected' if sortby == 'new' else ''}}>Newest</option>
-					<option value="desc" {{'selected' if sortby == 'desc' else ''}}>Samples (descending)</option>
-					<option value="asc" {{'selected' if sortby == 'asc' else ''}}>Samples (ascending)</option>
-				</select>
-			</div>
-		</form>
-	</div>
-</div>
-
-<!-- Display Datasets -->
-{% if datasets %}
-<div class="row">
-	<div class="col-12 mx-1 mb-4">
-		<form id="dataset-form">
-			{% for dataset in datasets %}				
-				{{ macros.dataset_radio(dataset, loop.index) }}
-			{% endfor %}		
-		</form>
-	</div>
-</div>
-
-<!-- Page Navigation -->
-<div class="row">
-	<div class="col-12 px-4 mb-5">
-		<div class="light float-left d-table light">
-			<a href="{{ url_for('search_data', q=q, min_samples=min_samples, max_samples=max_samples, sortby=sortby, organism=organism, page=1) }}" class="nodecoration black border-grey px-2 py-1 border-right-0 d-table-cell rounded-left"> << </a>
-			<a href="{{ url_for('search_data', q=q, min_samples=min_samples, max_samples=max_samples, sortby=sortby, organism=organism, page=page-1 if page-1 > 1 else 1) }}" class="nodecoration black border-grey px-2 py-1 border-right-0 d-table-cell"> < </a>
-			{% for page_nr in pages %}
-				<a href="{{ url_for('search_data', q=q, min_samples=min_samples, max_samples=max_samples, sortby=sortby, organism=organism, page=page_nr) }}" class="nodecoration border-grey px-2 py-1 border-right-0 d-table-cell {{ 'bg-blue white regular' if page_nr == page else 'black' }}">{{page_nr}}</a>
-			{% endfor %}
-			<a href="{{ url_for('search_data', q=q, min_samples=min_samples, max_samples=max_samples, sortby=sortby, organism=organism, page=page+1 if page+1 < nr_pages else nr_pages) }}" class="nodecoration black border-grey px-2 py-1 border-right-0 d-table-cell"> > </a>
-			<a href="{{ url_for('search_data', q=q, min_samples=min_samples, max_samples=max_samples, sortby=sortby, organism=organism, page=nr_pages) }}" class="nodecoration black border-grey px-2 py-1 d-table-cell rounded-right"> >> </a>
+<div class="px-6">
+	<div class="row pt-4">
+		<div class="col-8 large pl-4">Search Datasets<sup><i class="fa fa-question-circle small ml-1 text-muted cursor-pointer" data-toggle="collapse" data-target="#info"></i></sup></div>
+		<div class="col-4 text-right">
+			<a class="btn black border-black-custom bg-white nodecoration mr-2" href="{{ url_for('analyze') }}"><i class="fa fa-angle-left mr-2"></i>Back</a>
+			<button class="btn black border-black-custom bg-white nodecoration" form="dataset-form" type="submit" formaction="{{ url_for('add_tools') }}" formmethod="post">Continue<i class="fa fa-angle-right ml-2"></i></button>
 		</div>
 	</div>
-</div>
+	<div class="row">
+		<hr width="100%" class="mt-3 mb-0">
+		<div class="col-12">
+			<form id="dataset-search-form">
 
-<!-- No Results -->
-{% else %}
-<div class="row">
-	<div class="col-12 text-center mt-5 pt-5 medium light">
-		<span>No search results.</span>
+				<!-- Add introduction -->
+				<div id="info" class="text-justify collapse px-2">
+					<div class="mt-4 light">To start building your notebook, <b>select a dataset</b> you wish to analyze.</div>
+					<div class="mt-3 light">The form below allows to <b>search {{ "{:,d}".format(dataset_nr) }} datasets</b> containing a total of <b>{{ "{:,d}".format(sample_nr) }} RNA-seq samples</b> which have been published in the <a href="https://www.ncbi.nlm.nih.gov/geo/" target="_blank">Gene Expression Omnibus</a> and processed by <a href="https://amp.pharm.mssm.edu/archs4/" target="_blank">ARCHS4</a>. To toggle more information on each dataset, click on the <i class="fa fa-chevron-down text-muted border-grey rounded-circle px-1 py-1 mx-1"></i> icon on the right of its card.</div>
+					<div class="mt-3 light">Once you identify a dataset you wish to analyze, click on it to select it. Then click <b>Continue</b> to proceed.</div>
+					<div class="pt-4 pb-3">
+						<hr width="100%" class="my-0">
+					</div>
+				</div>
+
+				<!-- Search bar -->
+				<div class="border-custom rounded mt-4 mb-3">
+					<input type="text" name="q" value="{{ q }}" class="border-0 w-75 nodecoration px-3 py-2 small light">
+					<button type="submit" class="border-0 px-1 py-2 float-right bg-transparent cursor-pointer nodecoration"><i class="fa fa-search text-muted mr-2 medium mt-1"></i></button>
+				</div>
+
+				<!-- Search Options -->
+				<div class="text-secondary form-inline mt-3 mb-3">
+
+					<!-- Number of results -->
+					<label class="very-small ml-2 mr-4 pr-4 light font-italic mt-1 border-grey border-top-0 border-bottom-0 border-left-0">Displaying {{nr_results_displayed*page+1}}-{{nr_results_displayed*(page+1)}} of {{nr_results}} results</label>
+
+					<!-- Samples Filter -->
+					<label class="tiny regular mr-3" for="samples">Samples<sup><i class="fa fa-question-circle" data-toggle="tooltip" title="The number of RNA-seq samples contained in the dataset."></i></sup>:</label>
+					<div id="slider" class="ml-2"></div>
+					<input type="hidden" id="min-samples" name="min_samples" value="{{ min_samples }}">
+					<input type="hidden" id="max-samples" name="max_samples" value="{{ max_samples }}">
+
+					<!-- Organism Filter -->
+					<label class="tiny regular ml-4 mr-2" for="sortby">Organism<sup><i class="fa fa-question-circle" data-toggle="tooltip" title="The organism from which the RNA-seq samples were generated."></i></sup>:</label>
+					<select class="form-control nodecoration tiny" id="organism" name="organism">
+						<option value="all" {{'selected' if organism == 'all' else ''}}>All</option>
+						<option value="human" {{'selected' if organism == 'human' else ''}}>Human</option>
+						<option value="mouse" {{'selected' if organism == 'mouse' else ''}}>Mouse</option>
+					</select>
+
+					<!-- Sort By -->
+					<label class="tiny regular ml-4 mr-2" for="sortby">Sort by<sup><i class="fa fa-question-circle" data-toggle="tooltip" title="Sorting method used to display the search results."></i></sup>:</label>
+					<select class="form-control nodecoration tiny" id="sortby" name="sortby">
+						<option value="new" {{'selected' if sortby == 'new' else ''}}>Newest</option>
+						<option value="desc" {{'selected' if sortby == 'desc' else ''}}>Samples (descending)</option>
+						<option value="asc" {{'selected' if sortby == 'asc' else ''}}>Samples (ascending)</option>
+					</select>
+				</div>
+			</form>
+		</div>
 	</div>
+
+	<!-- Display Datasets -->
+	{% if datasets %}
+	<div class="row">
+		<div class="col-12 mx-1 mb-4">
+			<form id="dataset-form">
+				{% for dataset in datasets %}				
+					{{ macros.dataset_radio(dataset, loop.index) }}
+				{% endfor %}		
+			</form>
+		</div>
+	</div>
+
+	<!-- Page Navigation -->
+	<div class="row">
+		<div class="col-12 px-4 mb-5">
+			<div class="light float-left d-table light">
+				<a href="{{ url_for('search_data', q=q, min_samples=min_samples, max_samples=max_samples, sortby=sortby, organism=organism, page=1) }}" class="nodecoration black border-grey px-2 py-1 border-right-0 d-table-cell rounded-left"> << </a>
+				<a href="{{ url_for('search_data', q=q, min_samples=min_samples, max_samples=max_samples, sortby=sortby, organism=organism, page=page-1 if page-1 > 1 else 1) }}" class="nodecoration black border-grey px-2 py-1 border-right-0 d-table-cell"> < </a>
+				{% for page_nr in pages %}
+					<a href="{{ url_for('search_data', q=q, min_samples=min_samples, max_samples=max_samples, sortby=sortby, organism=organism, page=page_nr) }}" class="nodecoration border-grey px-2 py-1 border-right-0 d-table-cell {{ 'bg-blue white regular' if page_nr == page else 'black' }}">{{page_nr}}</a>
+				{% endfor %}
+				<a href="{{ url_for('search_data', q=q, min_samples=min_samples, max_samples=max_samples, sortby=sortby, organism=organism, page=page+1 if page+1 < nr_pages else nr_pages) }}" class="nodecoration black border-grey px-2 py-1 border-right-0 d-table-cell"> > </a>
+				<a href="{{ url_for('search_data', q=q, min_samples=min_samples, max_samples=max_samples, sortby=sortby, organism=organism, page=nr_pages) }}" class="nodecoration black border-grey px-2 py-1 d-table-cell rounded-right"> >> </a>
+			</div>
+		</div>
+	</div>
+
+	<!-- No Results -->
+	{% else %}
+	<div class="row">
+		<div class="col-12 text-center mt-5 pt-5 medium light">
+			<span>No search results.</span>
+		</div>
+	</div>
+	{% endif %}
 </div>
-{% endif %}
 
 {% endblock %}
 

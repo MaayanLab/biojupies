@@ -68,7 +68,10 @@ body {
 .highlight { font-weight: 500; font-style: normal; color: #525dff; }
 .bg-blue { background-color: #007bff !important; }
 .bg-grey { background-color: rgba(238, 238, 238, 1) !important; }
+.bg-lightgrey { background-color: #f8f8f9 !important; }
+.bg-black { background-color: black !important; }
 .line-height-2 { line-height: 2; }
+.px-6 { padding-left: 4rem !important; padding-right: 4rem !important; }
 
 /* Hidden */
 .hidden { display: none; }
@@ -91,6 +94,10 @@ body {
 
 #carousel .slick-arrow::before {
   color: rgba(0,0,0,0.33);
+}
+
+#carousel .slick-prev, #carousel .slick-next {
+  z-index: 100;
 }
 
 /********************************/

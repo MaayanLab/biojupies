@@ -15,7 +15,7 @@
 <body class="bg-grey">
 
   <!-- Outer Container -->
-  <div id="outer-container" class="container">
+  <div id="outer-container" class="container px-0">
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light px-4 pt-3">
@@ -48,14 +48,14 @@
     </nav>
 
     <!-- Container -->
-    <div id="inner-container" class="container bg-white px-5">
+    <div id="inner-container" class="container bg-white px-0">
         {% block content %}{% endblock %}
     </div> <!-- #inner-container -->
   </div> <!-- #outer-container -->
 
   <!-- Footer -->
   <footer class="footer bg-grey">
-    <div class="container bg-white border-bottom-0 border-left-0 border-right-0 pt-3 px-4">
+    <div class="container bg-lightgrey border-bottom-0 border-left-0 border-right-0 pt-4 px-4 pb-3">
       <div class="row px-3">
         <div class="col-4">
           <div class="very-small bold mb-1">Affiliations</div>
