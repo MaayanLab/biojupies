@@ -26,7 +26,22 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
           <ul class="navbar-nav ml-3"> <!-- ml-auto -->
-            <li class="nav-item dropdown">
+
+            <!-- Search Data -->
+            <li class="nav-item ml-3 my-auto">
+              <form id="navbar-search-form" action="{{ url_for('search_data') }}" method="get" class="border-grey nodecoration micro light rounded pl-3 py-1">
+                  <input type="text" name="q" class="nodecoration border-left-0 border-right-0 border-top-0 border-bottom-0 light very-small" placeholder="Search Data...">
+                  <button class="btn text-muted bg-transparent float-right" type="submit"><i class="fa fa-search small text-muted nodecoration"></i></button>
+              </form>
+            </li>
+
+            <!-- Chrome Extension -->
+            <li class="nav-item ml-3">
+              <a class="nav-link ml-3 black" href="https://chrome.google.com/webstore/detail/biojupies-generator/picalhhlpcjhonibabfigihelpmpadel" target="_blank">Chrome Extension</a>
+            </li>
+
+            <!-- Analyze -->
+            <li class="nav-item dropdown ml-3">
               <a class="nav-link dropdown-toggle black" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Analyze
               </a>
@@ -35,13 +50,22 @@
                 <a class="dropdown-item" href="{{ url_for('upload_table') }}">Upload data</a>
               </div>
             </li>
-  <!--             <li class="nav-item">
-              <a class="nav-link ml-3 black" href="{{ url_for('contribute') }}">Contribute</a>
+
+            <!-- Help -->
+            <li class="nav-item">
+              <a class="nav-link ml-3 black" href="{{ url_for('about') }}">Help</a>
             </li>
-  -->            <li class="nav-item">
-              <a class="nav-link ml-3 black" href="{{ url_for('about') }}">About</a>
-              <!-- <a class="nav-link ml-2 black" href="{{ url_for('about') }}"><i class="fa fa-question-circle"></i></a> -->
+
+            <!-- GitHub -->
+            <li class="nav-item">
+              <a class="nav-link ml-3 black" href="https://github.com/MaayanLab/notebook-generator" target="_blank"><i class="fab fa-github medium text-muted"></i></a>
             </li>
+
+            <!-- Twitter -->
+<!--             <li class="nav-item">
+              <a class="nav-link ml-3 black" href="https://github.com/MaayanLab/notebook-generator"><i class="fab fa-twitter medium text-muted"></i></a>
+            </li>
+ -->
           </ul>
         </div>
       </div>

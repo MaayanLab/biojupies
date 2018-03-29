@@ -127,7 +127,7 @@
 			<label class="object-label mt-3 mb-0 px-3 py-3 w-100 border-custom rounded cursor-pointer" for="{{tool.tool_string}}">
 				<div class="row">
 					<div class="col-1">
-						<img src="{{ url_for('static', filename='img/tool/{}.png'.format(tool['tool_string'])) }}" class="w-100 px-1 py-1 rounded bg-white border-grey">
+						<img src="{{ url_for('static', filename='img/tool/{tool_string}/{tool_string}.png'.format(**tool)) }}" class="w-100 px-1 py-1 rounded bg-white border-grey">
 					</div>
 					<div class="col-11">
 						<div class="float-right rounded-circle bg-white border-grey px-2 py-1 cursor-pointer mt-2 info-toggle"><i class="fa fa-chevron-down text-muted"></i></div>

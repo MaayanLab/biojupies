@@ -100,6 +100,15 @@ body {
   z-index: 100;
 }
 
+#navbar-search-form {
+  width: 340px;
+}
+
+#navbar-search-form button {
+  margin-top: -5px;
+  margin-right: -3px;
+}
+
 /********************************/
 /***** SHARED *******************/
 /********************************/
