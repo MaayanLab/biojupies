@@ -134,3 +134,14 @@ CREATE TABLE alignment_job (
 	`user_sample_fk` INT,
 	FOREIGN KEY (user_sample_fk) REFERENCES user_sample(id)
 );
+
+CREATE TABLE contribution (
+	`id` INT AUTO_INCREMENT PRIMARY KEY,
+	`title` VARCHAR(30),
+	`description` TEXT,
+	`email` VARCHAR(75),
+	`file` TEXT,
+	`filename` VARCHAR(100),
+	`extension` VARCHAR(100),
+	`date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

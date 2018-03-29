@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% import 'macros.html' as macros %}
+
+{% block head %}
+	<title>BioJupies | Rerun</title>
+	<style type="text/css">html{height: 100%;}body{height: 100%; overflow: hidden;}#outer-container{height: 100%;}</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="px-6">
+	<div class="row">
+		<div class="col-8 large mt-4 pl-4">Reuse Notebooks</sup></div>
+	</div>
+	<div class="row">
+		<hr width="100%" class="mt-3 mb-0">
+		<div class="col-12 px-4 pt-4 very-small">
+			<div>1. Download Docker</div>
+			<div>2. Open the Docker Console</div>
+			<div>3. <code>docker run -it maayanlab/biojupies-notebook -v ~/jupyter:. -e UID=qzmeZ0p4s </code></div>
+			<div>4. Visit localhost:8888 on your browser </div>
+			<div>5. Edit and save notebook </div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
+{% block footer %}
+
+{% endblock %}

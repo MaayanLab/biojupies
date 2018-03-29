@@ -41,7 +41,7 @@
 				<div class="text-secondary form-inline mt-3 mb-3">
 
 					<!-- Number of results -->
-					<label class="very-small ml-2 mr-4 pr-4 light font-italic mt-1 border-grey border-top-0 border-bottom-0 border-left-0">Displaying {{nr_results_displayed*page+1}}-{{nr_results_displayed*(page+1)}} of {{nr_results}} results</label>
+					<label class="very-small ml-2 mr-4 pr-4 light font-italic mt-1 border-grey border-top-0 border-bottom-0 border-left-0">Displaying {{nr_results_displayed*(page-1)+1}}-{{nr_results_displayed*(page+1)}} of {{nr_results}} results</label>
 
 					<!-- Samples Filter -->
 					<label class="tiny regular mr-3" for="samples">Samples<sup><i class="fa fa-question-circle" data-toggle="tooltip" title="The number of RNA-seq samples contained in the dataset."></i></sup>:</label>

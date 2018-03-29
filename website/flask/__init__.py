@@ -300,14 +300,24 @@ def generate_notebook():
 					if value != 'none':
 						g[value[0]].append(key.rpartition('-')[0])
 
+	# Generate signature
+	signature_tools = pd.read_sql_query('SELECT tool_string FROM tool WHERE requires_signature = 1', engine)['tool_string'].values
+	requires_signature = any([x in signature_tools for x in p.keys()])
+	if requires_signature:
+		signature = {
+			"method": "limma",
+			"A": {"name": d.get('group_a_label', ''), "samples": g['a']},
+			"B": {"name": d.get('group_b_label', ''), "samples": g['b']}
+		}
+	else:
+		signature = {}
+
 	# Generate notebook configuration
 	c = {
 		'notebook': {'title': d.get('notebook_title'), 'live': 'False', 'version': version},
 		'tools': [{'tool_string': x, 'parameters': p.get(x, {})} for x in p.keys()],
 		'data': {'source': d['source'], 'parameters': {'gse': d['gse'], 'platform': d['gpl']} if 'gse' in d.keys() and 'gpl' in d.keys() else {'uid': d['uid']}},
-		'signature': {"method": "limma",
-			"A": {"name": d.get('group_a_label'), "samples": g['a']},
-			"B": {"name": d.get('group_b_label'), "samples": g['b']}}
+		'signature': signature
 	}
 
 	# Get tools
@@ -492,12 +502,39 @@ def upload_table_api():
 ########## 1. Contribute Plugin Interface
 #############################################
 ### Allows users to upload a plugin for evaluation.
-### Accessible from: navbar.
-### APIs called: upload_dataframe_api(), upload_table_api().
+### Accessible from: index().
+### APIs called: contribute_api()
 
-@app.route(entry_point+'/contribute')
+@app.route(entry_point+'/contribute', methods=['GET', 'POST'])
 def contribute():
-	return render_template('contribute/contribute.html')
+	# Get Contribute Data
+	contribute_data = request.form.to_dict()
+	if contribute_data:
+
+		# Upload
+		engine.execute(tables['contribution'].insert(), contribute_data)
+
+		return render_template('contribute/contribute_results.html')
+	else:
+		return render_template('contribute/contribute.html')
+
+##################################################
+########## 3.2 APIs
+##################################################
+
+#############################################
+########## 1. Contribute API
+#############################################
+### Uploads a contributed file to the cloud and the details to the database.
+### Input: Script file uploaded by the user (supports .py, .R) and annotations by a form.
+### Output: The submission UID.
+### Called by: contribute().
+
+@app.route(entry_point+'/api/contribute', methods=['GET', 'POST'])
+def contribute_api():
+	# Read Uploaded File
+	file = request.files.get('file')
+	return json.dumps({'file': file.read().decode('utf-8'), 'filename': file.filename, 'extension': file.filename.split('.')[-1]})
 
 #######################################################
 #######################################################
@@ -518,7 +555,7 @@ def contribute():
 
 @app.route(entry_point+'/docker')
 def docker():
-	return ''
+	return render_template('docker.html')
 
 #######################################################
 #######################################################
