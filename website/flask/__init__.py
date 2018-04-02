@@ -37,7 +37,7 @@ import TableManager as TM
 #############################################
 ##### 1. Flask App #####
 # General
-entry_point = '/notebook-generator-website'
+entry_point = '/biojupies'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'static'))
 
 # Database
@@ -106,7 +106,7 @@ def analyze():
 	options = [
 		{'link': 'search_data', 'icon': 'search', 'title': 'Search', 'description': 'Search thousands of ready-to-analyze datasets'},
 		{'link': 'upload_table', 'icon': 'upload', 'title': 'Upload', 'description': 'Upload your own<br>gene expression data<br>for analysis'},
-		{'link': 'index', 'icon': 'question-circle', 'title': 'Tutorial', 'description': 'Learn to generate notebooks with a<br>sample dataset'}
+		{'link': 'tutorial', 'icon': 'question-circle', 'title': 'Tutorial', 'description': 'Learn to generate notebooks with a<br>sample dataset'}
 	]
 	
 	# Return result
@@ -218,7 +218,7 @@ def add_tools():
 	nr_tools = len(tools)
 	
 	# Return result
-	return render_template('analyze/add_tools.html', selected_data=selected_data, sections=sections, nr_tools=nr_tools)
+	return render_template('analyze/add_tools.html', selected_data=selected_data, sections=sections, nr_tools=nr_tools, version=version)
 
 #############################################
 ########## 5. Configure Analysis
@@ -336,7 +336,7 @@ def generate_notebook():
 ### Links to: none.
 ### Accessible from: generate_notebook().
 
-@app.route(entry_point+'/notebooks/<notebook_uid>')
+@app.route(entry_point+'/notebook/<notebook_uid>')
 def view_notebook(notebook_uid):
 
 	# Get notebook data
@@ -489,6 +489,33 @@ def upload_table_api():
 	# Return result
 	return dataset_uid_json
 
+#############################################
+########## 3. Example Table API
+#############################################
+### Reads and example dataframe from the static source and returns it as a JSON
+### Input: a JSON-formatted string containing one key: filename. It specifies the name of the file to return.
+### Output: a JSON-formatted string generated using pd.to_dict(orient='split')
+### Called by: upload_table().
+
+@app.route(entry_point+'/api/upload/example', methods=['POST'])
+def example_table_api():
+
+	# Get file
+	filename = request.json.get('filename')
+
+	# Read file
+	dataframe = pd.read_table('static/data/'+filename)
+
+	# Set index
+	dataframe.set_index(dataframe.columns[0], inplace=True)
+	dataframe.index.name = ''
+
+	# Convert to JSON
+	dataframe_json = json.dumps(dataframe.to_dict(orient='split'))
+	
+	# Return result
+	return dataframe_json
+
 #######################################################
 #######################################################
 ########## 4. Contribution
@@ -559,9 +586,45 @@ def contribute_api():
 def docker():
 	return render_template('docker.html')
 
+##################################################
+########## 3.2 APIs
+##################################################
+
+#############################################
+########## 1. Notebook API
+#############################################
+### Return a JSON file of notebook data based on a notebook UID.
+### Input: A notebook UID.
+### Output: A JSON containing notebook data.
+### Called by: Docker container.
+
+@app.route(entry_point+'/api/notebook/<notebook_uid>', methods=['GET'])
+def notebook_api(notebook_uid):
+
+	# Open session
+	session = Session()
+	
+	# Initialize database query
+	db_query_results = session.query(tables['notebooks']).filter(tables['notebooks'].columns['notebook_uid'] == notebook_uid).all()
+
+	# Close session
+	session.close()
+
+	# If results
+	if len(db_query_results):
+		notebook_data = db_query_results[0]._asdict()
+		notebook_data['date'] = notebook_data['date'].strftime('%b %d, %Y')
+		del notebook_data['notebook_configuration']
+		del notebook_data['id']
+	else:
+		notebook_data = {}
+
+	# Return
+	return json.dumps(notebook_data)
+
 #######################################################
 #######################################################
-########## 5. About
+########## 5. Help
 #######################################################
 #######################################################
 ##### Help center.
@@ -576,9 +639,30 @@ def docker():
 ### User manual.
 ### Accessible from: navbar.
 
-@app.route(entry_point+'/about')
-def about():
-	return ''
+@app.route(entry_point+'/help')
+def help():
+	return render_template('help.html')
+
+#######################################################
+#######################################################
+########## 5. Tutorial
+#######################################################
+#######################################################
+##### BioJupies tutorial
+
+##################################################
+########## 3.1 Webpages
+##################################################
+
+#############################################
+########## 1. Tutorial Homepage
+#############################################
+### Tutorial Homepage.
+### Accessible from: analyze().
+
+@app.route(entry_point+'/tutorial')
+def tutorial():
+	return render_template('tutorial/tutorial.html')
 
 #######################################################
 #######################################################

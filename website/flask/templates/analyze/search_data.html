@@ -1,11 +1,15 @@
 {% extends 'base.html' %}
 {% import 'macros.html' as macros %}
 
+<!-- Title -->
+{% block title %} BioJupies | Search Datasets {% endblock %}
+
+<!-- Head -->
 {% block head %}
 	<link href="{{ url_for('static', filename='css/nouislider.min.css') }}" rel="stylesheet">
-	<title>Notebook Generator | Datasets</title>
 {% endblock %}
 
+<!-- Content -->
 {% block content %}
 
 <div class="px-6">

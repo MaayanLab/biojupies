@@ -1,9 +1,12 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html>
 <head>
-  <!-- <title>Notebook Generator</title> -->
+  <!-- Title -->
+  <title>{% block title %}{% endblock %}</title>
+
+  <!-- CSS -->
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-  <!-- <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script> -->
   <link href="https://use.fontawesome.com/releases/v5.0.8/css/all.css" rel="stylesheet">
   <link rel="stylesheet" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
   <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400" rel="stylesheet">
@@ -11,7 +14,10 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/basic.min.css') }}">
   {% block head %}{% endblock %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
 </head>
+
+<!-- Body -->
 <body class="bg-grey">
 
   <!-- Outer Container -->
@@ -20,17 +26,26 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light px-4 pt-3">
       <div class="container px-4">
-        <a class="navbar-brand" href="{{ url_for('index') }}"><span class="medium-large">BioJupies</span></a>
+
+        <!-- Logo -->
+        <a class="navbar-brand my-auto" href="{{ url_for('index') }}">
+          <img src="{{ url_for('static', filename='img/icon.png') }}" class="d-inline-block mr-1">
+          <div class="medium-large d-inline-block regular" style=""><span class="blue">Bio</span>Jupies</div>
+        </a>
+
+        <!-- Toggles -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
+
+        <!-- Links -->
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
           <ul class="navbar-nav ml-3"> <!-- ml-auto -->
 
             <!-- Search Data -->
             <li class="nav-item ml-3 my-auto">
               <form id="navbar-search-form" action="{{ url_for('search_data') }}" method="get" class="border-grey nodecoration micro light rounded pl-3 py-1">
-                  <input type="text" name="q" class="nodecoration border-left-0 border-right-0 border-top-0 border-bottom-0 light very-small" placeholder="Search Data...">
+                  <input type="text" name="q" class="nodecoration border-left-0 border-right-0 border-top-0 border-bottom-0 light very-small" placeholder="Search GEO datasets (e.g. cancer, p53)">
                   <button class="btn text-muted bg-transparent float-right" type="submit"><i class="fa fa-search small text-muted nodecoration"></i></button>
               </form>
             </li>
@@ -40,20 +55,9 @@
               <a class="nav-link ml-3 black" href="https://chrome.google.com/webstore/detail/biojupies-generator/picalhhlpcjhonibabfigihelpmpadel" target="_blank">Chrome Extension</a>
             </li>
 
-            <!-- Analyze -->
-            <li class="nav-item dropdown ml-3">
-              <a class="nav-link dropdown-toggle black" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Analyze
-              </a>
-              <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                <a class="dropdown-item" href="{{ url_for('search_data') }}">Search data</a>
-                <a class="dropdown-item" href="{{ url_for('upload_table') }}">Upload data</a>
-              </div>
-            </li>
-
             <!-- Help -->
             <li class="nav-item">
-              <a class="nav-link ml-3 black" href="{{ url_for('about') }}">Help</a>
+              <a class="nav-link ml-3 black" href="{{ url_for('help') }}">Help</a>
             </li>
 
             <!-- GitHub -->
@@ -62,10 +66,9 @@
             </li>
 
             <!-- Twitter -->
-<!--             <li class="nav-item">
-              <a class="nav-link ml-3 black" href="https://github.com/MaayanLab/notebook-generator"><i class="fab fa-twitter medium text-muted"></i></a>
+            <li class="nav-item">
+              <a class="nav-link ml-3 black" href="#" onclick="window.open('https://twitter.com/intent/tweet?ref_src=twsrc%5Etfw&text=BioJupies - Generate Tailored Bioinformatics Analysis Notebooks via User Interface Using&tw_p=tweetbutton&url=http://amp.pharm.mssm.edu/biojupies&hashtags=biojupies,jupyter,bioinformatics&via=MaayanLab', 'newwindow', 'width=600, height=250'); return false;" target="_blank"><i class="fab fa-twitter medium text-muted"></i></a>
             </li>
- -->
           </ul>
         </div>
       </div>
@@ -74,56 +77,69 @@
     <!-- Container -->
     <div id="inner-container" class="container bg-white px-0">
         {% block content %}{% endblock %}
-    </div> <!-- #inner-container -->
-  </div> <!-- #outer-container -->
+    </div>
 
-  <!-- Footer -->
-  <footer class="footer bg-grey">
-    <div class="container bg-lightgrey border-bottom-0 border-left-0 border-right-0 pt-4 px-4 pb-3">
-      <div class="row px-3">
-        <div class="col-4">
-          <div class="very-small bold mb-1">Affiliations</div>
-          <div class="micro">
-            <div><a class="black" href="http://icahn.mssm.edu/research/labs/maayan-laboratory" target="_blank">The Ma'ayan Lab</a></div>
-            <div><a class="black" href="http://www.lincs-dcic.org/" target="_blank">BD2K-LINCS Data Coordination and Integration Center (DCIC)</a></div>
-            <div><a class="black" href="http://www.lincsproject.org/">NIH LINCS program</a></div>
-            <div><a class="black" href="http://bd2k.nih.gov/" target="_blank">NIH Big Data to Knowledge (BD2K)</a></div>
-            <div><a class="black" href="https://commonfund.nih.gov/idg/index" target="_blank">NIH Illuminating the Druggable Genome (IDG) Program</a></div>
-            <div><a class="black" href="http://icahn.mssm.edu/" target="_blank">Icahn School of Medicine at Mount Sinai</a></div>
+    <!-- Footer -->
+    <footer class="footer bg-grey">
+      <div class="container bg-lightgrey border-bottom-0 border-left-0 border-right-0 pt-4 px-4 pb-3 ml-0">
+        <div class="row px-3">
+
+          <!-- Affiliations Column -->
+          <div class="col-4">
+            <div class="very-small bold mb-1">Affiliations</div>
+            <div class="micro">
+              <div><a class="black" href="http://icahn.mssm.edu/research/labs/maayan-laboratory" target="_blank">The Ma'ayan Lab</a></div>
+              <div><a class="black" href="http://www.lincs-dcic.org/" target="_blank">BD2K-LINCS Data Coordination and Integration Center (DCIC)</a></div>
+              <div><a class="black" href="http://www.lincsproject.org/">NIH LINCS program</a></div>
+              <div><a class="black" href="https://commonfund.nih.gov/commons" target="_blank">NIH Big Data to Knowledge (BD2K)</a></div>
+              <div><a class="black" href="https://druggablegenome.net/KMC_ISMMS" target="_blank">NIH Illuminating the Druggable Genome (IDG) Program</a></div>
+              <div><a class="black" href="http://icahn.mssm.edu/" target="_blank">Icahn School of Medicine at Mount Sinai</a></div>
+              <div><a class="black" href="http://icahn.mssm.edu/research/bioinformatics" target="_blank">Mount Sinai Center for Bioinformatics</a></div>
+            </div>
+          </div>
+
+          <!-- Share Column -->
+          <div class="col-4">
+              <div class="very-small bold mb-1">Share</div>
+              <div class="addthis_inline_share_toolbox"></div>
+              <div class="very-small bold mb-1 mt-2">License</div>
+              <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+                <img alt="Creative Commons License" style="border-width:0;" src="https://i.creativecommons.org/l/by/4.0/88x31.png">
+              </a>
+              <div class="micro mt-2">All contents on this site are covered by the <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</div>
+          </div>
+
+          <!-- Logo Column -->
+          <div class="col-4 px-5 my-auto">
+              <a href="http://icahn.mssm.edu/research/bioinformatics" target="_blank">
+                <img src="https://amp.pharm.mssm.edu/archs4/images/mountsinai.png" class="w-100 px-3">
+              </a>
           </div>
         </div>
-        <div class="col-4">
-            <div class="very-small bold mb-1">Share</div>
-            <div class="addthis_inline_share_toolbox"></div>
-            <div class="very-small bold mb-1 mt-2">License</div>
-            <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
-              <img alt="Creative Commons License" style="border-width:0;" src="https://i.creativecommons.org/l/by/4.0/88x31.png">
-            </a>
-            <div class="micro mt-2">All contents on this site are covered by the <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</div>
-        </div>
-        <div class="col-4 px-5 my-auto">
-            <a href="http://icahn.mssm.edu/research/bioinformatics" target="_blank">
-              <img src="https://amp.pharm.mssm.edu/archs4/images/mountsinai.png" class="w-100 px-3">
-            </a>
-        </div>
       </div>
-    </div>
-  </footer>
+    </footer>
+
+    <!-- Push -->
+    <div class="push"></div>
+
+  </div> <!-- #outer-container -->
 
   <!-- Scripts -->
   <div id="scripts">
+
+    <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
     <script src="{{ url_for('static', filename='js/dropzone.min.js') }}"></script>
     <script type="text/javascript">Dropzone.autoDiscover = false;</script>
-    <!-- Go to www.addthis.com/dashboard to customize your tools --> <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ab16f3e92c75294"></script>
-    {% block footer %}{% endblock %}
+    <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ab16f3e92c75294"></script>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
-  </div>
-  <!-- Go to www.addthis.com/dashboard to customize your tools -->
-<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5abbf0fee97b42e1"></script>
 
+    <!-- Footer Block -->
+    {% block footer %}{% endblock %}
+
+  </div>
 </body>
 </html>

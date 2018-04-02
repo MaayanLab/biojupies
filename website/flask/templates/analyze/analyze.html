@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 {% import 'macros.html' as macros %}
 
+<!-- Title -->
+{% block title %} BioJupies | Get Started {% endblock %}
+
+<!-- Head -->
 {% block head %}
-	<title>BioJupies | Analyze</title>
-	<style type="text/css">html{height: 100%;}body{height: 100%; overflow: hidden;}#outer-container{height: 100%;}</style>
 {% endblock %}
 
+<!-- Content -->
 {% block content %}
 
-<div class="px-6">
+<div class="px-6 mt-3 pt-5 pb-5">
 	<div class="row">
-		<div class="col-12 text-center very-large mt-5 mb-1">What data would you like to analyze?</div>
-	</div>
-	<div class="row mt-5 px-3">
 		{% for option in options %}
 			{{ macros.option_col(option, options|length) }}
 		{% endfor %}

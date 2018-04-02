@@ -78,12 +78,12 @@
 <!-- ### Displays tool selection options for notebook generation. -->
 <!-- ### Used in: add_tools(). -->
 
-{% macro tool_checkbox(tool) %}
+{% macro tool_checkbox(tool, version) %}
 
 	<div class="row">
 		<div class="col-12">
 			<input type="checkbox" name="tool" id="{{tool['tool_string']}}" value="{{tool['tool_string']}}" {{'checked' if tool['default_selected'] else ''}} class="hidden">
-			<label for="{{tool['tool_string']}}" class="object-label mt-3 mb-0 px-3 py-3 w-100 border-custom rounded cursor-pointer">
+			<label for="{{tool['tool_string']}}" class="object-label mt-3 mb-0 px-3 py-3 w-100 border-custom rounded cursor-pointer bg-lightgrey">
 				<div class="row">
 					<div class="col-1">
 						<img src="{{ url_for('static', filename='img/tool/{tool_string}/{tool_string}.png'.format(**tool)) }}" class="w-100 px-1 py-1 rounded bg-white border-grey">
@@ -95,17 +95,53 @@
 					</div>
 				</div>
 			</label>
-			<div id="{{tool['tool_string']}}-info" class="collapse border-grey mx-2 border-top-0 rounded-bottom tiny {{ 'show' if tool['tool_string'] == '' else '' }}">
+			<div id="{{tool['tool_string']}}-info" class="collapse show border-grey mx-2 border-top-0 rounded-bottom tiny {{ 'show' if tool['tool_string'] == '' else '' }}">
 				<div class="row py-3 px-3">
-					<div class="col-4">
+
+					<!-- Screenshot -->
+					<div class="col-4 my-auto">
 						<div class="pop cursor-pointer">
 							<img src="{{ url_for('static', filename='img/tool/{tool_string}/{tool_string}-example.png'.format(**tool)) }}" class="w-100">
 						</div>
+						<div class="text-center tiny light mt-3">Screenshot from a sample analysis</div>
 					</div>
 					<div class="col-8 text-muted light pl-4">
+
+						<!-- Overview -->
 						<div class="tiny bold">Overview</div>
-						{{tool['overview']|safe}}
-						<div class="tiny bold mt-2">Resources</div>
+						<div>{{tool['overview']|safe}}</div>
+
+						<!-- Reference -->
+						{% if tool['reference'] %}
+							<div class="tiny bold mt-3">Reference</div>
+							<div><a class="nodecoration" href="{{ tool['reference_link'] }}">{{ tool['reference']|safe }}</a></div>
+						{% endif %}
+
+						<!-- Icons -->
+						<div class="row mt-4">
+
+							<!-- Example -->
+							<div class="col-4 text-left">
+								<a href="#" class="grey nodecoration bold mr-4" target="_blank">
+									<i class="fa fa-book fa-2x align-middle mr-2"></i>Interactive Example
+								</a>
+							</div>
+
+							<!-- Tutorial -->
+							<div class="col-4 text-left">
+								<a href="#" class="grey nodecoration bold mr-4" target="_blank">
+									<i class="fab fa-youtube fa-2x align-middle mr-2"></i>Video Tutorial
+								</a>
+							</div>
+
+							<!-- Source Code -->
+							<div class="col-4 text-left">
+								<a href="https://github.com/MaayanLab/notebook-generator/tree/master/library/{{version}}/analysis_tools/{{tool['tool_string']}}" class="grey nodecoration bold mr-4" target="_blank">
+									<i class="fab fa-github fa-2x align-middle mr-2"></i>Source Code
+								</a>
+							</div>
+						</div>
+
 					</div>
 				</div>
 			</div>
@@ -172,7 +208,7 @@
 			<label class="object-label mt-3 mb-0 px-3 py-3 w-100 border-custom rounded cursor-pointer" for="notebook_settings">
 				<div class="row">
 					<div class="col-1">
-						<img src="{{ url_for('static', filename='img/tool/notebook.png') }}" class="w-100 px-1 py-1 rounded bg-white border-grey">
+						<img src="{{ url_for('static', filename='img/jupyter.png') }}" class="w-100 px-1 py-1 rounded bg-white border-grey">
 					</div>
 					<div class="col-11">
 						<div class="float-right rounded-circle bg-white border-grey px-2 py-1 cursor-pointer mt-2 info-toggle"><i class="fa fa-chevron-up text-muted"></i></div>

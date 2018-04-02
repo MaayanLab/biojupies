@@ -1,8 +1,11 @@
 {% extends 'base.html' %}
 {% import 'macros.html' as macros %}
 
+<!-- Title -->
+{% block title %} BioJupies | Upload Matrix File {% endblock %}
+
+<!-- Head -->
 {% block head %}
-<title>Notebook Generator | Upload</title>
 <style type="text/css">
 	.tooltip-inner {
 		max-width: 600px;
@@ -10,6 +13,7 @@
 </style>
 {% endblock %}
 
+<!-- Content -->
 {% block content %}
 
 <div class="px-6">
@@ -105,7 +109,15 @@
 			</form>
 			<div class="tiny mt-2">
 				Supported formats: <span class="font-italic">.txt, .csv, .tsv, .xls, .xlsx</span>.
-				<a href="{{ url_for('static', filename='data/sample.txt') }}" class="btn bg-white border-black black nodecoration tiny regular my-auto float-right" download>Example</a>
+				<div class="dropdown show float-right">
+					<a class="btn bg-white border-black black nodecoration tiny regular my-auto dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown">
+						Example
+					</a>
+					<div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+						<a class="dropdown-item" href="#">Load Example</a>
+						<a class="dropdown-item" href="{{ url_for('static', filename='data/biojupies_example_metadata.txt') }}" download>Download Example File</a>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -124,6 +136,18 @@
 {% block footer %}
 
 <script type="text/javascript">
+
+// Add Table
+var addTable = function(dataset) {
+
+	// Interfaces
+	$('#options').addClass('hidden');
+	$('#sample-annotation-table').addClass('hidden');
+	$('#intro').html('The uploaded metadata file contains <span class="highlight">'+dataset['columns'].length+' fields</span> and <span class="highlight">'+dataset['index'].length+' rows</span>. Check that the preview below is correct, then click Continue to proceed.');
+
+	// Add Table
+	addPreviewTable(dataset, false);
+}
 
 // Dropzone handler
 $("#dropzone").dropzone({ 
@@ -153,14 +177,33 @@ $("#dropzone").dropzone({
 			alert('The following samples are missing from the metadata file:\n\t• '+missing_names.join('\n\t• ')+'\n\nPlease make sure that the rows of the metadata file match the number samples in the expression file.');
 			console.log('missing');
 		} else {
-			// Interfaces
-			$('#options').addClass('hidden');
-			$('#sample-annotation-table').addClass('hidden');
-			$('#intro').html('The uploaded metadata file contains <span class="highlight">'+response['columns'].length+' fields</span> and <span class="highlight">'+response['index'].length+' rows</span>. Check that the preview below is correct, then click Continue to proceed.');
-			addPreviewTable(response, false);
+
+			// Add table
+			addTable(response);
 		}
 	}
 });
+
+
+// Load Example
+$('.dropdown-menu .dropdown-item:first-child').click(function(evt) {
+
+	// AJAX Query
+	$.ajax({
+		url: "{{ url_for('example_table_api') }}",
+		method: 'post',
+		data: JSON.stringify({'filename': 'biojupies_example_metadata.txt'}),
+		contentType: "application/json; charset=utf-8",
+		dataType: 'json',
+		success: function(response) {
+
+	    	// Add dataset
+	    	addTable(response);
+
+		}
+	})
+})
+
 
 // Check if all rows of input have been completed
 $('#sample-annotation-table input').change(function(evt) {

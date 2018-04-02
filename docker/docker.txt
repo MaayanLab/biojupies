@@ -1,0 +1,12 @@
+# Versions
+c=maayanlab/biojupies-notebooks
+v=v0.1
+
+# Build Container
+docker build -t $c:$v .;
+
+# Run
+docker run -it -p 8888:8888 -e NOTEBOOK_UID=qSYxvJnDT $c:$v;
+
+# Push
+docker push $c:$v;

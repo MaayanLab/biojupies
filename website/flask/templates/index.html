@@ -1,16 +1,22 @@
 {% extends 'base.html' %}
 
+<!-- Title -->
+{% block title %} BioJupies | Home {% endblock %}
+
+<!-- Head -->
 {% block head %}
-	<title>BioJupies | Home</title>
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/slick.css') }}">
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/slick-theme.css') }}">
 {% endblock %}
 
+<!-- Content -->
 {% block content %}
 
+<!-- Carousel Row -->
 <div id="intro-row" class="row py-3 px-6">
 	<div class="col-6 mt-3 mb-3">
 		<div id="carousel">
+			<div class="mw-100 nodecoration px-3 py-3 mx-1"><iframe class="w-100 h-100 border-black" src="https://www.youtube.com/embed/EJOd1f0QV-w"></iframe></div>
 			{% for carousel_image in carousel_images %}
 				<div style="background: url({{ url_for('static', filename='img/carousel/'+carousel_image+'.png') }})" class="mw-100 nodecoration px-3 py-3 mx-1"></div>
 			{% endfor %}
@@ -23,68 +29,69 @@
 	</div>
 </div>
 
+<!-- How to create notebooks -->
 <div class="bg-lightgrey w-100 px-6 py-3">
 	<div class="row text-center mt-3 pb-4 mb-2">
 		<div class="col-12 large light">
-			How To Create Notebooks
-			<!-- <hr width="100%" align="left" class="my-3"> -->
+			How To Create a Notebook?
 		</div>
 	</div>
 
-	<div class="row text-left pb-4">
+	<div class="row text-left pb-4 px-4">
 		<div class="col-4">
 			<div class="mb-4"><i class="fa fa-database fa-5x"></i></div>
-			<div class="small regular mb-2">1. Add Data</div>
-			<div class="very-small light pr-5">Select from thousands of ready-to-analyze RNA-seq datasets, or upload your own data</div>
+			<div class="small regular mb-2">1. Upload or Fetch Data</div>
+			<div class="very-small light pr-5">Select from thousands of ready-to-analyze RNA-seq datasets,<br>or upload your own</div>
 			<!-- <div class="very-small light mt-3"><a href="{{ url_for('upload_table') }}" class="border-black nodecoration px-2 py-1 black tiny">Explore Datasets <i class="fa fa-angle-right ml-1"></i></a></div> -->
 
 		</div>
 		<div class="col-4">
 			<div class="mb-4"><i class="fa fa-cogs fa-5x"></i></div>
-			<div class="small regular mb-2">2. Add Tools</div>
-			<div class="very-small light pr-5">Choose from over 15 data analysis and visualization tools, or contribute your own code</div>
+			<div class="small regular mb-2">2. Select Tools</div>
+			<div class="very-small light pr-5">Choose from multiple data analysis and visualization tools, or<br>contribute your own plug-in</div>
 			<!-- <div class="very-small light mt-3"><a href="{{ url_for('upload_table') }}" class="border-black nodecoration px-2 py-1 black tiny">Explore Tools <i class="fa fa-angle-right ml-1"></i></a></div> -->
 		</div>
 		<div class="col-4">
 			<div class="mb-4"><i class="fa fa-book fa-5x"></i></div>
 			<div class="small regular mb-2">3. Generate</div>
-			<div class="very-small light pr-5">Create, access and share your analysis notebook results through a permanent, public URL</div>
+			<div class="very-small light pr-5">Create, access and share your analysis notebooks through a permanent and public URL</div>
 			<!-- <div class="very-small light mt-3"><a href="{{ url_for('upload_table') }}" class="border-black nodecoration px-2 py-1 black tiny">Explore Notebooks <i class="fa fa-angle-right ml-1"></i></a></div> -->
 		</div>
 	</div>
 </div>
 
+<!-- Customize you analysis -->
 <div class="bg-white w-100 px-6 py-3">
 	<div class="row text-center mt-3 pb-4 mb-2">
 		<div class="col-12 large light">
-			Customize Your Analyses
+			Customize Your Analysis
 		</div>
 	</div>
 
-	<div class="row text-left pb-0">
+	<div class="row text-left pb-0 px-4">
 		<div class="col-4 mb-5">
 			<div class="mb-4"><i class="fa fa-dna fa-5x"></i></div>
-			<div class="small regular mb-2">Upload Your Data</div>
-			<div class="very-small light pr-5">Generate notebooks by uploading your own datasets generated from<br>RNA-seq experiments</div>
+			<div class="small regular mb-2">Upload Your Own Data</div>
+			<div class="very-small light pr-5">Generate tailored analysis notebooks from your<br>RNA-seq datasets </div>
 			<div class="very-small light mt-3"><a href="{{ url_for('upload_table') }}" class="border-black nodecoration px-2 py-1 black tiny">Learn More <i class="fa fa-angle-right ml-1"></i></a></div>
 		</div>
 		<div class="col-4">
 			<div class="mb-4"><i class="fa fa-wrench fa-5x"></i></div>
 			<div class="small regular mb-2">Contribute Plug-ins</div>
-			<div class="very-small light pr-5">Add your own computational tools as BioJupies plug-ins for use by the community</div>
+			<div class="very-small light pr-5">Add and share your own computational tools<br>as BioJupies plug-ins</div>
 			<div class="very-small light mt-3"><a href="{{ url_for('contribute') }}" class="border-black nodecoration px-2 py-1 black tiny">Learn More <i class="fa fa-angle-right ml-1"></i></a></div>
 		</div>
 		<div class="col-4">
 			<div class="mb-4"><i class="fab fa-docker fa-5x"></i></div>
 			<div class="small regular mb-2">Reuse Notebooks</div>
-			<div class="very-small light pr-5">Download, run and edit your notebook using our pre-configured Docker container</div>
+			<div class="very-small light pr-5">Download, run and edit<br>your notebook using a<br>Docker container</div>
 			<div class="very-small light mt-3"><a href="{{ url_for('docker') }}" class="border-black nodecoration px-2 py-1 black tiny">Learn More <i class="fa fa-angle-right ml-1"></i></a></div>
 		</div>
 	</div>
 </div>
-
 {% endblock %}
 
+<!-- Footer -->
 {% block footer %}
 <script src="{{ url_for('static', filename='js/slick.min.js') }}"></script>
 <script type="text/javascript">

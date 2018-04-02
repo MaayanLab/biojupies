@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 {% import 'macros.html' as macros %}
 
-{% block head %}<title>Notebook Generator | Signature</title>{% endblock %}
+<!-- Title -->
+{% block title %} BioJupies | Generate Signature {% endblock %}
 
+<!-- Content -->
 {% block content %}
 <div class="px-6">
 	<div class="row pt-4">
@@ -12,7 +14,7 @@
 			<button class="btn btn-primary navigate black border-black-custom bg-white nodecoration" form="configure-signature-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">Continue<i class="fa fa-angle-right ml-2"></i></button>
 		</div>
 	</div>
-	<div class="row">
+	<div class="row pb-5">
 		<hr width="100%">
 		<div class="col-12 px-4">
 			<form id="configure-signature-form">
@@ -61,7 +63,7 @@
 				<div class="very-small light mb-4 mt-3 text-justify">Second, <b>select the samples</b> you wish to assign to each group by using the dropdown menus below.</div>
 
 				<!-- Sample Table -->
-				<table id="sample-table" class="stripe mb-5">
+				<table id="sample-table" class="stripe">
 					<thead>
 						<tr>
 							<th class="text-center very-small regular">Group</th>

@@ -1,11 +1,15 @@
 {% extends 'base.html' %}
 {% import 'macros.html' as macros %}
 
+<!-- Title -->
+{% block title %} BioJupies | Help {% endblock %}
+
+<!-- Head -->
 {% block head %}
-	<title>BioJupies | Results</title>
 	<style type="text/css">html{height: 100%;}body{height: 100%; overflow: hidden;}#outer-container{height: 100%;}</style>
 {% endblock %}
 
+<!-- Content -->
 {% block content %}
 
 <div class="px-6">
@@ -126,7 +130,7 @@
 				$('<a>', {
 					'class': 'twitter-share-button',
 					'data-size': 'large',
-					'href': "https://twitter.com/intent/tweet?text={{ notebook_configuration_dict['notebook']['title'] }}&url={{ url_for('view_notebook', notebook_uid='', _external=True)}}"+notebook_uid+"&hashtags=jupyter,bioinformatics,omicstream&via=MaayanLab"
+					'href': "https://twitter.com/intent/tweet?text={{ notebook_configuration_dict['notebook']['title'] }}&url={{ url_for('view_notebook', notebook_uid='', _external=True)}}"+notebook_uid+"&hashtags=jupyter,bioinformatics,biojupies&via=MaayanLab"
 				})
 			)
 

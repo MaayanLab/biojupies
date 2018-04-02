@@ -1,14 +1,20 @@
 {% extends 'base.html' %}
 {% import 'macros.html' as macros %}
 
+<!-- Title -->
+{% block title %} BioJupies | Upload Matrix File {% endblock %}
+
+<!-- Head -->
 {% block head %}
-	<title>BioJupies | Upload</title>
 	<style type="text/css">html{height: 100%;}body{height: 100%; overflow: hidden;}#outer-container{height: 100%;}</style>
 {% endblock %}
 
+<!-- Content -->
 {% block content %}
 
 <div class="px-6">
+
+	<!-- Title Row -->
 	<div class="row">
 		<div class="col-8 large mt-5 pl-4">Upload Data<sup><i class="fa fa-question-circle small ml-1 text-muted cursor-pointer" data-toggle="collapse" data-target="#info"></i></sup></div>
 		<div class="col-4 text-right mt-5">
@@ -16,6 +22,8 @@
 			<button class="btn btn-primary navigate black border-black bg-white nodecoration" form="upload-expression-form" type="submit" formaction="{{ url_for('upload_table') }}" formmethod="post" disabled="true">Continue<i class="fa fa-angle-right ml-2"></i></button>
 		</div>
 	</div>
+
+	<!-- Intro Row -->
 	<div class="row">
 		<hr width="100%" class="mt-3 mb-0">
 		<div class="col-12 px-4">
@@ -32,7 +40,7 @@
 			</div>
 
 			<!-- Expression Table Dropzone -->
-			<div class="medium regular mt-4 mb-2">Upload Expression File</div>
+			<div class="medium regular mt-4 mb-2">Upload an Expression Matrix File</div>
 			<div id="intro" class="very-small light mb-3">To start, upload your <b>RNA-seq expression dataset</b> using the form below.</div>
 			<div id="dropzone" class="dropzone border-grey rounded" style="background-image: url({{ url_for('static', filename='img/dropzone/expression_table.png') }}); background-size: 100% 100%;"></div>
 			<form id="upload-expression-form"><input type="hidden" id="expression" name="expression" value=""></form>
@@ -41,8 +49,17 @@
 			<!-- Formats and Examples -->
 			<div id="formats" class="mt-2 tiny light pl-1">
 				Supported formats: <span class="font-italic">.txt, .csv, .tsv, .xls, .xlsx</span>.
-				<a href="{{ url_for('static', filename='data/example.txt') }}" class="btn bg-white border-black black nodecoration tiny regular my-auto float-right" download>Example</a>
+				<div class="dropdown show float-right">
+					<a class="btn bg-white border-black black nodecoration tiny regular my-auto dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown">
+						Example
+					</a>
+					<div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+						<a class="dropdown-item" href="#">Load Example</a>
+						<a class="dropdown-item" href="{{ url_for('static', filename='data/biojupies_example_matrix.txt') }}" download>Download Example File</a>
+					</div>
+				</div>
 			</div>
+
 		</div>
 	</div>
 </div>
@@ -54,25 +71,58 @@
 
 <script type="text/javascript">
 
-$("#dropzone").dropzone({ 
-	// dictDefaultMessage: "Click h",
+// Add Table
+var addTable = function(dataset) {
+
+	// Save data
+	$('#expression').val(JSON.stringify(dataset));
+
+	// Toggle Interfaces
+	$('button[form="upload-expression-form"]').prop('disabled', false);
+	$('#dropzone').hide();
+	$('#formats').hide();
+	addPreviewTable(dataset, true);
+	$('#intro').html('The uploaded dataset contains <span class="highlight">'+dataset['columns'].length+' samples</span> and <span class="highlight">'+dataset['index'].length+' genes</span>. Check that the preview below is correct, then click Continue to proceed.')
+}
+
+// Initialize Dropzone
+dropzone = $("#dropzone").dropzone({ 
+	dictDefaultMessage: "Drag and drop files here, or click to browse and upload a file",
 	url: "{{ url_for('upload_dataframe_api') }}",
     success: function(file, response){
-
-    	// Save data
-        $('#expression').val(response);
 
     	// Parse response
     	response = JSON.parse(response);
 
-        // Toggle Interfaces
-        $('button[form="upload-expression-form"]').prop('disabled', false);
-        $('#dropzone').hide();
-        $('#formats').hide();
-        addPreviewTable(response, true);
-        $('#intro').html('The uploaded dataset contains <span class="highlight">'+response['columns'].length+' samples</span> and <span class="highlight">'+response['index'].length+' genes</span>. Check that the preview below is correct, then click Continue to proceed.')
+    	// Add dataset
+    	addTable(response);
+
     }
 });
+
+// Load Example
+$('.dropdown-menu .dropdown-item:first-child').click(function(evt) {
+
+	// Toggle Interfaces
+	$('#dropzone').hide();
+	$('#preview').html($('<div>', {'class': 'text-center medium regular py-5 border-grey rounded'}).html($('<div>', {'class': 'py-3'}).html('Loading Example Matrix...')));
+
+	// AJAX Query
+	$.ajax({
+		url: "{{ url_for('example_table_api') }}",
+		method: 'post',
+		data: JSON.stringify({'filename': 'biojupies_example_matrix.txt'}),
+		contentType: "application/json; charset=utf-8",
+		dataType: 'json',
+		success: function(response) {
+
+	    	// Add dataset
+	    	addTable(response);
+
+		}
+	})
+})
+
 
 </script>
 
