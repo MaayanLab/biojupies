@@ -13,6 +13,7 @@ body {
   font-weight: 300 !important;
   height: 100%;
   margin: 0;
+  min-width: 600px;
 }
 
 #outer-container {

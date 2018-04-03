@@ -1,5 +1,6 @@
 .notebook-generator-link {
-	border: 1px solid black;
+    border: 1px solid #b8b8b8;
+    border-bottom: 2px solid #b4b4b4;
 	display: table;
     padding: 3px 5px;
     border-radius: 3px;
@@ -10,7 +11,7 @@
 }
 
 	.notebook-generator-link img {
-		height: 30px;
+		height: 33px;
 		display: table-cell;
 		vertical-align: middle;
 		margin-right: 5px;

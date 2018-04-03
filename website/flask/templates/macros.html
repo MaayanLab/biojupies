@@ -7,12 +7,12 @@
 {% macro option_col(option, length) %}
 
 	{% set colsize=(12/length)|int %}
-	<div class="col-{{colsize}} text-center">
+	<div class="col-md-{{colsize}} text-center">
 			<a class="display-1 px-5 py-4 black border-black-custom rounded d-inline-block" href="{{url_for(option['link'])}}">
 				<i class="fa fa-{{option['icon']}} my-3"></i>
 			</a>
 		<div class="large mt-3">{{option['title']}}</div>
-		<div class="light small mt-2 px-5">{{option['description']|safe}}</div>
+		<div class="light small mt-2 px-5 pb-5">{{option['description']|safe}}</div>
 	</div>
 	
 {% endmacro %}
