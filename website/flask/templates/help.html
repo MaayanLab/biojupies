@@ -14,18 +14,134 @@
 
 <div class="px-6">
 	<div class="row">
-		<div class="col-8 large mt-4 pl-4">BioJupies Help Center</sup></div>
+		<div class="col-8 large mt-4 pl-4">BioJupies Help Center (Under Development)</div>
 	</div>
 	<div class="row">
-		<hr width="100%" class="mt-3 mb-0">
-		<div class="col-12 px-4 pt-4 very-small">
-			<div class="mb-2 medium bold text-center">This page is currently under development.</div>
+		<hr width="100%" class="mt-3 mb-3">
+
+		<!-- Left Panel -->
+		<div class="col-4">
+
+			<!-- Basics -->
+			<a href="#basics" class="py-3 pl-2 border-grey-light border-left-0 border-right-0 border-top-0 black nodecoration d-block category-link">
+				<div class="very-small bold">The Basics</div>
+				<div class="tiny light text-muted">Learn the basics of using BioJupies</div>
+			</a>
+
+			<!-- Generating Notebooks -->
+			<a href="#notebooks" class="py-3 pl-2 border-grey-light border-left-0 border-right-0 border-top-0 black nodecoration d-block category-link">
+				<div class="very-small bold">Generating Notebooks</div>
+				<div class="tiny light text-muted">Learn how to generate BioJupies notebooks</div>
+			</a>
+			
+			<!-- Analyzing Your Data -->
+			<a href="#upload" class="py-3 pl-2 border-grey-light border-left-0 border-right-0 border-top-0 black nodecoration d-block category-link">
+				<div class="very-small bold">Analyzing Your Data</div>
+				<div class="tiny light text-muted">Upload your RNA-seq datasets for analysis</div>
+			</a>
+			
+			<!-- Chrome Extension -->
+			<a href="#extension" class="py-3 pl-2 border-grey-light border-left-0 border-right-0 border-top-0 black nodecoration d-block category-link">
+				<div class="very-small bold">Chrome Extension Tutorial</div>
+				<div class="tiny light text-muted">Learn how to use the Chrome Extension</div>
+			</a>
+			
+			<!-- Reusing Notebooks -->
+			<a href="#docker" class="py-3 pl-2 border-grey-light border-left-0 border-right-0 border-top-0 black nodecoration d-block category-link">
+				<div class="very-small bold">Reusing Notebooks</div>
+				<div class="tiny light text-muted">Re-run BioJupies notebooks on your computer</div>
+			</a>
+
+			<!-- Terms of Use -->
+			<a href="#terms" class="py-3 pl-2 black nodecoration d-block category-link">
+				<div class="very-small bold">Terms of Use</div>
+				<div class="tiny light text-muted">Terms, citation and disclaimer</div>
+			</a>
+
 		</div>
+
+		<!-- Right Panel -->
+		<div class="col-8 border-grey-light border-top-0 border-bottom-0 border-right-0">
+
+			<!-- Basics -->
+			<div id="basics" class="panel-question">
+
+				<!-- What is BioJupies? -->
+				<a href="#" class="py-2 pl-2 border-grey-light border-left-0 border-right-0 border-top-0 black nodecoration d-block">
+					<div class="very-small bold">What is BioJupies?</div>
+				</a>
+
+			</div>
+
+			<!-- Generating Notebooks -->
+			<div id="notebooks" class="panel-question hidden">
+
+				<!-- What is BioJupies? -->
+				<a href="#" class="py-2 pl-2 border-grey-light border-left-0 border-right-0 border-top-0 black nodecoration d-block">
+					<div class="very-small bold">How do I generate a notebook?</div>
+				</a>
+
+			</div>
+
+			<!-- Analyzing Your Data -->
+			<div id="upload" class="panel-question hidden">
+
+				<!-- What is BioJupies? -->
+				<a href="#" class="py-2 pl-2 border-grey-light border-left-0 border-right-0 border-top-0 black nodecoration d-block">
+					<div class="very-small bold">How do I analyze my data?</div>
+				</a>
+
+			</div>
+
+			<!-- Chrome Extension Tutorial -->
+			<div id="extension" class="panel-question hidden">
+
+				<!-- What is BioJupies? -->
+				<a href="#" class="py-2 pl-2 border-grey-light border-left-0 border-right-0 border-top-0 black nodecoration d-block">
+					<div class="very-small bold">What is the Chrome Extension?</div>
+				</a>
+
+			</div>
+
+			<!-- Reusing Notebooks -->
+			<div id="docker" class="panel-question hidden">
+
+				<!-- What is BioJupies? -->
+				<a href="#" class="py-2 pl-2 border-grey-light border-left-0 border-right-0 border-top-0 black nodecoration d-block">
+					<div class="very-small bold">How to reuse notebooks?</div>
+				</a>
+
+			</div>
+
+			<!-- Terms of Use -->
+			<div id="terms" class="panel-question hidden">
+
+				<!-- What is BioJupies? -->
+				<a href="#" class="py-2 pl-2 border-grey-light border-left-0 border-right-0 border-top-0 black nodecoration d-block">
+					<div class="very-small bold">Terms</div>
+				</a>
+
+			</div>
+
+		</div>
+
 	</div>
 </div>
 
 {% endblock %}
 
 {% block footer %}
+<script type="text/javascript">
+
+	// Listener
+	$('a.category-link').click(function(evt) {
+		var $evtTarget = $(evt.target),
+			target = $evtTarget.attr('href') ? $evtTarget.attr('href') : $evtTarget.parents('a').attr('href');
+		console.log(target);
+		$('.panel-question').hide();
+		$(target).show();
+	})
+
+</script>
 
 {% endblock %}

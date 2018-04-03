@@ -411,3 +411,11 @@ input:checked + .object-label span {
 #preview {
   overflow-x: auto;
 }
+
+/********************************/
+/***** Help ******/
+/********************************/
+
+.category-link:hover {
+  background-color: rgba(0,0,0,0.01);
+}
