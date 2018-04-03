@@ -198,18 +198,17 @@
 
 	<div class="row">
 		<div class="col-12">
-			<label class="object-label mt-3 mb-0 px-3 py-3 w-100 border-custom rounded cursor-pointer" for="{{tool.tool_string}}">
+			<div class="mt-3 mb-0 px-3 py-3 w-100 border-custom rounded cursor-pointer bg-lightgrey" data-toggle="collapse" data-target="#{{tool.tool_string}}-info">
 				<div class="row">
 					<div class="col-1">
 						<img src="{{ url_for('static', filename='img/tool/{tool_string}/{tool_string}.png'.format(**tool)) }}" class="w-100 px-1 py-1 rounded bg-white border-grey">
 					</div>
 					<div class="col-11">
-						<div class="float-right rounded-circle bg-white border-grey px-2 py-1 cursor-pointer mt-2 info-toggle"><i class="fa fa-chevron-down text-muted"></i></div>
 						<div class="very-small regular pb-2 pr-5">{{tool.tool_name}}</div>
 						<div class="tiny light text-muted">Optional configuration parameters for {{tool.tool_name}}</div>
 					</div>
 				</div>
-			</label>
+			</div>
 			<div id="{{tool.tool_string}}-info" class="collapse border-grey mx-2 border-top-0 rounded-bottom tiny">
 				<div class="pt-3">
 					{% for parameter in tool.parameters %}
@@ -243,18 +242,17 @@
 
 	<div class="row">
 		<div class="col-12">
-			<label class="object-label mt-3 mb-0 px-3 py-3 w-100 border-custom rounded cursor-pointer" for="notebook_settings">
+			<div class="mt-3 mb-0 px-3 py-3 w-100 border-custom rounded cursor-pointer bg-lightgrey" data-toggle="collapse" data-target="#notebook_settings-info">
 				<div class="row">
 					<div class="col-1">
 						<img src="{{ url_for('static', filename='img/jupyter.png') }}" class="w-100 px-1 py-1 rounded bg-white border-grey">
 					</div>
 					<div class="col-11">
-						<div class="float-right rounded-circle bg-white border-grey px-2 py-1 cursor-pointer mt-2 info-toggle"><i class="fa fa-chevron-up text-muted"></i></div>
 						<div class="very-small regular pb-2 pr-5">Notebook Configuration</div>
 						<div class="tiny light text-muted">Optional annotations and configuration for the notebook</div>
 					</div>
 				</div>
-			</label>
+			</div>
 			<div id="notebook_settings-info" class="collapse show border-grey mx-2 border-top-0 rounded-bottom tiny">
 				<div class="pt-3">
 					<div class="row px-3 pb-3">
