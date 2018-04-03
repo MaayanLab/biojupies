@@ -29,14 +29,12 @@
 
 	<div class="row">
 		<div class="col-12">
-			<input type="radio" required="true" name="gse-gpl" id="{{id}}" value="{{id}}" class="hidden" {{'checked' if i==1 else ''}}>
-			<label for="{{id}}" class="object-label mt-3 mb-0 px-3 py-3 w-100 border-custom rounded cursor-pointer">
+			<div data-toggle="collapse" data-target="#{{id}}-info" class="object-label mt-3 mb-0 px-3 py-3 w-100 border-custom rounded cursor-pointer bg-lightgrey">
 				<div class="row">
 					<div class="col-1 my-auto">
 						<img src="{{ url_for('static', filename='img/dataset_icon.png') }}" class="w-100">
 					</div>
 					<div class="col-11">
-						<div class="float-right rounded-circle bg-white border-grey px-2 py-1 cursor-pointer mt-2 info-toggle"><i class="fa fa-chevron-{{'up' if i == 0 else 'down'}} text-muted"></i></div>
 						<div class="very-small regular pb-2 pr-5">{{ dataset['title']|safe }}</div>
 						<div class="row tiny light text-muted">
 							<div class="col-2"><span></span><span class="font-italic">{{dataset['gse']}}</span></div>
@@ -46,25 +44,45 @@
 						</div>
 					</div>
 				</div>
-			</label>
-			<div id="{{id}}-info" class="collapse border-grey mx-2 border-top-0 rounded-bottom tiny {{ 'show' if i == 0 else '' }}">
+			</div>
+			<div id="{{id}}-info" class="collapse border-grey mx-2 border-top-0 rounded-bottom tiny {{ 'show' if i == 1 else '' }}">
 				<div class="py-3">
+
+					<!-- Summary -->
 					<div class="row px-3">
 						<div class="col-1 bold">Summary</div>
 						<div class="col-11 text-muted light pl-4">{{ dataset['summary']|safe }}</div>
 					</div>
+
+					<!-- Organism -->
 					<div class="row px-3 pt-3">
 						<div class="col-1 bold">Organism</div>
 						<div class="col-11 text-muted light pl-4 font-italic">{{ dataset['organism'].replace('Human', 'Homo sapiens').replace('Mouse', 'Mus musculus') }}</div>
 					</div>
+
+					<!-- Source -->
 					<div class="row px-3 pt-3">
 						<div class="col-1 bold">Source</div>
-						<div class="col-11 text-muted light pl-4"><a target="_blank" href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={{ dataset['gse'] }}">https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={{ dataset['gse'] }}</a></div>
+						<div class="col-6 text-muted light pl-4"><a target="_blank" href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={{ dataset['gse'] }}">https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={{ dataset['gse'] }}</a></div>
 					</div>
+
+					<!-- Repository -->
 					<div class="row px-3 pt-3">
 						<div class="col-1 bold">Repository</div>
 						<div class="col-11 text-muted light pl-4"><a target="_blank" href="https://www.ncbi.nlm.nih.gov/gds">Gene Expression Omnibus</a></div>
 					</div>
+
+					<!-- Analyze -->
+					<div class="row px-3 pt-3 analyze-col float-right">
+						<div class="col-12">
+							<form id="{{id}}-form">
+								<input type="hidden" name="gse-gpl" value="{{id}}">
+							</form>
+							<button class="btn white bg-white nodecoration border-custom px-3 py-2 small regular bg-blue" form="{{id}}-form" type="submit" formaction="{{ url_for('add_tools') }}" formmethod="post">Analyze<i class="fa fa-angle-right ml-2"></i></button>
+						</div>
+					</div>
+
+
 				</div>
 			</div>
 		</div>
@@ -83,19 +101,28 @@
 	<div class="row">
 		<div class="col-12">
 			<input type="checkbox" name="tool" id="{{tool['tool_string']}}" value="{{tool['tool_string']}}" {{'checked' if tool['default_selected'] else ''}} class="hidden">
-			<label for="{{tool['tool_string']}}" class="object-label mt-3 mb-0 px-3 py-3 w-100 border-custom rounded cursor-pointer bg-lightgrey">
+			<div class="object-label mt-3 mb-0 px-3 py-3 w-100 border-custom rounded cursor-pointer bg-lightgrey" data-toggle="collapse" data-target="#{{tool['tool_string']}}-info">
 				<div class="row">
+
+					<!-- Icon -->
 					<div class="col-1">
 						<img src="{{ url_for('static', filename='img/tool/{tool_string}/{tool_string}.png'.format(**tool)) }}" class="w-100 px-1 py-1 rounded bg-white border-grey">
 					</div>
-					<div class="col-11">
-						<div class="float-right rounded-circle bg-white border-grey px-2 py-1 cursor-pointer mt-2 info-toggle"><i class="fa fa-chevron-{{'up' if tool['tool_string'] == '' else 'down' }} text-muted"></i></div>
+
+					<!-- Info -->
+					<div class="col-10">
 						<div class="very-small regular pb-2 pr-5">{{tool['tool_name']|safe}}</div>
 						<div class="tiny light text-muted"><span>{{tool['tool_description']}}</span></div>
 					</div>
+
+					<!-- Checkbox -->
+					<div class="col-1 my-auto text-center">
+						<label for="{{tool['tool_string']}}" class="my-auto"><i class="far fa-2x tool-checkbox"></i></label>
+					</div>
+
 				</div>
-			</label>
-			<div id="{{tool['tool_string']}}-info" class="collapse show border-grey mx-2 border-top-0 rounded-bottom tiny {{ 'show' if tool['tool_string'] == '' else '' }}">
+			</div>
+			<div id="{{tool['tool_string']}}-info" class="collapse border-grey mx-2 border-top-0 rounded-bottom tiny {{ 'show' if tool['tool_string'] == '' else '' }}">
 				<div class="row py-3 px-3">
 
 					<!-- Screenshot -->
@@ -108,8 +135,19 @@
 					<div class="col-8 text-muted light pl-4">
 
 						<!-- Overview -->
-						<div class="tiny bold">Overview</div>
-						<div>{{tool['overview']|safe}}</div>
+						<div class="tiny bold">What
+							{% if tool['tool_string'] in ['signature_table', 'volcano_plot', 'ma_plot']%}
+								is a
+							{% else %}
+								is
+							{% endif %}
+							{{ tool['tool_name'].replace(' Links', '').replace(' Query', '')|safe }}?
+						</div>
+						<div class="micro mt-1 text-justify">{{tool['overview']|safe}}</div>
+
+						<!-- Results -->
+						<div class="tiny bold mt-3">Overview</div>
+						<div class="micro mt-1 text-justify">{{tool['result_description']|safe}}</div>
 
 						<!-- Reference -->
 						{% if tool['reference'] %}

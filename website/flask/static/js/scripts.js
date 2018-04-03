@@ -11,14 +11,14 @@ $('[data-toggle="tooltip"]').tooltip();
 $('[data-toggle="popover"]').popover(); 
 
 // Card Collapse Info
-$('.info-toggle').click(function(evt) {
-	evt.preventDefault();
-	var $button = $(evt.target),
-		$icon = $button.parents('label').find('i'),
-		id = $button.parents('label').attr('for');
-	$('#'+id+'-info').collapse('toggle');
-	$icon.toggleClass('fa-chevron-down').toggleClass('fa-chevron-up');
-})
+// $('.info-toggle').click(function(evt) {
+// 	evt.preventDefault();
+// 	var $button = $(evt.target),
+// 		$icon = $button.parents('label').find('i'),
+// 		id = $button.parents('label').attr('for');
+// 	$('#'+id+'-info').collapse('toggle');
+// 	$icon.toggleClass('fa-chevron-down').toggleClass('fa-chevron-up');
+// })
 
 // Preview Table
 function addPreviewTable(response, metadata=true) {

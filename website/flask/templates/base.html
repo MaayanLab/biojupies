@@ -44,7 +44,7 @@
 
             <!-- Search Data -->
             <li class="nav-item ml-3 my-auto">
-              <form id="navbar-search-form" action="{{ url_for('search_data') }}" method="get" class="border-grey nodecoration micro light rounded pl-3 py-1 mt-sm-3 mt-md-0">
+              <form id="navbar-search-form" action="{{ url_for('search_data') }}" method="get" class="border-grey nodecoration micro light rounded pl-3 py-1">
                   <input type="text" name="q" class="nodecoration border-left-0 border-right-0 border-top-0 border-bottom-0 light very-small" placeholder="Search GEO datasets (e.g. cancer, p53)">
                   <button class="btn text-muted bg-transparent float-right" type="submit"><i class="fa fa-search small text-muted nodecoration"></i></button>
               </form>
@@ -52,22 +52,22 @@
 
             <!-- Chrome Extension -->
             <li class="nav-item">
-              <a class="nav-link ml-3 black mt-sm-3 mt-md-0" href="https://chrome.google.com/webstore/detail/biojupies-generator/picalhhlpcjhonibabfigihelpmpadel" target="_blank">Chrome Extension</a>
+              <a class="nav-link ml-3 black" href="https://chrome.google.com/webstore/detail/biojupies-generator/picalhhlpcjhonibabfigihelpmpadel" target="_blank">Chrome Extension</a>
             </li>
 
             <!-- Help -->
             <li class="nav-item">
-              <a class="nav-link ml-3 black mt-sm-3 mt-md-0" href="{{ url_for('help') }}">Help</a>
+              <a class="nav-link ml-3 black" href="{{ url_for('help') }}">Help</a>
             </li>
 
             <!-- GitHub -->
             <li class="nav-item">
-              <a class="nav-link ml-3 black mt-sm-3 mt-md-0" href="https://github.com/MaayanLab/notebook-generator" target="_blank"><i class="fab fa-github medium text-muted"></i></a>
+              <a class="nav-link ml-3 black" href="https://github.com/MaayanLab/notebook-generator" target="_blank"><i class="fab fa-github medium text-muted"></i></a>
             </li>
 
             <!-- Twitter -->
             <li class="nav-item">
-              <a class="nav-link ml-3 black mt-sm-3 mt-md-0" href="#" onclick="window.open('https://twitter.com/intent/tweet?ref_src=twsrc%5Etfw&text=BioJupies - Generate Tailored Bioinformatics Analysis Notebooks via User Interface Using&tw_p=tweetbutton&url=http://amp.pharm.mssm.edu/biojupies&hashtags=biojupies,jupyter,bioinformatics&via=MaayanLab', 'newwindow', 'width=600, height=250'); return false;" target="_blank"><i class="fab fa-twitter medium text-muted"></i></a>
+              <a class="nav-link ml-3 black" href="#" onclick="window.open('https://twitter.com/intent/tweet?ref_src=twsrc%5Etfw&text=BioJupies - Generate Tailored Bioinformatics Analysis Notebooks via User Interface Using&tw_p=tweetbutton&url=http://amp.pharm.mssm.edu/biojupies&hashtags=biojupies,jupyter,bioinformatics&via=MaayanLab', 'newwindow', 'width=600, height=250'); return false;" target="_blank"><i class="fab fa-twitter medium text-muted"></i></a>
             </li>
           </ul>
         </div>
