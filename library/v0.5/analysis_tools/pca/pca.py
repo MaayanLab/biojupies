@@ -65,7 +65,7 @@ def run(dataset, normalization='logCPM', nr_genes=2500, z_score=True, color_by=N
 		color_type = 'categorical'
 
 	# Return
-	pca_results = {'pca': pca, 'var_explained': var_explained, 'sample_metadata': dataset['sample_metadata'].loc[expression_dataframe.columns], 'color_by': color_by, 'color_type': color_type, 'nr_genes': nr_genes}
+	pca_results = {'pca': pca, 'var_explained': var_explained, 'sample_metadata': dataset['sample_metadata'].loc[expression_dataframe.columns], 'color_by': color_by, 'color_type': color_type, 'nr_genes': nr_genes, 'normalization': normalization}
 	return pca_results
 
 #############################################
@@ -142,5 +142,5 @@ def plot(pca_results, plot_counter):
 	iplot(fig)
 
 	# Add Figure Legend
-	display(Markdown('** Figure '+plot_counter()+' | Principal Component Analysis **'.format(**locals())))
+	display(Markdown('** Figure '+plot_counter()+' | Principal Component Analysis results. ** The figure displays an interactive, three-dimensional scatter plot of the first three Principal Components (PCs) of the data. Each point represents an RNA-seq sample. Samples with similar gene expression profiles are closer in the three-dimensional space. If provided, sample groups are indicated using different colors, allowing for easier interpretation of the results.'.format(**locals())))
 

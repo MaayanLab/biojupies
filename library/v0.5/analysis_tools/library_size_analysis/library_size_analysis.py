@@ -58,4 +58,4 @@ def plot(library_size_results, plot_counter):
 	iplot(fig)
 
 	# Figure Legend
-	display(Markdown('** Figure '+plot_counter()+' | **'.format(**locals())))
+	display(Markdown('** Figure '+plot_counter()+' | Library Size Analysis results. **The figure contains an interactive bar chart which displays the total number of reads mapped to each RNA-seq sample in the dataset. Additional information for each sample is available by hovering over the bars. If provided, sample groups are indicated using different colors, thus allowing for easier interpretation of the results'.format(**locals())))

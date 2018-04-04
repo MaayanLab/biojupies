@@ -126,4 +126,4 @@ def plot(tf_analysis_results, plot_counter):
 	results_table(tf_analysis_results['tf_dataframe'].copy(), source_label='Transcription Factor', target_label='target')
 
 	# Figure Legend
-	display(Markdown('** Table '+plot_counter('table')+' | **'.format(**locals())))
+	display(Markdown('** Table '+plot_counter('table')+' | Transcription Factor Enrichment Analysis Results. **The figure contains scrollable tables displaying the results of the Transcription Factor (TF) enrichment analysis generated using Enrichr. Every row represents a TF; significant TFs are highlighted in bold. A and B display results generated using ChEA and ENCODE libraries, indicating TFs whose experimentally validated targets are enriched. C displays results generated using the ARCHS4 library, indicating TFs whose top coexpressed genes (according to the ARCHS4 dataset) are enriched.'.format(**locals())))

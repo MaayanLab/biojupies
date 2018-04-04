@@ -357,9 +357,9 @@ input:checked + .object-label span {
   z-index: 10;
   color: black !important;
   width: 150px;
-  top: 75px;
-  left: 50px;
-  font-size: 22pt;
+  top: 115px;
+  left: 100px;
+  font-size: 24pt;
   text-align: center;
   font-weight: 200;
 }

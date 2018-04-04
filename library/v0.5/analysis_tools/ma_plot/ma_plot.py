@@ -85,4 +85,4 @@ def plot(volcano_plot_results, plot_counter):
 	)
 
 	# Figure Legend
-	display(Markdown('** Figure '+plot_counter()+' | **'.format(**locals())))
+	display(Markdown('** Figure '+plot_counter()+' | MA Plot. **The figure contains an interactive scatter plot which displays the average expression and statistical significance of each gene calculated by performing differential gene expression analysis. Every point in the plot represents a gene. Red points indicate significantly up-regulated genes, blue points indicate down-regulated genes. Additional information for each gene is available by hovering over it.'.format(**locals())))

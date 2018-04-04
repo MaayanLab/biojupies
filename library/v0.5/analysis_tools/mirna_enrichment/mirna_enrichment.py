@@ -126,4 +126,4 @@ def plot(mirna_enrichment_results, plot_counter):
 	results_table(mirna_enrichment_results['tf_dataframe'].copy(), source_label='miRNA', target_label='target')
 
 	# Figure Legend
-	display(Markdown('** Table '+plot_counter('table')+' | **'.format(**locals())))
+	display(Markdown('** Table '+plot_counter('table')+' | miRNA Enrichment Analysis Results. **The figure contains browsable tables displaying the results of the miRNA enrichment analysis generated using Enrichr. Every row represents a miRNA; significant miRNAs are highlighted in bold. A. displays results generated using the TargetScan library, B. displays results generated using the miRTarBase library.'.format(**locals())))

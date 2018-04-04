@@ -46,4 +46,4 @@ def plot(signature, plot_counter):
 	display(HTML(html_results))
 
 	# Figure Legend
-	display(Markdown('** Table '+plot_counter('table')+' | **'.format(**locals())))
+	display(Markdown('** Table '+plot_counter('table')+' | Differential Expression Table.** The figure displays a browsable table containing the gene expression signature generated from a differential gene expression analysis. Every row of the table represents a gene; the columns display the estimated measures of differential expression. Links to external resources containing additional information for each gene are also provided'.format(**locals())))
