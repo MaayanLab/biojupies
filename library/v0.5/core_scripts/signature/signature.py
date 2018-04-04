@@ -53,7 +53,7 @@ def make_design_matrix(expression_dataframe, group_A, group_B, data):
 def limma(dataset, group_A, group_B, data='subset'):
 
 	# Get design
-	processed_data = make_design_matrix(dataset['rawdata'], group_A, group_B, data)
+	processed_data = make_design_matrix(dataset['rawdata'].copy(), group_A, group_B, data)
 
 	# Add
 	return pandas2ri.ri2py(r.limma(pandas2ri.py2ri(processed_data['expression']), pandas2ri.py2ri(processed_data['design']))).sort_values('logFC', ascending=False).set_index('gene_symbol')
@@ -65,7 +65,7 @@ def limma(dataset, group_A, group_B, data='subset'):
 def cd(dataset, group_A, group_B, normalization='rawdata', log=False):
 
 	# Get design
-	processed_data = make_design_matrix(dataset[normalization], group_A, group_B)
+	processed_data = make_design_matrix(dataset[normalization].copy(), group_A, group_B)
 
 	# Add
 	return pandas2ri.ri2py(r.cd(pandas2ri.py2ri(processed_data['expression']), pandas2ri.py2ri(processed_data['design']), log)).sort_values('CD', ascending=False).set_index('gene_symbol')

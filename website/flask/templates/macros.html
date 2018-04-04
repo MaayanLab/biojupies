@@ -143,10 +143,10 @@
 							{% endif %}
 							{{ tool['tool_name'].replace(' Links', '').replace(' Query', '')|safe }}?
 						</div>
-						<div class="micro mt-1 text-justify">{{tool['overview']|safe}}</div>
+						<div class="micro mt-1 text-justify">{{tool['introduction']|safe}}</div>
 
 						<!-- Results -->
-						<div class="tiny bold mt-3">Overview</div>
+						<div class="tiny bold mt-3">How are the results displayed?</div>
 						<div class="micro mt-1 text-justify">{{tool['result_description']|safe}}</div>
 
 						<!-- Reference -->
@@ -160,13 +160,13 @@
 
 							<!-- Example -->
 							<div class="col-4 text-left">
-								<a href="#" class="grey nodecoration bold mr-4" target="_blank">
+								<a href="http://nbviewer.jupyter.org/urls/storage.googleapis.com/jupyter-notebook-generator/n3Seul6aJ/Normal%20vs%20Metastatic%20Analysis%20Notebook%20%7C%20BioJupies.ipynb#{{tool['tool_string']}}" class="grey nodecoration bold mr-4" target="_blank">
 									<i class="fa fa-book fa-2x align-middle mr-2"></i>Interactive Example
 								</a>
 							</div>
 
 							<!-- Tutorial -->
-							<div class="col-4 text-left">
+							<div class="col-4 text-left hidden">
 								<a href="#" class="grey nodecoration bold mr-4" target="_blank">
 									<i class="fab fa-youtube fa-2x align-middle mr-2"></i>Video Tutorial
 								</a>

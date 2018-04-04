@@ -78,3 +78,29 @@ def h5(path, data_type='rnaseq', from_url=False):
 
 	# Return
 	return {'rawdata': expression_dataframe, 'sample_metadata': sample_metadata_dataframe, 'dataset_metadata': {'source': 'h5', 'data_type': data_type}}
+
+
+#############################################
+########## 3. Upload
+#############################################
+
+def upload(uid):
+
+	# Load HDF5 File
+	h5 = '{uid}.h5'.format(**locals())
+	with open(h5, 'wb') as openfile:
+		openfile.write(urllib.request.urlopen('https://storage.googleapis.com/jupyter-notebook-generator-user-data/{uid}/{uid}.h5'.format(**locals())).read())
+	f = h5py.File(h5, 'r')
+	
+	# Get data
+	rawcount_dataframe = pd.DataFrame(data=f['data']['expression'].value, index=[x for x in f['meta']['gene']['symbol'].value], columns=[x for x in f['meta']['sample']['Sample'].value])
+	sample_metadata_dataframe = pd.DataFrame({key: [x for x in value.value] if type(value) == h5py._hl.dataset.Dataset else [x for x in [y for y in value.items()][0][1].value] for key, value in f['meta']['sample'].items()}).set_index('Sample', drop=False).rename(columns={'Sample': 'Sample Title'})
+	# for column in sample_metadata_dataframe.columns:
+	# 	unique_vals = list(set(sample_metadata_dataframe[column]))
+	# 	if len(unique_vals) == 1 or any([len(x) > 20 for x in unique_vals]):
+	   #  	sample_metadata_dataframe.drop(column, axis=1, inplace=True)
+	data = {'rawdata': rawcount_dataframe, 'sample_metadata': sample_metadata_dataframe, 'dataset_metadata': {'source': 'upload', 'datatype': 'rnaseq'}}
+	os.unlink(h5)
+
+	# Return
+	return data
