@@ -166,11 +166,13 @@
 							</div>
 
 							<!-- Tutorial -->
-							<div class="col-4 text-left hidden">
-								<a href="#" class="grey nodecoration bold mr-4" target="_blank">
-									<i class="fab fa-youtube fa-2x align-middle mr-2"></i>Video Tutorial
-								</a>
-							</div>
+							{% if tool['video_tutorial'] %}
+								<div class="col-4 text-left">
+									<a href="{{tool['video_tutorial']}}" class="grey nodecoration bold mr-4" target="_blank">
+										<i class="fab fa-youtube fa-2x align-middle mr-2"></i>Video Tutorial
+									</a>
+								</div>
+							{% endif %}
 
 							<!-- Source Code -->
 							<div class="col-4 text-left">

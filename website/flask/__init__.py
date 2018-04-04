@@ -324,10 +324,10 @@ def generate_notebook():
 
 	# Get tools
 	tools = pd.read_sql_query('SELECT tool_string, tool_name FROM tool', engine).set_index('tool_string').to_dict()['tool_name']
-	tool_string = ', '.join([tools[x['tool_string']] for x in c['tools']])
+	selected_tools = [tools[x['tool_string']] for x in c['tools']]
 	
 	# Return result
-	return render_template('analyze/results.html', notebook_configuration=json.dumps(c), notebook_configuration_dict=c, tool_string=tool_string)
+	return render_template('analyze/results.html', notebook_configuration=json.dumps(c), notebook_configuration_dict=c, selected_tools=selected_tools)
 
 #############################################
 ########## 10. View Notebook

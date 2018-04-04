@@ -50,14 +50,18 @@
 									User-submitted
 								{% endif %}
 						</div>
-						<div class="text-muted regular very-small mt-2">Analysis Tools:<span class="light font-italic"> {{ tool_string|safe }}</span></div>
-							{% if notebook_configuration_dict['signature']|length %}
-								<div class="text-muted regular very-small mt-2 light">Signature:
-									<span class="light font-italic">{{ notebook_configuration_dict['signature']['A']['name'] }}</span>
-									<span class="light">vs</span>
-									<span class="light font-italic">{{ notebook_configuration_dict['signature']['B']['name'] }}</span>
-								</div>
-							{% endif %}
+						{% if notebook_configuration_dict['signature']|length %}
+							<div class="text-muted regular very-small mt-2 light">Signature:
+								<span class="light font-italic">{{ notebook_configuration_dict['signature']['A']['name'] }}</span>
+								<span class="light">vs</span>
+								<span class="light font-italic">{{ notebook_configuration_dict['signature']['B']['name'] }}</span>
+							</div>
+						{% endif %}
+						<div class="text-muted regular very-small mt-2">Analysis Tools:
+							{% for tool in selected_tools %}
+								<span class="light bg-lightgrey px-2 py-0 mt-1 rounded border-custom d-inline-block">{{tool|safe}}</span>
+							{% endfor %}
+						</span></div>
 						<div class="row mt-4">
 							<div class="col-2 pr-0">
 								<span id="tweet" class="d-inline-block"></span>

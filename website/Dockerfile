@@ -13,33 +13,11 @@ RUN pip3 install Flask
 RUN pip3 install sqlalchemy
 RUN pip3 install flask-sqlalchemy
 RUN pip3 install pymysql
-RUN pip3 install nbformat
-RUN pip3 install nbconvert
 RUN pip3 install google-cloud
-RUN pip3 install jupyter
-RUN pip3 install jupyter_client
-
-RUN pip3 install seaborn
-RUN pip3 install plotly
-
-RUN apt-get update && apt-get install --allow-unauthenticated -y r-base
-
-RUN pip3 install rpy2
 RUN pip3 install h5py
-RUN pip3 install sklearn
-RUN pip3 install qgrid
-RUN pip3 install clustergrammer-widget
 
-RUN echo "r <- getOption('repos'); r['CRAN'] <- 'http://cran.us.r-project.org'; options(repos = r);" > ~/.Rprofile
-RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("limma");'
-RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("edgeR");'
-
-RUN apt-get update && apt-get install -y wget
-
-RUN mkdir notebook-generator-server
-COPY . /notebook-generator-server
-WORKDIR /notebook-generator-server/flask
-
-RUN cd static; wget https://github.com/MaayanLab/notebook-generator/raw/master/library.zip; rm -r library; unzip library.zip; cd ..;
+RUN mkdir biojupies
+COPY . /biojupies
+WORKDIR /biojupies/flask
 
 ENTRYPOINT mkdir ~/.config; mkdir ~/.config/gcloud; echo $APPLICATION_DEFAULT_CREDENTIALS > ~/.config/gcloud/application_default_credentials.json; python3 __init__.py
