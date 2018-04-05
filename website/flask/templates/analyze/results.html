@@ -4,20 +4,15 @@
 <!-- Title -->
 {% block title %} BioJupies | Results {% endblock %}
 
-<!-- Head -->
-{% block head %}
-	<style type="text/css">html{height: 100%;}body{height: 100%; overflow: hidden;}#outer-container{height: 100%;}</style>
-{% endblock %}
-
 <!-- Content -->
 {% block content %}
 
 <div class="px-6">
 	<div class="row pt-4">
-		<div class="col-8 large pl-4">Results</div>
-		<div class="col-4 text-right">
-			<button class="btn black border-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
-			<a class="btn white border-custom bg-blue nodecoration mr-2" href="{{url_for('analyze')}}">New Notebook</a>
+		<div class="col-6 large pl-4">Results</div>
+		<div class="col-6 text-right">
+			<a id="reanalyze" class="btn black border-custom bg-white nodecoration mr-2 d-inline-block hidden" href="{{url_for('add_tools')}}?uid=">Re-analyze Dataset</a>
+			<a id="new-notebook" class="btn white border-custom bg-blue nodecoration mr-2 d-inline-block hidden" href="{{url_for('analyze')}}">New Notebook</a>
 		</div>
 	</div>
 	<div class="row">
@@ -31,7 +26,8 @@
 
 			<!-- Notebook Link -->
 			<div id="results" class="hidden">
-				<!-- <hr width="50%" class="mb-4"> -->
+
+				<!-- Notebook Preview Image -->
 				<div class="row mt-5">
 					<div class="col-4">
 						<a id="notebook-link" href="{{ url_for('view_notebook', notebook_uid='') }}" target="_blank" data-notebook_configuration="{{ notebook_configuration }}">
@@ -96,12 +92,6 @@
 				</div>
 			</div>
 
-			<!-- Reanalyze User-submitted Dataset -->
-			<div id="reanalyze" class="mt-5 small light pt-3 hidden">
-				<div>Use the link below to re-analyze the uploaded dataset:</div>
-				<div class="mt-2 very-small"><a href="{{ url_for('add_tools', _external=True) }}?uid=" class="nodecoration" target="_blank">{{ url_for('add_tools', _external=True) }}?uid=</a></div>
-			</div>
-			<!-- <input id="notebook-configuration" type="hidden" value="{{ notebook_configuration }}"> -->
 		</div>
 	</div>
 </div>
@@ -124,11 +114,13 @@
 		contentType: "application/json; charset=utf-8",
 		dataType: 'json',
 		success: function(res) {
-			console.log(res);
+
+			// Add notebook link
 			$('#status').html('Your Jupyter Notebook is available below:');
 			$('#status').hide();
 			$('#description').hide();
 			$('#results').removeClass('hidden');
+			$('#new-notebook').removeClass('hidden');
 			var notebook_uid = res['notebook_url'].split('/')[6];
 			$('#notebook-link').attr('href', $('#notebook-link').attr('href')+notebook_uid);
 			$('.loader').hide();
@@ -136,8 +128,7 @@
 			// Add link for uploaded data
 			var dataset_uid = JSON.parse($('#notebook-link').attr('data-notebook_configuration'))['data']['parameters']['uid'];
 			if (dataset_uid) {
-				$('#reanalyze a').html($('#reanalyze a').html()+dataset_uid);
-				$('#reanalyze a').attr('href', $('#reanalyze a').attr('href')+dataset_uid);
+				$('#reanalyze').attr('href', $('#reanalyze').attr('href')+dataset_uid);
 				$('#reanalyze').removeClass('hidden');
 			}
 
@@ -149,7 +140,7 @@
 				$('<a>', {
 					'class': 'twitter-share-button',
 					'data-size': 'large',
-					'href': "https://twitter.com/intent/tweet?text={{ notebook_configuration_dict['notebook']['title'] }}&url={{ url_for('view_notebook', notebook_uid='', _external=True)}}"+notebook_uid+"&hashtags=jupyter,bioinformatics,biojupies&via=MaayanLab"
+					'href': "https://twitter.com/intent/tweet?text={{ notebook_configuration_dict['notebook']['title'] }}&url={{ url_for('view_notebook', notebook_uid='', _external=True)}}"+notebook_uid+"&hashtags=biojupies,jupyter,bioinformatics&via=MaayanLab"
 				})
 			)
 
@@ -186,8 +177,10 @@
 		},
 		error: function(e) {
 			$('#status').html('Sorry, there has been an error.');
+			// $('#status').html(e.responseText);
 			$('#description').hide();
 			$('.loader').hide();
+			$('#new-notebook').removeClass('hidden');
 		}
 	})
 

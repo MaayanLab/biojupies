@@ -83,7 +83,7 @@ body {
 .py-6 { padding-top: 4rem !important; padding-bottom: 4rem !important; }
 
 /* Hidden */
-.hidden { display: none; }
+.hidden { display: none !important; }
 
 /********************************/
 /***** INDEX ********************/
