@@ -4,15 +4,14 @@
 <!-- ### Displays navigation options with icon, link, and a text description. -->
 <!-- ### Used in: analyze(). -->
 
-{% macro option_col(option, length) %}
+{% macro option_col(option, colsize) %}
 
-	{% set colsize=(12/length)|int %}
-	<div class="col-md-{{colsize}} text-center">
-			<a class="display-1 px-5 py-4 black border-black-custom rounded d-inline-block" href="{{url_for(option['link'])}}">
+	<div class="{{colsize}} text-center mb-1 mb-lg-0">
+			<a class="display-1 px-5 py-4 black border-custom border-hover-blue rounded d-inline-block" href="{{ url_for(option['link']) }}">
 				<i class="fa fa-{{option['icon']}} my-3"></i>
 			</a>
-		<div class="large mt-3">{{option['title']}}</div>
-		<div class="light small mt-2 px-5 pb-5">{{option['description']|safe}}</div>
+		<a class="large mt-3 nodecoration black d-block" href="{{ url_for(option['link']) }}">{{option['title']}}</a>
+		<div class="light small mt-2 pb-5 px-0 px-lg-3 px-xl-5">{{option['description']|safe}}</div>
 	</div>
 	
 {% endmacro %}
@@ -29,23 +28,47 @@
 
 	<div class="row">
 		<div class="col-12">
-			<div data-toggle="collapse" data-target="#{{id}}-info" class="object-label mt-3 mb-0 px-3 py-3 w-100 border-custom rounded cursor-pointer bg-lightgrey">
-				<div class="row">
-					<div class="col-1 my-auto">
-						<img src="{{ url_for('static', filename='img/dataset_icon.png') }}" class="w-100">
+			<div class="object-label mt-3 mb-0 px-0 w-100 border-custom rounded bg-lightgrey">
+				<div class="d-table w-100 pl-2 pl-md-0">
+
+					<!-- Icon -->
+					<div class="d-none d-md-table-cell align-middle card-icon px-3 py-3">
+						<img src="{{ url_for('static', filename='img/dataset_icon.png') }}" class="w-100 my-auto">
 					</div>
-					<div class="col-11">
-						<div class="very-small regular pb-2 pr-5">{{ dataset['title']|safe }}</div>
-						<div class="row tiny light text-muted">
-							<div class="col-2"><span></span><span class="font-italic">{{dataset['gse']}}</span></div>
-							<div class="col-2"><span class="font-italic">{{dataset['nr_samples']}} samples</span></div>
+
+					<!-- Description -->
+					<div class="d-table-cell align-middle px-2 py-3">
+
+						<!-- Title -->
+						<div class="very-small regular">{{ dataset['title']|safe }}</div>
+
+						<!-- Info -->
+						<div class="tiny light text-muted">
+							<div class="d-block d-lg-inline-block mr-5 mt-3 mt-lg-2"><span class="font-italic">{{dataset['gse']}}</span></div>
+							<div class="d-block d-lg-inline-block mr-5 mt-3 mt-lg-2"><span class="font-italic">{{dataset['nr_samples']}} samples</span></div>
 							<!-- <div class="col-3"><span>Organism: </span><span class="font-italic">{{dataset['organism']}}</span></div> -->
-							<div class="col-3"><span>Published </span><span class="font-italic">{{dataset['date'].strftime('%B %Y')}}</span></div>
+							<div class="d-block d-lg-inline-block mr-5 mt-3 mt-lg-2"><span>Published </span><span class="font-italic">{{dataset['date'].strftime('%B %Y')}}</span></div>
 						</div>
 					</div>
+
+					<!-- Actions -->
+					<div class="d-table-cell align-middle card-options px-2">
+						<div class="d-block">
+							<form id="{{id}}-form">
+								<input type="hidden" name="gse-gpl" value="{{id}}">
+							</form>
+							<button class="btn text-center w-100 mb-1 bg-blue white border-grey light tiny mb-1 nodecoration" form="{{id}}-form" type="submit" formaction="{{ url_for('add_tools') }}" formmethod="post">
+								Analyze<i class="fa fa-angle-right ml-1"></i>
+							</button>
+							<button class="btn text-center w-100 border-grey bg-transparent light tiny nodecoration text-muted" data-toggle="collapse" data-target="#{{id}}-info" >
+								More Info<i class="fa fa-angle-down ml-1 fa-1x"></i>
+							</button>
+						</div>
+					</div>
+
 				</div>
 			</div>
-			<div id="{{id}}-info" class="collapse border-grey mx-2 border-top-0 rounded-bottom tiny {{ 'show' if i == 1 else '' }}">
+			<div id="{{id}}-info" class="collapse border-grey mx-2 border-top-0 rounded-bottom tiny {{ 'show' if i == 0 else '' }}">
 				<div class="py-3">
 
 					<!-- Summary -->
@@ -67,20 +90,11 @@
 					</div>
 
 					<!-- Repository -->
-					<div class="row px-3 pt-3">
+<!-- 					<div class="row px-3 pt-3">
 						<div class="col-1 bold">Repository</div>
 						<div class="col-11 text-muted light pl-4"><a target="_blank" href="https://www.ncbi.nlm.nih.gov/gds">Gene Expression Omnibus</a></div>
 					</div>
-
-					<!-- Analyze -->
-					<div class="row px-3 pt-3 analyze-col float-right">
-						<div class="col-12">
-							<form id="{{id}}-form">
-								<input type="hidden" name="gse-gpl" value="{{id}}">
-							</form>
-							<button class="btn white bg-white nodecoration border-custom px-3 py-2 small regular bg-blue" form="{{id}}-form" type="submit" formaction="{{ url_for('add_tools') }}" formmethod="post">Analyze<i class="fa fa-angle-right ml-2"></i></button>
-						</div>
-					</div>
+ -->
 
 
 				</div>
@@ -101,23 +115,39 @@
 	<div class="row">
 		<div class="col-12">
 			<input type="checkbox" name="tool" id="{{tool['tool_string']}}" value="{{tool['tool_string']}}" {{'checked' if tool['default_selected'] else ''}} class="hidden">
-			<div class="object-label mt-3 mb-0 px-3 py-3 w-100 border-custom rounded cursor-pointer bg-lightgrey" data-toggle="collapse" data-target="#{{tool['tool_string']}}-info">
-				<div class="row">
+			<div class="object-label mt-3 mb-0 p-0 w-100 border-custom rounded cursor-pointer bg-lightgrey">
+				<div class="d-table w-100">
 
 					<!-- Icon -->
-					<div class="col-1">
-						<img src="{{ url_for('static', filename='img/tool/{tool_string}/{tool_string}.png'.format(**tool)) }}" class="w-100 px-1 py-1 rounded bg-white border-grey">
+					<div class="d-none d-md-table-cell align-middle card-icon px-3 py-3">
+						<img src="{{ url_for('static', filename='img/tool/{tool_string}/{tool_string}.png'.format(**tool)) }}" class="w-100 px-1 py-1 rounded bg-white border-grey my-auto">
 					</div>
 
 					<!-- Info -->
-					<div class="col-10">
+					<div class="d-table-cell align-middle">
 						<div class="very-small regular pb-2 pr-5">{{tool['tool_name']|safe}}</div>
-						<div class="tiny light text-muted"><span>{{tool['tool_description']}}</span></div>
+						<div class="tiny light text-muted">
+							<span>{{tool['tool_description']}}</span>
+						</div>
 					</div>
 
 					<!-- Checkbox -->
-					<div class="col-1 my-auto text-center">
-						<label for="{{tool['tool_string']}}" class="my-auto"><i class="far fa-2x tool-checkbox"></i></label>
+					<div class="d-table-cell align-middle text-right card-options px-2">
+						<div class="d-block">
+							<form id="{{id}}-form">
+								<input type="hidden" name="gse-gpl" value="{{id}}">
+							</form>
+							<button class="btn text-center w-100 mb-1 bg-blue white border-grey light tiny mb-1 nodecoration" form="{{id}}-form" type="submit" formaction="{{ url_for('add_tools') }}" formmethod="post">
+								{% if tool['default_selected'] %}
+									Remove<i class="fa fa-minus ml-2"></i>
+								{% else %}
+									Add<i class="fa fa-plus ml-2"></i>
+								{% endif %}
+							</button>
+							<button class="btn text-center w-100 border-grey bg-transparent light tiny nodecoration text-muted" data-toggle="collapse" data-target="#{{tool['tool_string']}}-info">
+								More Info<i class="fa fa-angle-down ml-1 fa-1x"></i>
+							</button>
+						</div>
 					</div>
 
 				</div>

@@ -13,13 +13,14 @@ body {
   font-weight: 300 !important;
   height: 100%;
   margin: 0;
-  min-width: 600px;
+  min-width: 700px;
 }
 
 #outer-container {
   background-color: white;
   min-height: 100%;
   margin-bottom: -220px;
+  min-width: 700px;
 }
 
 .push {
@@ -64,6 +65,7 @@ body {
 .border-black { border: 1px solid black !important;}
 .border-grey { border: 1px solid #c9c9c9; }
 .border-custom { border: 1px solid #c9c9c9; border-bottom: 2px solid #d5d5d5; }
+.border-hover-blue:hover { border: 1px solid #3cb2f7 !important; border-bottom: 2px solid #3bb1f7 !important; }
 .border-black-custom { border: 1px solid black !important; border-bottom: 2px solid #8a8a8a !important; }
 .border-grey-light { border: 1px solid rgba(0,0,0,0.1); }
 .border-none { border: none; }
@@ -81,7 +83,7 @@ body {
 .line-height-2 { line-height: 2; }
 .px-6 { padding-left: 4rem !important; padding-right: 4rem !important; }
 .py-6 { padding-top: 4rem !important; padding-bottom: 4rem !important; }
-
+.w-auto { width: auto !important; }
 /* Hidden */
 .hidden { display: none !important; }
 
@@ -154,7 +156,8 @@ input:checked + .object-label span {
 /********************************/
 
 #slider {
-	width: 150px;
+	width: 100px;
+  margin-top: -20px;
 }
 
 .noUi-tooltip {
@@ -380,6 +383,15 @@ input:checked + .object-label span {
 /********************************/
 /***** Add Tools ******/
 /********************************/
+
+.card-icon {
+  width: 85px;
+}
+
+.card-options {
+  /*height: 80px !important;*/
+  width: 100px;
+}
 
 #imagemodal .modal-dialog {
   max-width: 900px;

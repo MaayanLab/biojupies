@@ -13,57 +13,96 @@
 {% block content %}
 
 <div class="px-6">
+
+	<!-- Title -->
 	<div class="row pt-4">
-		<div class="col-8 large pl-4">Search Datasets<sup><i class="fa fa-question-circle small ml-1 text-muted cursor-pointer" data-toggle="collapse" data-target="#info"></i></sup></div>
+		<div class="col-12 very-large text-center light">What dataset would you like to analyze?</div>
 	</div>
+
+	<!-- Introduction -->
+	<hr width="100%" class="my-4">
+	<div class="light very-small my-1">
+		Use the form below to <span class="bold">search {{ "{:,d}".format(dataset_nr) }} publicly available datasets</span> published in the <a href="https://www.ncbi.nlm.nih.gov/geo/" class="nodecoration" target="_blank">Gene Expression Omnibus</a> database and processed by <a href="https://amp.pharm.mssm.edu/archs4/" target="_blank">ARCHS4</a>.
+		<!-- Once you have identified a dataset you wish to analyze, click <b>Analyze</b> to continue. -->
+		<!-- Click on <b>More Info</b> to access additional information about the data. -->
+	</div>
+
+	<!-- Dataset Search Form -->
 	<div class="row">
-		<hr width="100%" class="mt-3 mb-0">
 		<div class="col-12">
 			<form id="dataset-search-form">
 
-				<!-- Add introduction -->
-				<div id="info" class="text-justify collapse px-2">
-					<div class="mt-4 light">To start building your notebook, <b>select a dataset</b> you wish to analyze.</div>
-					<div class="mt-3 light">The form below allows to <b>search {{ "{:,d}".format(dataset_nr) }} datasets</b> containing a total of <b>{{ "{:,d}".format(sample_nr) }} RNA-seq samples</b> which have been published in the <a href="https://www.ncbi.nlm.nih.gov/geo/" target="_blank">Gene Expression Omnibus</a> and processed by <a href="https://amp.pharm.mssm.edu/archs4/" target="_blank">ARCHS4</a>. To toggle more information on each dataset, click on its card.</div>
-					<div class="mt-3 light">Once you identify a dataset you wish to analyze, click <b>Analyze</b> to continue.</div>
-					<div class="pt-4 pb-3">
-						<hr width="100%" class="my-0">
-					</div>
-				</div>
-
 				<!-- Search bar -->
-				<div class="border-custom rounded mt-4 mb-3">
-					<input type="text" name="q" value="{{ q }}" class="border-0 w-75 nodecoration px-3 py-2 small light">
-					<button type="submit" class="border-0 px-1 py-2 float-right bg-transparent cursor-pointer nodecoration"><i class="fa fa-search text-muted mr-2 medium mt-1"></i></button>
+				<div class="border-custom rounded mt-3 mb-0">
+					<input type="text" name="q" value="{{ q }}" class="border-0 w-75 nodecoration px-3 py-1 very-small light" placeholder="Search for genes, diseases, small molecules...">
+					<button type="submit" class="border-0 px-1 py-2 float-right bg-transparent cursor-pointer nodecoration"><i class="fa fa-search text-muted mr-2 small"></i></button>
 				</div>
 
 				<!-- Search Options -->
-				<div class="text-secondary form-inline mt-3 mb-3">
+				<div class="text-secondary">
 
 					<!-- Number of results -->
-					<label class="very-small ml-2 mr-4 pr-4 light font-italic mt-1 border-grey border-top-0 border-bottom-0 border-left-0">Displaying {{nr_results_displayed*(page-1)+1}}-{{nr_results_displayed*(page)}} of {{nr_results}} results</label>
+					<div class="d-inline-block">
+						<label class="tiny ml-2 light font-italic pt-3 pt-xl-1">
+							{% if nr_results %}
+									Displaying {{nr_results_displayed*(page-1)+1}}-{{nr_results_displayed*(page)}} of {{nr_results}} results
+							{% else %}
+									Displaying 0 of 0 results
+							{% endif %}
+						</label>
+					</div>
 
-					<!-- Samples Filter -->
-					<label class="tiny regular mr-3" for="samples">Samples<sup><i class="fa fa-question-circle" data-toggle="tooltip" title="The number of RNA-seq samples contained in the dataset."></i></sup>:</label>
-					<div id="slider" class="ml-2"></div>
-					<input type="hidden" id="min-samples" name="min_samples" value="{{ min_samples }}">
-					<input type="hidden" id="max-samples" name="max_samples" value="{{ max_samples }}">
+					<!-- Separator -->
+					<div class="d-none d-xl-inline-block border-grey border-top-0 border-bottom-0 border-left-0 mx-3">&nbsp</div>
 
-					<!-- Organism Filter -->
-					<label class="tiny regular ml-4 mr-2" for="sortby">Organism<sup><i class="fa fa-question-circle" data-toggle="tooltip" title="The organism from which the RNA-seq samples were generated."></i></sup>:</label>
-					<select class="form-control nodecoration tiny" id="organism" name="organism">
-						<option value="all" {{'selected' if organism == 'all' else ''}}>All</option>
-						<option value="human" {{'selected' if organism == 'human' else ''}}>Human</option>
-						<option value="mouse" {{'selected' if organism == 'mouse' else ''}}>Mouse</option>
-					</select>
+					<!-- Filters -->
+					<nav id="filters" class="navbar navbar-expand-xl d-block d-xl-inline-block m-0 p-0">
 
-					<!-- Sort By -->
-					<label class="tiny regular ml-4 mr-2" for="sortby">Sort by<sup><i class="fa fa-question-circle" data-toggle="tooltip" title="Sorting method used to display the search results."></i></sup>:</label>
-					<select class="form-control nodecoration tiny" id="sortby" name="sortby">
-						<option value="new" {{'selected' if sortby == 'new' else ''}}>Newest</option>
-						<option value="desc" {{'selected' if sortby == 'desc' else ''}}>Samples (descending)</option>
-						<option value="asc" {{'selected' if sortby == 'asc' else ''}}>Samples (ascending)</option>
-					</select>
+				        <!-- Toggler -->
+				        <button class="navbar-toggler nodecoration pl-0" type="button" data-toggle="collapse" data-target="#filterNavDropdown" aria-controls="filterNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+				          <div class="tiny border-custom px-2 py-2 rounded">Filters<i class="fa fa-caret-down ml-1"></i></div>
+				        </button>
+
+				        <!-- Collapsible -->
+				        <div class="collapse navbar-collapse" id="filterNavDropdown">
+
+							<!-- Organism Filter -->
+							<div class="d-block d-lg-inline-block ml-3 my-4">
+								<label class="tiny regular d-inline-block" for="sortby">Organism<sup><i class="fa fa-question-circle ml-1" data-toggle="tooltip" title="The organism from which the RNA-seq samples were generated."></i></sup>:
+								</label>
+								<select class="form-control w-auto d-inline-block nodecoration tiny" id="organism" name="organism">
+									<option value="all" {{'selected' if organism == 'all' else ''}}>All</option>
+									<option value="human" {{'selected' if organism == 'human' else ''}}>Human</option>
+									<option value="mouse" {{'selected' if organism == 'mouse' else ''}}>Mouse</option>
+								</select>
+							</div>
+
+							<!-- Sort By -->
+							<div class="d-block d-lg-inline-block ml-3 ml-xl-5 my-4">
+								<label class="tiny regular d-inline-block" for="sortby">
+									Sort by<sup><i class="fa fa-question-circle ml-1" data-toggle="tooltip" title="Sorting method used to display the search results."></i></sup>:
+								</label>
+								<select class="form-control w-auto d-inline-block nodecoration tiny" id="sortby" name="sortby">
+									<option value="new" {{'selected' if sortby == 'new' else ''}}>Newest</option>
+									<option value="desc" {{'selected' if sortby == 'desc' else ''}}>Samples (descending)</option>
+									<option value="asc" {{'selected' if sortby == 'asc' else ''}}>Samples (ascending)</option>
+								</select>
+							</div>
+
+							<!-- Samples Filter -->
+							<div class="d-block d-lg-inline-block ml-3 ml-xl-5 my-4">
+								<label class="tiny regular d-inline-block" for="samples">
+									Samples<sup><i class="fa fa-question-circle ml-1" data-toggle="tooltip" title="The number of RNA-seq samples contained in the dataset."></i></sup>:
+								</label>
+								<div id="slider" class="ml-2 d-inline-block"></div>
+								<input type="hidden" id="min-samples" name="min_samples" value="{{ min_samples }}">
+								<input type="hidden" id="max-samples" name="max_samples" value="{{ max_samples }}">
+							</div>
+						
+						</div>
+
+					</nav>
+
 				</div>
 			</form>
 		</div>
@@ -96,9 +135,10 @@
 
 	<!-- No Results -->
 	{% else %}
-	<div class="row">
-		<div class="col-12 text-center mt-5 pt-5 medium light">
-			<span>No search results.</span>
+	<div class="row mb-5">
+		<div class="col-12 text-center my-5 light">
+			<div class="large mb-3">Sorry, your search returned no results.</div>
+			<div class="medium text-muted mb-5">Please try again with a different query.</div>
 		</div>
 	</div>
 	{% endif %}
@@ -143,12 +183,18 @@
 	slider.on('change', function(range) {
 		$('#min-samples').val(range[0]);
 		$('#max-samples').val(range[1]);
+		$('#dataset-search-form').submit();
 	})
 
 	// Set Samples if specified in args
 	{% if request.args.get('min_samples') %}
 		slider.set([{{request.args.get('min_samples')}}, {{request.args.get('max_samples')}}])
 	{% endif %}
+
+	// Auto-submit form
+	$('#sortby,#organism').change(function(evt) {
+		$('#dataset-search-form').submit();
+	})
 
 </script>
 {% endblock %}

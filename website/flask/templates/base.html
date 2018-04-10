@@ -24,13 +24,18 @@
   <div id="outer-container" class="container px-0">
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light px-4 pt-3">
+    <nav class="navbar navbar-expand-xl navbar-light px-4 pt-3">
       <div class="container px-4">
 
         <!-- Logo -->
         <a class="navbar-brand my-auto" href="{{ url_for('index') }}">
           <img src="{{ url_for('static', filename='img/icon.png') }}" class="d-inline-block mr-1">
           <div class="medium-large d-inline-block regular" style=""><span class="blue">Bio</span>Jupies</div>
+          <span class="d-inline-block d-sm-none">xs</span>
+          <span class="d-none d-sm-inline-block d-md-none">sm</span>
+          <span class="d-none d-md-inline-block d-lg-none">md</span>
+          <span class="d-none d-lg-inline-block d-xl-none">lg</span>
+          <span class="d-none d-xl-inline-block">xl</span>
         </a>
 
         <!-- Toggler -->
@@ -43,7 +48,7 @@
           <ul class="navbar-nav ml-3"> <!-- ml-auto -->
 
             <!-- Search Data -->
-            <li class="nav-item ml-3 my-auto">
+            <li class="nav-item pt-2 pt-xl-0 pl-4 pl-xl-0 ml-3 my-auto">
               <form id="navbar-search-form" action="{{ url_for('search_data') }}" method="get" class="border-grey nodecoration micro light rounded pl-3 py-1">
                   <input type="text" name="q" class="nodecoration border-left-0 border-right-0 border-top-0 border-bottom-0 light very-small" placeholder="Search GEO datasets (e.g. cancer, p53)">
                   <button class="btn text-muted bg-transparent float-right" type="submit"><i class="fa fa-search small text-muted nodecoration"></i></button>
@@ -51,22 +56,22 @@
             </li>
 
             <!-- Chrome Extension -->
-            <li class="nav-item">
+            <li class="nav-item pt-2 pt-xl-0 pl-4 pl-xl-0">
               <a class="nav-link ml-3 black" href="https://chrome.google.com/webstore/detail/biojupies-generator/picalhhlpcjhonibabfigihelpmpadel" target="_blank">Chrome Extension</a>
             </li>
 
             <!-- Help -->
-            <li class="nav-item">
+            <li class="nav-item pt-2 pt-xl-0 pl-4 pl-xl-0">
               <a class="nav-link ml-3 black" href="{{ url_for('help') }}">Help</a>
             </li>
 
             <!-- GitHub -->
-            <li class="nav-item">
+            <li class="nav-item pt-2 pt-xl-0 pl-4 pl-xl-0">
               <a class="nav-link ml-3 black" href="https://github.com/MaayanLab/notebook-generator" target="_blank"><i class="fab fa-github medium text-muted"></i></a>
             </li>
 
             <!-- Twitter -->
-            <li class="nav-item">
+            <li class="nav-item pt-2 pt-xl-0 pl-4 pl-xl-0">
               <a class="nav-link ml-3 black" href="#" onclick="window.open('https://twitter.com/intent/tweet?ref_src=twsrc%5Etfw&text=BioJupies - Generate Tailored Bioinformatics Analysis Notebooks via User Interface Using&tw_p=tweetbutton&url=http://amp.pharm.mssm.edu/biojupies&hashtags=biojupies,jupyter,bioinformatics&via=MaayanLab', 'newwindow', 'width=600, height=250'); return false;" target="_blank"><i class="fab fa-twitter medium text-muted"></i></a>
             </li>
           </ul>

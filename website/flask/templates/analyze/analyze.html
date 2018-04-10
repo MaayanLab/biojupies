@@ -11,12 +11,22 @@
 <!-- Content -->
 {% block content %}
 
-<div class="px-6 my-5 py-5">
+<div class="px-6 my-5 pb-5">
+
+	<!-- Intro Text -->
 	<div class="row">
+		<div class="col-12 text-center very-large light mb-5">
+			<div>What data would you like to analyze?</div>
+		</div>
+	</div>
+
+	<!-- Options -->
+	<div class="row px-xl-5 px-lg-3">
 		{% for option in options %}
-			{{ macros.option_col(option, options|length) }}
+			{{ macros.option_col(option, colsize='col-lg-4') }}
 		{% endfor %}
 	</div>
+
 </div>
 
 {% endblock %}

@@ -104,9 +104,9 @@ def analyze():
 
 	# Get options
 	options = [
-		{'link': 'search_data', 'icon': 'search', 'title': 'Search', 'description': 'Search thousands of ready-to-analyze datasets'},
-		{'link': 'upload_table', 'icon': 'upload', 'title': 'Upload', 'description': 'Upload your own<br>gene expression data<br>for analysis'},
-		{'link': 'tutorial', 'icon': 'question-circle', 'title': 'Tutorial', 'description': 'Learn to generate notebooks with a<br>sample dataset'}
+		{'link': 'search_data', 'icon': 'search', 'title': 'Published Data', 'description': 'Search thousands of published, publicly available datasets'},
+		{'link': 'upload_table', 'icon': 'upload', 'title': 'Your Data', 'description': 'Upload your own gene expression data for analysis'},
+		{'link': 'tutorial', 'icon': 'question-circle', 'title': 'Example Data', 'description': 'Learn to generate notebooks with an example dataset'}
 	]
 	
 	# Return result
