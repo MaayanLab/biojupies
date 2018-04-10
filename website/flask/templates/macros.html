@@ -51,14 +51,14 @@
 						</div>
 					</div>
 
-					<!-- Actions -->
+					<!-- Options -->
 					<div class="d-table-cell align-middle card-options px-2">
 						<div class="d-block">
 							<form id="{{id}}-form">
 								<input type="hidden" name="gse-gpl" value="{{id}}">
 							</form>
 							<button class="btn text-center w-100 mb-1 bg-blue white border-grey light tiny mb-1 nodecoration" form="{{id}}-form" type="submit" formaction="{{ url_for('add_tools') }}" formmethod="post">
-								Analyze<i class="fa fa-angle-right ml-1"></i>
+								Analyze<i class="fa fa-angle-right ml-2"></i>
 							</button>
 							<button class="btn text-center w-100 border-grey bg-transparent light tiny nodecoration text-muted" data-toggle="collapse" data-target="#{{id}}-info" >
 								More Info<i class="fa fa-angle-down ml-1 fa-1x"></i>
@@ -115,8 +115,8 @@
 	<div class="row">
 		<div class="col-12">
 			<input type="checkbox" name="tool" id="{{tool['tool_string']}}" value="{{tool['tool_string']}}" {{'checked' if tool['default_selected'] else ''}} class="hidden">
-			<div class="object-label mt-3 mb-0 p-0 w-100 border-custom rounded cursor-pointer bg-lightgrey">
-				<div class="d-table w-100">
+			<div class="object-label mt-3 mb-0 p-0 w-100 border-custom rounded bg-lightgrey">
+				<div class="d-table w-100 pl-3 pl-md-0">
 
 					<!-- Icon -->
 					<div class="d-none d-md-table-cell align-middle card-icon px-3 py-3">
@@ -124,28 +124,28 @@
 					</div>
 
 					<!-- Info -->
-					<div class="d-table-cell align-middle">
-						<div class="very-small regular pb-2 pr-5">{{tool['tool_name']|safe}}</div>
+					<div class="d-table-cell align-middle py-2 py-md-0">
+						<div class="very-small regular pb-0 pb-lg-2 pr-5">{{tool['tool_name']|safe}}</div>
 						<div class="tiny light text-muted">
 							<span>{{tool['tool_description']}}</span>
 						</div>
 					</div>
 
-					<!-- Checkbox -->
-					<div class="d-table-cell align-middle text-right card-options px-2">
+					<!-- Options -->
+					<div class="d-table-cell align-middle text-right card-options px-2 py-2 py-md-0">
 						<div class="d-block">
 							<form id="{{id}}-form">
 								<input type="hidden" name="gse-gpl" value="{{id}}">
 							</form>
-							<button class="btn text-center w-100 mb-1 bg-blue white border-grey light tiny mb-1 nodecoration" form="{{id}}-form" type="submit" formaction="{{ url_for('add_tools') }}" formmethod="post">
+							<label class="btn text-center w-100 mb-1 bg-blue white border-grey light tiny mb-1 nodecoration tool-checkbox"  for="{{tool['tool_string']}}">
 								{% if tool['default_selected'] %}
-									Remove<i class="fa fa-minus ml-2"></i>
+									<span>Remove</span><i class="fa fa-minus ml-2"></i>
 								{% else %}
-									Add<i class="fa fa-plus ml-2"></i>
+									<span>Add</span><i class="fa fa-plus ml-2"></i>
 								{% endif %}
-							</button>
-							<button class="btn text-center w-100 border-grey bg-transparent light tiny nodecoration text-muted" data-toggle="collapse" data-target="#{{tool['tool_string']}}-info">
-								More Info<i class="fa fa-angle-down ml-1 fa-1x"></i>
+							</label>
+							<button class="btn text-center w-100 border-grey bg-transparent light tiny nodecoration" data-toggle="collapse" data-target="#{{tool['tool_string']}}-info" type="button">
+								<span class="{{ 'white' if tool['default_selected'] else 'text-muted' }}">More Info<i class="fa fa-angle-down ml-1 fa-1x"></i></span>
 							</button>
 						</div>
 					</div>
@@ -230,15 +230,27 @@
 
 	<div class="row">
 		<div class="col-12">
-			<div class="mt-3 mb-0 px-3 py-3 w-100 border-custom rounded cursor-pointer bg-lightgrey" data-toggle="collapse" data-target="#{{tool.tool_string}}-info">
-				<div class="row">
-					<div class="col-1">
+			<div class="mt-3 mb-0 w-100 border-custom rounded bg-lightgrey">
+				<div class="d-table w-100">
+
+					<!-- Icon -->
+					<div class="d-table-cell align-middle card-icon px-3 py-3">
 						<img src="{{ url_for('static', filename='img/tool/{tool_string}/{tool_string}.png'.format(**tool)) }}" class="w-100 px-1 py-1 rounded bg-white border-grey">
 					</div>
-					<div class="col-11">
-						<div class="very-small regular pb-2 pr-5">{{tool.tool_name}}</div>
-						<div class="tiny light text-muted">Optional configuration parameters for {{tool.tool_name}}</div>
+
+					<!-- Title -->
+					<div class="d-table-cell align-middle">
+						<div class="very-small regular pb-2 pr-5">{{tool.tool_name}} Options</div>
+						<div class="tiny light text-muted">Manually change optional configuration parameters for {{tool.tool_name}}</div>
 					</div>
+
+					<!-- Options -->
+					<div class="d-table-cell align-middle card-options pr-3">
+						<button class="btn text-center w-100 border-grey bg-transparent light tiny nodecoration text-muted" data-toggle="collapse" type="button" data-target="#{{tool.tool_string}}-info">
+							Modify Parameters<i class="fa fa-angle-down ml-1 fa-1x"></i>
+						</button>
+					</div>
+
 				</div>
 			</div>
 			<div id="{{tool.tool_string}}-info" class="collapse border-grey mx-2 border-top-0 rounded-bottom tiny">
@@ -274,15 +286,20 @@
 
 	<div class="row">
 		<div class="col-12">
-			<div class="mt-3 mb-0 px-3 py-3 w-100 border-custom rounded cursor-pointer bg-lightgrey" data-toggle="collapse" data-target="#notebook_settings-info">
-				<div class="row">
-					<div class="col-1">
+			<div class="mt-3 mb-0 w-100 border-custom rounded bg-lightgrey" data-toggle="collapse" data-target="#notebook_settings-info">
+				<div class="d-table w-100">
+
+					<!-- Icon -->
+					<div class="d-table-cell align-middle card-icon px-3 py-3">
 						<img src="{{ url_for('static', filename='img/jupyter.png') }}" class="w-100 px-1 py-1 rounded bg-white border-grey">
 					</div>
-					<div class="col-11">
+
+					<!-- Title -->
+					<div class="d-table-cell align-middle">
 						<div class="very-small regular pb-2 pr-5">Notebook Configuration</div>
-						<div class="tiny light text-muted">Optional annotations and configuration for the notebook</div>
+						<div class="tiny light text-muted">Manually customize your Jupyter Notebook</div>
 					</div>
+
 				</div>
 			</div>
 			<div id="notebook_settings-info" class="collapse show border-grey mx-2 border-top-0 rounded-bottom tiny">

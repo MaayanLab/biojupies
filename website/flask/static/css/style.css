@@ -13,14 +13,13 @@ body {
   font-weight: 300 !important;
   height: 100%;
   margin: 0;
-  min-width: 700px;
 }
 
 #outer-container {
   background-color: white;
   min-height: 100%;
   margin-bottom: -220px;
-  min-width: 700px;
+  min-width: 500px !important;
 }
 
 .push {

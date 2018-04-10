@@ -8,27 +8,28 @@
 {% block content %}
 
 <div class="px-6">
+
+	<!-- Title -->
+	<div class="row pt-4">
+		<div class="col-12 very-large text-center light px-5">Review and Submit</div>
+	</div>
+
+	<!-- Introduction -->
+	<hr width="100%" class="my-4">
 	<div class="row">
-		<div class="col-8 large mt-5 pl-4">Review and Submit<sup><i class="fa fa-question-circle small ml-1 text-muted cursor-pointer" data-toggle="collapse" data-target="#info"></i></sup></div>
-		<div class="col-4 text-right mt-5">
+		<div class="light very-small my-1 col-lg-8 text-justify">
+			Your Jupyter notebook is ready to be generated. Here you can <b>customize your results</b> by changing the notebook title and modifying optional tool parameters. You can also <b>add biological tags</b> to make the results more findable by other users. Once you have made the desired changes, click on <b>Generate Notebook</b> to proceed.
+		</div>
+		<div class="col-lg-4 my-auto text-center pt-3 pt-lg-0">
 			<button class="btn black border-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
 			<button class="btn navigate white border-custom bg-blue nodecoration" form="review-analysis-form" type="submit" formaction="{{ url_for('generate_notebook') }}" formmethod="post">Generate Notebook</button>
 		</div>
 	</div>
-	<div class="row">
-		<hr width="100%" class="mt-3 mb-0">
+
+	<!-- Review Analysis Form -->
+	<div class="row pt-2">
 		<div class="col-12 mb-5">
 			<form id="review-analysis-form" action="{{ url_for('generate_notebook') }}" method="post">
-
-				<!-- Add introduction -->
-				<div id="info" class="text-justify collapse px-2">
-					<div class="mt-4 light">Your notebook is <b>ready to be generated</b>.</div>
-					<div class="mt-3 light">Here, you can customize it by <b>modifying optional tool parameters</b> and by <b>adding biological hashtags</b>. While this step is optional, we recommend selecting <span class="font-italic">at least three relevant hashtags</span> - this will allow other users to find your notebook more easily.</div>
-					<div class="mt-3 light">Once you have made the desired changes, click on <span class="rounded px-0 py-1 regular">Generate Notebook</span> to proceed.</div>
-					<div class="pt-4 pb-3">
-						<hr width="100%" class="my-0">
-					</div>
-				</div>
 
 				<!-- Notebook Settings -->
 				{{ macros.notebook_settings(f['gse'], f.get('group_a_label'), f.get('group_b_label')) }}

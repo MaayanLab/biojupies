@@ -11,21 +11,24 @@
 
 	<!-- Title -->
 	<div class="row pt-4">
-		<div class="col-12 very-large text-center light">What analysis tools would you like to add?</div>
+		<div class="col-12 very-large text-center light px-5">What analysis tools would you like to add?</div>
 	</div>
 
 	<!-- Introduction -->
 	<hr width="100%" class="my-4">
-	<div class="light very-small my-1">
-		Use the form below to <span class="bold">add or remove analysis tools</span> to your notebook.
-	</div>
-
-<!-- 		<div class="col-4 text-right">
+	<div class="row">
+		<div class="light very-small my-1 col-lg-8 col-xl-9 text-justify">
+			Use the form below to <span class="bold">add or remove data analysis and visualization tools</span> to your notebook.
+			These tools will analyze the selected dataset and embed interactive results in your Jupyter Notebook.
+			Once you have selected the desired tools, click <b>Continue</b> to proceed.
+		</div>
+		<div class="col-lg-4 col-xl-3 my-auto text-center pt-3 pt-lg-0">
 			<button class="btn black border-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
-			<button class="btn navigate white border-custom bg-blue nodecoration" form="add-tools-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">Continue<i class="fa fa-angle-right ml-2"></i></button>
+			<button class="btn navigate white border-custom bg-blue nodecoration" form="add-tools-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">
+				Continue<i class="fa fa-angle-right ml-2"></i>
+			</button>
 		</div>
 	</div>
- -->	
 
 	 <!-- Add Tools Form -->
 	 <div class="row">
@@ -79,20 +82,13 @@
 	   $('#imagemodal').modal('show'); // imagemodal is the id attribute assigned to the bootstrap modal, then i use the show function
 	});
 
-	// Add Tool Checkbox
-	$('.tool-checkbox').each(function(index, elem) {
-		if ($(elem).parents('.object-label').prev().prop('checked')) {
-			$(elem).addClass('fa-check-square');
-		} else {
-			$(elem).addClass('fa-square');
-		}
-	})
-
 	// Tool Checkbox Listener
 	$('.tool-checkbox').click(function(evt) {
 		evt.stopPropagation();
-		$(evt.target).toggleClass('fa-check-square');
-		$(evt.target).toggleClass('fa-square');
+		$(evt.target).parents('.card-options').find('.fa').first().toggleClass('fa-plus fa-minus');
+		$(evt.target).parents('.card-options').find('span').first().html($(evt.target).parents('.card-options').find('span').first().html().replace('Add', 'Add1').replace('Remove', 'Add').replace('Add1', 'Remove'));
+		$(evt.target).parents('.card-options').find('button span').first().toggleClass('white text-muted');
 	})
+
 </script>
 {% endblock %}
