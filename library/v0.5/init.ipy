@@ -76,5 +76,5 @@ def plot(results, **kwargs):
 
 # Display metadata
 def display_metadata(dataset):
-    display(HTML('<div style="max-height: 350px; overflow-y: auto;">'+dataset['sample_metadata'].to_html(escape=False)+'</div>'))
+	display(HTML('<div style="max-height: 350px; overflow-y: auto;">'+dataset['sample_metadata'].to_html(escape=False)+'</div>'))
 
