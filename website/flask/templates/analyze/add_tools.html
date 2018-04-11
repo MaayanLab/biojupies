@@ -11,7 +11,7 @@
 
 	<!-- Title -->
 	<div class="row pt-4">
-		<div class="col-12 very-large text-center light px-5">What analysis tools would you like to add?</div>
+		<div class="col-12 very-large text-center light px-5">What analyses would you like to perform?</div>
 	</div>
 
 	<!-- Introduction -->
@@ -19,7 +19,7 @@
 	<div class="row">
 		<div class="light very-small my-1 col-lg-8 col-xl-9 text-justify">
 			Use the form below to <span class="bold">add or remove data analysis and visualization tools</span> to your notebook.
-			These tools will analyze the selected dataset and embed interactive results in your Jupyter Notebook.
+			These tools will analyze the selected dataset and embed interactive results in your notebook.
 			Once you have selected the desired tools, click <b>Continue</b> to proceed.
 		</div>
 		<div class="col-lg-4 col-xl-3 my-auto text-center pt-3 pt-lg-0">
@@ -89,6 +89,9 @@
 		$(evt.target).parents('.card-options').find('span').first().html($(evt.target).parents('.card-options').find('span').first().html().replace('Add', 'Add1').replace('Remove', 'Add').replace('Add1', 'Remove'));
 		$(evt.target).parents('.card-options').find('button span').first().toggleClass('white text-muted');
 	})
+
+	// Fix fonts
+	$('input:checked').each(function(index, elem) { $(elem).parent().find('button span').last().addClass('white') });
 
 </script>
 {% endblock %}

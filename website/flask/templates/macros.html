@@ -7,7 +7,7 @@
 {% macro option_col(option, colsize) %}
 
 	<div class="{{colsize}} text-center mb-1 mb-lg-0">
-			<a class="display-1 px-5 py-4 black border-custom border-hover-blue rounded d-inline-block" href="{{ url_for(option['link']) }}">
+			<a class="display-1 px-5 py-4 black border-custom rounded d-inline-block" href="{{ url_for(option['link']) }}">
 				<i class="fa fa-{{option['icon']}} my-3"></i>
 			</a>
 		<a class="large mt-3 nodecoration black d-block" href="{{ url_for(option['link']) }}">{{option['title']}}</a>
@@ -134,9 +134,6 @@
 					<!-- Options -->
 					<div class="d-table-cell align-middle text-right card-options px-2 py-2 py-md-0">
 						<div class="d-block">
-							<form id="{{id}}-form">
-								<input type="hidden" name="gse-gpl" value="{{id}}">
-							</form>
 							<label class="btn text-center w-100 mb-1 bg-blue white border-grey light tiny mb-1 nodecoration tool-checkbox"  for="{{tool['tool_string']}}">
 								{% if tool['default_selected'] %}
 									<span>Remove</span><i class="fa fa-minus ml-2"></i>
@@ -241,7 +238,7 @@
 					<!-- Title -->
 					<div class="d-table-cell align-middle">
 						<div class="very-small regular pb-2 pr-5">{{tool.tool_name}} Options</div>
-						<div class="tiny light text-muted">Manually change optional configuration parameters for {{tool.tool_name}}</div>
+						<div class="tiny light text-muted">Modify optional configuration parameters for {{tool.tool_name}}</div>
 					</div>
 
 					<!-- Options -->
