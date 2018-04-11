@@ -16,7 +16,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-from IPython.display import HTML
+from IPython.display import display, HTML
 from importlib import reload
 
 # Plotting
@@ -73,3 +73,8 @@ def analyze(tool, **kwargs):
 # Plot
 def plot(results, **kwargs):
 	return eval(results['tool']).plot(results['results'], plot_counter=plot_counter, **kwargs)
+
+# Display metadata
+def display_metadata(dataset):
+    display(HTML('<div style="max-height: 350px; overflow-y: auto;">'+dataset['sample_metadata'].to_html(escape=False)+'</div>'))
+

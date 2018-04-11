@@ -106,7 +106,7 @@ def analyze():
 	options = [
 		{'link': 'search_data', 'icon': 'search', 'title': 'Published Data', 'description': 'Search thousands of published, publicly available datasets'},
 		{'link': 'upload_table', 'icon': 'upload', 'title': 'Your Data', 'description': 'Upload your own gene expression data for analysis'},
-		{'link': 'tutorial', 'icon': 'question-circle', 'title': 'Example Data', 'description': 'Learn to generate notebooks with an example dataset'}
+		{'link': 'example', 'icon': 'question-circle', 'title': 'Example Data', 'description': 'Learn to generate notebooks with an example dataset'}
 	]
 	
 	# Return result
@@ -634,7 +634,7 @@ def notebook_api(notebook_uid):
 ##################################################
 
 #############################################
-########## 1. Contribute Plugin Interface
+########## 1. Help Center
 #############################################
 ### User manual.
 ### Accessible from: navbar.
@@ -643,26 +643,21 @@ def notebook_api(notebook_uid):
 def help():
 	return render_template('help.html')
 
-#######################################################
-#######################################################
-########## 5. Tutorial
-#######################################################
-#######################################################
-##### BioJupies tutorial
-
-##################################################
-########## 3.1 Webpages
-##################################################
-
 #############################################
-########## 1. Tutorial Homepage
+########## 2. Example Dataset
 #############################################
-### Tutorial Homepage.
+### Example dataset.
 ### Accessible from: analyze().
 
-@app.route(entry_point+'/tutorial')
-def tutorial():
-	return render_template('tutorial/tutorial.html')
+@app.route(entry_point+'/analyze/example')
+def example():
+
+	# Select dataset
+	accession = 'GSE88741'
+	dataset = pd.read_sql_query('SELECT * FROM series se WHERE gse = "{}"'.format(accession), engine).T.to_dict()[0]
+	dataset['date'] = dataset['date'].strftime('%b %d, %Y')
+	print(dataset)
+	return render_template('analyze/example.html', dataset=dataset)
 
 #######################################################
 #######################################################

@@ -27,7 +27,7 @@ from IPython.display import display, Markdown
 ########## 1. Run
 #############################################
 
-def run(dataset, normalization='logCPM', nr_genes=2500, z_score=True, color_by=None, color_type='categorical'):
+def run(dataset, normalization='logCPM', nr_genes=2500, z_score=True, color_by='auto', color_type='categorical'):
 
 	# Get data
 	expression_dataframe = dataset[normalization].copy()
@@ -48,21 +48,31 @@ def run(dataset, normalization='logCPM', nr_genes=2500, z_score=True, color_by=N
 	# Get Variance
 	var_explained = ['PC'+str((i+1))+'('+str(round(e*100, 1))+'% var. explained)' for i, e in enumerate(pca.explained_variance_ratio_)]
 
-	# Add colors
-	if dataset.get('signature_metadata'):
-		A_label, B_label = list(dataset['signature_metadata'].keys())[0].split(' vs ')
-		col = []
-		group_dict = list(dataset['signature_metadata'].values())[0]
-		for gsm in dataset['sample_metadata'].index:
-			if gsm in group_dict['A']:
-				col.append(A_label)
-			elif gsm in group_dict['B']:
-				col.append(B_label)
+	# Estimate colors
+	if color_by == 'auto':
+
+		# Add signature groups
+		if dataset.get('signature_metadata'):
+			A_label, B_label = list(dataset['signature_metadata'].keys())[0].split(' vs ')
+			col = []
+			group_dict = list(dataset['signature_metadata'].values())[0]
+			for gsm in dataset['sample_metadata'].index:
+				if gsm in group_dict['A']:
+					col.append(A_label)
+				elif gsm in group_dict['B']:
+					col.append(B_label)
+				else:
+					col.append('Other')
+			dataset['sample_metadata']['Sample Group'] = col
+			color_by = 'Sample Group'
+		else:
+
+			# Add group column, if available
+			if 'Group' in dataset['sample_metadata'].columns:
+				color_by = 'Group'
 			else:
-				col.append('Other')
-		dataset['sample_metadata']['Group'] = col
-		color_by = 'Group'
-		color_type = 'categorical'
+				color_by = None
+
 
 	# Return
 	pca_results = {'pca': pca, 'var_explained': var_explained, 'sample_metadata': dataset['sample_metadata'].loc[expression_dataframe.columns], 'color_by': color_by, 'color_type': color_type, 'nr_genes': nr_genes, 'normalization': normalization}
@@ -81,7 +91,7 @@ def plot(pca_results, plot_counter):
 	color_by = pca_results.get('color_by')
 	color_type = pca_results.get('color_type')
 	color_column = pca_results['sample_metadata'][color_by] if color_by else None
-	colors = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928']
+	colors = ['blue','red','black'] if color_by=='Sample Group' else ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928']
 	sample_titles = ['<b>{}</b><br>'.format(index)+'<br>'.join('<i>{key}</i>: {value}'.format(**locals()) for key, value in rowData.items()) for index, rowData in sample_metadata.iterrows()]
 
 	if not color_by:

@@ -45,10 +45,16 @@ def run(dataset, normalization='logCPM', z_score=True, nr_genes=1500, metadata_c
 		if z_score:
 			data = data.apply(ss.zscore, axis=1)
 
-		# If metadata
+		# Sample metadata
 		sample_metadata = dataset['sample_metadata'].copy()
+
+		# For uploaded files
+		if sample_metadata.index.name == 'Sample':
+			sample_metadata = pd.Series(index=sample_metadata.index, data=sample_metadata.index, name='Sample').to_frame().merge(sample_metadata, left_index=True, right_index=True)
+
+		# Filter columns
 		if metadata_cols:
-			sample_metadata = pd.concat([sample_metadata[metadata_cols].index.rename('Sample').to_frame(), sample_metadata[metadata_cols]], axis=1)
+			sample_metadata = pd.concat([sample_metadata[metadata_cols].index.rename('Sample').to_frame(), sample_metadata[metadata_cols]])
 
 		# Add metadata
 		data.index = ['Gene: '+x for x in data.index]

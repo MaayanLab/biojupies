@@ -200,7 +200,7 @@
 	    	hit = autoSelect('a', terms[i]);
 	    	if (hit) { 
 	    		$('input[name="group_a_label"]').val(terms[i]);
-	    		$('[data-group="a"]:not(tr)').text(terms[i]);
+	    		$('[data-group="a"]:not(tr):not(span)').text(terms[i]);
 	    		break
 	    	}
 	    }

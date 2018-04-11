@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% import 'macros.html' as macros %}
+
+<!-- Title -->
+{% block title %} BioJupies | Search Datasets {% endblock %}
+
+<!-- Head -->
+{% block head %}
+	<link href="{{ url_for('static', filename='css/nouislider.min.css') }}" rel="stylesheet">
+{% endblock %}
+
+<!-- Content -->
+{% block content %}
+
+<div class="px-6">
+
+	<!-- Title -->
+	<div class="row pt-4">
+		<div class="col-12 very-large text-center light px-5">Analyze an Example Dataset</div>
+	</div>
+
+	<!-- Introduction -->
+	<hr width="100%" class="my-4">
+	<div class="row">
+		<div class="light very-small my-1 col-lg-8 text-justify">
+			Here you can learn how to generate Jupyter Notebooks using an <b>example dataset</b>. This dataset is publicly available, published in the <a href="https://www.ncbi.nlm.nih.gov/geo/" class="nodecoration" target="_blank">Gene Expression Omnibus</a> database, and processed by <a href="https://amp.pharm.mssm.edu/archs4/" target="_blank">ARCHS4</a>.
+		</div>
+		<div class="col-lg-4 my-auto text-center pt-3 pt-lg-0">
+			<button class="btn black border-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
+			<button class="btn navigate white border-custom bg-blue nodecoration" form="example-dataset-form" type="submit" formaction="{{ url_for('add_tools') }}" formmethod="post">Continue<i class="fa fa-angle-right ml-2"></i></button>
+		</div>
+	</div>
+
+	<!-- Dataset Search Form -->
+	<div class="row">
+		<div class="col-12">
+		<hr width="100%" class="my-4">
+
+			<!-- Dataset data -->
+			{{dataset['title']}}
+			{{dataset['summary']}}
+			{{dataset['gse']}}
+			{{dataset['date']}}
+
+			<!-- Form -->
+			<form id="example-dataset-form">
+				<input type="hidden" name="gse-gpl" value="{{dataset['gse']}}-{{dataset['gpl']}}">
+			</form>
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
+
+{% block footer %}
+<script src="{{ url_for('static', filename='js/nouislider.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/wNumb.js') }}"></script>
+
+<script type="text/javascript">
+
+	// Initialize Slider
+	var slider = noUiSlider.create(document.getElementById('slider'), {
+		start: [ {{ min_samples }}, {{ max_samples }} ], // 4 handles, starting at...
+		margin: 1, // Handles must be at least 300 apart
+		connect: true, // Display a colored bar between the handles
+		orientation: 'horizontal', // Orient the slider vertically
+		behaviour: 'tap-drag', // Move handle on tap, bar is draggable
+		step: 1,
+		format: wNumb({
+			decimals: 0
+		}),
+		tooltips: true,
+		range: {
+			'min': 6,
+			'max': 70
+		},
+		pips: { // Show a scale with the slider
+			mode: 'values',
+			values: [6, 35, 70],
+			density: 10
+		}
+	})
+	
+	// Max samples +
+	$('.noUi-value').last().html($('.noUi-value').last().html()+'+');
+
+	// Slider Listener
+	slider.on('change', function(range) {
+		$('#min-samples').val(range[0]);
+		$('#max-samples').val(range[1]);
+		$('#dataset-search-form').submit();
+	})
+
+	// Set Samples if specified in args
+	{% if request.args.get('min_samples') %}
+		slider.set([{{request.args.get('min_samples')}}, {{request.args.get('max_samples')}}])
+	{% endif %}
+
+	// Auto-submit form
+	$('#sortby,#organism').change(function(evt) {
+		$('#dataset-search-form').submit();
+	})
+
+</script>
+{% endblock %}

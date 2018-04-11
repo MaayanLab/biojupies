@@ -94,7 +94,7 @@ def load_data(notebook, data_configuration, core_options):
 	notebook = addCell(notebook, cell, 'markdown')
 
 	# Add Metadata
-	cell = "# Display metadata\ndataset['sample_metadata']"
+	cell = "# Display metadata\ndisplay_metadata(dataset)"
 	notebook = addCell(notebook, cell)
 	cell = "**Table 2 | Sample metadata.** The table displays the metadata associated with the samples in the RNA-seq dataset.  Rows represent RNA-seq samples, columns represent metadata categories."
 	return addCell(notebook, cell, 'markdown')
