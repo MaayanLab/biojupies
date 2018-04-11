@@ -75,7 +75,7 @@ def run(dataset, normalization='logCPM', nr_genes=2500, z_score=True, color_by='
 
 
 	# Return
-	pca_results = {'pca': pca, 'var_explained': var_explained, 'sample_metadata': dataset['sample_metadata'].loc[expression_dataframe.columns], 'color_by': color_by, 'color_type': color_type, 'nr_genes': nr_genes, 'normalization': normalization}
+	pca_results = {'pca': pca, 'var_explained': var_explained, 'sample_metadata': dataset['sample_metadata'].loc[expression_dataframe.columns], 'color_by': color_by, 'color_type': color_type, 'nr_genes': nr_genes, 'normalization': normalization, 'signature_metadata': dataset['signature_metadata']}
 	return pca_results
 
 #############################################
@@ -91,7 +91,7 @@ def plot(pca_results, plot_counter):
 	color_by = pca_results.get('color_by')
 	color_type = pca_results.get('color_type')
 	color_column = pca_results['sample_metadata'][color_by] if color_by else None
-	colors = ['blue','red','black'] if color_by=='Sample Group' else ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928']
+	colors = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928']
 	sample_titles = ['<b>{}</b><br>'.format(index)+'<br>'.join('<i>{key}</i>: {value}'.format(**locals()) for key, value in rowData.items()) for index, rowData in sample_metadata.iterrows()]
 
 	if not color_by:
@@ -115,6 +115,7 @@ def plot(pca_results, plot_counter):
 							 marker=marker)
 		data = [trace]
 	elif color_by and color_type == 'categorical':
+
 		# Get unique categories
 		unique_categories = color_column.unique()
 
@@ -125,7 +126,18 @@ def plot(pca_results, plot_counter):
 		for i, category in enumerate(unique_categories):
 
 			# Get the color corresponding to the category
-			category_color = colors[i]
+
+			# If signature
+			if color_by == 'Sample Group':
+				group_A, group_B = [x.split(' vs ') for x in pca_results['signature_metadata'].keys()][0]
+				if category == group_A:
+					category_color = 'blue'
+				elif category == group_B:
+					category_color = 'red'
+				else:
+					category_color = 'black'
+			else:
+				category_color = colors[i]
 
 			# Get the indices of the samples corresponding to the category
 			category_indices = [i for i, sample_category in enumerate(color_column) if sample_category == category]

@@ -96,7 +96,7 @@ def plot_library_barchart(enrichr_results, gene_set_library, signature_label, nr
 	] if signature_label else []
 
 	# Get title
-	title = signature_label+ ' Analysis | '+gene_set_library.replace('GO_', 'Gene Ontology ').replace('_2017b', '').replace('_', ' ')
+	title = signature_label+ ' | '+gene_set_library.replace('GO_', 'Gene Ontology ').replace('_2017b', '').replace('_', ' ')
 
 	fig['layout'].update(height=height, title='<b>{}</b>'.format(title), hovermode='closest', annotations=annotations)
 	fig['layout']['xaxis1'].update(domain=[0,0.49], title='')

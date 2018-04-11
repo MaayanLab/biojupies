@@ -96,7 +96,7 @@ def plot_library_barchart(enrichr_results, gene_set_library, signature_label, nr
 	] if signature_label else []
 
 	# Get title
-	title = signature_label+ ' Analysis | '+gene_set_library.replace('KEGG_2016', 'KEGG Pathways').replace('WikiPathways_2016', 'WikiPathways').replace('Reactome_2016', 'Reactome Pathways')
+	title = signature_label+ ' | '+gene_set_library.replace('KEGG_2016', 'KEGG Pathways').replace('WikiPathways_2016', 'WikiPathways').replace('Reactome_2016', 'Reactome Pathways')
 
 	fig['layout'].update(height=height, title='<b>{}</b>'.format(title), hovermode='closest', annotations=annotations)
 	fig['layout']['xaxis1'].update(domain=[0,0.49], title='')
