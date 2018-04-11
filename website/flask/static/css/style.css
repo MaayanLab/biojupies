@@ -195,7 +195,7 @@ input:checked + .object-label span {
 /***** Configure Signature ******/
 /********************************/
 
-.signature-popover {
+.info-popover {
   max-width: 450px;
 }
 

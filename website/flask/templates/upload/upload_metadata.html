@@ -17,13 +17,28 @@
 {% block content %}
 
 <div class="px-6">
+
+	<!-- Title -->
+	<div class="row pt-4">
+		<div class="col-12 very-large text-center light px-5">What groups do the samples belong to?</div>
+	</div>
+
+	<!-- Introduction -->
+	<hr width="100%" class="my-4">
 	<div class="row">
-		<div class="col-8 large mt-5 pl-4">Annotate the Dataset<sup><i class="fa fa-question-circle small ml-1 text-muted cursor-pointer" data-toggle="collapse" data-target="#info"></i></sup></div>
-		<div class="col-4 text-right mt-5">
+		<div class="light very-small my-1 col-lg-8 col-xl-9 text-justify">
+			The uploaded file contains <b>{{sample_groups|length}} samples.</b>
+			To improve the quality of the analyses, it is required to <b>define groups of samples</b> based on their experimental conditions.
+			To do this, manually enter the groups or upload a sample metadata file using the form below.
+			Once you have defined the desired groups, click <b>Continue</b> to proceed.
+		</div>
+		<div class="col-lg-4 col-xl-3 my-auto text-center pt-3 pt-lg-0">
 			<button class="btn black border-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
-			<button class="btn navigate white border-custom bg-blue nodecoration" form="upload-metadata-form">Continue<i class="fa fa-angle-right ml-2"></i></button>
+			<button id="continue-button" class="btn navigate white border-custom bg-blue nodecoration">Continue<i class="fa fa-angle-right ml-2"></i></button>
 		</div>
 	</div>
+
+	<!-- Add Metadata -->
 	<div class="row">
 		<hr width="100%" class="mt-3 mb-0">
 		<div class="col-12 px-4">
@@ -38,16 +53,13 @@
 				</div>
 			</div>
 
-			<!-- Description -->
-			<div class="medium regular mb-3 mt-3">Define Sample Groups</div>
-			<div id="intro" class="very-small light mb-3">To proceed, <b>define groups of samples</b> based on the experimental condition or biological source - this will allow to extract more knowledge from the dataset. To achieve this, <b>manually complete the form</b> on the left or <b>upload a metadata file</b> using the form on the right. </div>
-
 		</div>
 	</div>
 	<div id="options" class="row mt-2 px-2">
 
 		<!-- Manual Annotation Table -->
 		<div class="col-6 px-0">
+
 			<!-- Predict Groups -->
 			<div class="hidden">
 				<div class="d-table-cell">
@@ -60,6 +72,10 @@
 					Predict Groups <sup><i class="fa fa-question-circle" data-toggle="tooltip" data-html="true" data-placement="right" title="Automatically predicts the<br>groups based on the<br>sample names."></i></sup>
 				</div>
 			</div>
+
+			<!-- Title and Description -->
+			<div class="light medium mt-2 mb-2">Manually Add the Groups</div>
+			<div class="light very-small mb-3"><b>Manually specify the sample groups</b> using the text boxes below.</div>
 
 			<!-- Sample Annotation Table -->
 			<table id="sample-annotation-table" class="tiny text-center table-striped border-grey w-100 mb-5">
@@ -96,14 +112,20 @@
 		</div>
 
 		<!-- OR Separator -->
-		<div class="col-1 text-center px-0">
+		<div class="col-1 text-center px-0 pt-5 mt-5">
 			<span>OR</span>
 		</div>
 
 		<!-- Metadata File Upload -->
 		<div class="col-5 px-0">
-			<div class="very-small light mb-3">Upload a metadata file:</div>
-			<div id="dropzone" class="dropzone border-grey rounded mt-4" style="background-image: url({{ url_for('static', filename='img/dropzone/metadata.png') }}); background-size: 100% auto;"></div>
+
+			<!-- Title and Description -->
+			<div class="light medium mt-2 mb-2">Upload a Metadata File</div>
+			<div class="light very-small mb-3"><b>Upload a sample metadata file</b><sup>
+				<i class="fa fa-question-circle" data-template='<div class="popover info-popover micro text-justify" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>' data-toggle="popover" data-html="true" data-trigger="hover" title="What is a sample metadata file?" data-content="<div>Sample metadata files <b>contain information describing the samples in the dataset</b>, such as the experimental conditions they have been treated with or their biological sources.</div><div class='mt-2'>.</div><div class='mt-2'>.</div>"></i></sup></span> using the form below.</div>
+
+			<!-- Dropzone -->
+			<div id="dropzone" class="dropzone border-grey rounded mt-3" style="background-image: url({{ url_for('static', filename='img/dropzone/metadata.png') }}); background-size: 100% auto;"></div>
 			<form id="upload-metadata-form" action="{{ url_for('upload_'+uploadtype) }}" method="post">
 				<input type="hidden" id="expression" name="expression" value="{{f.get('expression')}}">
 				<input type="hidden" id="metadata" name="metadata" value="">
@@ -111,7 +133,7 @@
 			<div class="tiny mt-2">
 				Supported formats: <span class="font-italic">.txt, .csv, .tsv, .xls, .xlsx</span>.
 				<div class="dropdown show float-right">
-					<a class="btn bg-white border-black black nodecoration tiny regular my-auto dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown">
+					<a class="btn bg-white border-custom black nodecoration tiny regular my-auto dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown">
 						Example
 					</a>
 					<div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
@@ -124,7 +146,7 @@
 	</div>
 
 	<!-- Uploaded File Preview -->
-	<div class="row mt-2">
+	<div class="row mt-4">
 		<div id="preview" class="col-12">
 		</div>
 	</div>
@@ -205,7 +227,6 @@ $('.dropdown-menu .dropdown-item:first-child').click(function(evt) {
 	})
 })
 
-
 // Check if all rows of input have been completed
 $('#sample-annotation-table input').change(function(evt) {
 	var complete = true;
@@ -217,14 +238,31 @@ $('#sample-annotation-table input').change(function(evt) {
 })
 
 // Submit metadata
-$('button[form="upload-metadata-form"]').click(function(evt) {
-	evt.preventDefault();
+$('#continue-button').click(function(evt) {
+
+	// Get available table
 	var $table = $('table:not(.hidden)'),
 		metadata = serializeTable($table);
+
+	// Remove tooltip
+	metadata[0][0] = metadata[0][0].split('<sup>')[0];
 	metadata[0][1] = metadata[0][1].split('<sup>')[0];
-	// Check metadata length here //
-	$('#metadata').val(JSON.stringify(metadata));
-	$('#upload-metadata-form').submit();
+
+	// Convert to object
+	var missing_samples = [];
+	$.each(metadata, function(index, elem){
+		if ((index > 0) & (elem[1].length === 0)) {
+			missing_samples.push(elem[0]);
+		}
+	})
+
+	// Check groups
+	if (missing_samples.length) {
+		alert('Please assign a group to the following samples:\n - '+missing_samples.join('\n - '))
+	} else {
+		$('#metadata').val(JSON.stringify(metadata));
+		$('#upload-metadata-form').submit();
+	}
 })
 
 </script>

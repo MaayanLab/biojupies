@@ -8,11 +8,14 @@
 {% block content %}
 
 <div class="px-6">
+
+	
 	<div class="row pt-4">
 		<div class="col-6 large pl-4">Results</div>
 		<div class="col-6 text-right">
 			<a id="reanalyze" class="btn black border-custom bg-white nodecoration mr-2 d-inline-block hidden" href="{{url_for('add_tools')}}?uid=">Re-analyze Dataset</a>
-			<a id="new-notebook" class="btn white border-custom bg-blue nodecoration mr-2 d-inline-block hidden" href="{{url_for('analyze')}}">New Notebook</a>
+			<a id="new-notebook" class="btn black border-custom bg-white nodecoration mr-2 d-inline-block hidden" href="{{url_for('analyze')}}">New Notebook</a>
+			<a id="open-notebook" class="btn white border-custom bg-blue nodecoration mr-2 d-inline-block hidden" href="{{ url_for('view_notebook', notebook_uid='') }}">Open Notebook</a>
 		</div>
 	</div>
 	<div class="row">
@@ -121,8 +124,10 @@
 			$('#description').hide();
 			$('#results').removeClass('hidden');
 			$('#new-notebook').removeClass('hidden');
+			$('#open-notebook').removeClass('hidden');
 			var notebook_uid = res['notebook_url'].split('/')[6];
 			$('#notebook-link').attr('href', $('#notebook-link').attr('href')+notebook_uid);
+			$('#open-notebook').attr('href', $('#open-notebook').attr('href')+notebook_uid);
 			$('.loader').hide();
 
 			// Add link for uploaded data
