@@ -8,16 +8,23 @@
 {% block content %}
 
 <div class="px-6">
-
 	
 	<div class="row pt-4">
-		<div class="col-6 large pl-4">Results</div>
-		<div class="col-6 text-right">
-			<a id="reanalyze" class="btn black border-custom bg-white nodecoration mr-2 d-inline-block hidden" href="{{url_for('add_tools')}}?uid=">Re-analyze Dataset</a>
-			<a id="new-notebook" class="btn black border-custom bg-white nodecoration mr-2 d-inline-block hidden" href="{{url_for('analyze')}}">New Notebook</a>
-			<a id="open-notebook" class="btn white border-custom bg-blue nodecoration mr-2 d-inline-block hidden" href="{{ url_for('view_notebook', notebook_uid='') }}" target="_blank">Open Notebook</a>
+
+		<!-- Title -->
+		<div class="col-md-2 large pl-4">Results</div>
+
+		<!-- Buttons -->
+		<div class="col-md-10 mt-auto pt-3 pt-md-0">
+			<div class="float-left float-md-right">
+				<a id="reanalyze" class="btn black border-custom bg-white nodecoration mr-2 d-inline-block hidden" href="{{url_for('add_tools')}}?uid=">Re-analyze Dataset</a>
+				<a id="new-notebook" class="btn black border-custom bg-white nodecoration mr-2 d-inline-block hidden" href="{{url_for('analyze')}}">New Notebook</a>
+				<a id="open-notebook" class="btn white border-custom bg-blue nodecoration mr-2 d-inline-block hidden" href="{{ url_for('view_notebook', notebook_uid='') }}" target="_blank">Open Notebook</a>
+			</div>
 		</div>
 	</div>
+
+	<!-- Results -->
 	<div class="row">
 		<hr width="100%" class="mt-3 mb-0">
 		<div class="col-12 text-center pb-5" style="overflow: hidden;">

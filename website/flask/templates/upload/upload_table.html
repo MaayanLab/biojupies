@@ -83,7 +83,7 @@ var addTable = function(dataset) {
 
 // Initialize Dropzone
 dropzone = $("#dropzone").dropzone({ 
-	dictDefaultMessage: "Drag and drop your file here, or click to browse and upload it",
+	dictDefaultMessage: "Drag and drop your file here, or click to browse and upload it.",
 	url: "{{ url_for('upload_dataframe_api') }}",
     success: function(file, response){
 

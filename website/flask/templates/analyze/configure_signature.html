@@ -11,7 +11,7 @@
 
 	<!-- Title -->
 	<div class="row pt-4">
-		<div class="col-12 very-large text-center light px-5">What samples would you like to compare?</div>
+		<div class="col-12 very-large text-center light px-5">Which samples would you like to compare?</div>
 	</div>
 
 	<!-- Introduction -->
@@ -186,10 +186,11 @@
 	    	return hit
 	    }
 
+	    // Update name
 	    $('.group-label-input').change(function(evt) {
 	    	var value = $(evt.target).val(),
 	    		group = $(evt.target).data('group');
-	    	$('[data-group="'+group+'"]:not(tr):not(span)').text(value);
+	    	$('[data-group="'+group+'"]:not(tr):not(span.ml-neg)').text(value);
 	    	if ($('#predict-groups').prop('checked')) {
 		    	autoSelect(group, value);
 	    	}
