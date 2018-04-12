@@ -2,7 +2,7 @@
 {% import 'macros.html' as macros %}
 
 <!-- Title -->
-{% block title %} BioJupies | Contribute a Plug-in {% endblock %}
+{% block title %} BioJupies | Contribute a Plugin {% endblock %}
 
 <!-- Head -->
 {% block head %}
@@ -13,39 +13,35 @@
 {% block content %}
 
 <div class="px-6">
-	<div class="row">
-		<div class="col-8 large mt-4 pl-4">Contribute a Plug-in</sup></div>
+
+	<!-- Title -->
+	<div class="row pt-4">
+		<div class="col-12 very-large text-center light">Contribute a Plugin</div>
 	</div>
+
+	<!-- Introduction -->
+<!-- 	<hr width="100%" class="my-4">
+	<div class="row">
+		<div class="light very-small my-1 col-lg-10 text-justify">
+			Use the form below to <span class="bold">add or remove data analysis and visualization tools</span> to your notebook.
+			These tools will analyze the selected dataset and embed interactive results in your notebook.
+			Once you have selected the desired tools, click <b>Continue</b> to proceed.
+		</div>
+		<div class="col-lg-2 my-auto text-center pt-3 pt-lg-0">
+			<button class="btn navigate white border-custom bg-blue nodecoration" form="add-tools-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">
+				Submit Plugin
+			</button>
+		</div>
+	</div>
+ -->
+	<!-- Contribute Plugin Form -->
 	<div class="row">
 		<hr width="100%" class="mt-3 mb-0">
 		<div class="col-12 px-4 pt-4 very-small">
 			<div class="mb-3 medium bold text-center">Note: this page is still under development.</div>
-			<div class="mb-3">Contribute your computational tool as a plug-in to BioJupies.</div>
-<!-- 			<div>We currently only support plug-ins in Python and R. These should be uploaded as a single .py or .R file.  This file should contain two functions: run() and plot().</div>
-			<div>run() runs the analysis.</div>
-			<div>plot() plots the analysis results in a way which is embeddable in a Jupyter Notebook.</div> -->
+			<!-- <div class="mb-3">Contribute your computational tool as a plugin to BioJupies.</div> -->
 			<form id="contribute-form" action="{{ url_for('contribute') }}" method="post">
-				<div>
-					<label class="mr-2 regular very-small">Plug-in Name: </label>
-					<input class="light nodecoration" type="text" placeholder="Insert plug-in name" name="title" required="true" value="">
-				</div>
-				<div>
-					<label class="mr-2 regular very-small">Plug-in Description: </label>
-					<input type="text" class="light nodecoration" placeholder="Insert plug-in description" name="description" required="true" value="">
-				</div>
-				<div>
-					<label class="mr-2 regular very-small">E-mail: </label>
-					<input type="email" class="light nodecoration" placeholder="Insert email" name="email" required="true" value="">
-				</div>
-				<div>
-					<input type="hidden" name="filename" value="">
-					<input type="hidden" name="file" value="">
-					<input type="hidden" name="extension" value="">
-				</div>
-				<div>
-					<div id="dropzone" class="dropzone border-grey rounded mt-3"></div>
-				</div>
-				<input type="submit" value="Submit">
+
 			</form>
 
 		</div>

@@ -76,6 +76,8 @@ def buildH5(data, dataset_uid):
 
 		# Get outfile
 		f = h5py.File(outfile, 'w')
+		print(data)
+		print(data.keys())
 
 		# Add data
 		data_grp = f.create_group('data')

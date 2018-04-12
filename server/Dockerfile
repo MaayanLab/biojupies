@@ -42,6 +42,6 @@ RUN mkdir notebook-generator-server
 COPY . /notebook-generator-server
 WORKDIR /notebook-generator-server/flask
 
-RUN cd static; wget https://github.com/MaayanLab/notebook-generator/raw/2c9b18bf2ec67f4abd57a975b10477d204759dfa/library.zip; rm -r library; unzip library.zip; cd ..;
+RUN cd static; wget https://github.com/MaayanLab/notebook-generator/raw/68cd3bf30d7158aae500e361e7ffc389c00e66c8/library.zip; rm -r library; unzip library.zip; cd ..;
 
 ENTRYPOINT mkdir ~/.config; mkdir ~/.config/gcloud; echo $APPLICATION_DEFAULT_CREDENTIALS > ~/.config/gcloud/application_default_credentials.json; python3 __init__.py

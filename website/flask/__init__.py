@@ -451,7 +451,8 @@ def upload_dataframe_api():
 	dataframe.index.name = ''
 
 	# Convert to JSON
-	dataframe_json = json.dumps(dataframe.to_dict(orient='split'))
+	dataframe_json = json.dumps(dataframe.fillna('').to_dict(orient='split'))
+	print(dataframe_json)
 	
 	# Return result
 	return dataframe_json
