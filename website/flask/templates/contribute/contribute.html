@@ -40,6 +40,7 @@
 		<div class="col-12 px-4 pt-4 very-small">
 			<div class="mb-3 medium bold text-center">Note: this page is still under development.</div>
 			<!-- <div class="mb-3">Contribute your computational tool as a plugin to BioJupies.</div> -->
+			<div class="github-card" data-user="denis-torre" data-repo="biojupies-plugin-template" data-target="blank" data-theme="default"></div>
 			<form id="contribute-form" action="{{ url_for('contribute') }}" method="post">
 
 			</form>
@@ -51,23 +52,9 @@
 {% endblock %}
 
 {% block footer %}
+<script src="{{ url_for('static', filename='js/card.js') }}"></script>
+<script src="{{ url_for('static', filename='js/github-cards.js') }}"></script>
 <script type="text/javascript">
-
-$("#dropzone").dropzone({ 
-	// dictDefaultMessage: "Click h",
-	url: "{{ url_for('contribute_api') }}",
-    success: function(file, response){
-
-    	// Read Response
-    	response = JSON.parse(response);
-
-    	// Add File
-    	$('[name="filename"]').val(response['filename']);
-    	$('[name="file"]').val(response['file']);
-    	$('[name="extension"]').val(response['extension']);
-
-    }
-});
 
 $('#contribute-form').submit(function(evt) {
 	if ($('[name="file-txt"]').val().length) {
