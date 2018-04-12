@@ -4,22 +4,31 @@
 <!-- Title -->
 {% block title %} BioJupies | Reuse Notebooks {% endblock %}
 
-<!-- Head -->
-{% block head %}
-	<style type="text/css">html{height: 100%;}body{height: 100%; overflow: hidden;}#outer-container{height: 100%;}</style>
-{% endblock %}
-
 <!-- Content -->
 {% block content %}
 
 <div class="px-6">
-	<div class="row">
-		<div class="col-8 large mt-4 pl-4">Reuse Notebooks</sup></div>
+	<!-- Title -->
+	<div class="row pt-4">
+		<div class="col-12 very-large text-center light">How to rerun a BioJupies notebook?</div>
 	</div>
+
+	<!-- Introduction -->
+	<hr width="100%" class="my-4">
+	<div class="light very-small my-1">
+		<!-- You can download and rerun your BioJupies notebook on your machine for customization. -->
+	</div>
+
+	<!-- Explanation Row -->
 	<div class="row">
-		<hr width="100%" class="mt-3 mb-0">
-		<div class="col-12 px-4 pt-4 very-small">
-			<div class="mb-2 medium bold text-center">Note: this page is still under development.</div>
+
+		<!-- Image Col -->
+		<div class="col-md-5">
+			
+		</div>
+
+		<!-- Explanation Col -->
+		<div class="col-md-7 px-4 pt-4 very-small">
 			<div class="mb-2 very-small light">1. Download Docker</div>
 			<div class="mb-2 very-small light">2. Open the Docker Console</div>
 			<div class="mb-2 very-small light">3. Pull the lastest Docker container: <code>docker pull maayanlab/biojupies-notebooks</code></div>
