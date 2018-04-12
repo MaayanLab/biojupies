@@ -53,9 +53,9 @@ def run(dataset, normalization='logCPM', nr_genes=2500, z_score=True, color_by='
 
 		# Add signature groups
 		if dataset.get('signature_metadata'):
-			A_label, B_label = list(dataset['signature_metadata'].keys())[0].split(' vs ')
+			A_label, B_label = list(dataset.get('signature_metadata').keys())[0].split(' vs ')
 			col = []
-			group_dict = list(dataset['signature_metadata'].values())[0]
+			group_dict = list(dataset.get('signature_metadata').values())[0]
 			for gsm in dataset['sample_metadata'].index:
 				if gsm in group_dict['A']:
 					col.append(A_label)
@@ -75,7 +75,7 @@ def run(dataset, normalization='logCPM', nr_genes=2500, z_score=True, color_by='
 
 
 	# Return
-	pca_results = {'pca': pca, 'var_explained': var_explained, 'sample_metadata': dataset['sample_metadata'].loc[expression_dataframe.columns], 'color_by': color_by, 'color_type': color_type, 'nr_genes': nr_genes, 'normalization': normalization, 'signature_metadata': dataset['signature_metadata']}
+	pca_results = {'pca': pca, 'var_explained': var_explained, 'sample_metadata': dataset['sample_metadata'].loc[expression_dataframe.columns], 'color_by': color_by, 'color_type': color_type, 'nr_genes': nr_genes, 'normalization': normalization, 'signature_metadata': dataset.get('signature_metadata')}
 	return pca_results
 
 #############################################
