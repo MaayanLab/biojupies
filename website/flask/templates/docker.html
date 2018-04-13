@@ -2,41 +2,44 @@
 {% import 'macros.html' as macros %}
 
 <!-- Title -->
-{% block title %} BioJupies | Reuse Notebooks {% endblock %}
+{% block title %} BioJupies | Rerun Notebooks {% endblock %}
 
 <!-- Content -->
 {% block content %}
 
 <div class="px-6">
+
 	<!-- Title -->
 	<div class="row pt-4">
-		<div class="col-12 very-large text-center light">How to rerun a BioJupies notebook?</div>
+		<div class="col-12 very-large text-center light">How can I download and customize my notebooks?</div>
 	</div>
 
 	<!-- Introduction -->
 	<hr width="100%" class="my-4">
-	<div class="light very-small my-1">
-		<!-- You can download and rerun your BioJupies notebook on your machine for customization. -->
+	<div class="light very-small my-1 text-justify">
+		Notebooks generated using BioJupies can be <b>downloaded, rerun and customized</b>. To achieve this, follow the instructions below:
 	</div>
 
 	<!-- Explanation Row -->
+	<hr width="100%" class="my-4">
 	<div class="row">
 
 		<!-- Image Col -->
-		<div class="col-md-5">
-			
+		<div class="col-lg-5">
+			<img src="{{ url_for('static', filename='img/flowcharts/docker-flowchart.png') }}" class="w-100">
 		</div>
 
 		<!-- Explanation Col -->
-		<div class="col-md-7 px-4 pt-4 very-small">
-			<div class="mb-2 very-small light">1. Download Docker</div>
-			<div class="mb-2 very-small light">2. Open the Docker Console</div>
-			<div class="mb-2 very-small light">3. Pull the lastest Docker container: <code>docker pull maayanlab/biojupies-notebooks</code></div>
-			<div class="mb-2 very-small light">4. Run the docker container. <code>docker run -it -p 8888:8888 -e NOTEBOOK_UID=qzmeZ0p4s maayanlab/biojupies-notebooks:v0.1</code><br><b class="ml-3">Note:</b> replace the <span class="font-italic">NOTEBOOK_UID</span> parameter with the UID of the notebook you wish to re-run.</div>
-			<div class="mb-2 very-small light">5. Visit <span class="font-italic">localhost:8888</span> on your browser </div>
-			<div class="mb-2 very-small light">6. Run, edit and download your notebook. </div>
+		<div class="col-lg-7 px-4 pt-5 pt-lg-2 very-small light">
+			<div class="mb-2 pl-4"><span class="regular mr-1">1.</span>Download Docker</div>
+			<div class="mb-2 pl-4"><span class="regular mr-1">2.</span>Open the Docker Console</div>
+			<div class="mb-2 pl-4"><span class="regular mr-1">3.</span>Pull the lastest Docker container: <code>docker pull maayanlab/biojupies-notebooks</code></div>
+			<div class="mb-2 pl-4"><span class="regular mr-1">4.</span>Run the docker container. <code>docker run -it -p 8888:8888 -e NOTEBOOK_UID=qzmeZ0p4s maayanlab/biojupies-notebooks:v0.1</code><br><b class="ml-3">Note:</b> replace the <span class="font-italic">NOTEBOOK_UID</span> parameter with the UID of the notebook you wish to re-run.</div>
+			<div class="mb-2 pl-4"><span class="regular mr-1">5.</span>Visit <span class="font-italic">localhost:8888</span> on your browser </div>
+			<div class="mb-2 pl-4"><span class="regular mr-1">6.</span>Run, edit and download your notebook. </div>
 		</div>
 	</div>
+
 </div>
 
 {% endblock %}
