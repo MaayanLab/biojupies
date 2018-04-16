@@ -22,24 +22,22 @@
 		<div class="col-lg-7">
 
 			<!-- Workflow -->
-			{{ macros.workflow_step('fab fa-github fa-4x', 1, '#000098', 'Fork the GitHub Repository', 'Create a new fork in the <a href="https://github.com/denis-torre/biojupies-plugins" target="_blank" class="white bold">MaayanLab/biojupies-plugins</a> GitHub repository.') }}
-			{{ macros.workflow_step('fa fa-code fa-3x', 2, '#002C91', 'Add Your Code', '<b>Contribute your code</b> to a new directory following the plugin submission guidelines.') }}
-			{{ macros.workflow_step('fas fa-code-branch fa-3x', 3, '#0F0FFF', 'Create a Pull Request', '<b>Create a pull request</b> for your plugin. Your code will be reviewed before integration.') }}
-			{{ macros.workflow_step('fa fa-wrench fa-3x', 4, '#2668FF', 'Use and Share your Plugin', 'Once approved, your plugin will be <b>publicly available for notebook generation</b> on BioJupies.', arrow=False) }}
+			{{ macros.workflow_step('fab fa-github fa-4x', 1, '#005A5E', 'Fork the GitHub Repository', 'Create a new fork in the <a href="https://github.com/denis-torre/biojupies-plugins" target="_blank" class="white bold">MaayanLab/biojupies-plugins</a> GitHub repository.') }}
+			{{ macros.workflow_step('fa fa-code fa-3x', 2, '#017277', 'Add Your Code', '<b>Contribute your code</b> to a new directory following the plugin submission guidelines.') }}
+			{{ macros.workflow_step('fas fa-code-branch fa-3x', 3, '#259BA0', 'Create a Pull Request', '<b>Create a pull request</b> for your plugin. Your code will be reviewed before integration.') }}
+			{{ macros.workflow_step('fa fa-wrench fa-3x', 4, '#5ac2c7', 'Use and Share your Plugin', 'Once approved, your plugin will be made <b>publicly available for generation of notebooks</b> on BioJupies.', arrow=False) }}
 
 		</div>
 
 		<!-- Explanation Col -->
 		<div class="col-lg-5 px-4 pt-4 pt-lg-0 very-small light text-justify">
-			<div class="mb-3">
-				You can <b>contribute your RNA-seq data analysis tools</b> to BioJupies.
-				Once submitted, users will be able to utilize this computational tool to analyze data using the BioJupies website.
-			</div>
-			
+			<div class="mb-3">Developers are welcome to <b>contribute their own RNA-seq data analysis tools</b> to BioJupies.</div>
+			<div class="mb-3">These tools will be integrated as.</div>
+
+			<!-- GitHub Card -->			
 			<div class="mb-3">
 				To submit your tool to BioJupies, visit the following GitHub repository:
 			</div>
-			<!-- GitHub Card -->
 			<div class="github-card" data-user="denis-torre" data-repo="biojupies-plugins"></div>
 
 		</div>
