@@ -18,9 +18,12 @@
 	<!-- Carousel Column -->
 	<div class="col-lg-6 mt-3 mb-3 order-2 order-lg-1 pb-lg-0">
 		<div id="carousel">
-			<div class="mw-100 nodecoration px-3 py-3 mx-1"><iframe class="w-100 h-100 border-black" src="https://www.youtube.com/embed/EJOd1f0QV-w"></iframe></div>
 			{% for carousel_image in carousel_images %}
-				<div style="background: url({{ url_for('static', filename='img/carousel/'+carousel_image+'.png') }})" class="mw-100 nodecoration px-3 py-3 mx-1"></div>
+			{% if loop.index == 2 %}
+				<div class="mw-100 nodecoration px-3 py-3 mx-1"><iframe class="w-100 h-100 border-black" src="https://www.youtube.com/embed/EJOd1f0QV-w"></iframe></div>
+				{% else %}
+					<div style="background: url({{ url_for('static', filename='img/carousel/'+carousel_image+'.png') }});" class="mw-100 nodecoration px-3 py-3 mx-1"></div>
+				{% endif %}
 			{% endfor %}
 		</div>
 	</div>

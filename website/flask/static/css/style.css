@@ -49,6 +49,7 @@ body {
 .light { font-weight: 200; }
 .regular { font-weight: 300; }
 .bold {	font-weight: 400;}
+.ultra-light {	font-weight: 100; }
 
 /* Font size */
 .very-large { font-size: 27pt;}
@@ -84,6 +85,7 @@ body {
 .py-6 { padding-top: 4rem !important; padding-bottom: 4rem !important; }
 .w-auto { width: auto !important; }
 .ml-neg { margin-left: -5px; }
+.text-underline { text-decoration: underline; }
 /* Hidden */
 .hidden { display: none !important; }
 
@@ -95,7 +97,7 @@ body {
   height: 500px;
   background-size: auto 100% !important;
   background-repeat: no-repeat !important;
-  background-position: left !important;
+  background-position: center !important;
 }
 
 #carousel .slick-dots li button::before {
@@ -427,6 +429,24 @@ input:checked + .object-label span {
 #preview {
   overflow-x: auto;
 }
+
+/********************************/
+/***** Workflow ******/
+/********************************/
+
+.arrow-bottom {
+  width: 0; 
+  height: 0; 
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-top: 20px solid black;
+  position: absolute;
+  bottom: -15px;
+  left: 45%;
+  z-index: 1;
+}
+
+.blue-1 { background-color: #525dff; } .blue-1 .arrow-bottom { border-top-color: #525dff; }
 
 /********************************/
 /***** Help ******/

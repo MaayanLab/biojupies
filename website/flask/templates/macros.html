@@ -316,3 +316,39 @@
 
 {% endmacro %}
 
+<!-- ###############################################  -->
+<!-- ##### Workflow Step ###########################  -->
+<!-- ###############################################  -->
+<!-- ### Displays workflows. -->
+<!-- ### Used in: contribute(), docker(). -->
+
+{% macro workflow_step(icon, number, color, title, description, arrow=True) %}
+	<!-- Step Wrapper -->
+	<div class="rounded px-4 pt-3 pb-2 position-relative white" style="background-color: {{color}}; margin-top: -5px; font-family: 'Helvetica Neue';">
+
+		<!-- Title -->
+		<div class="row">
+			<div class="col-2 my-auto text-center">
+				<i class="{{icon}}"></i>
+			</div>
+			<div class="col-10 medium">
+				<div class="bold">Step {{number}}.</div>
+				<div class="ultra-light" style="letter-spacing: 0.7px;">{{title}}</div>
+			</div>
+		</div>
+
+		<!-- Text -->
+		<div class="mt-3 tiny">
+			<ul class="pl-4 regular" style="letter-spacing: 0.5px;">
+				<li>
+					{{description|safe}}
+				</li>
+			</ul>
+		</div>
+
+		<!-- Arrow -->
+		{% if arrow %}
+			<div class="arrow-bottom" style="border-top-color: {{color}};"></div>
+		{% endif %}
+	</div>
+{% endmacro %}

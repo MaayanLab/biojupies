@@ -7,30 +7,45 @@
 <!-- Content -->
 {% block content %}
 
-<div class="px-6">
+<div class="px-6 mb-5">
 
 	<!-- Title -->
 	<div class="row pt-4">
-		<div class="col-12 very-large text-center light">How can I download and customize my notebooks?</div>
-	</div>
-
-	<!-- Introduction -->
-	<hr width="100%" class="my-4">
-	<div class="light very-small my-1 text-justify">
-		Notebooks generated using BioJupies can be <b>downloaded, rerun and customized</b>. To achieve this, follow the instructions below:
+		<div class="col-12 very-large text-center light">How can I rerun and customize my notebooks?</div>
 	</div>
 
 	<!-- Explanation Row -->
 	<hr width="100%" class="my-4">
-	<div class="row">
-
+	<div class="row pt-3">
+		
 		<!-- Image Col -->
-		<div class="col-lg-5">
-			<img src="{{ url_for('static', filename='img/flowcharts/docker-flowchart.png') }}" class="w-100">
+		<div class="col-lg-7">
+
+			<!-- Workflow -->
+			{{ macros.workflow_step('fab fa-docker fa-4x', 1, '#230349', 'Install and Run Docker', '<b>Download, install and run Docker</b> on your computer from the official <a href="https://www.docker.com/community-edition" target="_blank" class="white bold text-underline">Docker website</a>.') }}
+			{{ macros.workflow_step('fa fa-book fa-3x', 2, '#300762', 'Generate your Notebook', 'Generate a notebook and identify its <b>unique ID (UID)</b><sup><i class="fa fa-question-circle ml-1" data-toggle="popover" data-html="true" title="How do I find the unique ID of a notebook?" data-content="<div class=\'mb-2\'>Every notebook generated with BioJupies can be identified by a <b>unique identifier (UID)</b> consisting of nine alphanumeric characters.</div><div class=\'mb-2\'>A notebook\'s UID <b>can be identified from its URL</b>. For example:</div><div class=\'font-italic\'>http://amp.pharm.mssm.edu/biojupies/notebook/<code>JxSg0C23W</code></div>" data-trigger="hover" data-template=\'<div class="popover info-popover micro text-justify" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>\'></i></sup>.') }}
+			{{ macros.workflow_step('fas fa-terminal fa-3x', 3, '#511D8F', 'Launch a Docker Container', 'Launch the <code class="white">maayanlab/biojupies-notebooks</code> Docker container<sup><i class="fa fa-question-circle ml-1" data-toggle="popover" data-html="true" title="How do I find the unique ID of a notebook?" data-content="<div class=\'mb-2\'>Every notebook generated with BioJupies can be identified by a <b>unique identifier (UID)</b> consisting of nine alphanumeric characters.</div><div class=\'mb-2\'>A notebook\'s UID <b>can be identified from its URL</b>. For example:</div><div class=\'font-italic\'>http://amp.pharm.mssm.edu/biojupies/notebook/<code>JxSg0C23W</code></div>" data-trigger="hover" data-template=\'<div class="popover info-popover micro text-justify" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>\'></i></sup> and provide the UID of the notebook you wish to run.') }}
+			{{ macros.workflow_step('fa fa-edit fa-3x', 4, '#65399A', 'Customize and Save your Notebook', 'Visit <code class="white">localhost:8888</code> on your internet browser to run, edit and save the Jupyter notebook on your local computer.', arrow=False) }}
+
+		</div>
+			
+		<!-- Explanation Col -->
+		<div class="col-lg-5 px-4 pt-4 pt-lg-0 very-small light text-justify">
+			<div class="mb-3">
+				You can
+				<b>contribute your RNA-seq data analysis tools</b> to BioJupies. Once submitted, users will be able to utilize this computational
+				tool to analyze data using the BioJupies website.
+			</div>
+
+			<div class="mb-3">
+				To submit your tool to BioJupies, visit the following GitHub repository:
+			</div>
+			<!-- GitHub Card -->
+			<div class="github-card" data-user="denis-torre" data-repo="biojupies-plugins"></div>
+
 		</div>
 
-		<!-- Explanation Col -->
-		<div class="col-lg-7 px-4 pt-5 pt-lg-2 very-small light">
+		<!-- <div class="col-lg-7 px-4 pt-5 pt-lg-2 very-small light">
 			<div class="mb-2 pl-4"><span class="regular mr-1">1.</span>Download Docker</div>
 			<div class="mb-2 pl-4"><span class="regular mr-1">2.</span>Open the Docker Console</div>
 			<div class="mb-2 pl-4"><span class="regular mr-1">3.</span>Pull the lastest Docker container: <code>docker pull maayanlab/biojupies-notebooks</code></div>
@@ -38,6 +53,7 @@
 			<div class="mb-2 pl-4"><span class="regular mr-1">5.</span>Visit <span class="font-italic">localhost:8888</span> on your browser </div>
 			<div class="mb-2 pl-4"><span class="regular mr-1">6.</span>Run, edit and download your notebook. </div>
 		</div>
+		 -->
 	</div>
 
 </div>
