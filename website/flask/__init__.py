@@ -17,7 +17,7 @@
 ########## 1. Load libraries
 #############################################
 ##### 1. Flask modules #####
-from flask import Flask, request, render_template, Response, redirect, url_for
+from flask import Flask, request, render_template, Response, redirect, url_for, abort
 from flask_sqlalchemy import SQLAlchemy
 
 ##### 2. Python modules #####
@@ -202,23 +202,30 @@ def search_data():
 @app.route(entry_point+'/analyze/tools', methods=['GET', 'POST'])
 def add_tools():
 
-	# Get dataset information from request
-	selected_data = {'uid': request.args.get('uid'), 'source': 'upload'} if 'uid' in request.args.keys() else {'gse': request.form.get('gse-gpl').split('-')[0], 'gpl': request.form.get('gse-gpl').split('-')[1], 'source': 'archs4'}
+	# Check if dataset has been selected
+	if request.args.get('uid') or request.form.get('gse-gpl'):
 
-	# Perform tool and section query from database
-	tools, sections = [pd.read_sql_table(x, engine) for x in ['tool', 'section']]
-	tools = tools[tools['display'] == True]
-	tools, sections = [x.to_dict(orient='records') for x in [tools, sections]]
+		# Get dataset information from request
+		selected_data = {'uid': request.args.get('uid'), 'source': 'upload'} if 'uid' in request.args.keys() else {'gse': request.form.get('gse-gpl').split('-')[0], 'gpl': request.form.get('gse-gpl').split('-')[1], 'source': 'archs4'}
 
-	# Combine tools and sections
-	for section in sections:
-		section.update({'tools': [x for x in tools if x['section_fk'] == section['id']]})
+		# Perform tool and section query from database
+		tools, sections = [pd.read_sql_table(x, engine) for x in ['tool', 'section']]
+		tools = tools[tools['display'] == True]
+		tools, sections = [x.to_dict(orient='records') for x in [tools, sections]]
 
-	# Number of tools
-	nr_tools = len(tools)
-	
-	# Return result
-	return render_template('analyze/add_tools.html', selected_data=selected_data, sections=sections, nr_tools=nr_tools, version=version)
+		# Combine tools and sections
+		for section in sections:
+			section.update({'tools': [x for x in tools if x['section_fk'] == section['id']]})
+
+		# Number of tools
+		nr_tools = len(tools)
+		
+		# Return result
+		return render_template('analyze/add_tools.html', selected_data=selected_data, sections=sections, nr_tools=nr_tools, version=version)
+
+	# Redirect to analyze page
+	else:
+		return redirect(url_for('analyze'))
 
 #############################################
 ########## 5. Configure Analysis
@@ -234,47 +241,55 @@ def configure_analysis():
 
 	# Get form
 	f=request.form
+	print(f)
 
-	# Check if requires signature
-	signature_tools = pd.read_sql_query('SELECT tool_string FROM tool WHERE requires_signature = 1', engine)['tool_string'].values
-	requires_signature = any([x in signature_tools for x in [x for x in f.lists()][0][-1]])
+	# Check if form has been provided
+	if f:
 
-	# Signature generation
-	if requires_signature:
+		# Check if requires signature
+		signature_tools = pd.read_sql_query('SELECT tool_string FROM tool WHERE requires_signature = 1', engine)['tool_string'].values
+		requires_signature = any([x in signature_tools for x in [x for x in f.lists()][0][-1]])
 
-		# Get metatada for processed datasets
-		if 'gse' in request.form.keys():
-			j = pd.read_sql_query('SELECT DISTINCT CONCAT(gsm, "---", sample_title) AS sample_info, variable, value FROM sample s LEFT JOIN series g ON g.id=s.series_fk LEFT JOIN sample_metadata sm ON s.id=sm.sample_fk WHERE gse = "{}"'.format(f.get('gse')), engine).pivot(index='sample_info', columns='variable', values='value')
-			j = pd.concat([pd.DataFrame({'accession': [x.split('---')[0] for x in j.index], 'sample': [x.split('---')[1] for x in j.index]}, index=j.index), j], axis=1).reset_index(drop=True).fillna('')
-			j = j[[col for col, colData in j.iteritems() if len(colData.unique()) > 1]]
+		# Signature generation
+		if requires_signature:
 
-		# Get metadata for user-submitted dataset
+			# Get metatada for processed datasets
+			if 'gse' in request.form.keys():
+				j = pd.read_sql_query('SELECT DISTINCT CONCAT(gsm, "---", sample_title) AS sample_info, variable, value FROM sample s LEFT JOIN series g ON g.id=s.series_fk LEFT JOIN sample_metadata sm ON s.id=sm.sample_fk WHERE gse = "{}"'.format(f.get('gse')), engine).pivot(index='sample_info', columns='variable', values='value')
+				j = pd.concat([pd.DataFrame({'accession': [x.split('---')[0] for x in j.index], 'sample': [x.split('---')[1] for x in j.index]}, index=j.index), j], axis=1).reset_index(drop=True).fillna('')
+				j = j[[col for col, colData in j.iteritems() if len(colData.unique()) > 1]]
+
+			# Get metadata for user-submitted dataset
+			else:
+				j = pd.read_sql_query('SELECT DISTINCT sample_name AS sample, variable, value FROM user_dataset ud LEFT JOIN user_sample us ON ud.id=us.user_dataset_fk LEFT JOIN user_sample_metadata usm ON us.id=usm.user_sample_fk WHERE ud.dataset_uid="{}"'.format(request.form.get('uid')), engine)
+				j = j.pivot(index='sample', columns='variable', values='value').reset_index()
+		
+			# Return result
+			return render_template('analyze/configure_signature.html', f=f, j=j)
+
 		else:
-			j = pd.read_sql_query('SELECT DISTINCT sample_name AS sample, variable, value FROM user_dataset ud LEFT JOIN user_sample us ON ud.id=us.user_dataset_fk LEFT JOIN user_sample_metadata usm ON us.id=usm.user_sample_fk WHERE ud.dataset_uid="{}"'.format(request.form.get('uid')), engine)
-			j = j.pivot(index='sample', columns='variable', values='value').reset_index()
-	
-		# Return result
-		return render_template('analyze/configure_signature.html', f=f, j=j)
 
+			# Get tool query
+			tools = [value for value, key in zip(f.listvalues(), f.keys()) if key == 'tool'][0]
+			tool_query_string = '("'+'","'.join([value for value, key in zip(f.listvalues(), f.keys()) if key == 'tool'][0])+'")'
+			p = pd.read_sql_query('SELECT tool_name, tool_string, tool_description, parameter_name, parameter_description, parameter_string, value, `default` FROM tool t LEFT JOIN parameter p ON t.id=p.tool_fk LEFT JOIN parameter_value pv ON p.id=pv.parameter_fk WHERE t.tool_string IN {}'.format(tool_query_string), engine).set_index(['tool_string'])#.set_index(['tool_name', 'parameter_name', 'parameter_description', 'parameter_string'])
+
+			# Fix tool parameter data structure
+			t = p[['tool_name', 'tool_description']].drop_duplicates().reset_index().set_index('tool_string', drop=False).to_dict(orient='index')#.groupby('tool_string')[['tool_name', 'tool_description']]#.apply(tuple).to_frame()#drop_duplicates().to_dict(orient='index')
+			p_dict = {tool_string: p.drop(['tool_description', 'tool_name', 'value', 'default'], axis=1).loc[tool_string].drop_duplicates().to_dict(orient='records') if not isinstance(p.loc[tool_string], pd.Series) else [] for tool_string in tools}
+			for tool_string, parameters in p_dict.items():
+				for parameter in parameters:
+					parameter['values'] = p.reset_index().set_index(['tool_string', 'parameter_string'])[['value', 'default']].dropna().loc[(tool_string, parameter['parameter_string'])].to_dict(orient='records')
+			for tool_string in t.keys():
+				t[tool_string]['parameters'] = p_dict[tool_string]
+			t = [t[x] for x in tools]
+		
+			# Return result
+			return render_template('analyze/review_analysis.html', t=t, f=f)
+
+	# Redirect to analyze page
 	else:
-
-		# Get tool query
-		tools = [value for value, key in zip(f.listvalues(), f.keys()) if key == 'tool'][0]
-		tool_query_string = '("'+'","'.join([value for value, key in zip(f.listvalues(), f.keys()) if key == 'tool'][0])+'")'
-		p = pd.read_sql_query('SELECT tool_name, tool_string, tool_description, parameter_name, parameter_description, parameter_string, value, `default` FROM tool t LEFT JOIN parameter p ON t.id=p.tool_fk LEFT JOIN parameter_value pv ON p.id=pv.parameter_fk WHERE t.tool_string IN {}'.format(tool_query_string), engine).set_index(['tool_string'])#.set_index(['tool_name', 'parameter_name', 'parameter_description', 'parameter_string'])
-
-		# Fix tool parameter data structure
-		t = p[['tool_name', 'tool_description']].drop_duplicates().reset_index().set_index('tool_string', drop=False).to_dict(orient='index')#.groupby('tool_string')[['tool_name', 'tool_description']]#.apply(tuple).to_frame()#drop_duplicates().to_dict(orient='index')
-		p_dict = {tool_string: p.drop(['tool_description', 'tool_name', 'value', 'default'], axis=1).loc[tool_string].drop_duplicates().to_dict(orient='records') if not isinstance(p.loc[tool_string], pd.Series) else [] for tool_string in tools}
-		for tool_string, parameters in p_dict.items():
-			for parameter in parameters:
-				parameter['values'] = p.reset_index().set_index(['tool_string', 'parameter_string'])[['value', 'default']].dropna().loc[(tool_string, parameter['parameter_string'])].to_dict(orient='records')
-		for tool_string in t.keys():
-			t[tool_string]['parameters'] = p_dict[tool_string]
-		t = [t[x] for x in tools]
-	
-		# Return result
-		return render_template('analyze/review_analysis.html', t=t, f=f)
+		return redirect(url_for('analyze'))
 
 #############################################
 ########## 6. Generate Notebook
@@ -286,48 +301,56 @@ def configure_analysis():
 @app.route(entry_point+'/analyze/results', methods=['GET', 'POST'])
 def generate_notebook():
 
-	# Get form
-	d = {key:value if len(value) > 1 else value[0] for key, value in request.form.lists()}
+	# Check if form has been provided
+	if request.form:
 
-	# Get parameters and groups
-	p = {x:{} for x in d['tool']} if isinstance(d['tool'], list) else {d['tool']: {}}
-	g = {x:[] for x in ['a', 'b', 'none']}
-	for key, value in d.items():
-		if key not in ['sample-table_length']:
-			if '-' in key:
-				if key.split('-')[0] in d['tool']:
-					tool_string, parameter_string = key.split('-')
-					p[tool_string][parameter_string] = value
-				else:
-					if value != 'none':
-						g[value[0]].append(key.rpartition('-')[0])
+		# Get form
+		d = {key:value if len(value) > 1 else value[0] for key, value in request.form.lists()}
 
-	# Generate signature
-	signature_tools = pd.read_sql_query('SELECT tool_string FROM tool WHERE requires_signature = 1', engine)['tool_string'].values
-	requires_signature = any([x in signature_tools for x in p.keys()])
-	if requires_signature:
-		signature = {
-			"method": "limma",
-			"A": {"name": d.get('group_a_label', ''), "samples": g['a']},
-			"B": {"name": d.get('group_b_label', ''), "samples": g['b']}
+		# Get parameters and groups
+		p = {x:{} for x in d['tool']} if isinstance(d['tool'], list) else {d['tool']: {}}
+		g = {x:[] for x in ['a', 'b', 'none']}
+		for key, value in d.items():
+			if key not in ['sample-table_length']:
+				if '-' in key:
+					if key.split('-')[0] in d['tool']:
+						tool_string, parameter_string = key.split('-')
+						p[tool_string][parameter_string] = value
+					else:
+						if value != 'none':
+							g[value[0]].append(key.rpartition('-')[0])
+
+		# Generate signature
+		signature_tools = pd.read_sql_query('SELECT tool_string FROM tool WHERE requires_signature = 1', engine)['tool_string'].values
+		requires_signature = any([x in signature_tools for x in p.keys()])
+		if requires_signature:
+			signature = {
+				"method": "limma",
+				"A": {"name": d.get('group_a_label', ''), "samples": g['a']},
+				"B": {"name": d.get('group_b_label', ''), "samples": g['b']}
+			}
+		else:
+			signature = {}
+
+		# Generate notebook configuration
+		c = {
+			'notebook': {'title': d.get('notebook_title'), 'live': 'False', 'version': version},
+			'tools': [{'tool_string': x, 'parameters': p.get(x, {})} for x in p.keys()],
+			'data': {'source': d['source'], 'parameters': {'gse': d['gse'], 'platform': d['gpl']} if 'gse' in d.keys() and 'gpl' in d.keys() else {'uid': d['uid']}},
+			'signature': signature
 		}
+
+		# Get tools
+		tools = pd.read_sql_query('SELECT tool_string, tool_name FROM tool', engine).set_index('tool_string').to_dict()['tool_name']
+		selected_tools = [tools[x['tool_string']] for x in c['tools']]
+		
+		# Return result
+		return render_template('analyze/results.html', notebook_configuration=json.dumps(c), notebook_configuration_dict=c, selected_tools=selected_tools)
+
+	# Redirect to analyze page
 	else:
-		signature = {}
+		return redirect(url_for('analyze'))
 
-	# Generate notebook configuration
-	c = {
-		'notebook': {'title': d.get('notebook_title'), 'live': 'False', 'version': version},
-		'tools': [{'tool_string': x, 'parameters': p.get(x, {})} for x in p.keys()],
-		'data': {'source': d['source'], 'parameters': {'gse': d['gse'], 'platform': d['gpl']} if 'gse' in d.keys() and 'gpl' in d.keys() else {'uid': d['uid']}},
-		'signature': signature
-	}
-
-	# Get tools
-	tools = pd.read_sql_query('SELECT tool_string, tool_name FROM tool', engine).set_index('tool_string').to_dict()['tool_name']
-	selected_tools = [tools[x['tool_string']] for x in c['tools']]
-	
-	# Return result
-	return render_template('analyze/results.html', notebook_configuration=json.dumps(c), notebook_configuration_dict=c, selected_tools=selected_tools)
 
 #############################################
 ########## 10. View Notebook
@@ -340,14 +363,21 @@ def generate_notebook():
 def view_notebook(notebook_uid):
 
 	# Get notebook data
-	notebook_data = pd.read_sql_query('SELECT notebook_url, notebook_configuration FROM notebooks WHERE notebook_uid="{notebook_uid}"'.format(**locals()), engine).to_dict(orient='index')[0]
+	notebook_query = pd.read_sql_query('SELECT notebook_url, notebook_configuration FROM notebooks WHERE notebook_uid="{notebook_uid}"'.format(**locals()), engine).to_dict(orient='index')
 
-	# Get Nbviewer URL and Title
-	nbviewer_url = 'http://nbviewer.jupyter.org/urls/'+notebook_data['notebook_url'].replace('https://', '')
-	title = json.loads(notebook_data['notebook_configuration'])['notebook']['title']
-	
-	# Return result
-	return render_template('analyze/notebook.html', nbviewer_url=nbviewer_url, title=title)
+	# Check if notebook has been found
+	if len(notebook_query):
+
+		# Get Nbviewer URL and Title
+		nbviewer_url = 'http://nbviewer.jupyter.org/urls/'+notebook_query[0]['notebook_url'].replace('https://', '')
+		title = json.loads(notebook_query[0]['notebook_configuration'])['notebook']['title']
+
+		# Return result
+		return render_template('analyze/notebook.html', nbviewer_url=nbviewer_url, title=title)
+
+	# Return 404
+	else:
+		abort(404)
 
 #######################################################
 #######################################################
