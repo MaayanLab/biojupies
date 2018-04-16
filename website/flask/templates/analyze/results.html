@@ -53,7 +53,7 @@
 					<div class="col-12 col-lg-8 text-left pl-4">
 
 						<!-- Notebook Title -->
-						<div class="regular medium mt-2">{{ notebook_configuration_dict['notebook']['title'] }}</div>
+						<div class="regular medium mt-2"><a id="notebook-url" href="{{ url_for('view_notebook', notebook_uid='') }}" target="_blank">{{ notebook_configuration_dict['notebook']['title'] }}</a></div>
 
 						<!-- Dataset -->
 						<div class="text-muted regular very-small mt-3">
@@ -148,6 +148,7 @@
 			var notebook_uid = res['notebook_url'].split('/')[6];
 			$('#notebook-link').attr('href', $('#notebook-link').attr('href')+notebook_uid);
 			$('#open-notebook').attr('href', $('#open-notebook').attr('href')+notebook_uid);
+			$('#notebook-url').attr('href', $('#notebook-url').attr('href')+notebook_uid);
 			$('.loader').hide();
 
 			// Add link for uploaded data
