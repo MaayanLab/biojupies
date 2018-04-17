@@ -567,16 +567,7 @@ def example_table_api():
 
 @app.route(entry_point+'/contribute', methods=['GET', 'POST'])
 def contribute():
-	# Get Contribute Data
-	contribute_data = request.form.to_dict()
-	if contribute_data:
-
-		# Upload
-		engine.execute(tables['contribution'].insert(), contribute_data)
-
-		return render_template('contribute/contribute_results.html')
-	else:
-		return render_template('contribute/contribute.html')
+	return render_template('contribute.html')
 
 ##################################################
 ########## 3.2 APIs
