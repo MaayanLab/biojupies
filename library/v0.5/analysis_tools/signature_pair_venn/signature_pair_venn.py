@@ -46,7 +46,7 @@ def run(signature_A, signature_B, signatures, col='logFC', logfc_threshold=1.5, 
 ########## 2. Plot
 #############################################
 
-def plot(venn_results):
+def plot(venn_results, plot_counter):
 	# Plot Venn
 	for direction, results in venn_results.items():
 		a = [x for x in results['sets'].values()]

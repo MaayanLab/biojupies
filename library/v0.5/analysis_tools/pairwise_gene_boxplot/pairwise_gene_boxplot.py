@@ -35,7 +35,7 @@ def run(datasets, gene_symbols, signatures):
 ########## 2. Plot
 #############################################
 
-def plot(results, order=None):
+def plot(results, plot_counter, order=None):
 
 	# Loop through genes 
 	for geneset_label, gene_symbols in results['gene_symbols'].items():
