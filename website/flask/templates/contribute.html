@@ -22,7 +22,7 @@
 		<div class="col-lg-6">
 
 			<!-- Workflow -->
-			{{ macros.workflow_step('fab fa-github fa-4x', 1, '#005A5E', 'Fork the GitHub Repository', 'Create a new fork in the <a href="https://github.com/denis-torre/biojupies-plugins" target="_blank" class="white bold">MaayanLab/biojupies-plugins</a> GitHub repository.') }}
+			{{ macros.workflow_step('fab fa-github fa-4x', 1, '#005A5E', 'Fork the GitHub Repository', 'Create a new fork in the <a href="https://github.com/MaayanLab/biojupies-plugins" target="_blank" class="white bold">MaayanLab/biojupies-plugins</a> GitHub repository.') }}
 			{{ macros.workflow_step('fa fa-code fa-3x', 2, '#017277', 'Add Your Code', '<b>Contribute your code</b> to a new directory following the plugin submission guidelines.') }}
 			{{ macros.workflow_step('fas fa-code-branch fa-3x', 3, '#259BA0', 'Create a Pull Request', '<b>Create a pull request</b> for your plugin. Your code will be reviewed before integration.') }}
 			{{ macros.workflow_step('fa fa-wrench fa-3x', 4, '#5ac2c7', 'Use and Share your Plugin', 'Once approved, your plugin will be made <b>publicly available for generation of notebooks</b> on BioJupies.', arrow=False) }}
@@ -31,16 +31,15 @@
 
 		<!-- Explanation Col -->
 		<div class="col-lg-6 px-4 pt-4 pt-lg-0 very-small light text-justify">
-			<div class="h3 text-center mb-4">Page under development.</div>
+			<!-- Text -->
 			<div class="mb-3">Developers are welcome to <b>contribute their own tools</b> for analysis of RNA-seq data to BioJupies.</div>
 			<div class="mb-3">The tools will be <b>integrated in the BioJupies analysis toolbox</b> and <b>made available to all users</b> of the website and Chrome Extension for analysis of published and uploaded data.</div>
-			<div class="mb-3">We currently accept submissions of any analysis tool written in <b>Python 3 and R</b>.</div>
+			<div class="mb-5">For more information on submitting your tool to BioJupies, visit the following <b>GitHub repository</b>:</div>
 
-			<!-- GitHub Card -->			
-			<div class="mb-3">
-				For more information on submitting your tool to BioJupies, visit the following <b>GitHub repository</b>:
+			<!-- GitHub Card -->
+			<div class="text-center">
+				<div class="github-card" data-user="MaayanLab" data-repo="biojupies-plugins" data-theme="medium"></div>
 			</div>
-			<div class="github-card" data-user="denis-torre" data-repo="biojupies-plugins"></div>
 
 		</div>
 
