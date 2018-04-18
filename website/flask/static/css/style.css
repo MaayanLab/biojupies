@@ -50,6 +50,7 @@ body {
 .regular { font-weight: 300; }
 .bold {	font-weight: 400;}
 .ultra-light {	font-weight: 100; }
+.extra-bold {	font-weight: 600; }
 
 /* Font size */
 .very-large { font-size: 27pt;}
