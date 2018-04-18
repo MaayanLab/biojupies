@@ -23,31 +23,88 @@
 
 			<!-- Workflow -->
 			{{ macros.workflow_step('fab fa-docker fa-3x', 1, '#230349', 'Install Docker', '<b>Download, install and run Docker</b> on your computer from the official <a href="https://www.docker.com/community-edition" target="_blank" class="white bold text-underline">Docker website</a>.') }}
-			{{ macros.workflow_step('fa fa-book fa-3x', 2, '#300762', 'Generate your Notebook', 'Generate a notebook and identify its <b>unique ID (UID)</b><sup><i class="fa fa-question-circle ml-1" data-toggle="popover" data-html="true" title="How do I find the unique ID of a notebook?" data-content="<div class=\'mb-2\'>Every notebook generated with BioJupies is associated to a <b>unique identifier (UID)</b> consisting of nine alphanumeric characters.</div><div class=\'mb-2\'>A notebook\'s UID <b>can be found in its URL</b>. For example:</div><div class=\'font-italic\'>http://amp.pharm.mssm.edu/biojupies/notebook/<code>JxSg0C23W</code></div>" data-trigger="hover" data-template=\'<div class="popover info-popover micro text-justify" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>\'></i></sup>.') }}
-			{{ macros.workflow_step('fas fa-terminal fa-3x', 3, '#511D8F', 'Launch a Docker Container', 'Launch the <code class="white">maayanlab/biojupies-notebooks</code> Docker container<sup><i class="fa fa-question-circle ml-1" data-toggle="popover" data-html="true" title="How do I run a Docker container?" data-content="<div class=\'mb-2\'>You can run Docker containers on your local computer by using the <b>Docker console</b> or a Terminal window.</div><div class=\'mb-2\'>Once you have launched a Docker container, you can access it through your browser.</div>" data-trigger="hover" data-template=\'<div class="popover info-popover micro text-justify" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>\'></i></sup> and provide the UID of the selected notebook.') }}
-			{{ macros.workflow_step('fa fa-edit fa-3x', 4, '#65399A', 'Customize your Notebook', 'Access your <b>local Jupyter server</b><sup><i class="fa fa-question-circle ml-1" data-toggle="popover" data-html="true" title="How do I access a local Jupyter server?" data-content="<div class=\'mb-2\'>You can run Docker containers on your local computer by using the <b>Docker console</b> or a Terminal window.</div><div class=\'mb-2\'>Once you have launched a Docker container, you can access it through your browser.</div>" data-trigger="hover" data-template=\'<div class="popover info-popover micro text-justify" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>\'></i></sup> to run, edit and save your notebook. See below for more information.', arrow=False) }}
+			{{ macros.workflow_step('fa fa-book fa-3x', 2, '#300762', 'Generate your Notebook', '<a href="analyze" target="_blank" class="white bold text-underline">Generate a notebook</a> and identify its <b>unique ID (UID)</b><sup><i class="fa fa-question-circle ml-1" data-toggle="popover" data-placement="top" data-html="true" title="How do I find the unique ID of a BioJupies notebook?" data-content="<div class=\'mb-2\'>Every notebook generated with BioJupies is associated to a <b>unique identifier (UID)</b> consisting of nine alphanumeric characters.</div><div class=\'mb-2\'>A notebook\'s UID <b>can be found in its URL</b>. For example:</div><div class=\'font-italic\'>http://amp.pharm.mssm.edu/biojupies/notebook/<code>JxSg0C23W</code></div>" data-trigger="hover" data-template=\'<div class="popover info-popover micro text-justify" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>\'></i></sup>.') }}
+			{{ macros.workflow_step('fas fa-terminal fa-3x', 3, '#511D8F', 'Launch a Docker Container', 'Launch the <code class="white">maayanlab/biojupies-notebooks</code> Docker container and provide the UID of the selected notebook<sup><i class="fa fa-question-circle ml-1" data-toggle="popover" data-placement="top" data-html="true" title="How do I run a Docker container?" data-content="<div class=\'mb-2\'>You can run Docker containers on your local computer by entering the <code class=\'black extra-bold\'>docker run</code> command from a terminal window (for Mac or Linux) or the Docker Quickstart Terminal (for Windows).</div><div class=\'mb-2\'>See <span class=\'d-none d-lg-inline-block\'>right</span><span class=\'d-inline-block d-lg-none\'>below</span> for more information.</div>" data-trigger="hover" data-template=\'<div class="popover info-popover micro text-justify" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>\'></i></sup>.') }}
+			{{ macros.workflow_step('fa fa-edit fa-3x', 4, '#65399A', 'Customize your Notebook', 'Access your <b>local Jupyter server</b> to run, edit and save your notebook<sup><i class="fa fa-question-circle ml-1" data-toggle="popover" data-placement="top" data-html="true" title="How do I access a local Jupyter server?" data-content="<div class=\'mb-2\'>Once your Jupyter server is running on the Docker container, you can access it through your web browser on <code class=\'black extra-bold\'>localhost:8888</code>.</div><div class=\'mb-2\'>See <span class=\'d-none d-lg-inline-block\'>right</span><span class=\'d-inline-block d-lg-none\'>below</span> for more information.</div>" data-trigger="hover" data-template=\'<div class="popover info-popover micro text-justify" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>\'></i></sup>. See below for more information.', arrow=False) }}
 
 		</div>
 			
 		<!-- Explanation Col -->
-		<div class="col-lg-6 px-4 pt-4 pt-lg-0 very-small light text-justify">
-			<div class="mb-3">
-				<div class="h3 text-center">Page under development.</div>
-				<!-- Users are welcome to <b>contribute their own RNA-seq data analysis tools</b> to BioJupies for use by the community.
-				You can
-				<b>contribute your RNA-seq data analysis tools</b> to BioJupies. Once submitted, users will be able to utilize this computational
-				tool to analyze data using the BioJupies website. -->
+		<div class="col-lg-6 px-4 pt-4 pt-lg-0 very-small light">
+
+			<!-- Text -->
+			<div class="mb-2 light small text-muted">Reusing BioJupies Notebooks</div>
+			<div class="mb-3 text-justify">All notebooks generated using BioJupies can be <b>downloaded, rerun and saved</b>, allowing users to fully customize the analyses of RNA-seq data on their local computers.</div>
+			<div class="mb-3 text-justify">To achieve this, we provide a <b>pre-configured Docker container</b> containing a fully functional <b>Jupyter server</b> with all the Python and R libraries necessary to run the notebooks.</div>
+			<div class="mt-4 mb-2 light small text-muted">Launching the Docker Container</div>
+			<div class="mb-3 text-justify">To run a BioJupies notebook on your local computer, <b>follow the instructions</b> <span class='d-none d-lg-inline-block'>on the left</span><span class='d-inline-block d-lg-none'>above</span>. We recommend users gain a basic understanding of Docker and Jupyter before proceeding.</div>
+			<div class="mb-3 text-justify">To complete <b>steps 3 and 4</b>, follow the instructions below:</div>
+
+			<!-- Instructions Nav -->
+			<div class="border-grey rounded overflow-hidden">
+				<nav id="docker-nav">
+					<div class="nav nav-tabs nav-justified" role="tablist">
+						<a class="nav-item nav-link rounded-0 border-top-0 border-left-0 active" id="mac-tab" data-toggle="tab" href="#ma" role="tab" aria-controls="ma"
+						 aria-selected="true">Mac OS & Linux</a>
+						<a class="nav-item nav-link rounded-0 border-top-0" id="windows-tab" data-toggle="tab" href="#windows" role="tab" aria-controls="windows"
+						 aria-selected="false">Windows</a>
+					</div>
+				</nav>
+				<div class="tab-content px-3 pt-3 pb-2">
+					<div class="tab-pane fade show active" id="ma" role="tabpanel" aria-labelledby="mac-tab">
+						<ol class="pl-3">
+							<li class="mb-2">Open a <b>new Terminal window</b>.</li>
+							<li class="mb-2"><b>Pull the latest version of the Docker container</b> by entering the following command:
+								<code class="d-block mt-2 mb-3">docker pull maayanlab/biojupies-notebooks</code>
+							</li>
+							<li class="mb-2"><b>Launch the Docker container</b> by entering the following command.
+								<code class="d-block mt-2 mb-2">docker run -it -p 8888:8888 -e NOTEBOOK_UID=<span class="font-italic"></span>&lt;NOTEBOOK_UID&gt;</span> maayanlab/biojupies-notebooks</code>
+								<div class="text-muted font-italic">Note: replace &lt;NOTEBOOK_UID&gt; with the ID of the notebook you wish to run (e.g. JxSg0C23W).</div>
+							</li>
+							<li class="mb-2">Open a <b>new browser window</b>.</li>
+							<li class="mb-2"><b>Access your Jupyter Server</b> by visiting <code class="black">localhost:8888</code>.</li>
+							<li class="mb-2"><b>Execute, customize and save</b> your notebook using Jupyter.</li>
+							<li class="mb-2">Once you are done, <b>stop the Docker container</b> by pressing <code class="black">Ctrl+C</code> on the previously opened Terminal window.</li>
+						</ol>
+					</div>
+					<div class="tab-pane fade" id="windows" role="tabpanel" aria-labelledby="windows-tab">
+						<ol class="pl-3">
+							<li class="mb-2">Open the <b>Docker Quickstart Terminal</b>.</li>
+							<li class="mb-2"><b>Pull the latest version of the Docker container</b> by entering the following command:
+								<code class="d-block mt-2 mb-3">docker pull maayanlab/biojupies-notebooks</code>
+							</li>
+							<li class="mb-2"><b>Launch the Docker container</b> by entering the following command.
+								<code class="d-block mt-2 mb-2">docker run -it -p 8888:8888 -e NOTEBOOK_UID=<span class="font-italic"></span>&lt;NOTEBOOK_UID&gt;</span> maayanlab/biojupies-notebooks</code>
+								<div class="text-muted font-italic">Note: replace &lt;NOTEBOOK_UID&gt; with the ID of the notebook you wish to run (e.g. JxSg0C23W).</div>
+							</li>
+							<li class="mb-2">Open a <b>new browser window</b>.</li>
+							<li class="mb-2">
+								Find the <b>IP of your Docker server</b>
+								<sup><i class="fa fa-question-circle" data-toggle="popover" data-placement="top" data-html="true" title="How do I find the IP of my Docker server?" data-content="<div class='text-left'>The IP of your Docker server is displayed at the top of your Docker Quickstart Terminal window:</div><img src='static/img/docker-terminal.png' class='mw-100 mt-2'>" data-trigger="hover" data-template='<div class="popover info-popover micro text-justify" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>'></i></sup>.
+							</li>
+							<li class="mb-2">
+								<b>Access your Jupyter Server</b> by visiting <code class="black">&lt;DOCKER_IP&gt;:8888</code>.
+								<div class="text-muted font-italic mt-2">Note: replace &lt;DOCKER_IP&gt; with the IP of your server (e.g. 192.168.99.100:8888).</div>							
+							</li>
+							<li class="mb-2"><b>Execute, customize and save</b> your notebook using Jupyter.</li>
+							<li class="mb-2">Once you are done, <b>stop the Docker container</b> by pressing <code class="black">Ctrl+C</code> on the Docker Quickstart Terminal.</li>
+						</ol>
+					</div>
+				</div>
 			</div>
 
-			<div class="mb-3">
-				<!-- To submit your tool to BioJupies, visit the following GitHub repository: -->
+			<div class="mb-3 d-none">
+				<code>docker pull maayanlab/biojupies-notebooks</code>
+				<br>
+				<br>
+				<code>docker run -it -p 8888:8888 -e NOTEBOOK_UID=<span class="extra-bold">&lt;NOTEBOOK_UID&gt;</span> maayanlab/biojupies-notebooks</code>
 			</div>
 
 		</div>
 
 		<!-- <div class="col-lg-7 px-4 pt-5 pt-lg-2 very-small light">
 			<div class="mb-2 pl-4"><span class="regular mr-1">1.</span>Download Docker</div>
-			<div class="mb-2 pl-4"><span class="regular mr-1">2.</span>Open the Docker Console</div>
+			<div class="mb-2 pl-4"><span class="regular mr-1">2.</span>Open the Docker Quickstart Terminal</div>
 			<div class="mb-2 pl-4"><span class="regular mr-1">3.</span>Pull the lastest Docker container: <code>docker pull maayanlab/biojupies-notebooks</code></div>
 			<div class="mb-2 pl-4"><span class="regular mr-1">4.</span>Run the docker container. <code>docker run -it -p 8888:8888 -e NOTEBOOK_UID=qzmeZ0p4s maayanlab/biojupies-notebooks:v0.1</code><br><b class="ml-3">Note:</b> replace the <span class="font-italic">NOTEBOOK_UID</span> parameter with the UID of the notebook you wish to re-run.</div>
 			<div class="mb-2 pl-4"><span class="regular mr-1">5.</span>Visit <span class="font-italic">localhost:8888</span> on your browser </div>
