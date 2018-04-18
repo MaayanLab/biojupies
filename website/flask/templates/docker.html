@@ -58,7 +58,7 @@
 								<code class="d-block mt-2 mb-3">docker pull maayanlab/biojupies-notebooks</code>
 							</li>
 							<li class="mb-2"><b>Launch the Docker container</b> by entering the following command.
-								<code class="d-block mt-2 mb-2">docker run -it -p 8888:8888 -e NOTEBOOK_UID=<span class="font-italic"></span>&lt;NOTEBOOK_UID&gt;</span> maayanlab/biojupies-notebooks</code>
+								<code class="d-block mt-2 mb-2">docker run -it -p 8888:8888 -e NOTEBOOK_UID=<span class="font-italic"></span>&lt;NOTEBOOK_UID&gt;</span>  -v ${PWD}:/notebooks maayanlab/biojupies-notebooks</code>
 								<div class="text-muted font-italic">Note: replace &lt;NOTEBOOK_UID&gt; with the ID of the notebook you wish to run (e.g. JxSg0C23W).</div>
 							</li>
 							<li class="mb-2">Open a <b>new browser window</b>.</li>
@@ -74,7 +74,7 @@
 								<code class="d-block mt-2 mb-3">docker pull maayanlab/biojupies-notebooks</code>
 							</li>
 							<li class="mb-2"><b>Launch the Docker container</b> by entering the following command.
-								<code class="d-block mt-2 mb-2">docker run -it -p 8888:8888 -e NOTEBOOK_UID=<span class="font-italic"></span>&lt;NOTEBOOK_UID&gt;</span> maayanlab/biojupies-notebooks</code>
+								<code class="d-block mt-2 mb-2">docker run -it -p 8888:8888 -e NOTEBOOK_UID=<span class="font-italic"></span>&lt;NOTEBOOK_UID&gt;</span> -v ${PWD}:/notebooks maayanlab/biojupies-notebooks</code>
 								<div class="text-muted font-italic">Note: replace &lt;NOTEBOOK_UID&gt; with the ID of the notebook you wish to run (e.g. JxSg0C23W).</div>
 							</li>
 							<li class="mb-2">
