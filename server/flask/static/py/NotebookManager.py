@@ -123,7 +123,7 @@ def log_error(notebook_configuration, error, annotations, engine):
 		error_response += ' loading the dataset.<br><br>Please try again with another one.'
 	elif 'generate_signature' in error:
 		error_type = 'generate_signature'
-		error_response += ' generating the signature.<br><br>Please try again with different settings, or deselect the tools which require a signature.'
+		error_response += ' generating the signature.<br><br>Please try again with different groups, or remove the tools which require a signature.'
 	elif 'run' in error:
 		tool_name = annotations['tools'][error.split("tool='")[-1].split("'")[0]]['tool_name']
 		error_type = tool_name
