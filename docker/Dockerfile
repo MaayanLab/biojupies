@@ -41,7 +41,7 @@ RUN pip3 install matplotlib-venn
 RUN mkdir /notebooks
 WORKDIR /notebooks
 
-RUN wget https://github.com/MaayanLab/notebook-generator/raw/master/library.zip; unzip library.zip; rm library.zip; rm -r __MACOSX
+RUN wget https://github.com/MaayanLab/notebook-generator/raw/05abdfd6f07080484ade66b58422e770615ca4ba/library.zip; unzip library.zip; rm library.zip; rm -r __MACOSX
 COPY launch.py library
 
 ENTRYPOINT python3 library/launch.py; jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root --no-browser --notebook-dir='/notebooks' --NotebookApp.iopub_data_rate_limit=10000000000 --NotebookApp.token=
