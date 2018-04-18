@@ -124,9 +124,6 @@ def log_error(notebook_configuration, error, annotations, engine):
 	elif 'generate_signature' in error:
 		error_type = 'generate_signature'
 		error_response += ' generating the signature.<br><br>Please try again with different settings, or deselect the tools which require a signature.'
-	elif 'normalize' in error:
-		error_type = 'normalize'
-		error_response += ' normalizing the dataset.<br><br>Please try again with different normalization method.'
 	elif 'run' in error:
 		tool_name = annotations['tools'][error.split("tool='")[-1].split("'")[0]]['tool_name']
 		error_type = tool_name
@@ -135,11 +132,10 @@ def log_error(notebook_configuration, error, annotations, engine):
 		error_type = 'unspecified'
 		error_response = error_response.replace('error', 'unspecified error.')
 		raise
-	error_response += '<br><br>The error has been logged and we will work on fixing it.<br>&nbsp</span>'
+	# error_response += '<br><br>The error has been logged.<br>&nbsp</span>'
 
 	# Upload to database
 	error_dataframe = pd.Series({'notebook_configuration': json.dumps(notebook_configuration), 'error': error, 'version': notebook_configuration['notebook']['version'], 'error_type': error_type, 'gse': notebook_configuration['data']['parameters'].get('gse')}).to_frame().T
 	error_dataframe.to_sql('error_log', engine, if_exists='append', index=False)
-
 
 	return error_response
