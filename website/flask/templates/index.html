@@ -20,7 +20,7 @@
 		<div id="carousel">
 			{% for carousel_image in carousel_images %}
 			{% if loop.index == 2 %}
-				<div class="mw-100 nodecoration px-3 py-3 mx-1"><iframe class="w-100 h-100 border-black" src="https://www.youtube.com/embed/EJOd1f0QV-w"></iframe></div>
+				<div class="mw-100 nodecoration px-3 py-3 mx-1"><iframe class="w-100 h-100 border-black hidden" src="https://www.youtube.com/embed/EJOd1f0QV-w"></iframe></div>
 				{% else %}
 					<div style="background: url({{ url_for('static', filename='img/carousel/'+carousel_image+'.png') }});" class="mw-100 nodecoration px-3 py-3 mx-1"></div>
 				{% endif %}
@@ -109,5 +109,7 @@
   	autoplay: true,
   	autoplaySpeed: 10000
   });
+
+  $('iframe').removeClass('hidden');
 </script>
 {% endblock %}
