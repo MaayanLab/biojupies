@@ -82,6 +82,7 @@ def common_start(sa, sb):
 ### Links to: analyze().
 
 @app.route(entry_point)
+@app.route(entry_point+'/')
 def index():
 
 	# Get Carousel Images

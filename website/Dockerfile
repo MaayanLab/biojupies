@@ -23,6 +23,6 @@ RUN pip3 install uwsgi
 RUN mkdir biojupies
 COPY . /biojupies
 WORKDIR /biojupies
-RUN chmod +x boot.sh
+RUN chmod +x boot.sh; chmod -R 777 /biojupies/app/static/uploads;
 
-ENTRYPOINT mkdir ~/.config; mkdir ~/.config/gcloud; echo $APPLICATION_DEFAULT_CREDENTIALS > ~/.config/gcloud/application_default_credentials.json; ./boot.sh
+ENTRYPOINT mkdir -p .config/gcloud; echo $APPLICATION_DEFAULT_CREDENTIALS > $GOOGLE_APPLICATION_CREDENTIALS; ./boot.sh
