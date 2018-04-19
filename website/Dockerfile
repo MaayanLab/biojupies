@@ -16,8 +16,12 @@ RUN pip3 install pymysql
 RUN pip3 install google-cloud
 RUN pip3 install h5py
 
+RUN apt-get update && apt-get install -y nginx
+RUN pip3 install uwsgi
+RUN apt-get update && apt-get install -y systemd
+
 RUN mkdir biojupies
 COPY . /biojupies
 WORKDIR /biojupies/flask
 
-ENTRYPOINT mkdir ~/.config; mkdir ~/.config/gcloud; echo $APPLICATION_DEFAULT_CREDENTIALS > ~/.config/gcloud/application_default_credentials.json; python3 __init__.py
+ENTRYPOINT mkdir ~/.config; mkdir ~/.config/gcloud; echo $APPLICATION_DEFAULT_CREDENTIALS > ~/.config/gcloud/application_default_credentials.json; mv app.service /etc/systemd/system; /bin/bash
