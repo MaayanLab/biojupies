@@ -38,10 +38,15 @@ RUN apt-get update && apt-get install -y wget
 
 RUN pip3 install matplotlib-venn
 
+RUN apt-get update && apt-get install -y python3-setuptools
+RUN apt-get update && apt-get install -y nginx uwsgi-core
+RUN pip3 install uwsgi
+
 RUN mkdir notebook-generator-server
 COPY . /notebook-generator-server
-WORKDIR /notebook-generator-server/flask
+WORKDIR /notebook-generator-server
+RUN chmod +x boot.sh;
 
 RUN cd static; wget https://github.com/MaayanLab/notebook-generator/raw/05abdfd6f07080484ade66b58422e770615ca4ba/library.zip; rm -r library; unzip library.zip; cd ..;
 
-ENTRYPOINT mkdir ~/.config; mkdir ~/.config/gcloud; echo $APPLICATION_DEFAULT_CREDENTIALS > ~/.config/gcloud/application_default_credentials.json; python3 __init__.py
+ENTRYPOINT mkdir -p .config/gcloud; echo $APPLICATION_DEFAULT_CREDENTIALS > $GOOGLE_APPLICATION_CREDENTIALS; ./boot.sh

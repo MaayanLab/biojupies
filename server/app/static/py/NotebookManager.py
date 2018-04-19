@@ -27,7 +27,7 @@ import json
 import urllib.parse
 import nbformat as nbf
 import pandas as pd
-sys.path.append('static/py')
+sys.path.append('app/static/py')
 from nbconvert.preprocessors import ExecutePreprocessor
 from nbconvert.preprocessors.execute import executenb
 
@@ -58,7 +58,7 @@ def execute_notebook(notebook, execute=True, to_html=False):
 
 	# Execute
 	if execute:
-		ep.preprocess(notebook, {'metadata': {'path': './static/library'}})
+		ep.preprocess(notebook, {'metadata': {'path': 'app/static/library'}})
 
 	if to_html:
 		notebook = html_exporter_with_figs.from_notebook_node(notebook)[0]
@@ -66,23 +66,23 @@ def execute_notebook(notebook, execute=True, to_html=False):
 	# Return
 	return notebook
 
-def execute_notebook_stream(notebook, execute=True, to_html=False):
+# def execute_notebook_stream(notebook, execute=True, to_html=False):
 
-	# Execute
-	print('ExecutePreprocessor')
-	print(ExecutePreprocessor)
-	print(dir(ExecutePreprocessor))
-	print(executenb)
-	print(dir(executenb))
-	if execute:
-		notebook = executenb(notebook, cwd='./static/library')
-		# ep.preprocess(notebook, {'metadata': {'path': './static/library'}})
+# 	# Execute
+# 	print('ExecutePreprocessor')
+# 	print(ExecutePreprocessor)
+# 	print(dir(ExecutePreprocessor))
+# 	print(executenb)
+# 	print(dir(executenb))
+# 	if execute:
+# 		notebook = executenb(notebook, cwd='app/static/library')
+# 		# ep.preprocess(notebook, {'metadata': {'path': './static/library'}})
 
-	if to_html:
-		notebook = html_exporter_with_figs.from_notebook_node(notebook)[0]
+# 	if to_html:
+# 		notebook = html_exporter_with_figs.from_notebook_node(notebook)[0]
 
-	# Return
-	return notebook
+# 	# Return
+# 	return notebook
 
 #############################################
 ########## 2. Upload Notebook
@@ -104,7 +104,6 @@ def upload_notebook(notebook, notebook_configuration, engine):
 
 	# Upload to database
 	notebook_dataframe = pd.Series({'notebook_uid': notebook_uid, 'notebook_url': notebook_url, 'notebook_configuration': json.dumps(notebook_configuration), 'version': notebook_configuration['notebook']['version'], 'gse': notebook_configuration['data']['parameters'].get('gse')}).to_frame().T
-	print(notebook_dataframe)
 	notebook_dataframe.to_sql('notebooks', engine, if_exists='append', index=False)
 
 	# Return

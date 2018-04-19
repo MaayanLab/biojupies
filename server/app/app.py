@@ -27,7 +27,7 @@ import pymysql
 pymysql.install_as_MySQLdb()
 
 ##### 3. Custom modules #####
-sys.path.append('static/py')
+sys.path.append('app/static/py')
 from NotebookGenerator import *
 from NotebookManager import *
 
@@ -37,7 +37,7 @@ from NotebookManager import *
 ##### 1. Flask App #####
 # General
 entry_point = '/notebook-generator-server'
-app = Flask(__name__, static_url_path=os.path.join(entry_point, 'static'))
+app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
 
 # Database
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
@@ -83,7 +83,7 @@ def generate():
 		if development:
 
 			# Open example.json
-			with open('../example.json', 'r') as openfile:
+			with open('example.json', 'r') as openfile:
 				notebook_configuration = json.loads(openfile.read())
 
 			# Generate, Execute and Convert to HTML

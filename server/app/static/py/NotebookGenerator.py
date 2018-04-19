@@ -253,6 +253,12 @@ def generate_notebook(notebook_configuration, annotations):
 
 	# Create Notebook
 	notebook = nbf.v4.new_notebook()
+	print('notebook')
+	print('notebook')
+	print('notebook')
+	print(notebook)
+	print(notebook)
+	print(notebook)
 
 	# Initialize Notebook
 	notebook['cells'].append(nbf.v4.new_code_cell("# Initialize Notebook\n%run ../library/"+notebook_configuration['notebook']['version']+"""/init.ipy\nHTML('''<script> code_show=true;  function code_toggle() {  if (code_show){  $('div.input').hide();  } else {  $('div.input').show();  }  code_show = !code_show }  $( document ).ready(code_toggle); </script> <form action="javascript:code_toggle()"><input type="submit" value="Toggle Code"></form>''')"""))
