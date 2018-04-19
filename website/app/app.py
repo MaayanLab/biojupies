@@ -29,7 +29,7 @@ from sqlalchemy import MetaData, or_, and_, func
 pymysql.install_as_MySQLdb()
 
 ##### 3. Custom modules #####
-sys.path.append('static/py')
+sys.path.append('app/static/py')
 import TableManager as TM
 
 #############################################
@@ -38,7 +38,7 @@ import TableManager as TM
 ##### 1. Flask App #####
 # General
 entry_point = '/biojupies'
-app = Flask(__name__, static_url_path=os.path.join(entry_point, 'static'))
+app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
 
 # Database
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']#+'-dev'
@@ -85,7 +85,7 @@ def common_start(sa, sb):
 def index():
 
 	# Get Carousel Images
-	carousel_images = [os.path.basename(x).split('.')[0] for x in glob.glob('static/img/carousel/*.png')]#['notebook', 'pca', 'clustergrammer', 'volcano_plot', 'go_enrichment']
+	carousel_images = [os.path.basename(x).split('.')[0] for x in glob.glob('app/static/img/carousel/*.png')]#['notebook', 'pca', 'clustergrammer', 'volcano_plot', 'go_enrichment']
 	carousel_images.sort()
 	carousel_images.remove('template')
 
