@@ -23,5 +23,6 @@ RUN pip3 install uwsgi
 RUN mkdir biojupies
 COPY . /biojupies
 WORKDIR /biojupies
+RUN chmod +x boot.sh
 
-ENTRYPOINT mkdir ~/.config; mkdir ~/.config/gcloud; echo $APPLICATION_DEFAULT_CREDENTIALS > ~/.config/gcloud/application_default_credentials.json; chmod +x boot.sh; ./boot.sh
+ENTRYPOINT mkdir ~/.config; mkdir ~/.config/gcloud; echo $APPLICATION_DEFAULT_CREDENTIALS > ~/.config/gcloud/application_default_credentials.json; ./boot.sh
