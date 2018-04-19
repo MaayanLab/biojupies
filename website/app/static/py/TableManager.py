@@ -69,7 +69,7 @@ def getUID(engine, idtype='table'):
 def buildH5(data, dataset_uid):
 
 	# Get outfile
-	outfile = os.path.join('static/uploads/h5', dataset_uid+'.h5')
+	outfile = os.path.join('app/static/uploads/h5', dataset_uid+'.h5')
 
 	# Try
 	try:

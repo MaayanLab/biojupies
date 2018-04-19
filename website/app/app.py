@@ -240,7 +240,6 @@ def configure_analysis():
 
 	# Get form
 	f=request.form
-	print(f)
 
 	# Check if form has been provided
 	if f:
@@ -423,7 +422,6 @@ def upload_table():
 
 		# Assign groups
 		matches = {sample: [group for group in groups if group in sample] for sample in samples}
-		print(matches)
 		sample_groups = [{'sample': sample, 'group': matches[sample][-1] if len(matches[sample]) else ''} for sample in samples]
 			
 		# Return result
@@ -481,7 +479,6 @@ def upload_dataframe_api():
 
 	# Convert to JSON
 	dataframe_json = json.dumps(dataframe.fillna('NA').to_dict(orient='split'))
-	print(dataframe_json)
 	
 	# Return result
 	return dataframe_json
@@ -534,7 +531,7 @@ def example_table_api():
 	filename = request.json.get('filename')
 
 	# Read file
-	dataframe = pd.read_table('static/data/'+filename)
+	dataframe = pd.read_table('app/static/data/'+filename)
 
 	# Set index
 	dataframe.set_index(dataframe.columns[0], inplace=True)
@@ -677,7 +674,6 @@ def example():
 	accession = 'GSE88741'
 	dataset = pd.read_sql_query('SELECT * FROM series se WHERE gse = "{}"'.format(accession), engine).T.to_dict()[0]
 	dataset['date'] = dataset['date'].strftime('%b %d, %Y')
-	print(dataset)
 	return render_template('analyze/example.html', dataset=dataset)
 
 #######################################################
