@@ -22,10 +22,10 @@
 	<!-- Introduction -->
 	<hr width="100%" class="my-4">
 	<div class="row">
-		<div class="light very-small my-1 col-lg-8 text-justify">
-			Here you can learn how to generate Jupyter Notebooks using an <b>example dataset</b>. This dataset is publicly available, published in the <a href="https://www.ncbi.nlm.nih.gov/geo/" class="nodecoration" target="_blank">Gene Expression Omnibus</a> database, and processed by <a href="https://amp.pharm.mssm.edu/archs4/" target="_blank">ARCHS4</a>.
+		<div class="light very-small my-1 col-12 text-center">
+			Here you can learn how to generate Jupyter Notebooks using an <b>example dataset</b>.<br>This dataset is published and publicly available in the <a href="https://www.ncbi.nlm.nih.gov/geo/" class="nodecoration" target="_blank">Gene Expression Omnibus</a> and processed by <a href="https://amp.pharm.mssm.edu/archs4/" target="_blank">ARCHS4</a>.
 		</div>
-		<div class="col-lg-4 my-auto text-center pt-3 pt-lg-0">
+		<div class="col-lg-4 my-auto text-center pt-3 pt-lg-0 d-none">
 			<button class="btn black border-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
 			<button class="btn navigate white border-custom bg-blue nodecoration" form="example-dataset-form" type="submit" formaction="{{ url_for('add_tools') }}" formmethod="post">Continue<i class="fa fa-angle-right ml-2"></i></button>
 		</div>
@@ -37,10 +37,7 @@
 		<hr width="100%" class="my-4">
 
 			<!-- Dataset data -->
-			{{dataset['title']}}
-			{{dataset['summary']}}
-			{{dataset['gse']}}
-			{{dataset['date']}}
+			{{ macros.dataset_radio(dataset, 0) }}
 
 			<!-- Form -->
 			<form id="example-dataset-form">

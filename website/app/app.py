@@ -673,8 +673,8 @@ def example():
 
 	# Select dataset
 	accession = 'GSE88741'
-	dataset = pd.read_sql_query('SELECT * FROM series se WHERE gse = "{}"'.format(accession), engine).T.to_dict()[0]
-	dataset['date'] = dataset['date'].strftime('%b %d, %Y')
+	dataset = pd.read_sql_query('SELECT * FROM series se LEFT JOIN sample sa ON se.id=sa.series_fk LEFT JOIN platform p ON p.id=sa.platform_fk WHERE gse = "{}"'.format(accession), engine).drop(['id', 'gsm', 'sample_title'], axis=1).drop_duplicates().T.to_dict()[0]
+	# dataset['date'] = dataset['date'].strftime('%b %d, %Y')
 	return render_template('analyze/example.html', dataset=dataset)
 
 #######################################################
