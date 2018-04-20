@@ -42,11 +42,13 @@ RUN apt-get update && apt-get install -y python3-setuptools
 RUN apt-get update && apt-get install -y nginx uwsgi-core
 RUN pip3 install uwsgi
 
+RUN pip3 install --upgrade jupyter_client
+
 RUN mkdir notebook-generator-server
 COPY . /notebook-generator-server
 WORKDIR /notebook-generator-server
 RUN chmod +x boot.sh;
 
-RUN cd static; wget https://github.com/MaayanLab/notebook-generator/raw/05abdfd6f07080484ade66b58422e770615ca4ba/library.zip; rm -r library; unzip library.zip; cd ..;
+RUN cd app/static; wget https://github.com/MaayanLab/notebook-generator/raw/05abdfd6f07080484ade66b58422e770615ca4ba/library.zip; rm -r library; unzip library.zip; cd /notebook-generator-server;
 
-ENTRYPOINT mkdir -p .config/gcloud; echo $APPLICATION_DEFAULT_CREDENTIALS > $GOOGLE_APPLICATION_CREDENTIALS; ./boot.sh
+ENTRYPOINT mkdir -p .config/gcloud; echo $APPLICATION_DEFAULT_CREDENTIALS > $GOOGLE_APPLICATION_CREDENTIALS; mkdir -p /root/.local/share/jupyter; ln -s /usr/local/share/jupyter/kernels /root/.local/share/jupyter/kernels; chmod -R 777 /root; ./boot.sh
