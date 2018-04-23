@@ -21,7 +21,7 @@ from flask import Flask, request, render_template, Response, redirect, url_for, 
 from flask_sqlalchemy import SQLAlchemy
 
 ##### 2. Python modules #####
-import sys, os, json, requests, re, math, itertools, glob
+import sys, os, json, requests, re, math, itertools, glob, urllib
 import pandas as pd
 import pymysql
 from sqlalchemy.orm import sessionmaker
@@ -49,9 +49,6 @@ Session = sessionmaker(bind=engine)
 metadata = MetaData()
 metadata.reflect(bind=engine)
 tables = metadata.tables
-
-# Notebook Generation
-version = 'v0.6'
 
 ##### 2. Functions #####
 # Longest common substring
@@ -219,6 +216,10 @@ def add_tools():
 
 		# Number of tools
 		nr_tools = len(tools)
+
+		# Notebook Generation
+		req =  urllib.request.Request('http://amp.pharm.mssm.edu/notebook-generator-server/api/version') # this will make the method "POST"
+		version = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['latest_library_version']
 		
 		# Return result
 		return render_template('analyze/add_tools.html', selected_data=selected_data, sections=sections, nr_tools=nr_tools, version=version)
@@ -330,6 +331,10 @@ def generate_notebook():
 			}
 		else:
 			signature = {}
+
+		# Notebook Generation
+		req =  urllib.request.Request('http://amp.pharm.mssm.edu/notebook-generator-server/api/version') # this will make the method "POST"
+		version = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['latest_library_version']
 
 		# Generate notebook configuration
 		c = {
