@@ -16,7 +16,9 @@ uid = $user
 gid = $user
 
 home = /notebook-generator-server/venv
-plugins = python
+plugins = python3
+
+enable-threads = true
 
 master = true
 processes = 5

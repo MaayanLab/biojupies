@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install --allow-unauthenticated -y r-base
 RUN apt-get update && apt-get install -y wget
 RUN apt-get update && apt-get install -y python3-setuptools
 RUN apt-get update && apt-get install -y nginx uwsgi-core
+RUN apt-get update && apt-get install -y uwsgi-plugin-python3
 
 RUN mkdir /notebook-generator-server; cd /notebook-generator-server; virtualenv -p /usr/bin/python3 venv/; 
 
@@ -34,19 +35,21 @@ RUN . /notebook-generator-server/venv/bin/activate && pip3 install qgrid
 RUN . /notebook-generator-server/venv/bin/activate && pip3 install clustergrammer-widget
 RUN . /notebook-generator-server/venv/bin/activate && pip3 install matplotlib-venn
 RUN . /notebook-generator-server/venv/bin/activate && pip3 install uwsgi
+RUN . /notebook-generator-server/venv/bin/activate && pip3 install tzlocal
+
+RUN . /notebook-generator-server/venv/bin/activate && python -m ipykernel install --user --name venv --display-name "python3-venv"
 
 RUN echo "r <- getOption('repos'); r['CRAN'] <- 'http://cran.us.r-project.org'; options(repos = r);" > ~/.Rprofile
 RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("limma");'
 RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("edgeR");'
+RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("DESeq2");'
 
-RUN apt-get update && apt-get install -y uwsgi-plugin-python3
+RUN mkdir /download; chmod 777 /download; chmod -R 777 /root;
 
-RUN cd /notebook-generator-server/app/static; wget https://github.com/MaayanLab/notebook-generator/raw/9d8feb84508db180ee30b50c4fb11403e37bcd52/library.zip; rm -r library; unzip library.zip; cd /notebook-generator-server;
+COPY . /notebook-generator-server
+RUN cd /notebook-generator-server/app/static; wget https://github.com/MaayanLab/notebook-generator/raw/48b135f8aa9c6b24d9b4f66859d6b09d4142e130/library.zip; rm -r library; unzip library.zip;
 
 WORKDIR /notebook-generator-server
-
-RUN mkdir /download; chmod 777 /download;
-COPY . /notebook-generator-server
 RUN chmod +x boot.sh;
 
 ENTRYPOINT mkdir -p .config/gcloud; echo $APPLICATION_DEFAULT_CREDENTIALS > $GOOGLE_APPLICATION_CREDENTIALS; ./boot.sh
