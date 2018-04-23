@@ -43,8 +43,6 @@ RUN echo "r <- getOption('repos'); r['CRAN'] <- 'http://cran.us.r-project.org'; 
 RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("limma");'
 RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("edgeR");'
 
-RUN mkdir /download; chmod 777 /download; chmod -R 777 /root;
-
 COPY . /notebook-generator-server
 RUN cd /notebook-generator-server/app/static; wget https://github.com/MaayanLab/notebook-generator/raw/48b135f8aa9c6b24d9b4f66859d6b09d4142e130/library.zip; rm -r library; unzip library.zip;
 

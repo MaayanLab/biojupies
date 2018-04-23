@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 root=/notebook-generator-server
-user=r
+user=root
 log=$root/error.log
 
 function setup {
