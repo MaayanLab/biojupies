@@ -40,16 +40,13 @@ RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("limma")
 RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("edgeR");'
 
 RUN apt-get update && apt-get install -y uwsgi-plugin-python3
-RUN . /notebook-generator-server/venv/bin/activate && python3 -m ipykernel install --user --name venv --display-name "python3-venv"
-RUN . /notebook-generator-server/venv/bin/activate && pip3 install tzlocal
 
-RUN chmod -R 777 /root;
-COPY . /notebook-generator-server
+RUN cd /notebook-generator-server/app/static; wget https://github.com/MaayanLab/notebook-generator/raw/9d8feb84508db180ee30b50c4fb11403e37bcd52/library.zip; rm -r library; unzip library.zip; cd /notebook-generator-server;
+
 WORKDIR /notebook-generator-server
-RUN chmod +x boot.sh; chmod -R 777 .;
 
 RUN mkdir /download; chmod 777 /download;
-
-RUN cd app/static; wget https://github.com/MaayanLab/notebook-generator/raw/05abdfd6f07080484ade66b58422e770615ca4ba/library.zip; rm -r library; unzip library.zip; cd /notebook-generator-server;
+COPY . /notebook-generator-server
+RUN chmod +x boot.sh;
 
 ENTRYPOINT mkdir -p .config/gcloud; echo $APPLICATION_DEFAULT_CREDENTIALS > $GOOGLE_APPLICATION_CREDENTIALS; ./boot.sh
