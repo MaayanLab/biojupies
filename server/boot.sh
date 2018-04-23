@@ -1,16 +1,22 @@
 #!/usr/bin/env bash
 
 root=/notebook-generator-server
-user=root
+user=r
 log=$root/error.log
 
 function setup {
+
+echo "Creating user..." >> $log
+adduser --disabled-password --gecos '' $user >> $log
 
 echo "Writing wsgi.ini..." >> $log
 cat << EOF | tee -a $root/wsgi.ini >> $log
 [uwsgi]
 uid = $user
 gid = $user
+
+home = /notebook-generator-server/venv
+plugins = python3
 
 master = true
 processes = 5

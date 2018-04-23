@@ -35,7 +35,7 @@ from nbconvert.preprocessors.execute import executenb
 ########## 2. Variables
 #############################################
 ##### 1. Notebook Execution #####
-ep = ExecutePreprocessor(timeout=600, kernel_name='python3')
+ep = ExecutePreprocessor(timeout=600, kernel_name='venv')
 
 ###
 from nbconvert import HTMLExporter
