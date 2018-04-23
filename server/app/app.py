@@ -47,7 +47,7 @@ engine = db.engine
 
 ##### 2. Variables #####
 # Latest library version
-latest_library_version = 'v0.5'
+latest_library_version = 'v0.6'
 
 #######################################################
 #######################################################

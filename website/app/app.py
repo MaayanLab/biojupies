@@ -51,7 +51,7 @@ metadata.reflect(bind=engine)
 tables = metadata.tables
 
 # Notebook Generation
-version = 'v0.5'
+version = 'v0.6'
 
 ##### 2. Functions #####
 # Longest common substring
