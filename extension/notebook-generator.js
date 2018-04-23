@@ -78,7 +78,7 @@ var modal = {
 					.append($('<input>', {'type': 'checkbox', 'class': 'modal-tool-checkbox', 'id': tool['tool_string']+'-checkbox', 'value': tool['tool_string'], 'name': 'input-tools', 'required': 'true', 'checked': tool['default_selected'] > 0}).data(tool))
 					.append($('<label>', {'class': 'modal-tool-label', 'for': tool['tool_string']+'-checkbox'})
 						.append($('<div>', {'class': 'modal-tool-icon-wrapper'})
-							.html($('<img>', {'class': 'modal-tool-icon', 'src': 'http://amp.pharm.mssm.edu/notebook-generator-server/static/img/'+tool['tool_string']+'.png'})))
+							.html($('<img>', {'class': 'modal-tool-icon', 'src': 'http://amp.pharm.mssm.edu/biojupies/app/static/img/tool/'+tool['tool_string']+'/'+tool['tool_string']+'.png'})))
 						.append($('<div>', {'class': 'modal-tool-text'})
 							.append($('<div>', {'class': 'modal-tool-title'}).html(tool['tool_name']))
 							.append($('<div>', {'class': 'modal-tool-description'}).html(tool['tool_description'])))
