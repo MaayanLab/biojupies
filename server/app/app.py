@@ -36,7 +36,8 @@ from NotebookManager import *
 #############################################
 ##### 1. Flask App #####
 # General
-entry_point = '/notebook-generator-server'
+dev = False
+entry_point = '/notebook-generator-server-dev' if dev else '/notebook-generator-server'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
 
 # Database

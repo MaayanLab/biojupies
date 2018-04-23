@@ -37,7 +37,8 @@ import TableManager as TM
 #############################################
 ##### 1. Flask App #####
 # General
-entry_point = '/biojupies'
+dev = True
+entry_point = '/biojupies-dev' if dev else '/biojupies'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
 
 # Database
@@ -349,12 +350,11 @@ def generate_notebook():
 		selected_tools = [tools[x['tool_string']] for x in c['tools']]
 		
 		# Return result
-		return render_template('analyze/results.html', notebook_configuration=json.dumps(c), notebook_configuration_dict=c, selected_tools=selected_tools)
+		return render_template('analyze/results.html', notebook_configuration=json.dumps(c), notebook_configuration_dict=c, selected_tools=selected_tools, dev=dev)
 
 	# Redirect to analyze page
 	else:
 		return redirect(url_for('analyze'))
-
 
 #############################################
 ########## 10. View Notebook

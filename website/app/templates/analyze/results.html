@@ -130,7 +130,7 @@
 	$('#copy-link').tooltip('disable');
 	
 	$.ajax({	
-		url: "http://amp.pharm.mssm.edu/notebook-generator-server/api/generate",
+		url: "http://amp.pharm.mssm.edu/notebook-generator-server{{ '-dev' if dev else '' }}/api/generate",
 		method: "POST",
 		data: $('#notebook-link').attr('data-notebook_configuration'),
 		// data: $('#notebook-configuration').val(),
