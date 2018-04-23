@@ -37,7 +37,7 @@ import TableManager as TM
 #############################################
 ##### 1. Flask App #####
 # General
-dev = True
+dev = False
 entry_point = '/biojupies-dev' if dev else '/biojupies'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
 

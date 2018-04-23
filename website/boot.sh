@@ -15,6 +15,8 @@ cat << EOF | tee -a $root/wsgi.ini >> $log
 uid = $user
 gid = $user
 
+enable-threads = true
+
 master = true
 processes = 5
 
