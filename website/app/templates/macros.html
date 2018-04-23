@@ -1,4 +1,25 @@
 <!-- ###############################################  -->
+<!-- ##### Intro Column ############################  -->
+<!-- ###############################################  -->
+<!-- ### Displays introductory column with icon for use on the landing page.
+<!-- ### Used in: index(). -->
+
+{% macro intro_col(icon, title, text, link=None) %}
+
+	<div class="col-4">
+		<div class="mb-4">
+			<i class="{{ icon }} fa-5x"></i>
+		</div>
+		<div class="small regular mb-2">{{ title }}</div>
+		<div class="very-small light pr-0 pr-xl-5">{{ text }}</div>
+		{% if link %}
+			<div class="very-small light mt-3"><a href="{{ url_for(link) }}" class="border-black nodecoration px-2 py-1 black tiny">Learn More <i class="fa fa-angle-right ml-1"></i></a></div>		
+		{% endif %}
+	</div>
+
+{% endmacro %}
+
+<!-- ###############################################  -->
 <!-- ##### Option Column ###########################  -->
 <!-- ###############################################  -->
 <!-- ### Displays navigation options with icon, link, and a text description. -->

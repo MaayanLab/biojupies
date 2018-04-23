@@ -33,69 +33,46 @@
 		<div id="intro-title" class="bold large mt-3 mt-lg-5 mb-4 px-5">Generate Tailored<br>RNA-seq Data Analysis Notebooks</div>
 		<div id="intro-description" class="light medium mb-5 px-3">BioJupies allows for easy generation of customized, reusable analysis notebooks of biological data through a simple user interface</div>
 		<div id="get-started" class="regular small"><a href="{{ url_for('analyze') }}" class="px-4 py-3 border-grey bg-blue white nodecoration rounded">Get Started</a></div>
-		<!-- <div id="get-started" class="regular small"><a href="{{ url_for('analyze') }}" class="black px-4 py-3 border-black nodecoration">Get Started</a></div> -->
 	</div>
+	
 </div>
 
-<!-- How to create notebooks -->
+<!-- How to create notebooks? -->
 <div class="bg-lightgrey w-100 px-6 py-3">
+
+	<!-- Title -->
 	<div class="row text-center mt-3 pb-4 mb-2">
 		<div class="col-12 large light">
 			How to Create a Notebook?
 		</div>
 	</div>
 
+	<!-- Columns -->
 	<div class="row text-left pb-4 px-4">
-		<div class="col-4">
-			<div class="mb-4"><i class="fa fa-database fa-5x"></i></div>
-			<div class="small regular mb-2">1. Upload or Fetch Data</div>
-			<div class="very-small light pr-0 pr-xl-5">Select from thousands of ready-to-analyze RNA-seq datasets, or upload your own</div>
-			<!-- <div class="very-small light mt-3"><a href="{{ url_for('upload_table') }}" class="border-black nodecoration px-2 py-1 black tiny">Explore Datasets <i class="fa fa-angle-right ml-1"></i></a></div> -->
-
-		</div>
-		<div class="col-4">
-			<div class="mb-4"><i class="fa fa-cogs fa-5x"></i></div>
-			<div class="small regular mb-2">2. Select Tools</div>
-			<div class="very-small light pr-0 pr-xl-5">Choose from multiple data analysis and visualization tools, or contribute your own code</div>
-			<!-- <div class="very-small light mt-3"><a href="{{ url_for('upload_table') }}" class="border-black nodecoration px-2 py-1 black tiny">Explore Tools <i class="fa fa-angle-right ml-1"></i></a></div> -->
-		</div>
-		<div class="col-4">
-			<div class="mb-4"><i class="fa fa-book fa-5x"></i></div>
-			<div class="small regular mb-2">3. Generate</div>
-			<div class="very-small light pr-0 pr-xl-5">Create, access and share your analysis notebooks through a permanent and public URL</div>
-			<!-- <div class="very-small light mt-3"><a href="{{ url_for('upload_table') }}" class="border-black nodecoration px-2 py-1 black tiny">Explore Notebooks <i class="fa fa-angle-right ml-1"></i></a></div> -->
-		</div>
+		{{ macros.intro_col('fa fa-database', '1. Upload or Fetch Data', 'Select from thousands of ready-to-analyze RNA-seq datasets, or upload your own') }}
+		{{ macros.intro_col('fa fa-cogs', '2. Select Tools', 'Choose from multiple data analysis and visualization tools, or contribute your own code') }}
+		{{ macros.intro_col('fa fa-book', '3. Generate', 'Create, access and share your analysis notebooks through a permanent and public URL') }}
 	</div>
+
 </div>
 
-<!-- Customize you analysis -->
+<!-- Customize your analysis -->
 <div class="bg-white w-100 px-6 py-3">
+
+	<!-- Title -->
 	<div class="row text-center mt-3 pb-4 mb-2">
 		<div class="col-12 large light">
 			Customize Your Analysis
 		</div>
 	</div>
 
-	<div class="row text-left pb-0 px-4">
-		<div class="col-4 mb-5">
-			<div class="mb-4"><i class="fa fa-dna fa-5x"></i></div>
-			<div class="small regular mb-2">Upload Your Own Data</div>
-			<div class="very-small light pr-0 pr-xl-5">Generate tailored analysis notebooks from your RNA-seq datasets </div>
-			<div class="very-small light mt-3"><a href="{{ url_for('upload_table') }}" class="border-black nodecoration px-2 py-1 black tiny">Learn More <i class="fa fa-angle-right ml-1"></i></a></div>
-		</div>
-		<div class="col-4">
-			<div class="mb-4"><i class="fa fa-wrench fa-5x"></i></div>
-			<div class="small regular mb-2">Contribute Your Code</div>
-			<div class="very-small light pr-0 pr-xl-5">Add and share your own computational tools as BioJupies plugins</div>
-			<div class="very-small light mt-3"><a href="{{ url_for('contribute') }}" class="border-black nodecoration px-2 py-1 black tiny">Learn More <i class="fa fa-angle-right ml-1"></i></a></div>
-		</div>
-		<div class="col-4">
-			<div class="mb-4"><i class="fab fa-docker fa-5x"></i></div>
-			<div class="small regular mb-2">Rerun Your Notebooks</div>
-			<div class="very-small light pr-0 pr-xl-5">Download, run and customize your analysis notebooks using a Docker container</div>
-			<div class="very-small light mt-3"><a href="{{ url_for('docker') }}" class="border-black nodecoration px-2 py-1 black tiny">Learn More <i class="fa fa-angle-right ml-1"></i></a></div>
-		</div>
+	<!-- Columns -->
+	<div class="row text-left pb-4 px-4">
+		{{ macros.intro_col('fa fa-database', 'Upload Your Own Data', 'Generate tailored analysis notebooks from your RNA-seq datasets', 'upload_table') }}
+		{{ macros.intro_col('fa fa-wrench', 'Contribute Your Code', 'Add and share your own computational tools as BioJupies plugins', 'contribute') }}
+		{{ macros.intro_col('fab fa-docker', 'Rerun Your Notebooks', 'Download, run and customize your analysis notebooks using a Docker container', 'docker') }}
 	</div>
+
 </div>
 {% endblock %}
 
