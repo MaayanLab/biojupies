@@ -213,7 +213,10 @@ def tools():
 	tool_dict = pd.DataFrame(tool_dict).T.set_index('tool_string', drop=False).to_dict(orient='index')
 
 	# Get sections
-	section_dict = pd.read_sql_query('SELECT s.id, section_name, tool_string FROM section s LEFT JOIN tool t ON s.id=t.section_fk', engine).groupby(['id', 'section_name']).aggregate(lambda x: tuple(x)).reset_index().drop('id', axis=1).to_dict(orient='records')
+	statement = 'SELECT s.id, section_name, tool_string FROM section s LEFT JOIN tool t ON s.id=t.section_fk'
+	if not dev:
+		statement += ' WHERE t.display = 1'
+	section_dict = pd.read_sql_query(statement, engine).groupby(['id', 'section_name']).aggregate(lambda x: tuple(x)).reset_index().drop('id', axis=1).to_dict(orient='records')
 
 	return json.dumps({'tools': tool_dict, 'sections': section_dict})
 

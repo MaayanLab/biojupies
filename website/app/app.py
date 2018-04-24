@@ -37,7 +37,7 @@ import TableManager as TM
 #############################################
 ##### 1. Flask App #####
 # General
-dev = False
+dev = True
 entry_point = '/biojupies-dev' if dev else '/biojupies'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
 
@@ -208,7 +208,7 @@ def add_tools():
 
 		# Perform tool and section query from database
 		tools, sections = [pd.read_sql_table(x, engine) for x in ['tool', 'section']]
-		tools = tools[tools['display'] == True]
+		tools = tools if dev else tools[tools['display'] == True]
 		tools, sections = [x.to_dict(orient='records') for x in [tools, sections]]
 
 		# Combine tools and sections
