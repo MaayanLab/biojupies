@@ -31,7 +31,7 @@ def run(enrichr_results, signature_label):
 
 	# Libraries
 	libraries = {
-		'ENCODE_TF_ChIP-Epigenomics_Roadmap_HM_ChIP-seq': 'Epigenomics Roadmap Histone Modification ChIP-seq'
+		'Epigenomics_Roadmap_HM_ChIP-seq': 'Epigenomics Roadmap Histone Modification ChIP-seq'
 	}
 
 	# Get Enrichment Results
