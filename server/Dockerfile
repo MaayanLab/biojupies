@@ -44,7 +44,7 @@ RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("limma")
 RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("edgeR");'
 
 COPY . /notebook-generator-server
-RUN cd /notebook-generator-server/app/static; wget https://github.com/MaayanLab/notebook-generator/raw/4565ec89da482eb83ecbb672783d9970eba79668/library.zip; rm -r library; unzip library.zip; mkdir /download;
+RUN cd /notebook-generator-server/app/static; wget https://github.com/MaayanLab/notebook-generator/raw/0128de40fe6d3ada2f05d785aa98f8db3158ed97/library.zip; rm -r library; unzip library.zip; mkdir /download;
 
 WORKDIR /notebook-generator-server
 RUN chmod +x boot.sh;

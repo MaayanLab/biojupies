@@ -209,6 +209,8 @@ def add_tools():
 		# Perform tool and section query from database
 		tools, sections = [pd.read_sql_table(x, engine) for x in ['tool', 'section']]
 		tools = tools if dev else tools[tools['display'] == True]
+		if dev:
+			tools = tools[[x not in ['pathway_enrichment', 'tf_enrichment', 'kinase_enrichment', 'mirna_enrichment'] for x in tools['tool_string']]]
 		tools, sections = [x.to_dict(orient='records') for x in [tools, sections]]
 
 		# Combine tools and sections

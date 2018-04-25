@@ -55,4 +55,4 @@ def plot(enrichment_results, plot_counter):
 		plot_library_barchart(enrichment_results, gene_set_library, enrichment_results['signature_label'], 10, 300)
 
 	# Figure legend
-	display(Markdown('** Figure '+plot_counter()+' | Gene Ontology Enrichment Analysis Results. **The figure contains interactive bar charts displaying the results of the Gene Ontology enrichment analysis generated using Enrichr. The x axis indicates the enrichment score for each term. Significant terms are highlighted in bold. Additional information about enrichment results is available by hovering over each bar'.format(**locals())))
+	display(Markdown('** Figure '+plot_counter()+' | Epigenomics Roadmap Enrichment Analysis Results. **The figure contains interactive bar charts displaying the results of the enrichment analysis generated using Enrichr. The x axis indicates the enrichment score for each term. Significant terms are highlighted in bold. Additional information about enrichment results is available by hovering over each bar'.format(**locals())))
