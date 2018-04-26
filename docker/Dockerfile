@@ -42,7 +42,7 @@ RUN mkdir /notebooks
 RUN mkdir /library
 
 WORKDIR /library
-RUN wget https://github.com/MaayanLab/notebook-generator/raw/05abdfd6f07080484ade66b58422e770615ca4ba/library.zip; unzip library.zip; rm library.zip; rm -r __MACOSX; mv library/* .; rm -r library; mkdir /download;
+RUN wget https://github.com/MaayanLab/notebook-generator/raw/227ce19bbbdad8fca433386a2328cce385ba4255/library.zip; unzip library.zip; rm library.zip; rm -r __MACOSX; mv library/* .; rm -r library; mkdir /download;
 COPY launch.py /library
 WORKDIR /notebooks
 
