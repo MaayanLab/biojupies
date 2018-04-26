@@ -183,13 +183,15 @@
 					<div class="col-lg-8 text-muted light pl-4">
 
 						<!-- Overview -->
-						<div class="tiny bold">What
+						<div class="tiny bold">
+							Description
+							<!-- What
 							{% if tool['tool_string'] in ['signature_table', 'volcano_plot', 'ma_plot']%}
 								is a
 							{% else %}
 								is
 							{% endif %}
-							{{ tool['tool_name'].replace(' Links', '').replace(' Query', '')|safe }}?
+							{{ tool['tool_name'].replace(' Links', '').replace(' Query', '')|safe }}? -->
 						</div>
 						<div class="micro mt-1 text-justify">{{tool['introduction']|safe}}</div>
 

@@ -1,359 +1,619 @@
 [
     {
-        "id": 1,
-        "tool_string": "pca",
         "tool_name": "PCA",
+        "tool_string": "pca",
         "tool_description": "Linear dimensionality reduction technique to visualize similarity between samples",
         "introduction": "Principal Component Analysis (PCA) is a statistical technique used to identify global patterns in high-dimensional datasets. It is commonly used to explore the similarity of biological samples in RNA-seq datasets. To achieve this, gene expression values are transformed into Principal Components (PCs), a set of linearly uncorrelated features which represent the most relevant sources of variance in the data, and subsequently visualized using a scatter plot.",
+        "result_description": "The PCA plug-in embeds an interactive, three-dimensional scatter plot of the first three Principal Components (PCs) of the data. Each point represents an RNA-seq sample. Samples with similar gene expression profiles are closer in the three-dimensional space. If provided, sample groups are indicated using different colors, thus allowing for easier interpretation of the results.",
         "methods": "Principal Component Analysis was performed using the PCA function from in the sklearn Python module. Prior to performing PCA, the raw gene counts were normalized using the {normalization} method, filtered by selecting the {nr_genes} genes with most variable expression, and finally transformed using the Z-score method.",
         "reference": "Pearson, K. (1901). <b>LIII. On lines and planes of closest fit to systems of points in space.</b> <i>The London, Edinburgh, and Dublin Philosophical Magazine and Journal of Science</i> 2, 559\u00d0572.",
         "reference_link": "https://doi.org/10.1080/14786440109462720",
+        "video_tutorial": "https://www.youtube.com/watch?v=r7WYtxeAaDw",
+        "input": "dataset",
         "default_selected": 1,
         "section_fk": 1,
-        "input": "dataset",
         "display": 1,
-        "result_description": "The PCA plug-in embeds an interactive, three-dimensional scatter plot of the first three Principal Components (PCs) of the data. Each point represents an RNA-seq sample. Samples with similar gene expression profiles are closer in the three-dimensional space. If provided, sample groups are indicated using different colors, thus allowing for easier interpretation of the results.",
-        "video_tutorial": "https://www.youtube.com/watch?v=r7WYtxeAaDw",
-        "requires_signature": 0
+        "requires_signature": 0,
+        "parameters": [
+            {
+                "parameter_name": "Top Genes",
+                "parameter_description": "Number of most variably expressed genes to use for the analysis",
+                "parameter_string": "nr_genes",
+                "values": [
+                    {
+                        "value": "500",
+                        "default": 0
+                    },
+                    {
+                        "value": "2500",
+                        "default": 1
+                    },
+                    {
+                        "value": "5000",
+                        "default": 0
+                    }
+                ]
+            },
+            {
+                "parameter_name": "Normalization",
+                "parameter_description": "Normalization method for the dataset",
+                "parameter_string": "normalization",
+                "values": [
+                    {
+                        "value": "logCPM",
+                        "default": 1
+                    },
+                    {
+                        "value": "quantile",
+                        "default": 0
+                    },
+                    {
+                        "value": "VST",
+                        "default": 0
+                    }
+                ]
+            },
+            {
+                "parameter_name": "Z-score",
+                "parameter_description": "Whether to perform Z-score on the rows of the normalized dataset",
+                "parameter_string": "z_score",
+                "values": [
+                    {
+                        "value": "True",
+                        "default": 1
+                    },
+                    {
+                        "value": "False",
+                        "default": 0
+                    }
+                ]
+            }
+        ]
     },
     {
-        "id": 2,
-        "tool_string": "tsne",
         "tool_name": "t-SNE",
+        "tool_string": "tsne",
         "tool_description": "Nonlinear dimensionality reduction technique to visualize similarity between samples",
         "introduction": "t-distributed Stochastic Neighbor Embedding (t-SNE) (Van Der Maaten and Hinton, Journal of Machine Learning Research 2008) is a nonlinear dimensionality reduction technique which can project high-dimensional data in lower dimensions by minimizing distances between near points and maximizing distances between far points.",
+        "result_description": "",
         "methods": "t-SNE analysis was performed using the `TSNE` function from the `sklearn` Python module, available here: http://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html. Prior to performing t-SNE, the dataset was normalized using the zscore method, and a subset of the top {nr_genes} most variably expressed genes was used for the t-SNE analysis.",
         "reference": "L.J.P. van der Maaten and G.E. Hinton. <b>Visualizing High-Dimensional Data Using t-SNE.</b> <i>Journal of Machine Learning Research</i> 9 (Nov):2579-2605, 2008.",
         "reference_link": "https://lvdmaaten.github.io/publications/papers/JMLR_2008.pdf",
+        "video_tutorial": "",
+        "input": "dataset",
         "default_selected": 0,
         "section_fk": 1,
-        "input": "dataset",
         "display": 0,
-        "result_description": "",
-        "video_tutorial": null,
-        "requires_signature": 0
+        "requires_signature": 0,
+        "parameters": [
+            {
+                "parameter_name": "Top Genes",
+                "parameter_description": "Number of most variably expressed genes to use for the analysis",
+                "parameter_string": "nr_genes",
+                "values": [
+                    {
+                        "value": "500",
+                        "default": 0
+                    },
+                    {
+                        "value": "2500",
+                        "default": 1
+                    },
+                    {
+                        "value": "5000",
+                        "default": 0
+                    }
+                ]
+            },
+            {
+                "parameter_name": "Normalization",
+                "parameter_description": "Normalization method for the dataset",
+                "parameter_string": "normalization",
+                "values": [
+                    {
+                        "value": "logCPM",
+                        "default": 1
+                    },
+                    {
+                        "value": "quantile",
+                        "default": 0
+                    },
+                    {
+                        "value": "VST",
+                        "default": 0
+                    }
+                ]
+            },
+            {
+                "parameter_name": "Z-score",
+                "parameter_description": "Whether to perform Z-score on the rows of the normalized dataset",
+                "parameter_string": "z_score",
+                "values": [
+                    {
+                        "value": "True",
+                        "default": 1
+                    },
+                    {
+                        "value": "False",
+                        "default": 0
+                    }
+                ]
+            }
+        ]
     },
     {
-        "id": 3,
-        "tool_string": "clustergrammer",
         "tool_name": "Clustergrammer",
+        "tool_string": "clustergrammer",
         "tool_description": "Interactive hierarchical clustering heatmap visualization",
         "introduction": "Clustergrammer is a web-based tool for visualizing and analyzing high-dimensional data as interactive and hierarchically clustered heatmaps.  It is commonly used to explore the similarity between samples in an RNA-seq dataset. In addition to identifying clusters of samples, it also allows to identify the genes which contribute to the clustering.",
+        "result_description": "The Clustergrammer plug-in embeds an interactive heatmap which displays gene expression for each sample in the RNA-seq dataset. Every row of the heatmap represents a gene, every column represents a sample, and every cell displays normalized gene expression values. The heatmap additionally features color bars beside each column which represent prior knowledge of each sample \u0096 for example, the tissue of origin or experimental treatment",
         "methods": "The interactive heatmap was generated using Clustergrammer (<a href='#10.1038/sdata.2017.151'>Fernandez et al., 2017</a>) which is freely available at http://amp.pharm.mssm.edu/clustergrammer/. Prior to displaying the heatmap, the raw gene counts were normalized using the {normalization} method, filtered by selecting the {nr_genes} genes with most variable expression, and finally transformed using the Z-score method.",
         "reference": "Fernandez, N.F., Gundersen, G.W., Rahman, A., Grimes, M.L., Rikova, K., Hornbeck, P., and Ma'ayan, A. (2017). <b>Clustergrammer, a web-based heatmap visualization and analysis tool for high-dimensional biological data.</b> <i>Scientific Data</i> 4, 170151.",
         "reference_link": "http://dx.doi.org/10.1038/sdata.2017.151",
+        "video_tutorial": "https://youtu.be/8MgvyeroW98?t=59s",
+        "input": "dataset",
         "default_selected": 1,
         "section_fk": 1,
-        "input": "dataset",
         "display": 1,
-        "result_description": "The Clustergrammer plug-in embeds an interactive heatmap which displays gene expression for each sample in the RNA-seq dataset. Every row of the heatmap represents a gene, every column represents a sample, and every cell displays normalized gene expression values. The heatmap additionally features color bars beside each column which represent prior knowledge of each sample \u0096 for example, the tissue of origin or experimental treatment",
-        "video_tutorial": "https://youtu.be/8MgvyeroW98?t=59s",
-        "requires_signature": 0
+        "requires_signature": 0,
+        "parameters": [
+            {
+                "parameter_name": "Top Genes",
+                "parameter_description": "Number of most variably expressed genes to use for the analysis",
+                "parameter_string": "nr_genes",
+                "values": [
+                    {
+                        "value": "500",
+                        "default": 0
+                    },
+                    {
+                        "value": "2500",
+                        "default": 1
+                    },
+                    {
+                        "value": "5000",
+                        "default": 0
+                    }
+                ]
+            },
+            {
+                "parameter_name": "Normalization",
+                "parameter_description": "Normalization method for the dataset",
+                "parameter_string": "normalization",
+                "values": [
+                    {
+                        "value": "logCPM",
+                        "default": 1
+                    },
+                    {
+                        "value": "quantile",
+                        "default": 0
+                    },
+                    {
+                        "value": "VST",
+                        "default": 0
+                    }
+                ]
+            },
+            {
+                "parameter_name": "Z-score",
+                "parameter_description": "Whether to perform Z-score on the rows of the normalized dataset",
+                "parameter_string": "z_score",
+                "values": [
+                    {
+                        "value": "True",
+                        "default": 1
+                    },
+                    {
+                        "value": "False",
+                        "default": 0
+                    }
+                ]
+            }
+        ]
     },
     {
-        "id": 4,
-        "tool_string": "library_size_analysis",
         "tool_name": "Library Size Analysis",
+        "tool_string": "library_size_analysis",
         "tool_description": "Analysis of readcount distribution for the samples within the dataset",
         "introduction": "In order to quantify gene expression in an RNA-seq dataset, reads generated from the sequencing step are mapped to a reference genome and subsequently aggregated into numeric gene counts. Due to experimental variations and random technical noise, samples in an RNA-seq datasets often have variable amounts of the total RNA. Library size analysis calculates and displays the total number of reads mapped for each sample in the RNA-seq dataset, facilitating the identification of outlying samples and the assessment of the overall quality of the data.",
+        "result_description": "The Library Size Analysis plug-in embeds an interactive bar chart which displays the total number of reads mapped to each RNA-seq sample in the dataset. Additional information for each sample is available by hovering over the bars. If provided, sample groups are indicated using different colors, thus allowing for easier interpretation of the results.",
         "methods": "Read counts were calculated by performing the sum for each column in the raw gene count matrix. Total counts were subsequently divided by 106 and displayed as million reads.",
         "reference": "",
         "reference_link": "",
+        "video_tutorial": "",
+        "input": "dataset",
         "default_selected": 1,
         "section_fk": 1,
-        "input": "dataset",
         "display": 1,
-        "result_description": "The Library Size Analysis plug-in embeds an interactive bar chart which displays the total number of reads mapped to each RNA-seq sample in the dataset. Additional information for each sample is available by hovering over the bars. If provided, sample groups are indicated using different colors, thus allowing for easier interpretation of the results.",
-        "video_tutorial": null,
-        "requires_signature": 0
+        "requires_signature": 0,
+        "parameters": []
     },
     {
-        "id": 5,
-        "tool_string": "signature_table",
         "tool_name": "Differential Expression Table",
+        "tool_string": "signature_table",
         "tool_description": "Differential expression analysis between two groups of samples",
         "introduction": "Gene expression signatures\u00a0are alterations in the patterns of gene expression that occur as a result of cellular perturbations such as drug treatments, gene knock-downs or diseases. They can be quantified using differential gene expression (DGE) methods, which compare gene expression between two groups of samples to identify genes whose expression is significantly altered in the perturbation. The signature table is used to interactively display the results of such analyses.",
+        "result_description": "The Signature Table plug-in embeds an interactive, scrollable table which contains the results of a differential gene expression (DGE) analysis between two groups of samples in the dataset. Every row of the table represents a gene; the columns display the results of the differential gene expression analysis. Links to external resources containing additional information for each gene are also provided.",
         "methods": "The gene expression signature was generated by performing differential gene expression analysis using the methods described in the Differential Gene Expression section.",
         "reference": "",
         "reference_link": "",
+        "video_tutorial": "",
+        "input": "signature",
         "default_selected": 0,
         "section_fk": 2,
-        "input": "signature",
         "display": 1,
-        "result_description": "The Signature Table plug-in embeds an interactive, scrollable table which contains the results of a differential gene expression (DGE) analysis between two groups of samples in the dataset. Every row of the table represents a gene; the columns display the results of the differential gene expression analysis. Links to external resources containing additional information for each gene are also provided.",
-        "video_tutorial": null,
-        "requires_signature": 1
+        "requires_signature": 1,
+        "parameters": []
     },
     {
-        "id": 6,
-        "tool_string": "volcano_plot",
         "tool_name": "Volcano Plot",
+        "tool_string": "volcano_plot",
         "tool_description": "Plot the logFC and logP values resulting from a differential expression analysis",
         "introduction": "Volcano plots are a type of scatter plot commonly used to display the results of a differential gene expression analysis. They can be used to quickly identify genes whose expression is significantly altered in a perturbation, and to assess the global similarity of gene expression in two groups of biological samples. Each point in the scatter plot represents a gene; the axes display the significance versus fold-change estimated by the differential expression analysis.",
+        "result_description": "The Volcano Plot plug-in embeds an interactive scatter plot which displays the log2-fold changes and statistical significance of each gene calculated by performing differential gene expression analysis comparing samples in the Control group to samples in the Perturbation group. Every point in the plot represents a gene; additional information for each gene is available by hovering over it.",
         "methods": "Gene fold changes were transformed using log2 and displayed on the x axis; P-values were corrected using the Benjamini-Hochberg method, transformed using \u0096log10, and displayed on the y axis. See the Differential Gene Expression section for more information on the methods used to generate these values.",
         "reference": "",
         "reference_link": "",
+        "video_tutorial": "",
+        "input": "signature",
         "default_selected": 0,
         "section_fk": 2,
-        "input": "signature",
         "display": 1,
-        "result_description": "The Volcano Plot plug-in embeds an interactive scatter plot which displays the log2-fold changes and statistical significance of each gene calculated by performing differential gene expression analysis comparing samples in the Control group to samples in the Perturbation group. Every point in the plot represents a gene; additional information for each gene is available by hovering over it.",
-        "video_tutorial": null,
-        "requires_signature": 1
+        "requires_signature": 1,
+        "parameters": [
+            {
+                "parameter_name": "P-value Threshold",
+                "parameter_description": "P-value cutoff to display significant genes on the plot",
+                "parameter_string": "pvalue_threshold",
+                "values": [
+                    {
+                        "value": "0.01",
+                        "default": 0
+                    },
+                    {
+                        "value": "0.05",
+                        "default": 1
+                    },
+                    {
+                        "value": "0.1",
+                        "default": 0
+                    }
+                ]
+            },
+            {
+                "parameter_name": "logFC Threshold",
+                "parameter_description": "Threshold of the absolute log2-Fold Changes to indicate differentially expressed genes",
+                "parameter_string": "logfc_threshold",
+                "values": [
+                    {
+                        "value": "1",
+                        "default": 0
+                    },
+                    {
+                        "value": "1.5",
+                        "default": 1
+                    },
+                    {
+                        "value": "2",
+                        "default": 0
+                    }
+                ]
+            }
+        ]
     },
     {
-        "id": 7,
-        "tool_string": "ma_plot",
         "tool_name": "MA Plot",
+        "tool_string": "ma_plot",
         "tool_description": "Plot the logFC and average expression values resulting from a differential expression analysis",
         "introduction": "Volcano plots are a type of scatter plot commonly used to display the results of a differential gene expression analysis. They can be used to quickly identify genes whose expression is significantly altered in a perturbation, and to assess the global similarity of gene expression in two groups of biological samples. Each point in the scatter plot represents a gene; the axes display the average gene expression versus fold-change estimated by the differential expression analysis.",
+        "result_description": "The MA Plot plug-in embeds an interactive scatter plot which displays the average expression and statistical significance of each gene calculated by performing differential gene expression analysis comparing samples in the Control group to samples in the Perturbation group. Every point in the plot represents a gene; additional information for each gene is available by hovering over it.",
         "methods": "Average gene expression was identified by calculating the mean of the normalized gene expression values and displayed on the x axis; P-values were corrected using the Benjamini-Hochberg method, transformed using \u0096log10, and displayed on the y axis. For more information on the methods used to generate the signature, see the Differential Gene Expression section.",
         "reference": "",
         "reference_link": "",
+        "video_tutorial": "",
+        "input": "signature",
         "default_selected": 0,
         "section_fk": 2,
-        "input": "signature",
         "display": 1,
-        "result_description": "The MA Plot plug-in embeds an interactive scatter plot which displays the average expression and statistical significance of each gene calculated by performing differential gene expression analysis comparing samples in the Control group to samples in the Perturbation group. Every point in the plot represents a gene; additional information for each gene is available by hovering over it.",
-        "video_tutorial": null,
-        "requires_signature": 1
+        "requires_signature": 1,
+        "parameters": [
+            {
+                "parameter_name": "P-value Threshold",
+                "parameter_description": "P-value cutoff to display significant genes on the plot",
+                "parameter_string": "pvalue_threshold",
+                "values": [
+                    {
+                        "value": "0.01",
+                        "default": 0
+                    },
+                    {
+                        "value": "0.05",
+                        "default": 1
+                    },
+                    {
+                        "value": "0.1",
+                        "default": 0
+                    }
+                ]
+            },
+            {
+                "parameter_name": "logFC Threshold",
+                "parameter_description": "Threshold of the absolute log2-Fold Changes to indicate differentially expressed genes",
+                "parameter_string": "logfc_threshold",
+                "values": [
+                    {
+                        "value": "1",
+                        "default": 0
+                    },
+                    {
+                        "value": "1.5",
+                        "default": 1
+                    },
+                    {
+                        "value": "2",
+                        "default": 0
+                    }
+                ]
+            }
+        ]
     },
     {
-        "id": 8,
-        "tool_string": "enrichr",
         "tool_name": "Enrichr Links",
+        "tool_string": "enrichr",
         "tool_description": "Links to enrichment analysis results of the differentially expressed genes via Enrichr",
         "introduction": "Enrichment analysis is a statistical procedure used to identify biological terms which are over-represented in a given gene set. These include signaling pathways, molecular functions, diseases, and a wide variety of other biological terms obtained by integrating prior knowledge of gene function from multiple resources. Enrichr is a web-based application which allows to perform enrichment analysis using a large collection of gene-set libraries and various interactive approaches to display enrichment results.",
+        "result_description": "The Enrichr Links plug-in embeds links to the Enrichr web server which contain the results of enrichment analyses generated by analyzing the up-regulated genes and down-regulated genes identified from the Control vs Perturbation signature. By clicking on these links, users can interactively explore and download the results of the analysis.",
         "methods": "The up-regulated and down-regulated gene sets were generated by extracting the {geneset_size} genes with the respectively highest and lowest values from the gene expression signature. The gene sets were subsequently submitted to Enrichr (<a href='10.1093/nar/gkw377'>Kuleshov et al., 2016</a>), which is freely available at <a href=\"http://amp.pharm.mssm.edu/Enrichr/\">http://amp.pharm.mssm.edu/Enrichr/</a>, using the gene set upload API. For more information on the methods used to generate the signature, see the Differential Gene Expression section.",
         "reference": "Kuleshov, M.V., Jones, M.R., Rouillard, A.D., Fernandez, N.F., Duan, Q., Wang, Z., Koplev, S., Jenkins, S.L., Jagodnik, K.M., Lachmann, A., et al. (2016). <b>Enrichr: a comprehensive gene set enrichment analysis web server 2016 update.</b> <i>Nucleic Acids Research</i> 44, W90\u00d0W97.",
         "reference_link": "https://dx.doi.org/10.1093/nar/gkw377",
+        "video_tutorial": "https://www.youtube.com/watch?v=HfUZdNJ9a3A&t=37s",
+        "input": "signature",
         "default_selected": 0,
         "section_fk": 3,
-        "input": "signature",
         "display": 1,
-        "result_description": "The Enrichr Links plug-in embeds links to the Enrichr web server which contain the results of enrichment analyses generated by analyzing the up-regulated genes and down-regulated genes identified from the Control vs Perturbation signature. By clicking on these links, users can interactively explore and download the results of the analysis.",
-        "video_tutorial": "https://www.youtube.com/watch?v=HfUZdNJ9a3A&t=37s",
-        "requires_signature": 1
+        "requires_signature": 1,
+        "parameters": [
+            {
+                "parameter_name": "Gene Set Size",
+                "parameter_description": "Size of the gene set to be extracted to perform enrichment analysis",
+                "parameter_string": "geneset_size",
+                "values": [
+                    {
+                        "value": "100",
+                        "default": 0
+                    },
+                    {
+                        "value": "250",
+                        "default": 0
+                    },
+                    {
+                        "value": "500",
+                        "default": 1
+                    }
+                ]
+            }
+        ]
     },
     {
-        "id": 9,
-        "tool_string": "go_enrichment",
         "tool_name": "Gene Ontology Enrichment Analysis",
+        "tool_string": "go_enrichment",
         "tool_description": "Identifies Gene Ontology terms which are enriched in the differentially expressed genes",
         "introduction": "Gene Ontology (GO) is a major bioinformatics initiative aimed at unifying the representation of gene attributes across all species. It contains a large collection of experimentally validated and predicted associations between genes and biological terms. This information can be leveraged by Enrichr to identify the biological processes, molecular functions and cellular components which are over-represented in the up-regulated and down-regulated genes identified by comparing two groups of samples.",
+        "result_description": "The Gene Ontology Enrichment Analysis plug-in embeds interactive bar charts displaying the results of the Gene Ontology enrichment analysis generated using Enrichr. The x axis indicates the enrichment score for each term; significant terms are highlighted in bold. Results are grouped by library. Additional information about enrichment results is available by hovering over each bar",
         "methods": "Enrichment results were generated by analyzing the up-regulated and down-regulated gene sets using Enrichr. The following libraries were used for the analysis: GO_Biological_Process_2017b, GO_Molecular_Function_2017b, GO_Cellular_Component_2017b. Significant terms are determined by using a cut-off of p-value<0.1 after applying Benjamini-Hochberg correction. For more information on the methods used to perform the enrichment analysis, see the Enrichr section.",
         "reference": "",
         "reference_link": "",
+        "video_tutorial": "",
+        "input": "enrichr",
         "default_selected": 0,
         "section_fk": 3,
-        "input": "enrichr",
         "display": 1,
-        "result_description": "The Gene Ontology Enrichment Analysis plug-in embeds interactive bar charts displaying the results of the Gene Ontology enrichment analysis generated using Enrichr. The x axis indicates the enrichment score for each term; significant terms are highlighted in bold. Results are grouped by library. Additional information about enrichment results is available by hovering over each bar",
-        "video_tutorial": null,
-        "requires_signature": 1
+        "requires_signature": 1,
+        "parameters": []
     },
     {
-        "id": 10,
-        "tool_string": "pathway_enrichment",
         "tool_name": "Pathway Enrichment Analysis",
+        "tool_string": "pathway_enrichment",
         "tool_description": "Identifies biological pathways which are enriched in the differentially expressed genes",
         "introduction": "Biological pathways are sequences of interactions between biochemical compounds which play a key role in determining cellular behavior. Databases such as KEGG, Reactome and WikiPathways contain a large number of associations between such pathways and genes. This information can be leveraged by Enrichr to identify the biological pathways which are over-represented in the up-regulated and down-regulated genes identified by comparing two groups of samples.",
+        "result_description": "The Pathway Enrichment Analysis plug-in embeds interactive bar charts displaying the results of the pathway enrichment analysis generated using Enrichr. The x axis indicates the enrichment score for each term; significant terms are highlighted in bold. Results are grouped by library. Additional information about enrichment results is available by hovering over each bar",
         "methods": "Enrichment results were generated by analyzing the up-regulated and down-regulated gene sets using Enrichr. The following libraries were used for the analysis: KEGG_2016, Reactome_2016, WikiPathways_2016. Significant terms are determined by using a cut-off of p-value<0.1 after applying Benjamini-Hochberg correction. For more information on the methods used to perform the enrichment analysis, see the Enrichr section.",
         "reference": "",
         "reference_link": "",
+        "video_tutorial": "",
+        "input": "enrichr",
         "default_selected": 0,
         "section_fk": 3,
-        "input": "enrichr",
         "display": 1,
-        "result_description": "The Pathway Enrichment Analysis plug-in embeds interactive bar charts displaying the results of the pathway enrichment analysis generated using Enrichr. The x axis indicates the enrichment score for each term; significant terms are highlighted in bold. Results are grouped by library. Additional information about enrichment results is available by hovering over each bar",
-        "video_tutorial": null,
-        "requires_signature": 1
+        "requires_signature": 1,
+        "parameters": []
     },
     {
-        "id": 11,
-        "tool_string": "tf_enrichment",
         "tool_name": "Transcription Factor Enrichment Analysis",
+        "tool_string": "tf_enrichment",
         "tool_description": "Identifies transcription factors whose targets are enriched in the differentially expressed genes",
         "introduction": "Transcription Factors (TFs) are proteins involved in the transcriptional regulation of gene expression. Databases such as ChEA and ENCODE contain a large number of associations between TFs and their transcriptional targets. This information can be leveraged by Enrichr to identify the transcription factors whose targets are over-represented in the up-regulated and down-regulated genes identified by comparing two groups of samples.",
+        "result_description": "The Transcription Factor Enrichment Analysis plug-in embeds scrollable tables displaying the results of the Transcription Factor (TF) enrichment analysis generated using Enrichr. Every row represents a TF; significant TFs are highlighted in bold. A and B display results generated using ChEA and ENCODE libraries, indicating TFs whose experimentally validated targets are enriched. C displays results generated using the ARCHS4 library, indicating TFs whose top coexpressed genes (according to the ARCHS4 dataset) are enriched.",
         "methods": "Enrichment results were generated by analyzing the up-regulated and down-regulated gene sets using Enrichr. The following libraries were used for the analysis: ChEA_2016, ENCODE_TF_ChIP-seq_2015, ARCHS4_TFs_Coexp. Significant results are determined by using a cut-off of p-value<0.1 after applying Benjamini-Hochberg correction. For more information on the methods used to perform the enrichment analysis, see the Enrichr section.",
         "reference": "",
         "reference_link": "",
+        "video_tutorial": "",
+        "input": "enrichr",
         "default_selected": 0,
         "section_fk": 3,
-        "input": "enrichr",
         "display": 1,
-        "result_description": "The Transcription Factor Enrichment Analysis plug-in embeds scrollable tables displaying the results of the Transcription Factor (TF) enrichment analysis generated using Enrichr. Every row represents a TF; significant TFs are highlighted in bold. A and B display results generated using ChEA and ENCODE libraries, indicating TFs whose experimentally validated targets are enriched. C displays results generated using the ARCHS4 library, indicating TFs whose top coexpressed genes (according to the ARCHS4 dataset) are enriched.",
-        "video_tutorial": null,
-        "requires_signature": 1
+        "requires_signature": 1,
+        "parameters": []
     },
     {
-        "id": 12,
-        "tool_string": "kinase_enrichment",
         "tool_name": "Kinase Enrichment Analysis",
+        "tool_string": "kinase_enrichment",
         "tool_description": "Identifies protein kinases whose substrates are enriched in the differentially expressed genes",
         "introduction": "Protein kinases are enzymes that modify other proteins by chemically adding phosphate groups. Databases such as KEA contain a large number of associations between kinases and their substrates. This information can be leveraged by Enrichr to identify the protein kinases whose substrates are over-represented in the up-regulated and down-regulated genes identified by comparing two groups of samples.",
+        "result_description": "The Kinase Enrichment Analysis plug-in embeds browsable tables displaying the results of the Protein Kinase (PK) enrichment analysis generated using Enrichr. Every row represents a PK; significant PKs are highlighted in bold. A displays results generated using KEA, indicating PKs whose experimentally validated substrates are enriched. C displays results generated using the ARCHS4 library, indicating PKs whose top coexpressed genes (according to the ARCHS4 dataset) are enriched.",
         "methods": "Enrichment results were generated by analyzing the up-regulated and down-regulated gene sets using Enrichr. The following libraries were used for the analysis: KEA_2015, ARCHS4_Kinases_Coexp. Significant results are determined by using a cut-off of p-value<0.1 after applying Benjamini-Hochberg correction. For more information on the methods used to perform the enrichment analysis, see the Enrichr section.",
         "reference": "",
         "reference_link": "",
+        "video_tutorial": "",
+        "input": "enrichr",
         "default_selected": 0,
         "section_fk": 3,
-        "input": "enrichr",
         "display": 1,
-        "result_description": "The Kinase Enrichment Analysis plug-in embeds browsable tables displaying the results of the Protein Kinase (PK) enrichment analysis generated using Enrichr. Every row represents a PK; significant PKs are highlighted in bold. A displays results generated using KEA, indicating PKs whose experimentally validated substrates are enriched. C displays results generated using the ARCHS4 library, indicating PKs whose top coexpressed genes (according to the ARCHS4 dataset) are enriched.",
-        "video_tutorial": null,
-        "requires_signature": 1
+        "requires_signature": 1,
+        "parameters": []
     },
     {
-        "id": 13,
-        "tool_string": "mirna_enrichment",
         "tool_name": "miRNA Enrichment Analysis",
+        "tool_string": "mirna_enrichment",
         "tool_description": "Identifies miRNAs whose targets are enriched in the differentially expressed genes",
         "introduction": "microRNAs (miRNAs) are small non-coding RNA molecules which play a key role in the post-transcriptional regulation of gene expression. Databases such as TargetScan and MiRTarBase contain a large number of associations between miRNAs and their targets. This information can be leveraged by Enrichr to identify the miRNAs whose targets are over-represented in the up-regulated and down-regulated genes identified by comparing two groups of samples.",
+        "result_description": "The miRNA Enrichment Analysis plug-in embeds browsable tables displaying the results of the miRNA enrichment analysis generated using Enrichr. Every row represents a miRNA; significant miRNAs are highlighted in bold. A. displays results generated using the TargetScan library, B. displays results generated using the miRTarBase library.",
         "methods": "Enrichment results were generated by analyzing the up-regulated and down-regulated gene sets using Enrichr. The following libraries were used for the analysis: TargetScan_microRNA_2017, miRTarBase_2017. Significant results are determined by using a cut-off of p-value<0.1 after applying Benjamini-Hochberg correction. For more information on the methods used to perform the enrichment analysis, see the Enrichr section.",
         "reference": "",
         "reference_link": "",
+        "video_tutorial": "",
+        "input": "enrichr",
         "default_selected": 0,
         "section_fk": 3,
-        "input": "enrichr",
         "display": 1,
-        "result_description": "The miRNA Enrichment Analysis plug-in embeds browsable tables displaying the results of the miRNA enrichment analysis generated using Enrichr. Every row represents a miRNA; significant miRNAs are highlighted in bold. A. displays results generated using the TargetScan library, B. displays results generated using the miRTarBase library.",
-        "video_tutorial": null,
-        "requires_signature": 1
+        "requires_signature": 1,
+        "parameters": []
     },
     {
-        "id": 14,
-        "tool_string": "l1000cds2",
         "tool_name": "L1000CDS<sup>2</sup> Query",
+        "tool_string": "l1000cds2",
         "tool_description": "Identifies small molecules which mimic or reverse a given differential gene expression signature",
         "introduction": "L1000CDS2 is a web-based tool for querying gene expression signatures against signatures created from human cell lines treated with over 20,000 small molecules and drugs for the LINCS project. It is commonly used to identify small molecules which mimic or reverse the effects of a gene expression signature generated from a differential gene expression analysis.",
+        "result_description": "The L1000CDS<sup>2</sup> plug-in embeds an interactive bar chart displaying the top small molecules which mimic or reverse the input gene expression signature.",
         "methods": "The L1000CDS2 analysis (<a href='#10.1038/npjsba.2016.15'>Duan et al., 2016</a>) was performed by submitting the top 2000 genes in the gene expression signature to the <a href='http://amp.pharm.mssm.edu/L1000CDS2/#/index' target='_blank'>L1000CDS2</a> signature search API. For more information on the methods used to generate the signature, see the Differential Gene Expression section.",
         "reference": "Duan, Q., Reid, S.P., Clark, N.R., Wang, Z., Fernandez, N.F., Rouillard, A.D., Readhead, B., Tritsch, S.R., Hodos, R., Hafner, M., et al. (2016). <b>L1000CDS2: LINCS L1000 characteristic direction signatures search engine.</b> <i>Npj Systems Biology and Applications</i> 2.",
         "reference_link": "https://doi.org/10.1038/npjsba.2016.15",
+        "video_tutorial": "https://www.youtube.com/watch?v=kiTAGlvoyWU",
+        "input": "signature",
         "default_selected": 0,
         "section_fk": 4,
-        "input": "signature",
         "display": 1,
-        "result_description": "The L1000CDS<sup>2</sup> plug-in embeds an interactive bar chart displaying the top small molecules which mimic or reverse the input gene expression signature.",
-        "video_tutorial": "https://www.youtube.com/watch?v=kiTAGlvoyWU",
-        "requires_signature": 1
+        "requires_signature": 1,
+        "parameters": []
     },
     {
-        "id": 15,
-        "tool_string": "l1000fwd",
         "tool_name": "L1000FWD Query",
+        "tool_string": "l1000fwd",
         "tool_description": "Projects signatures on a 2-dimensional visualization of the L1000 signature database",
         "introduction": "",
+        "result_description": "",
         "methods": "",
         "reference": "",
         "reference_link": "",
+        "video_tutorial": "",
+        "input": "signature",
         "default_selected": 0,
         "section_fk": 4,
-        "input": "signature",
         "display": 0,
-        "result_description": "",
-        "video_tutorial": null,
-        "requires_signature": 1
+        "requires_signature": 1,
+        "parameters": []
     },
     {
-        "id": 16,
-        "tool_string": "gtex_enrichment",
         "tool_name": "GTEx Enrichment",
+        "tool_string": "gtex_enrichment",
         "tool_description": "Identifies GTEx tissues associated with the differentially expressed genes",
-        "introduction": "-",
+        "introduction": "Identifies GTEx tissues associated with the differentially expressed genes. Each gene set from the GTEx library contains the most up or down genes for a sample from a specific patient based on the population average.",
+        "result_description": "The analysis displays interactive bar charts displaying the results of the enrichment analysis generated using Enrichr. The x axis indicates the enrichment score for each term. Significant terms are highlighted in bold. Additional information about the enrichment results is available by hovering over each bar",
         "methods": "Enrichment results were generated by analyzing the up-regulated and down-regulated gene sets using Enrichr. The following libraries were used for the analysis: GTEx_Tissue_Sample_Gene_Expression_Profiles_up, GTEx_Tissue_Sample_Gene_Expression_Profiles_down. Significant results are determined by using a cut-off of p-value<0.1 after applying Benjamini-Hochberg correction. For more information on the methods used to perform the enrichment analysis, see the Enrichr section.",
         "reference": "",
         "reference_link": "",
+        "video_tutorial": "",
+        "input": "enrichr",
         "default_selected": 0,
         "section_fk": 3,
-        "input": "enrichr",
         "display": 0,
-        "result_description": "The analysis displays interactive bar charts displaying the results of the enrichment analysis generated using Enrichr. The x axis indicates the enrichment score for each term. Significant terms are highlighted in bold. Additional information about the enrichment results is available by hovering over each bar",
-        "video_tutorial": "",
-        "requires_signature": 1
+        "requires_signature": 1,
+        "parameters": []
     },
     {
-        "id": 17,
-        "tool_string": "lincs_enrichment",
         "tool_name": "LINCS Enrichment",
-        "tool_description": "Identifies LINCS Joins Project cellular perturbations associated with the differentially expressed genes",
-        "introduction": "-",
+        "tool_string": "lincs_enrichment",
+        "tool_description": "Identifies LINCS L1000 small molecule perturbations that mimic or reverse the differentially expressed genes",
+        "introduction": "Identifies LINCS L1000 small molecule perturbations that mimic or reverse the differentially. Each gene set in the library contain a set of up or down regulated genes after small molecule perturbation applied in a specific concentration to a specific cell line, and where gene expression was measured at a specific time point.",
+        "result_description": "The analysis displays interactive bar charts displaying the results of the enrichment analysis generated using Enrichr. The x axis indicates the enrichment score for each term. Significant terms are highlighted in bold. Additional information about the enrichment results is available by hovering over each bar",
         "methods": "Enrichment results were generated by analyzing the up-regulated and down-regulated gene sets using Enrichr. The following libraries were used for the analysis: LINCS_L1000_Chem_Pert_up, LINCS_L1000_Chem_Pert_down. Significant results are determined by using a cut-off of p-value<0.1 after applying Benjamini-Hochberg correction. For more information on the methods used to perform the enrichment analysis, see the Enrichr section.",
         "reference": "",
         "reference_link": "",
+        "video_tutorial": "",
+        "input": "enrichr",
         "default_selected": 0,
         "section_fk": 3,
-        "input": "enrichr",
         "display": 0,
-        "result_description": "The analysis displays interactive bar charts displaying the results of the enrichment analysis generated using Enrichr. The x axis indicates the enrichment score for each term. Significant terms are highlighted in bold. Additional information about the enrichment results is available by hovering over each bar",
-        "video_tutorial": "",
-        "requires_signature": 1
+        "requires_signature": 1,
+        "parameters": []
     },
     {
-        "id": 18,
-        "tool_string": "idg_enrichment",
         "tool_name": "IDG Enrichment",
-        "tool_description": "Identifies IDG understudied kinases, ion channels and GPCRs which are coexpressed with the differentially expressed genes",
-        "introduction": "-",
+        "tool_string": "idg_enrichment",
+        "tool_description": "Identifies understudied kinases, ion channels and GPCRs which are coexpressed with the differentially expressed genes",
+        "introduction": "Identifies understudied kinases, ion channels and GPCRs which are coexpressed with the differentially expressed genes. Each term in the library is an IDG understudied targets, and the genes associated with each term are those that are mostly co-expressed with the targets. ",
+        "result_description": "The analysis displays interactive bar charts displaying the results of the enrichment analysis generated using Enrichr. The x axis indicates the enrichment score for each term. Significant terms are highlighted in bold. Additional information about the enrichment results is available by hovering over each bar",
         "methods": "Enrichment results were generated by analyzing the up-regulated and down-regulated gene sets using Enrichr. The following libraries were used for the analysis: ARCHS4_IDG_Coexp. Significant results are determined by using a cut-off of p-value<0.1 after applying Benjamini-Hochberg correction. For more information on the methods used to perform the enrichment analysis, see the Enrichr section.",
         "reference": "",
         "reference_link": "",
+        "video_tutorial": "",
+        "input": "enrichr",
         "default_selected": 0,
         "section_fk": 3,
-        "input": "enrichr",
         "display": 0,
-        "result_description": "The analysis displays interactive bar charts displaying the results of the enrichment analysis generated using Enrichr. The x axis indicates the enrichment score for each term. Significant terms are highlighted in bold. Additional information about the enrichment results is available by hovering over each bar",
-        "video_tutorial": "",
-        "requires_signature": 1
+        "requires_signature": 1,
+        "parameters": []
     },
     {
-        "id": 19,
-        "tool_string": "komp_enrichment",
         "tool_name": "KOMP Enrichment",
-        "tool_description": "Identifies KOMP terms which are enriched in the differentially expressed genes",
-        "introduction": "-",
+        "tool_string": "komp_enrichment",
+        "tool_description": "Identifies KO mouse phenotype terms which are enriched in the differentially expressed genes",
+        "introduction": "Identifies KO mouse phenotype terms which are enriched in the differentially expressed genes. Each term in the KOMP library is a phenotype term. The genes in each set are genes that when knocked out in mice will induce the phenotype that is the term.",
+        "result_description": "The analysis displays interactive bar charts displaying the results of the enrichment analysis generated using Enrichr. The x axis indicates the enrichment score for each term. Significant terms are highlighted in bold. Additional information about the enrichment results is available by hovering over each bar",
         "methods": "Enrichment results were generated by analyzing the up-regulated and down-regulated gene sets using Enrichr. The following libraries were used for the analysis: MGI_Mammalian_Phenotype_2017. Significant results are determined by using a cut-off of p-value<0.1 after applying Benjamini-Hochberg correction. For more information on the methods used to perform the enrichment analysis, see the Enrichr section.",
         "reference": "",
         "reference_link": "",
+        "video_tutorial": "",
+        "input": "enrichr",
         "default_selected": 0,
         "section_fk": 3,
-        "input": "enrichr",
         "display": 0,
-        "result_description": "The analysis displays interactive bar charts displaying the results of the enrichment analysis generated using Enrichr. The x axis indicates the enrichment score for each term. Significant terms are highlighted in bold. Additional information about the enrichment results is available by hovering over each bar",
-        "video_tutorial": "",
-        "requires_signature": 1
+        "requires_signature": 1,
+        "parameters": []
     },
     {
-        "id": 21,
-        "tool_string": "encode_enrichment",
         "tool_name": "ENCODE Enrichment",
+        "tool_string": "encode_enrichment",
         "tool_description": "Identifies ENCODE transcription factors and histone modifications enriched in the differentially expressed genes",
-        "introduction": "-",
+        "introduction": "Identifies transcription factors and histone modifications profiled by the ENCODE projects that are enriched in the differentially expressed genes. Each term in those libraries comes from a ChIP-seq study from ENCODE where a transcription factor or a histone modification was profiled in various cell lines.",
+        "result_description": "The analysis displays interactive bar charts displaying the results of the enrichment analysis generated using Enrichr. The x axis indicates the enrichment score for each term. Significant terms are highlighted in bold. Additional information about the enrichment results is available by hovering over each bar",
         "methods": "Enrichment results were generated by analyzing the up-regulated and down-regulated gene sets using Enrichr. The following libraries were used for the analysis: ENCODE_Histone_Modifications_2015, ENCODE_TF_ChIP-seq_2015. Significant results are determined by using a cut-off of p-value<0.1 after applying Benjamini-Hochberg correction. For more information on the methods used to perform the enrichment analysis, see the Enrichr section.",
         "reference": "",
         "reference_link": "",
+        "video_tutorial": "",
+        "input": "enrichr",
         "default_selected": 0,
         "section_fk": 3,
-        "input": "enrichr",
         "display": 0,
-        "result_description": "The analysis displays interactive bar charts displaying the results of the enrichment analysis generated using Enrichr. The x axis indicates the enrichment score for each term. Significant terms are highlighted in bold. Additional information about the enrichment results is available by hovering over each bar",
-        "video_tutorial": "",
-        "requires_signature": 1
+        "requires_signature": 1,
+        "parameters": []
     },
     {
-        "id": 22,
-        "tool_string": "epigenomics_roadmap_enrichment",
         "tool_name": "Epigenomics Roadmap Enrichment",
-        "tool_description": "Identifies Epigenomics Roadmap histone modifications enriched in the differentially expressed genes",
-        "introduction": "-",
+        "tool_string": "epigenomics_roadmap_enrichment",
+        "tool_description": "Identifies Epigenomics Roadmap histone modifications enriched in the differentially expressed genes.",
+        "introduction": "Identifies histone modifications profiled by the Epigenomics Roadmap project that are enriched in the differentially expressed genes. Each term in those libraries comes from a ChIP-seq study from Epigenomics Roadmap project where a histone modification was profiled in various human cell lines.",
+        "result_description": "The analysis displays interactive bar charts displaying the results of the enrichment analysis generated using Enrichr. The x axis indicates the enrichment score for each term. Significant terms are highlighted in bold. Additional information about the enrichment results is available by hovering over each bar",
         "methods": "Enrichment results were generated by analyzing the up-regulated and down-regulated gene sets using Enrichr. The following libraries were used for the analysis: Epigenomics_Roadmap_HM_ChIP-seq. Significant results are determined by using a cut-off of p-value<0.1 after applying Benjamini-Hochberg correction. For more information on the methods used to perform the enrichment analysis, see the Enrichr section.",
         "reference": "",
         "reference_link": "",
+        "video_tutorial": "",
+        "input": "enrichr",
         "default_selected": 0,
         "section_fk": 3,
-        "input": "enrichr",
         "display": 0,
-        "result_description": "The analysis displays interactive bar charts displaying the results of the enrichment analysis generated using Enrichr. The x axis indicates the enrichment score for each term. Significant terms are highlighted in bold. Additional information about the enrichment results is available by hovering over each bar",
-        "video_tutorial": "",
-        "requires_signature": 1
+        "requires_signature": 1,
+        "parameters": []
     }
 ]
