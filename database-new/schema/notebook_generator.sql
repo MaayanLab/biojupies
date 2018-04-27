@@ -42,7 +42,7 @@ CREATE TABLE section (
 
 CREATE TABLE tool (
 	`id` INT AUTO_INCREMENT PRIMARY KEY,
-	`tool_string` VARCHAR(255),
+	`tool_string` VARCHAR(255) UNIQUE,
 	`tool_name` VARCHAR(255),
 	`tool_description` TEXT,
 	`introduction` TEXT,
