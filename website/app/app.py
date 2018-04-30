@@ -42,7 +42,7 @@ entry_point = '/biojupies-dev' if dev else '/biojupies'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
 
 # Database
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']#+'-dev'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']+'-dev'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 engine = db.engine
@@ -131,34 +131,34 @@ def search_data():
 	page = int(request.args.get('page', '1'))
 
 	# Get counts
-	dataset_nr = pd.read_sql_query('SELECT COUNT(DISTINCT gse) FROM series', engine).iloc[0,0]
-	sample_nr = pd.read_sql_query('SELECT COUNT(DISTINCT gsm) FROM sample', engine).iloc[0,0]
+	dataset_nr = pd.read_sql_query('SELECT COUNT(DISTINCT dataset_accession) FROM dataset', engine).iloc[0,0]
+	sample_nr = pd.read_sql_query('SELECT COUNT(DISTINCT sample_accession) FROM sample_new', engine).iloc[0,0]
 
 	###
 	# Initialize database query
 	session = Session()
-	db_query = session.query(tables['series'], tables['platform'], func.count(tables['sample'].columns['gsm']).label('nr_samples')) \
-					.join(tables['sample']) \
-					.join(tables['platform']) \
+	db_query = session.query(tables['dataset'], tables['platform_new'], func.count(tables['sample_new'].columns['sample_accession']).label('nr_samples')) \
+					.join(tables['sample_new']) \
+					.join(tables['platform_new']) \
 					.filter(or_( \
-						tables['series'].columns['title'].like('% '+q+' %'), \
-						tables['series'].columns['summary'].like('% '+q+' %'), \
-						tables['series'].columns['gse'].like(q) \
+						tables['dataset'].columns['dataset_title'].like('% '+q+' %'), \
+						tables['dataset'].columns['summary'].like('% '+q+' %'), \
+						tables['dataset'].columns['dataset_accession'].like(q)
 					)) \
-					.group_by(tables['series'].columns['gse']) \
-					.having(and_( \
-						tables['platform'].columns['organism'].in_(organisms), \
-						func.count(tables['sample'].columns['gsm']) >= min_samples, \
-						func.count(tables['sample'].columns['gsm']) <= max_samples \
-					))
+					.group_by(tables['dataset'].columns['dataset_accession']) \
+							.having(and_( \
+								# tables['platform_new'].columns['organism'].in_(organisms), \
+								func.count(tables['sample_new'].columns['sample_accession']) >= min_samples,
+								func.count(tables['sample_new'].columns['sample_accession']) <= max_samples
+							))
 
 	# Sort query results
 	if sortby == 'asc':
-		db_query = db_query.order_by(func.count(tables['sample'].columns['gsm']).asc())
+		db_query = db_query.order_by(func.count(tables['sample_new'].columns['sample_accession']).asc())
 	elif sortby == 'desc':
-		db_query = db_query.order_by(func.count(tables['sample'].columns['gsm']).desc())
+		db_query = db_query.order_by(func.count(tables['sample_new'].columns['sample_accession']).desc())
 	elif sortby == 'new':
-		db_query = db_query.order_by(tables['series'].columns['date'].desc())
+		db_query = db_query.order_by(tables['dataset'].columns['date'].desc())
 
 	# Finish query
 	query_dataframe = pd.DataFrame(db_query.all())
@@ -181,7 +181,7 @@ def search_data():
 	# Highlight searched term
 	if len(query_dataframe.index):
 		h = lambda x: '<span class="highlight">{}</span>'.format(x)
-		for col in ['title', 'summary']:
+		for col in ['dataset_title', 'summary']:
 			query_dataframe[col] = [x.replace(q, h(q)).replace(q.title(), h(q.title())).replace(q.lower(), h(q.lower())).replace(q.upper(), h(q.upper())) for x in query_dataframe[col]]
 
 	# Convert to dictionary
@@ -679,8 +679,8 @@ def help():
 def example():
 
 	# Select dataset
-	accession = 'GSE88741'
-	dataset = pd.read_sql_query('SELECT * FROM series se LEFT JOIN sample sa ON se.id=sa.series_fk LEFT JOIN platform p ON p.id=sa.platform_fk WHERE gse = "{}"'.format(accession), engine).drop(['id', 'gsm', 'sample_title'], axis=1).drop_duplicates().T.to_dict()[0]
+	dataset_accession = 'GSE100207'
+	dataset = pd.read_sql_query('SELECT * FROM dataset d LEFT JOIN sample_new s ON d.id=s.dataset_fk LEFT JOIN platform_new p ON p.id=s.platform_fk WHERE dataset_accession = "{}"'.format(dataset_accession), engine).drop(['id', 'sample_accession', 'sample_title'], axis=1).drop_duplicates().T.to_dict()[0]
 	# dataset['date'] = dataset['date'].strftime('%b %d, %Y')
 	return render_template('analyze/example.html', dataset=dataset)
 

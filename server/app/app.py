@@ -36,12 +36,12 @@ from NotebookManager import *
 #############################################
 ##### 1. Flask App #####
 # General
-dev = False
+dev = True
 entry_point = '/notebook-generator-server-dev' if dev else '/notebook-generator-server'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
 
 # Database
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']+'-dev'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 engine = db.engine
@@ -98,30 +98,32 @@ def generate():
 		else:
 			# Get Configuration
 			notebook_configuration = request.json
+			# with open('example.json', 'r') as openfile:
+			# 	notebook_configuration = json.loads(openfile.read())
 
 			# Check if notebook exists
-			matching_notebook = pd.read_sql_query("SELECT * FROM notebooks WHERE notebook_configuration = '{}'".format(json.dumps(notebook_configuration)), engine).to_dict(orient='records')
+			# matching_notebook = pd.read_sql_query("SELECT * FROM notebooks WHERE notebook_configuration = '{}'".format(json.dumps(notebook_configuration)), engine).to_dict(orient='records')
+			matching_notebook = pd.read_sql_query("SELECT * FROM notebook WHERE notebook_configuration = '{}'".format(json.dumps(notebook_configuration)), engine).to_dict(orient='records')
 
 			# Return existing notebook
 			if len(matching_notebook):
 
 				# Get URL
-				notebook_url = matching_notebook[0]['notebook_url']
+				notebook_uid = matching_notebook[0]['notebook_uid']
 
 			# Generte new notebook
 			else:
 
 				# Generate and Execute
 				notebook = generate_notebook(notebook_configuration, annotations)
-				notebook = execute_notebook(notebook)
+				notebook, time = execute_notebook(notebook)
 
 				# Get URL
-				notebook_url = upload_notebook(notebook, notebook_configuration, engine)
-
-				# for 
+				notebook_uid = upload_notebook(notebook, notebook_configuration, time, engine)
 
 			# Return
-			return json.dumps({'notebook_url': 'http://nbviewer.jupyter.org/urls/'+notebook_url.split('://')[-1]})
+			return json.dumps({'notebook_uid': notebook_uid})
+			# return json.dumps({'notebook_uid': notebook_uid, 'notebook_url': 'http: // nbviewer.jupyter.org/urls/'+notebook_url.split(': //')[-1]})
 
 	except Exception as e:
 

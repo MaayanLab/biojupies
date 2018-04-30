@@ -145,7 +145,7 @@
 			$('#results').removeClass('hidden');
 			$('#new-notebook').removeClass('hidden');
 			$('#open-notebook').removeClass('hidden');
-			var notebook_uid = res['notebook_url'].split('/')[6];
+			var notebook_uid = res['notebook_uid'];
 			$('#notebook-link').attr('href', $('#notebook-link').attr('href')+notebook_uid);
 			$('#open-notebook').attr('href', $('#open-notebook').attr('href')+notebook_uid);
 			$('#notebook-url').attr('href', $('#notebook-url').attr('href')+notebook_uid);

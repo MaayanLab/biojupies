@@ -24,6 +24,7 @@ import string
 import os
 import sys
 import json
+import time
 import urllib.parse
 import nbformat as nbf
 import pandas as pd
@@ -56,6 +57,9 @@ html_exporter_with_figs = HTMLExporter(config=c)
 
 def execute_notebook(notebook, execute=True, to_html=False):
 
+	# Get start time
+	start_time = time.time()
+
 	# Execute
 	if execute:
 		ep.preprocess(notebook, {'metadata': {'path': 'app/static/library'}})
@@ -64,31 +68,13 @@ def execute_notebook(notebook, execute=True, to_html=False):
 		notebook = html_exporter_with_figs.from_notebook_node(notebook)[0]
 
 	# Return
-	return notebook
-
-# def execute_notebook_stream(notebook, execute=True, to_html=False):
-
-# 	# Execute
-# 	print('ExecutePreprocessor')
-# 	print(ExecutePreprocessor)
-# 	print(dir(ExecutePreprocessor))
-# 	print(executenb)
-# 	print(dir(executenb))
-# 	if execute:
-# 		notebook = executenb(notebook, cwd='app/static/library')
-# 		# ep.preprocess(notebook, {'metadata': {'path': './static/library'}})
-
-# 	if to_html:
-# 		notebook = html_exporter_with_figs.from_notebook_node(notebook)[0]
-
-# 	# Return
-# 	return notebook
+	return notebook, round(time.time() - start_time)
 
 #############################################
 ########## 2. Upload Notebook
 #############################################
 
-def upload_notebook(notebook, notebook_configuration, engine):
+def upload_notebook(notebook, notebook_configuration, time, engine):
 
 	# Get UID
 	notebook_string = nbf.writes(notebook)
@@ -106,8 +92,13 @@ def upload_notebook(notebook, notebook_configuration, engine):
 	notebook_dataframe = pd.Series({'notebook_uid': notebook_uid, 'notebook_url': notebook_url, 'notebook_configuration': json.dumps(notebook_configuration), 'version': notebook_configuration['notebook']['version'], 'gse': notebook_configuration['data']['parameters'].get('gse')}).to_frame().T
 	notebook_dataframe.to_sql('notebooks', engine, if_exists='append', index=False)
 
+	# New
+	dataset = notebook_configuration['data']['parameters'].get('gse') if notebook_configuration['data']['parameters'].get('gse') else notebook_configuration['data']['parameters'].get('uid')
+	notebook_dataframe = pd.Series({'notebook_uid': notebook_uid, 'notebook_title': notebook_configuration['notebook']['title'], 'notebook_configuration': json.dumps(notebook_configuration), 'version': notebook_configuration['notebook']['version'], 'time': time, 'dataset': dataset}).to_frame().T
+	notebook_dataframe.to_sql('notebook', engine, if_exists='append', index=False)
+
 	# Return
-	return notebook_url
+	return notebook_uid
 
 #############################################
 ########## 3. Log Error

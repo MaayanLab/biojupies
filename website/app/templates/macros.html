@@ -45,7 +45,7 @@
 
 {% macro dataset_radio(dataset, i) %}
 
-	{% set id = dataset['gse']+'-'+dataset['gpl'] %}
+	{% set id = dataset['dataset_accession']+'-'+dataset['platform_accession'] %}
 
 	<div class="row">
 		<div class="col-12">
@@ -61,11 +61,11 @@
 					<div class="d-table-cell align-middle px-2 py-3">
 
 						<!-- Title -->
-						<div class="very-small regular">{{ dataset['title']|safe }}</div>
+						<div class="very-small regular">{{ dataset['dataset_title']|safe }}</div>
 
 						<!-- Info -->
 						<div class="tiny light text-muted">
-							<div class="d-block d-lg-inline-block mr-5 mt-3 mt-lg-2"><span class="font-italic">{{dataset['gse']}}</span></div>
+							<div class="d-block d-lg-inline-block mr-5 mt-3 mt-lg-2"><span class="font-italic">{{dataset['dataset_accession']}}</span></div>
 							<div class="d-block d-lg-inline-block mr-5 mt-3 mt-lg-2"><span class="font-italic">{{dataset['nr_samples']}} samples</span></div>
 							<!-- <div class="col-3"><span>Organism: </span><span class="font-italic">{{dataset['organism']}}</span></div> -->
 							<div class="d-block d-lg-inline-block mr-5 mt-3 mt-lg-2"><span>Published </span><span class="font-italic">{{dataset['date'].strftime('%B %Y')}}</span></div>
@@ -101,7 +101,7 @@
 					<!-- Organism -->
 					<div class="row px-3 pt-3">
 						<div class="col-1 bold">Organism</div>
-						<div class="col-11 text-muted light pl-4 font-italic">{{ dataset['organism'].replace('Human', 'Homo sapiens').replace('Mouse', 'Mus musculus') }}</div>
+						<div class="col-11 text-muted light pl-4 font-italic">{# dataset['organism'].replace('Human', 'Homo sapiens').replace('Mouse', 'Mus musculus') #}</div>
 					</div>
 
 					<!-- Source -->
