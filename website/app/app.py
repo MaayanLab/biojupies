@@ -37,12 +37,12 @@ import TableManager as TM
 #############################################
 ##### 1. Flask App #####
 # General
-dev = True
+dev = False
 entry_point = '/biojupies-dev' if dev else '/biojupies'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
 
 # Database
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']+'-dev'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']#+'-dev'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 engine = db.engine
@@ -258,7 +258,7 @@ def configure_analysis():
 
 			# Get metatada for processed datasets
 			if 'gse' in request.form.keys():
-				j = pd.read_sql_query('SELECT DISTINCT CONCAT(gsm, "---", sample_title) AS sample_info, variable, value FROM sample s LEFT JOIN series g ON g.id=s.series_fk LEFT JOIN sample_metadata sm ON s.id=sm.sample_fk WHERE gse = "{}"'.format(f.get('gse')), engine).pivot(index='sample_info', columns='variable', values='value')
+				j = pd.read_sql_query('SELECT DISTINCT CONCAT(sample_accession, "---", sample_title) AS sample_info, variable, value FROM sample_new s LEFT JOIN dataset d ON d.id=s.dataset_fk LEFT JOIN sample_metadata_new sm ON s.id=sm.sample_fk WHERE dataset_accession = "{}"'.format(f.get('gse')), engine).pivot(index='sample_info', columns='variable', values='value')
 				j = pd.concat([pd.DataFrame({'accession': [x.split('---')[0] for x in j.index], 'sample': [x.split('---')[1] for x in j.index]}, index=j.index), j], axis=1).reset_index(drop=True).fillna('')
 				j = j[[col for col, colData in j.iteritems() if len(colData.unique()) > 1]]
 

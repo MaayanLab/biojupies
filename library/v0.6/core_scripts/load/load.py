@@ -36,7 +36,7 @@ def archs4(gse, platform):
     # h5 = '/Users/denis/Data/archs-v1.1/h5/{gse}-{platform}.h5'.format(**locals())
     h5 = '/download/{gse}-{platform}.h5'.format(**locals())
     with open(h5, 'wb') as openfile:
-        openfile.write(urllib.request.urlopen('https://storage.googleapis.com/archs4-packages/'+h5.split('/')[-1]).read())
+        openfile.write(urllib.request.urlopen('https://storage.googleapis.com/archs4-packages-v2/'+h5.split('/')[-1]).read())
     f = h5py.File(h5, 'r')
     
     # Get data
