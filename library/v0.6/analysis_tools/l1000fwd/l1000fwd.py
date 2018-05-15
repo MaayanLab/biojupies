@@ -41,7 +41,7 @@ def run(signature, nr_genes=500, signature_label=''):
 
 	# Get result
 	response = requests.post(L1000FWD_URL + 'sig_search', json=payload)
-	l1000fwd_results['result_url'] = 'http://amp.pharm.mssm.edu/l1000fwd/result/'+response.json()['result_id']
+	l1000fwd_results['result_url'] = 'http://amp.pharm.mssm.edu/l1000fwd/vanilla/result/'+response.json()['result_id']
 
 	# Return
 	return l1000fwd_results
