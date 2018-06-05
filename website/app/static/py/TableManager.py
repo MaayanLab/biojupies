@@ -53,8 +53,10 @@ def getUID(engine, idtype='table'):
 		uid = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(9))
 		if idtype == 'table':
 			uid = 'ET'+uid
-		elif idtype == 'reads':
-			uid = 'RT'+uid
+		elif idtype == 'upload':
+			uid = 'RU'+uid
+		elif idtype == 'alignment':
+			uid = 'AJ'+uid
 
 		# Check if exists
 		duplicate = len(pd.read_sql_query('SELECT * FROM user_dataset WHERE dataset_uid = "{}"'.format(uid), engine).index)

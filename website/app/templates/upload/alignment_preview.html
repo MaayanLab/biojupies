@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% import 'macros.html' as macros %}
+
+<!-- Title -->
+{% block title %} BioJupies | Upload Raw Sequencing Data {% endblock %}
+
+<!-- Content -->
+{% block content %}
+
+<div class="px-6">
+
+	<!-- Title -->
+	<div class="row pt-4">
+		<div class="col-12 very-large text-center light px-5">RNA-seq Dataset Preview</div>
+	</div>
+
+	<!-- Introduction -->
+	<hr width="100%" class="my-4">
+    <div class="row">
+        <div class="light very-small text-justify my-1 col-lg-8 col-xl-9 text-justify">
+            The uploaded files have been successfully aligned, and your <b>RNA-seq dataset is ready</b> to be used for notebook generation.
+            A <b>preview of your RNA-seq dataset</b> is displayed below.
+            Once the preview has loaded, click <b>Continue</b> to proceed.
+        </div>
+        <div class="col-lg-4 col-xl-3 my-auto text-center pt-3 pt-lg-0">
+            <form method="post" action="{{ url_for('upload_reads') }}">
+                <input type="hidden" id="expression" name="expression">
+                <button class="btn black border-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
+                <button class="btn navigate white border-custom bg-blue" type="submit">Continue<i class="fa fa-angle-right ml-2"></i></button>
+            </form>
+        </div>
+	</div>
+
+	<!-- Alignment Settings -->
+    <hr width="100%" class="my-4">
+
+	<!-- Jobs -->
+	<div class="row px-3 mb-5 pt-2">
+        <div class="col-12">
+            <div id="preview">
+                <div id="status" class="mt-2 medium text-center">Loading your dataset...</div>
+                <div class="loader">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block footer %}
+
+<script type="text/javascript">
+
+// Add Table
+var addTable = function(dataset) {
+
+    // Save data
+    $('#expression').val(JSON.stringify(dataset));
+
+    // Toggle Interfaces
+    addPreviewTable(dataset, true);
+}
+
+    // AJAX Query
+    $.ajax({
+        url: "{{ url_for('merge_counts_api', alignment_uid=alignment_uid) }}",
+        method: 'get',
+        dataType: 'json',
+        success: function(response) {
+
+            // Add dataset
+            addTable(response);
+
+        }
+    })
+
+</script>
+
+{% endblock %}

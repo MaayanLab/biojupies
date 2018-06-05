@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+{% import 'macros.html' as macros %}
+
+<!-- Title -->
+{% block title %} BioJupies | Upload Raw Sequencing Data {% endblock %}
+
+<!-- Content -->
+{% block content %}
+
+<div class="px-6">
+
+	<!-- Title -->
+	<div class="row pt-4">
+		<div class="col-12 very-large text-center light px-5">Upload Raw Sequencing Data</div>
+	</div>
+
+	<!-- Introduction -->
+	<hr width="100%" class="my-4">
+	<div class="row">
+		<div class="light very-small text-justify my-1 col-lg-8 col-xl-9 text-justify">
+			<!-- Align {{upload_uid}}. -->
+			Before <b>quantifying gene expression</b>, the uploaded FASTQ files need to be aligned to a reference genome.
+			Use the form below to <b>add more information</b> on your RNA-seq experiment in order to generate optimal results.
+			Once you have added the relevant information, click <b>Continue</b> to proceed.
+		</div>
+		<div class="col-lg-4 col-xl-3 my-auto text-center pt-3 pt-lg-0">
+			<button class="btn black border-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
+			<button class="btn navigate white border-custom bg-blue" type="button" onclick="submit_alignment();">Continue<i class="fa fa-angle-right ml-2"></i></button>
+		</div>
+	</div>
+
+	<!-- Alignment Settings -->
+    <hr width="100%" class="my-4">
+	<div class="row">
+		<div class="col-12 px-4 pt-1 pb-3">
+
+            <!-- Form -->
+            <form id="alignment-settings-form">
+
+				<!-- Upload UID -->
+				<input type="hidden" name="upload_uid" value="{{ upload_uid }}">
+
+				<!-- Organism -->
+				<div class="medium light mb-2">What organism do the samples come from?</div>
+				<div class="light very-small text-justify">
+					First, <b>select the organism</b> the samples belong to.
+					Gene expression will be quantified by aligning the reads to the corresponding genome.
+				</div>
+
+				<!-- Organism Radio Button -->
+				<div class="row mt-3">
+					<div class="col-md-6">
+						<input class="d-none" type="radio" name="organism" id="human" value="human" checked>
+						<label for="human" class="bg-lightgrey border-custom rounded px-3 py-2 w-100 text-center cursor-pointer object-label">
+							<img src="{{ url_for('static', filename='img/alignment/human.png') }}" class="mr-2 invert-selected">
+							Human
+						</label>
+					</div>
+					<div class="col-md-6">
+						<input class="d-none" type="radio" name="organism" id="mouse" value="mouse">
+						<label for="mouse" class="bg-lightgrey border-custom rounded px-3 py-2 w-100 text-center cursor-pointer object-label">
+							<img src="{{ url_for('static', filename='img/alignment/mouse.png') }}" class="mr-2 invert-selected">
+							Mouse
+						</label>
+					</div>
+				</div>
+
+				<!-- Experiment Type-->
+				<div class="medium light mb-2 pt-2 mt-4">How was the sequencing performed?</div>
+				<div class="light very-small text-justify">
+					Second, <b>select the sequencing method</b> used to generate your data.
+					In <b>single-end sequencing</b> every FASTQ file is individually aligned to the genome, producing an independent sample.
+					In <b>paired-end sequencing</b> FASTQ files are chosen in pairs to generate each sample.
+				</div>
+				
+				<!-- Experiment Type Radio Button -->
+				<div class="row mt-3">
+					<div class="col-md-6">
+						<input class="d-none" type="radio" name="sequencing-type" id="single-end" value="single-end" checked>
+						<label for="single-end" class="bg-lightgrey border-custom rounded px-3 py-2 w-100 text-center cursor-pointer object-label">
+							<img src="{{ url_for('static', filename='img/alignment/single-end.png') }}" class="mr-2 w-50px invert-selected">
+							Single-End
+						</label>
+					</div>
+					<div class="col-md-6">
+						<input class="d-none" type="radio" name="sequencing-type" id="paired-end" value="paired-end">
+						<label for="paired-end" class="bg-lightgrey border-custom rounded px-3 py-2 w-100 text-center cursor-pointer object-label">
+							<img src="{{ url_for('static', filename='img/alignment/paired-end.png') }}" class="mr-2 w-50px invert-selected">
+							Paired-End
+						</label>
+					</div>
+				</div>
+				
+				<!-- Single-end -->
+				<div class="sample-selection mb-4">
+					<div class="medium light mb-2 pt-2 mt-3">Sample Overview</div>
+					<div class="light very-small text-justify mt-2 mb-3">
+						The following <b>{{ samples|length }} FASTQ files</b> will be individually aligned to the selected reference genome:
+					</div>
+					{% for sample in samples %}
+						<div class="bg-lightgrey px-3 py-2 border-custom rounded mb-2 d-table">
+							<i class="fa fa-dna mr-2"></i>{{ sample[(upload_uid|length+1):] }}
+						</div>
+						<input type="hidden" name="file{{loop.index}}" value="{{ sample }}">
+					{% endfor %}
+				</div>
+				
+				<!-- Paired-end -->
+				<div class="sample-selection mb-4" style="display: none;">
+					<div class="medium light mb-2 pt-2 mt-3">Select Pairs</div>
+					<div class="light very-small text-justify mt-2 mb-3">
+						Use the form below to select <b> {{ ((samples|length)/2)|int }} pairs of FASTQ files</b> to use for paired-end sequence alignment.
+						Samples can be optionally renamed using the text boxes.
+					</div>
+
+					<!-- Pair Selection -->
+					{% for i in range(((samples|length)/2)|int) %}
+
+						<!-- Row -->
+						<div class="row pl-2 py-2 bg-lightgrey my-2 mx-1 rounded border-custom">
+
+							<!-- Pair Label -->
+							<div class="col-xl-2 bold very-small text-justify my-auto py-xl-0 py-2">
+								<input class="form-control" type="text" name="sample{{i+1}}-outname" value="sample{{i+1}}">
+							</div>
+
+							<!-- Pair Input -->
+							{% for j in range(2) %}
+								<div class="col-xl-5 very-small text-justify py-xl-0 py-2">
+									<select class="form-control sample-select" name="sample{{i+1}}-file{{j+1}}" required>
+										<option selected value> Select a file... </option>
+										{% for sample in samples %}
+											<option value="{{ sample }}">{{ sample[(upload_uid|length+1):] }}</option>
+										{% endfor %}
+									</select>
+								</div>
+							{% endfor %}
+
+						</div>
+					{% endfor %}
+				</div>
+				
+            </form>
+            
+		</div>
+    </div>
+
+</div>
+
+<!-- Loading Modal -->
+<div class="modal fade" id="loading-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Launching alignment jobs...</h5>
+      </div>
+      <div class="modal-body">
+        <div class="loader">Loading...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+
+{% block footer %}
+
+<script type="text/javascript">
+
+	// $('#alignment-settings-form').submit(function(evt) {
+	// 	evt.preventDefault();
+	// 	$.ajax({
+	// 		url: "{{ url_for('upload_reads') }}",
+	// 		type: "post",
+	// 		data: $('#alignment-settings-form').serialize(),
+	// 		success: function() {
+	// 			window.location.href = "{{ url_for('upload_reads', uid=dataset_uid) }}"
+	// 		}
+	// 	})
+	// })
+
+	// Trigger sample selection
+	$('[name="sequencing-type"]').change(function(evt) {
+		$('.sample-selection').toggle();
+	})
+
+	// Disable selection of samples which have already been picked for paired end sequencing
+	$(document).on('change', $('.sample-select'), function(evt) {
+
+		// Enable all elements
+		$('.sample-select option').prop('disabled', false);
+
+		// Disable selected elements
+		$('.sample-select option:selected:not(:first-child)').each(function(index, elem){
+			$('.sample-select option[value="'+$(elem).val()+'"]').prop('disabled', true);
+		});
+
+	})
+
+	// Submit alignment job
+	function submit_alignment() {
+
+		// Initialize form data
+		var settings = {};
+
+		// Remove disabled options
+		$('.sample-select option').prop('disabled', false);
+
+		// Loop through form
+		$.each($('#alignment-settings-form').serializeArray(), function(index, elem) {
+			settings[elem['name']] = elem['value'];
+		});
+
+		// Validate paired end
+		if (($('.sample-select:not(:checked)').length) && (settings['sequencing-type'] === 'paired-end')) {
+			alert('Please select all pairs of samples for the paired-end sequencing.')
+		} else {
+
+			// Loading modal
+			$('#loading-modal').modal({"backdrop": "static"});
+			// AJAX Request
+			$.ajax({
+				url: "{{ url_for('launch_alignment_api') }}",
+				method: "post",
+				data: settings,
+				dataType: "json",
+				success: function(data) {
+					window.location.href = '{{ url_for("upload_reads", alignment="") }}'+data['alignment_uid'];
+				}
+			})
+		}
+
+	}
+
+
+</script>
+
+{% endblock %}

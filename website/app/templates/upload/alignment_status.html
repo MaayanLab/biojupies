@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% import 'macros.html' as macros %}
+
+<!-- Title -->
+{% block title %} BioJupies | Upload Raw Sequencing Data {% endblock %}
+
+<!-- Content -->
+{% block content %}
+
+<div class="px-6">
+
+	<!-- Title -->
+	<div class="row pt-4">
+		<div class="col-12 very-large text-center light px-5">Alignment Status</div>
+	</div>
+
+	<!-- Introduction -->
+	<hr width="100%" class="my-4">
+    <div class="row">
+        <div class="light very-small text-justify my-1 col-lg-8 col-xl-9 text-justify">
+            The <b>RNA-seq alignment jobs</b> have been successfully submitted to the Cloud.
+            The table below displays the <b>status of each job</b>, including the names of the FASTQ files, the reference genome used for alignment, and the creation date.
+            Once the alignment jobs have completed, the Continue button will become active.
+        </div>
+        <div class="col-lg-4 col-xl-3 my-auto text-right pt-3 pt-lg-0">
+            <form method="get" action="{{ url_for('upload_reads') }}">
+                <input type="hidden" name="table" value="{{ alignment_uid }}">
+                <button class="btn black border-custom bg-white nodecoration mr-2" onclick="goBack();" type="button"><i class="fa fa-angle-left mr-2"></i>Back</button>
+                <button class="btn navigate black border-custom bg-white" type="submit" disabled="true">Continue<i class="fa fa-angle-right ml-2"></i></button>
+            </form>
+        </div>
+	</div>
+
+	<!-- Alignment Settings -->
+    <hr width="100%" class="my-4">
+<!--     <div class="row">
+		<div class="col-12 px-4 pt-1">
+            <div class="medium light mb-2">Job Status</div>
+            <div class="light very-small text-justify mt-2 mb-2">The status of the alignment jobs can be seen below:</div>
+		</div>
+    </div> -->
+
+	<!-- Jobs -->
+	<div class="row px-3 mb-5 pt-2">
+        <table class="table table-striped text-center">
+            <tr><th>Status</th><th>Sample</th><th>Organism</th><th>Creation Date</th></tr>
+            {% for job in jobs %}
+                <tr data-outname="{{ job['outname'] }}">
+                    <td class="text-left align-middle"><img class="w-50px ml-3"><span class="pl-3 bold text-capitalize status">Fetching...</span></td>
+                    <td class="align-middle font-italic">{{ job['outname'].split('-', 2)[-1][:-3] }}</td>
+                    <td class="align-middle text-capitalize">{{ job['organism'] }}</td>
+                    <td class="align-middle">{{ job['creationdate'] }} GMT</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block footer %}
+
+<script type="text/javascript">
+
+    // Get status of alignment every 10 seconds
+    function getStatus() {
+        $.getJSON(
+            "https://amp.pharm.mssm.edu/cloudalignment/progress?username=biojupies&password=sequencing",
+            function (data) {
+
+                // Check status
+                console.log('updating status');
+                $.each(data, function (index, elem) {
+                    $('[data-outname="' + elem['outname'] + '"] img').prop('src', 'https://amp.pharm.mssm.edu/cloudalignment/images/'+elem['status'].replace('waiting', 'pending')+'.png');
+                    $('[data-outname="' + elem['outname'] + '"] span').html(elem['status']);
+                    $('[data-outname="' + elem['outname'] + '"] .status').html(elem['status']);
+                })
+
+                // Redirect - change to displaying data
+                if ($('.status').length === $('.status:contains("completed")').length) {
+                    
+                    // Show button
+                    $('button[type="submit"]').last().prop('disabled', false).toggleClass('black white bg-white bg-blue');
+
+                } else {
+
+                    // Repeat
+                    setTimeout(getStatus, 10000);
+                    
+                }
+
+            }
+        );
+    }
+
+    // Check alignment status every 10 seconds
+    getStatus();
+
+</script>
+
+{% endblock %}

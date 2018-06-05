@@ -90,6 +90,7 @@ body {
 .overflow-hidden { overflow: hidden; }
 /* Hidden */
 .hidden { display: none !important; }
+.w-50px { width: 50px; }
 
 /********************************/
 /***** INDEX ********************/
@@ -145,6 +146,10 @@ input:checked + .object-label {
 
 input:checked + .object-label span {
 	color: white;
+}
+
+input:checked + .object-label img.invert-selected {
+	-webkit-filter: invert(100%);
 }
 
 /********************************/

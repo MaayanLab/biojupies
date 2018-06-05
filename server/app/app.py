@@ -122,7 +122,7 @@ def generate():
 				notebook_uid = upload_notebook(notebook, notebook_configuration, time, engine)
 
 			# Return
-			return json.dumps({'notebook_uid': notebook_uid})
+			return json.dumps({'notebook_uid': notebook_uid, 'notebook_url': 'http://amp.pharm.mssm.edu/biojupies/notebook/'+notebook_uid})
 			# return json.dumps({'notebook_uid': notebook_uid, 'notebook_url': 'http: // nbviewer.jupyter.org/urls/'+notebook_url.split(': //')[-1]})
 
 	except Exception as e:
@@ -170,7 +170,7 @@ def samples():
 	# Get Sample Dataframe
 	gse_string = '("'+'", "'.join(gse_list)+'")'
 	# sample_dataframe = pd.read_sql_query('SELECT gse, gsm, gpl, sample_title FROM series se LEFT JOIN sample sa ON se.id=sa.series_fk LEFT JOIN platform p ON p.id=sa.platform_fk WHERE gse in {}'.format(gse_string), engine, index_col='gse')
-	sample_dataframe = pd.read_sql_query('SELECT dataset_accession, sample_accession, platform_accession, sample_title FROM dataset d LEFT JOIN sample_new s ON d.id=s.dataset_fk LEFT JOIN platform_new p ON p.id=s.platform_fk WHERE dataset_accession in {}'.format(gse_string), engine, index_col='dataset_accession')
+	sample_dataframe = pd.read_sql_query('SELECT dataset_accession AS gse, sample_accession AS gsm, platform_accession AS gpl, sample_title FROM dataset d LEFT JOIN sample_new s ON d.id=s.dataset_fk LEFT JOIN platform_new p ON p.id=s.platform_fk WHERE dataset_accession in {}'.format(gse_string), engine, index_col='gse')
 
 	# Initialize result dict
 	result = {gse:{} for gse in gse_list}
@@ -180,12 +180,12 @@ def samples():
 
 		# Check if series has over 3 samples
 		if len(sample_dataframe.loc[gse].index) > 3:
-			platforms = sample_dataframe.loc[gse]['platform_accession'].unique()
+			platforms = sample_dataframe.loc[gse]['gpl'].unique()
 
 			# Add platforms
 			for platform in platforms:
-				if len(sample_dataframe.loc[gse].set_index('platform_accession').loc[platform].index) > 3:
-					result[gse][platform] = sample_dataframe.loc[gse].set_index('platform_accession').loc[platform].sort_values('sample_title').to_dict(orient='records')
+				if len(sample_dataframe.loc[gse].set_index('gpl').loc[platform].index) > 3:
+					result[gse][platform] = sample_dataframe.loc[gse].set_index('gpl').loc[platform].sort_values('sample_title').to_dict(orient='records')
 
 	# Return
 	return json.dumps(result)

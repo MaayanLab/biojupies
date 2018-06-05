@@ -18,54 +18,43 @@
 	<hr width="100%" class="my-4">
 	<div class="row">
 		<div class="light very-small my-1 col-lg-8 col-xl-9 text-justify">
-			Use the form below to upload your <b>raw RNA-seq data</b>.
-			These files, which are typically in the <b>FASTQ format</b>, will be aligned to a reference genome and converted to a gene expression table.
+			Use the form below to upload <b>raw RNA-seq data</b> in FASTQ format.
+			The files will be aligned to the reference genome to generate the quantified reads <b>expression table at the gene level</b>.
+			The table will be subsequently made available for you to download and to generate the interactive notebook.
 			Once you have uploaded the desired files, click <b>Continue</b> to proceed.
 		</div>
 		<div class="col-lg-4 col-xl-3 my-auto text-center pt-3 pt-lg-0">
 			<button class="btn black border-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
-			<button class="btn navigate black border-custom bg-white nodecoration" form="upload-expression-form" type="submit" formaction="{{ url_for('upload_table') }}" formmethod="post" disabled="true">Continue<i class="fa fa-angle-right ml-2"></i></button>
+			<button class="btn navigate black border-custom bg-white nodecoration" form="read-upload-form" type="submit" formaction="{{ url_for('upload_reads') }}" formmethod="get" disabled="true">Continue<i class="fa fa-angle-right ml-2"></i></button>
 		</div>
 	</div>
 
 	<!-- Upload File -->
+	<hr width="100%" class="my-4">
 	<div class="row">
-		<hr width="100%" class="my-4">
 		<div class="col-12 px-4 pt-1">
 
-			<!-- Read Upload Form -->
-			<form id="read-upload-form">
-				<input id="fileinput" type="file" multiple>
-				<button type="button" class="btn btn-lg btn-block btn-outline-primary mt-2" onclick="upload_reads();">Upload Files</button>
-			</form>
+			<!-- Upload Wrapper -->
+			<div id="upload-wrapper">
 
-			<!-- S3 Upload Wrapper -->
-			<div id="form-wrapper">
-			</div>
-
-			<!-- Upload Form -->
-			<div class="d-none">
-				<form id="dataform" action="x" method="POST" enctype="multipart/form-data">
-					<input id="uid" type="hidden" name="key" value="x">
-					<input id="cid" type="hidden" name="AWSAccessKeyId" value="x">
-					<input type="hidden" name="acl" value="private">
-					<input type="hidden" name="success_action_redirect" value="success.html">
-					<input id="policy" type="hidden" name="policy" value="x">
-					<input id="signature" type="hidden" name="signature" value="x">
-					<input type="hidden" name="Content-Type" value="application/octet-stream">
-	
-					<h2>File to upload to S3</h2>
-					<input name="file" type="file" multiple>
-					<br>
-					<br>
-					<button type="button" id="loginbutton" class="btn btn-lg btn-block btn-outline-primary" onclick="upload();">Upload File</button>
+				<!-- Intro -->
+				<div class="medium light mb-2">Upload Read Files</div>
+				<div class="very-small light mb-3">To begin, <b>select the files</b> you wish to upload using the form below, then click on Upload Files to proceed.</div>
+				
+				<!-- Read Upload Form -->
+				<form id="read-upload-form">
+					<input type="hidden" name="upload" value="{{upload_uid}}">
+					<input id="fileinput" type="file" class="mb-2" accept=".gz" multiple>
+					<button type="button" class="btn btn-lg btn-block btn-outline-primary mt-2" onclick="upload_reads();">Upload Files</button>
 				</form>
 	
-				<!-- Progress Bar -->
-				<div id="prbar" class="progress" style="height: 30px;">
-					<div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
-				</div>
+				<!-- Note -->
+				<div class="light tiny text-muted mt-3 mb-5">Note: The form currently supports uploading of files in <span class="font-italic">.fastq.gz</span> format of less than 5GB in size.</div>
+
 			</div>
+
+			<!-- Status -->
+			<div id="status" class="mb-4"></div>
 
 		</div>
 	</div>
@@ -76,69 +65,25 @@
 
 {% block footer %}
 
-<script src="http://malsup.github.io/min/jquery.form.min.js"></script>
-<script src="{{ url_for('static', filename='js/jquery.ui.widget.js') }}"></script>
-<script src="{{ url_for('static', filename='js/jquery.fileupload.js') }}"></script>
-
 <script type="text/javascript">
 
-	// Create an S3 Upload form
-	function create_form(file, username, passwd) {
-
-		// Get Sign Policy
-		$.getJSON("https://amp.pharm.mssm.edu/charon/signpolicy?username=" + username + "&password=" + passwd, function (data) {
-
-			// Create Form
-			var $upload_form = $('<form>', {'method': 'POST', 'enctype': 'multipart/form-data', 'action': "https://" + data['bucket'] + ".s3.amazonaws.com/"})
-									.append($('<input>', {'id': 'uid', 'type': 'hidden', 'name': 'key', 'value': data['uid'] + "/${filename}"}))
-									.append($('<input>', {'id': 'cid', 'type': 'hidden', 'name': 'AWSAccessKeyId', 'value': data['cid']}))
-									.append($('<input>', {'type': 'hidden', 'name': 'acl', 'value': 'private'}))
-									.append($('<input>', {'type': 'hidden', 'name': 'success_action_redirect', 'value': 'success.html'}))
-									.append($('<input>', {'id': 'policy', 'type': 'hidden', 'name': 'policy', 'value': data['policy']}))
-									.append($('<input>', {'id': 'signature', 'type': 'hidden', 'name': 'signature', 'value': data['signature']}))
-									.append($('<input>', {'type': 'hidden', 'name': 'Content-Type', 'value': 'application/octet-stream'}))
-									.append($('<input>', {'id': 'file', 'type': 'file', 'name': 'file'}))
-									.append($('<span>').html(file['name']));
-
-			// Add file to form
-			// $upload_form.find('#file').fileupload('send', {files: file})
-
-			// Append form
-			$('#form-wrapper').append($upload_form);
-
-			// var bar = $('.bar');
-			// var percent = $('.progress-bar');
-			// var status = $('#status');
-
-			// $('#dataform').ajaxForm({
-			// 	beforeSend: function () {
-			// 		status.empty();
-			// 		var percentVal = '0%';
-			// 		bar.width(percentVal);
-			// 		percent.html(percentVal);
-			// 		// $("#dataform").toggle();
-			// 		// $("#prbar").toggle();
-			// 	},
-			// 	uploadProgress: function (event, position, total, percentComplete) {
-			// 		var percentVal = percentComplete + '%';
-			// 		bar.width(percentVal);
-			// 		percent.html(percentVal);
-			// 		percent.attr("aria-valuenow", percentComplete);
-			// 		percent.css("width", percentVal);
-			// 	},
-			// 	complete: function (xhr) {
-			// 		status.html(xhr.responseText);
-			// 		// $("#dataform").toggle();
-			// 		// $("#prbar").toggle();
-			// 		alert('Done!')
-			// 		checkFiles(username, passwd);
-			// 	}
-			// });
-			// $('#dataform').submit();
-		});
-
+	function progress_bar(filename) {
+		$('#upload-wrapper').hide();
+		$('#status').append(
+			$('<div>', {'class': 'progress-bar-wrapper', 'data-filename': filename})
+				.append($('<div>', {'class': 'progress-bar-text px-0 py-2 very-small regular mt-2'})
+					.append($('<span>', {'class': ''}).html('Uploading '))
+					.append($('<span>', {'class': 'bold'}).html(filename))
+					.append($('<span>', {'class': ''}).html('...'))
+				)
+				.append($('<div>', {'class': 'rounded bg-lightgrey border-custom overflow-hidden mb-3'})
+					.append($('<div>', {'class': 'progress-bar bg-primary text-center py-1 rounded-right text-nowrap'})
+						.html('0%')
+						.css('width', '0%')
+					)
+				)
+		);
 	}
-
 
 	// Upload Reads to Amazon S3 Bucket
 	function upload_reads() {
@@ -153,101 +98,61 @@
 		// Loop through files
 		$.each(files, function(index, file) {
 
-			// Create a new form
-			var form = create_form(file, username, passwd);
+			// Add progress bar
+			progress_bar(file['name']);
+
+			// Get Sign Policy
+			$.getJSON("https://amp.pharm.mssm.edu/charon/signpolicy?username=" + username + "&password=" + passwd, function (data) {
+
+				// Create Form
+				var FD = new FormData();
+				FD.append('key', data['uid'] + "/{{upload_uid}}-${filename}");
+				FD.append('AWSAccessKeyId', data['cid']);
+				FD.append('acl', 'private');
+				FD.append('success_action_redirect', 'success.html');
+				FD.append('policy', data['policy']);
+				FD.append('signature', data['signature']);
+				FD.append('Content-Type', 'application/octet-stream');
+				FD.append('file', file);
+
+				// Get filename
+				var filename = file['name'];
+
+				// Create Request
+				var xhr = new XMLHttpRequest();
+				xhr.open("POST", "https://" + data["bucket"] + ".s3.amazonaws.com/", true);
+				xhr.onloadstart = function (e) {
+					console.log("start")
+				}
+				xhr.onloadend = function (e) {
+					// Set complete status on progress bar
+					$('[data-filename="' + filename + '"] .progress-bar').attr('data-status', 'complete');
+					$('[data-filename="' + filename + '"] .progress-bar-text span:first-child').html('Successfully uploaded ');
+					$('[data-filename="' + filename + '"] .progress-bar-text span:last-child').html('');
+
+					// Activate button if all progress bars are complete
+					if ($('.progress-bar').length === $('.progress-bar[data-status="complete"]').length) {
+						$('[form="read-upload-form"]').prop('disabled', false).toggleClass('black white bg-white bg-blue');
+					}
+					console.log("end")
+				}
+				xhr.upload.addEventListener('progress', function (evt) {
+					if (evt.lengthComputable) {
+						var progress = Math.ceil((evt.loaded / evt.total) * 100)+'%';
+						$('[data-filename="' + filename + '"] .progress-bar').html(progress);
+						$('[data-filename="' + filename + '"] .progress-bar').css('width', progress);
+					}
+				}, false);
+				xhr.send(FD);
+
+			});
 
 		})
 	}
 
-
-	function upload() {
-
-		username = 'biojupies';
-		passwd = 'sequencing';
-
-		$.getJSON("https://amp.pharm.mssm.edu/charon/signpolicy?username=" + username + "&password=" + passwd, function (data) {
-
-			var items = [];
-
-			$.each(data, function (key, val) {
-
-				if (key == "uid") {
-					$('#uid').val(val + "/${filename}");
-				}
-				else if (key == "cid") {
-					$('#cid').val(val);
-				}
-				else if (key == "bucket") {
-					$('#dataform').attr("action", "https://" + val + ".s3.amazonaws.com/");
-				}
-				else if (key == "policy") {
-					$('#policy').val(val);
-				}
-				else if (key == "signature") {
-					$('#signature').val(val);
-				}
-			});
-
-			var bar = $('.bar');
-			var percent = $('.progress-bar');
-			var status = $('#status');
-
-			$('#dataform').ajaxForm({
-				beforeSend: function () {
-					status.empty();
-					var percentVal = '0%';
-					bar.width(percentVal);
-					percent.html(percentVal);
-					// $("#dataform").toggle();
-					// $("#prbar").toggle();
-				},
-				uploadProgress: function (event, position, total, percentComplete) {
-					var percentVal = percentComplete + '%';
-					bar.width(percentVal);
-					percent.html(percentVal);
-					percent.attr("aria-valuenow", percentComplete);
-					percent.css("width", percentVal);
-				},
-				complete: function (xhr) {
-					status.html(xhr.responseText);
-					// $("#dataform").toggle();
-					// $("#prbar").toggle();
-					alert('Done!')
-					checkFiles(username, passwd);
-				}
-			});
-			$('#dataform').submit();
-		});
-
-	}
-
-	function checkFiles(username, passwd) {
-		$.getJSON("https://amp.pharm.mssm.edu/charon/files?username=" + username + "&password=" + passwd, function (data) {
-			var fileStr = "";
-			var fileStr2 = "";
-			filename = data["filenames"];
-			filesize = data["filesize"];
-			console.log(data);
-
-			counter = 0
-			for (i = 0; i < filename.length; i++) {
-				if (filename[i].includes(".fastq")) {
-					counter = counter + 1;
-					fstr = "<span id=\"fn" + counter + "\">" + filename[i] + "</span><span style=\"float:right;\"><font color=\"grey\">" + filesize[i] + "</font></span>";
-					fstr = "<label class=\"container\">" + fstr + "<input id=\"c" + counter + "\" class=\"seqcheck\" type=\"checkbox\" onclick=\"checkBox(" + counter + ")\"><span id=\"cm" + counter + "\" class=\"checkmark\"></span></label>"
-					fileStr += fstr;
-				}
-				else {
-					//fstr = filename[i]+" <span style=\"float:right;\"><font color=\"grey\">"+filesize[i]+"</font></span><br>";
-					//fstr = "<label class=\"container\">"+fstr+"</label>"
-					//fileStr2 += filename[i]+" <span style=\"float:right;\"><font color=\"grey\">"+filesize[i]+"</font></span><br>";
-				}
-			}
-
-			$("#userfiles").html(fileStr + "" + fileStr2);
-		});
-	}
-
+	// progress_bar('testfile.fastq.gz');
+	// progress_bar('testfile2.fastq.gz');
+	// progress_bar('testfile2.fastq.gz');
 
 </script>
 

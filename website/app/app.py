@@ -24,6 +24,7 @@ from flask_sqlalchemy import SQLAlchemy
 import sys, os, json, requests, re, math, itertools, glob, urllib
 import pandas as pd
 import pymysql
+from io import StringIO
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import MetaData, or_, and_, func
 pymysql.install_as_MySQLdb()
@@ -31,13 +32,14 @@ pymysql.install_as_MySQLdb()
 ##### 3. Custom modules #####
 sys.path.append('app/static/py')
 import TableManager as TM
+import ReadManager as RM
 
 #############################################
 ########## 2. App Setup
 #############################################
 ##### 1. Flask App #####
 # General
-dev = False
+dev = True
 entry_point = '/biojupies-dev' if dev else '/biojupies'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
 
@@ -103,7 +105,7 @@ def analyze():
 	# Get options
 	options = [
 		{'link': 'search_data', 'icon': 'search', 'title': 'Published Data', 'description': 'Search thousands of published, publicly available datasets'},
-		{'link': 'upload_table', 'icon': 'upload', 'title': 'Your Data', 'description': 'Upload your own gene expression data for analysis'},
+		{'link': 'upload', 'icon': 'upload', 'title': 'Your Data', 'description': 'Upload your own gene expression data for analysis'},
 		{'link': 'example', 'icon': 'question-circle', 'title': 'Example Data', 'description': 'Learn to generate notebooks with an example dataset'}
 	]
 	
@@ -147,7 +149,7 @@ def search_data():
 					)) \
 					.group_by(tables['dataset'].columns['dataset_accession']) \
 							.having(and_( \
-								# tables['platform_new'].columns['organism'].in_(organisms), \
+								tables['platform_new'].columns['organism'].in_(organisms), \
 								func.count(tables['sample_new'].columns['sample_accession']) >= min_samples,
 								func.count(tables['sample_new'].columns['sample_accession']) <= max_samples
 							))
@@ -292,7 +294,8 @@ def configure_analysis():
 
 	# Redirect to analyze page
 	else:
-		return redirect(url_for('analyze'))
+		return render_template('analyze/review_analysis.html', t=[], f=f)
+		# return redirect(url_for('analyze'))
 
 #############################################
 ########## 6. Generate Notebook
@@ -385,6 +388,40 @@ def view_notebook(notebook_uid):
 	else:
 		abort(404)
 
+##################################################
+########## 2.2 APIs
+##################################################
+### Returns a JSON of ontology terms.
+### Input: a string specifying the ontology term category, specified by a GET parameter.
+### Output: a JSON containing a list of elements with the following structure: [{"term_id": "", "term_name": "", "term_description": ""}, ...]
+### Called by: review_notebook().
+
+@app.route(entry_point+'/api/ontology')
+def ontology_api():
+
+	# Get category
+	category = request.args.get('category', 'human_genes')
+
+	# Get ontologies
+	if category in ['disease', 'drug']:
+		ontologies = [category+'_ontology']
+	elif category == 'sample_source':
+		ontologies = ['cell_line_ontology', 'anatomy_ontology']
+	else:
+		ontologies = [category]
+
+	# Initialize database query
+	session = Session()
+	db_query = session.query(tables['ontology_term']) \
+					.join(tables['ontology']) \
+					.filter(tables['ontology'].columns['ontology_string'].in_(ontologies))#.limit(5)
+	# Finish query
+	query_dataframe = pd.DataFrame(db_query.all()).drop(['id', 'ontology_fk'], axis=1).fillna('')
+	session.close()
+
+	# Return
+	return json.dumps(query_dataframe.to_dict(orient='records'))
+
 #######################################################
 #######################################################
 ########## 3. Data Upload
@@ -397,7 +434,25 @@ def view_notebook(notebook_uid):
 ##################################################
 
 #############################################
-########## 1. Upload Table Interface
+########## 1. Upload Interface
+#############################################
+### Redirects users to the appropriate upload page, either for a gene expression table or for RNA-seq reads:
+### Links to: upload_table(), upload_reads().
+### Accessible from: analyze().
+
+@app.route(entry_point+'/upload')
+def upload():
+
+	# Get options
+	options = [
+		{'link': 'upload_table', 'icon': 'table', 'title': 'Gene Expression Table', 'description': 'Table containing numeric gene counts, with samples on columns and gene symbols on rows'},
+		{'link': 'upload_reads', 'icon': 'dna', 'title': 'Raw Sequencing Data', 'description': 'Raw FASTQ sample sequencing files generated from an RNA-seq profiling study'}
+	]
+
+	return render_template('upload/upload.html', options=options)
+
+#############################################
+########## 2. Upload Table Interface
 #############################################
 ### Allows users to upload a gene expression table. Renders three templates:
 ### 1. upload_table.html, which contains a form to upload tabular gene expression data.
@@ -453,6 +508,89 @@ def upload_table():
 	
 		# Return result
 		return render_template('upload/upload_table_loading.html', f=f)
+
+#############################################
+########## 3. Upload Reads
+#############################################
+### Allows users to upload FASTQ files for analysis.
+### 1. upload_table.html, which contains a form to upload tabular gene expression data.
+### 2. upload_metadata.html, which contains a form to upload metadata.
+### 3. upload_table_loading.html, which contains a loader indicating that the data is being loaded.
+### Accessible from: upload().
+### APIs called: upload_dataframe_api(), upload_table_api().
+
+@app.route(entry_point+'/upload/reads', methods=['GET', 'POST'])
+def upload_reads():
+
+	# Alignment settings
+	if request.args.get('upload'):
+
+		# Get upload UID
+		upload_uid = request.args.get('upload')
+
+		# Redirect if UID is short
+		if len(upload_uid) < 11:
+			return redirect(url_for('upload_reads'))
+		
+		# Else
+		else:
+
+			# Get samples
+			req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username=biojupies&password=sequencing')
+			uploaded_files = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['filenames']
+			samples = [x for x in uploaded_files if x.startswith(upload_uid) and x.endswith('.fastq.gz')]
+
+			return render_template('upload/align_reads.html', upload_uid=upload_uid, samples=samples)
+
+	# Alignment status
+	elif request.args.get('alignment'):
+
+		# Get form data
+		alignment_uid = request.args.get('alignment')
+
+		# Get jobs
+		print('performing request...')
+		req =  urllib.request.Request('https://amp.pharm.mssm.edu/cloudalignment/progress?username=biojupies&password=sequencing')
+		job_dataframe = pd.DataFrame(json.loads(urllib.request.urlopen(req).read().decode('utf-8'))).T
+		print('done!')
+		jobs = job_dataframe.loc[[index for index, rowData in job_dataframe.iterrows() if rowData['outname'].startswith(alignment_uid)]].to_dict(orient='records')
+
+		return render_template('upload/alignment_status.html', alignment_uid=alignment_uid, jobs=jobs)
+
+	# Preview table
+	elif request.args.get('table'):
+
+		return render_template('upload/alignment_preview.html', alignment_uid=request.args.get('table'))
+
+	# Annotate
+	elif request.form.get('expression'):
+
+		# Get form
+		f = request.form
+
+		# Get samples for group table
+		samples = json.loads(f.to_dict()['expression'])['columns']
+		samples.sort()
+
+		# Get groups
+		groups = [x for x in set([common_start(x, y) for x, y in itertools.combinations(samples, 2)]) if len(x)]
+		groups.sort(key=len)
+
+		# Assign groups
+		matches = {sample: [group for group in groups if group in sample] for sample in samples}
+		sample_groups = [{'sample': sample, 'group': matches[sample][-1] if len(matches[sample]) else ''} for sample in samples]
+			
+		# Return result
+		return render_template('upload/upload_metadata.html', sample_groups=sample_groups, f=f, uploadtype='table')
+
+	# Initial Upload
+	else:
+
+		# Get dataset UID
+		upload_uid = TM.getUID(engine, idtype='upload')  # 'RTBO2Vk5xvV'  #
+
+		# Render template
+		return render_template('upload/upload_reads.html', upload_uid=upload_uid)
 
 ##################################################
 ########## 3.2 APIs
@@ -550,6 +688,101 @@ def example_table_api():
 	
 	# Return result
 	return dataframe_json
+
+#############################################
+########## 4. Launch Alignment API
+#############################################
+### Launches an alignment job given a set of FASTQ files, species, and settings regarding single-end or paired-end files. Returns a unique dataset ID.
+### Input: a JSON-formatted string containing two keys: organism and sequencing-type. If sequencing-type is paired-end, additionally contains information about pairs.
+### Output: a JSON-formatted string generated containing one key: dataset_UID.
+### Called by: upload_reads().
+
+@app.route(entry_point+'/api/upload/launch_alignment', methods=['GET', 'POST'])
+def launch_alignment_api():
+
+	# Get form
+	alignment_settings = request.form.to_dict()
+
+	# Get sample files
+	if alignment_settings['sequencing-type'] == 'single-end':
+		samples = [{'outname': value[:-len('.fastq.gz')], 'file1': value, 'file2': None} for key, value in alignment_settings.items() if key.startswith('file')]
+	elif alignment_settings['sequencing-type'] == 'paired-end':
+		sample_dataframe = pd.Series({key: value for key, value in alignment_settings.items() if key.startswith('sample')}).rename('values').to_frame()
+		sample_dataframe['sample'] = [x.split('-')[0] for x in sample_dataframe.index]
+		sample_dataframe['column'] = [x.split('-')[1] for x in sample_dataframe.index]
+		samples = sample_dataframe.pivot(index='sample', columns='column', values='values').to_dict(orient='records')
+
+	# Get alignment UID
+	alignment_uid = TM.getUID(engine, 'alignment')
+
+	# Loop through samples
+	for sample in samples:
+
+		# Add species
+		sample['outname'] = alignment_uid+'-'+sample['outname']+'-'+alignment_settings['organism'].replace('human', 'hs').replace('mouse', 'mm')
+
+		# Get jobs
+		req =  urllib.request.Request('https://amp.pharm.mssm.edu/cloudalignment/progress?username=biojupies&password=sequencing')
+		job_dataframe = pd.DataFrame(json.loads(urllib.request.urlopen(req).read().decode('utf-8'))).T[['outname', 'status']]
+
+		# Check if alignment hasn't been submitted yet (fix to add support for different organisms)
+		if sample['outname'] not in job_dataframe['outname'].tolist():
+
+			# Get URL parameters
+			params = '&'.join(['{key}={value}'.format(**locals()) for key, value in sample.items() if value])+'&organism='+alignment_settings['organism']
+			url = "https://amp.pharm.mssm.edu/cloudalignment/createjob?username=biojupies&password=sequencing&"+params
+
+			# Launch alignment jobs
+			req =  urllib.request.Request(url)
+			resp = urllib.request.urlopen(req).read().decode('utf-8')
+			print(resp)
+
+	return json.dumps({'alignment_uid': alignment_uid})
+
+#############################################
+########## 5. Merge Counts API
+#############################################
+### Merges counts from Amazon S3 to a pandas dataframe based on a dataset UID.
+### Input: a JSON-formatted string containing one key: alignment_uid. It specifies the UID of the count matrix to generate.
+### Output: a JSON-formatted string generated using pd.to_dict(orient='split')
+### Called by: upload_reads().
+
+@app.route(entry_point+'/api/upload/merge_counts', methods=['GET', 'POST'])
+def merge_counts_api():
+
+	# Get dataset UID
+	alignment_uid = request.args.get('alignment_uid')#'RTBO2Vk5xvV'
+
+	# Get samples
+	req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username=biojupies&password=sequencing')
+	uploaded_files = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['filenames']
+	samples = [x for x in uploaded_files if x.startswith(alignment_uid) and x.endswith('_gene.tsv')]
+
+	# Initialize dict
+	results = []
+
+	# Read
+	for sample in samples:
+
+		# Get sample name
+		sample_name = sample[(len(alignment_uid)+1)*2:-len('-hs_gene.tsv')]
+
+		# Get counts from S3
+		req =  urllib.request.Request('https://s3.amazonaws.com/biodos/c095573dc866f2db2cd39862ad89f074/'+sample)
+
+		# Build dataframe
+		counts = pd.read_table(StringIO(urllib.request.urlopen(req).read().decode('utf-8')), header=None, names=['gene_symbol', 'counts'])
+		counts['counts'] = counts['counts'].astype(int)
+		counts['sample'] = sample_name
+		
+		# Append
+		results.append(counts)
+
+	# Create dataframe
+	count_dataframe = pd.concat(results).pivot_table(index='gene_symbol', columns='sample', values='counts')
+
+	# Return
+	return json.dumps(count_dataframe.to_dict(orient='split'))
 
 #######################################################
 #######################################################
@@ -680,7 +913,7 @@ def example():
 
 	# Select dataset
 	dataset_accession = 'GSE100207'
-	dataset = pd.read_sql_query('SELECT * FROM dataset d LEFT JOIN sample_new s ON d.id=s.dataset_fk LEFT JOIN platform_new p ON p.id=s.platform_fk WHERE dataset_accession = "{}"'.format(dataset_accession), engine).drop(['id', 'sample_accession', 'sample_title'], axis=1).drop_duplicates().T.to_dict()[0]
+	dataset = pd.read_sql_query('SELECT platform_accession, dataset_accession, dataset_title, summary, date, count(*) AS nr_samples, organism FROM dataset d LEFT JOIN sample_new s ON d.id=s.dataset_fk LEFT JOIN platform_new p ON p.id=s.platform_fk WHERE dataset_accession = "{}"'.format(dataset_accession), engine).drop_duplicates().T.to_dict()[0]
 	# dataset['date'] = dataset['date'].strftime('%b %d, %Y')
 	return render_template('analyze/example.html', dataset=dataset)
 
