@@ -294,8 +294,8 @@ def configure_analysis():
 
 	# Redirect to analyze page
 	else:
-		return render_template('analyze/review_analysis.html', t=[], f=f)
-		# return redirect(url_for('analyze'))
+		# return render_template('analyze/review_analysis.html', t=[], f=f)
+		return redirect(url_for('analyze'))
 
 #############################################
 ########## 6. Generate Notebook
@@ -323,7 +323,7 @@ def generate_notebook():
 						tool_string, parameter_string = key.split('-')
 						p[tool_string][parameter_string] = value
 					else:
-						if value != 'none':
+						if value not in ['none', 'no', 'yes']:
 							g[value[0]].append(key.rpartition('-')[0])
 
 		# Generate signature
@@ -342,12 +342,17 @@ def generate_notebook():
 		req =  urllib.request.Request('http://amp.pharm.mssm.edu/notebook-generator-server/api/version') # this will make the method "POST"
 		version = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['latest_library_version']
 
+		# Get tags
+		tags = d.get('tags', [])
+		tags = tags if isinstance(tags, list) else [tags]
+
 		# Generate notebook configuration
 		c = {
 			'notebook': {'title': d.get('notebook_title'), 'live': 'False', 'version': version},
 			'tools': [{'tool_string': x, 'parameters': p.get(x, {})} for x in p.keys()],
 			'data': {'source': d['source'], 'parameters': {'gse': d['gse'], 'platform': d['gpl']} if 'gse' in d.keys() and 'gpl' in d.keys() else {'uid': d['uid']}},
-			'signature': signature
+			'signature': signature,
+			'tags': tags
 		}
 
 		# Get tools
@@ -355,7 +360,8 @@ def generate_notebook():
 		selected_tools = [tools[x['tool_string']] for x in c['tools']]
 		
 		# Return result
-		return render_template('analyze/results.html', notebook_configuration=json.dumps(c), notebook_configuration_dict=c, selected_tools=selected_tools, dev=dev)
+		# return render_template('analyze/results.html', notebook_configuration=json.dumps(c), notebook_configuration_dict=c, selected_tools=selected_tools, dev=dev)
+		return json.dumps(c)
 
 	# Redirect to analyze page
 	else:
@@ -403,15 +409,7 @@ def ontology_api():
 	category = request.args.get('category')
 
 	# Get ontologies
-	if category == 'gene_perturbation':
-		perturbation_dict = [
-			{'term_name': 'Knock-down', 'term_description': 'A reduction in the expression of a gene (e.g. an shRNA knockdown)'},
-			{'term_name': 'Knock-out', 'term_description': 'A permanent inactivation of the expression of a gene, typically performed by genetic manipulation'},
-			{'term_name': 'Overexpression', 'term_description': 'An artificial increase in expression of a gene (e.g. performed by transfection)'},
-			{'term_name': 'Other', 'term_description': 'Other types of gene perturbations'}
-		]
-		return json.dumps(perturbation_dict)
-	elif category in ['disease', 'drug']:
+	if category in ['disease', 'drug']:
 		ontologies = [category+'_ontology']
 	elif category == 'sample_source':
 		ontologies = ['cell_line_ontology', 'anatomy_ontology']
@@ -424,7 +422,7 @@ def ontology_api():
 					.join(tables['ontology']) \
 					.filter(tables['ontology'].columns['ontology_string'].in_(ontologies))#.limit(5)
 	# Finish query
-	query_dataframe = pd.DataFrame(db_query.all()).drop(['id', 'ontology_fk'], axis=1).fillna('')
+	query_dataframe = pd.DataFrame(db_query.all()).drop(['ontology_fk'], axis=1).fillna('')
 	session.close()
 
 	# Return
