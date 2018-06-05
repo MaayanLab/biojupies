@@ -4,6 +4,11 @@
 <!-- Title -->
 {% block title %} BioJupies | Review and Submit {% endblock %}
 
+<!-- Head -->
+{% block head %}
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.default.min.css">
+{% endblock %}
+
 <!-- Content -->
 {% block content %}
 
@@ -33,7 +38,7 @@
 			<form id="review-analysis-form" action="{{ url_for('generate_notebook') }}" method="post">
 
 				<!-- Notebook Settings -->
-				{{ macros.notebook_settings(f['gse'], f.get('group_a_label'), f.get('group_b_label')) }}
+				{{ macros.notebook_settings(f['gse'], f.get('group_a_label'), f.get('group_b_label'), ontologies) }}
 
 				<!-- Tool Settings -->
 				{% for tool in t %}
@@ -52,5 +57,47 @@
 		</div>
 	</div>
 </div>
+
+{% endblock %}
+
+
+{% block footer %} 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
+
+	<script type="text/javascript">
+	$('.ontology-select').each(function(index, elem) {
+		$(elem).selectize({
+			valueField: 'term_name',
+			labelField: 'term_name',
+			searchField: 'term_name',
+			maxItems: 5,
+			preload: true,
+			render: {
+				option: function(item, escape) {
+					return '<div class="pt-2 light"><span class="bold black">' + item.term_name + '</span> <span class="text-secondary">({{ "Entrez" if "genes" in ontology else "Term" }} ID: '+item.term_id+')</span><br>'+item.term_description+'</div>';
+				}
+			},
+			load: function(query, callback) {
+				// if (!query.length) return callback();
+				$.ajax({
+					url: "{{ url_for('ontology_api') }}?category="+$(elem).attr('data-ontology'),
+					type: 'GET',
+					dataType: 'json',
+					error: function() {
+						callback();
+					},
+					success: function(res) {
+						console.log(res);
+						callback(res);
+					}
+				});
+			}
+		});
+	})
+	</script>
+	
+	<script>
+		// $('#select-mouse_genes').focus();
+	</script>
 
 {% endblock %}

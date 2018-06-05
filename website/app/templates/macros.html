@@ -101,13 +101,13 @@
 					<!-- Organism -->
 					<div class="row px-3 pt-3">
 						<div class="col-1 bold">Organism</div>
-						<div class="col-11 text-muted light pl-4 font-italic">{# dataset['organism'].replace('Human', 'Homo sapiens').replace('Mouse', 'Mus musculus') #}</div>
+						<div class="col-11 text-muted light pl-4 font-italic">{{ dataset['organism'].replace('Human', 'Homo sapiens').replace('Mouse', 'Mus musculus') }}</div>
 					</div>
 
 					<!-- Source -->
 					<div class="row px-3 pt-3">
 						<div class="col-1 bold">Source</div>
-						<div class="col-6 text-muted light pl-4"><a target="_blank" href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={{ dataset['gse'] }}">https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={{ dataset['gse'] }}</a></div>
+						<div class="col-6 text-muted light pl-4"><a target="_blank" href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={{ dataset['dataset_accession'] }}">https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={{ dataset['dataset_accession'] }}</a></div>
 					</div>
 
 					<!-- Repository -->
@@ -302,7 +302,7 @@
 <!-- ### Displays notebook configuration card. -->
 <!-- ### Used in: configure_analysis(). -->
 
-{% macro notebook_settings(gse, group_a_label, group_b_label) %}
+{% macro notebook_settings(gse, group_a_label, group_b_label, ontologies) %}
 
 	<div class="row">
 		<div class="col-12">
@@ -316,22 +316,65 @@
 
 					<!-- Title -->
 					<div class="d-table-cell align-middle">
-						<div class="very-small regular pb-2 pr-5">Notebook Configuration</div>
-						<div class="tiny light text-muted">Manually customize your Jupyter Notebook</div>
+						<div class="very-small regular pb-2 pr-5">Tag Your Notebook</div>
+						<div class="tiny light text-muted">Customize your Jupyter Notebook by adding biological tags</div>
 					</div>
 
 				</div>
 			</div>
 			<div id="notebook_settings-info" class="collapse show border-grey mx-2 border-top-0 rounded-bottom tiny">
 				<div class="pt-3">
+
+					<!-- Notebook Title -->
 					<div class="row px-3 pb-3">
-						<div class="col-2 bold text-right my-auto">
-							<div>Notebook Title<sup><i class="fa fa-question-circle ml-1" data-toggle="tooltip" title="Name of the Jupyter Notebook."></i></sup>:</div>
+						<div class="col-3 bold text-right my-auto">
+							Notebook Title
+							<sup><i class="fa fa-question-circle ml-1" data-toggle="tooltip" title="Placeholder."></i></sup>
 						</div>
 						<div class="col-5">
-							<input class="form-control tiny nodecoration" type="text" name="notebook_title" value="{{ ' vs '.join([group_a_label, group_b_label]) if group_a_label and group_b_label else gse }} Analysis Notebook | BioJupies">
+							<input class="form-control tiny nodecoration" type="text" name="notebook_title" value="{{ ' vs '.join([group_a_label, group_b_label]) if group_a_label and group_b_label else gse }}{{' ' if gse else ''}}Analysis Notebook | BioJupies">
 						</div>
 					</div>
+
+					<!-- Sample Source -->
+					<div class="row px-3 pb-3">
+						<div class="col-3 bold text-right my-auto">
+							What tissue or cell line do the samples belong to?
+							<!-- <sup><i class="fa fa-question-circle ml-1" data-toggle="tooltip" title="Placeholder."></i></sup> -->
+						</div>
+						<div class="col-5">
+							<select class="ontology-select" data-ontology="sample_source" placeholder="Select tissues or cell lines..."></select>
+						</div>
+					</div>
+
+					<!-- Disease -->
+					<div class="row px-3 pb-3">
+						<div class="col-3 bold text-right my-auto">
+							Are the samples affected by a disease?
+							<!-- <sup><i class="fa fa-question-circle ml-1" data-toggle="tooltip" title="Placeholder."></i></sup> -->
+						</div>
+						<div class="col-1 my-auto">
+
+						</div>
+						<div class="col-5">
+							<select class="ontology-select hidden" data-ontology="disease" placeholder="Select diseases..."></select>
+						</div>
+					</div>
+					
+					<!-- Gene Perturbation -->
+					<div class="row px-3 pb-3">
+						<div class="col-3 bold text-right my-auto">
+							Are the samples affected by a gene perturbation?
+							<!-- <sup><i class="fa fa-question-circle ml-1" data-toggle="tooltip" title="Placeholder."></i></sup> -->
+						</div>
+						<div class="col-1 my-auto">
+							Yes/No
+						</div>
+						<div class="col-5">
+							<select class="ontology-select hidden" data-ontology="disease" placeholder="Select genes..."></select>
+						</div>
+					</div>
+
 				</div>
 			</div>
 		</div>
