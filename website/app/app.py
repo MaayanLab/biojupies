@@ -400,10 +400,18 @@ def view_notebook(notebook_uid):
 def ontology_api():
 
 	# Get category
-	category = request.args.get('category', 'human_genes')
+	category = request.args.get('category')
 
 	# Get ontologies
-	if category in ['disease', 'drug']:
+	if category == 'gene_perturbation':
+		perturbation_dict = [
+			{'term_name': 'Knock-down', 'term_description': 'A reduction in the expression of a gene (e.g. an shRNA knockdown)'},
+			{'term_name': 'Knock-out', 'term_description': 'A permanent inactivation of the expression of a gene, typically performed by genetic manipulation'},
+			{'term_name': 'Overexpression', 'term_description': 'An artificial increase in expression of a gene (e.g. performed by transfection)'},
+			{'term_name': 'Other', 'term_description': 'Other types of gene perturbations'}
+		]
+		return json.dumps(perturbation_dict)
+	elif category in ['disease', 'drug']:
 		ontologies = [category+'_ontology']
 	elif category == 'sample_source':
 		ontologies = ['cell_line_ontology', 'anatomy_ontology']

@@ -23,7 +23,7 @@
 	<hr width="100%" class="my-4">
 	<div class="row">
 		<div class="light very-small my-1 col-lg-8 text-justify">
-			Your Jupyter notebook is ready to be generated. Here you can <b>customize your results</b> by changing the notebook title and modifying optional tool parameters. You can also <b>add biological tags</b> to make the results more findable by other users. Once you have made the desired changes, click on <b>Generate Notebook</b> to proceed.
+			Your Jupyter notebook is ready to be generated. Here you can <b>customize your results</b> by modifying optional tool parameters. You can also change the title of the notebook and <b>add biological tags</b>. Once you have made the desired changes, click on <b>Generate Notebook</b> to proceed.
 		</div>
 		<div class="col-lg-4 my-auto text-center pt-3 pt-lg-0">
 			<button class="btn black border-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
@@ -65,6 +65,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
 
 	<script type="text/javascript">
+
+	// Initialize select elements
 	$('.ontology-select').each(function(index, elem) {
 		$(elem).selectize({
 			valueField: 'term_name',
@@ -74,7 +76,9 @@
 			preload: true,
 			render: {
 				option: function(item, escape) {
-					return '<div class="pt-2 light"><span class="bold black">' + item.term_name + '</span> <span class="text-secondary">({{ "Entrez" if "genes" in ontology else "Term" }} ID: '+item.term_id+')</span><br>'+item.term_description+'</div>';
+					term_label = $(elem).attr('data-ontology').indexOf('genes') > -1 ? 'Entrez' : 'Term';
+					id_string = $(elem).attr('data-ontology') === 'gene_perturbation' ? '' :  ' <span class="text-secondary">('+term_label+' ID: '+item.term_id+')</span>';
+					return '<div class="pt-2 light"><span class="bold black">' + item.term_name + '</span>' + id_string + '<br>' + item.term_description + '</div>';
 				}
 			},
 			load: function(query, callback) {
@@ -94,10 +98,13 @@
 			}
 		});
 	})
+
+	// Toggle select elements
+	$('input[type="radio"]').change(function(evt){
+		$(evt.target).parents('.row').first().find('.ontology-select').toggleClass('hidden');
+	})
 	</script>
 	
-	<script>
-		// $('#select-mouse_genes').focus();
-	</script>
+
 
 {% endblock %}
