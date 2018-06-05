@@ -127,21 +127,20 @@ CREATE TABLE user_sample_metadata (
 	FOREIGN KEY (user_sample_fk) REFERENCES user_sample(id)
 );
 
-CREATE TABLE alignment_job (
+CREATE TABLE ontology (
 	`id` INT AUTO_INCREMENT PRIMARY KEY,
-	`job_uid` VARCHAR(30),
-	`status` TEXT,
-	`user_sample_fk` INT,
-	FOREIGN KEY (user_sample_fk) REFERENCES user_sample(id)
+	`ontology_name` VARCHAR(50),
+	`ontology_string` VARCHAR(50),
+	`homepage_url` VARCHAR(100),
+	`search_base_url` VARCHAR(100),
+	`ontology_description` TEXT
 );
 
-CREATE TABLE contribution (
+CREATE TABLE ontology_term (
 	`id` INT AUTO_INCREMENT PRIMARY KEY,
-	`title` VARCHAR(30),
-	`description` TEXT,
-	`email` VARCHAR(75),
-	`file` TEXT,
-	`filename` VARCHAR(100),
-	`extension` VARCHAR(100),
-	`date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+	`term_id` VARCHAR(30),
+	`term_name` VARCHAR(250),
+	`term_description` TEXT,
+	`ontology_fk` INT,
+	FOREIGN KEY (ontology_fk) REFERENCES ontology(id)
 );
