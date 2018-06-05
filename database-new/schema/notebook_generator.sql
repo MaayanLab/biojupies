@@ -144,3 +144,11 @@ CREATE TABLE ontology_term (
 	`ontology_fk` INT,
 	FOREIGN KEY (ontology_fk) REFERENCES ontology(id)
 );
+
+CREATE TABLE notebook_ontology_term (
+	`id` INT AUTO_INCREMENT PRIMARY KEY,
+	`notebook_fk` INT,
+	`ontology_term_fk` INT,
+	FOREIGN KEY (notebook_fk) REFERENCES notebook(id),
+	FOREIGN KEY (ontology_term_fk) REFERENCES ontology_term(id)
+);

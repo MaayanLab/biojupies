@@ -317,7 +317,7 @@
 					<!-- Title -->
 					<div class="d-table-cell align-middle">
 						<div class="very-small regular pb-2 pr-5">Customize Your Notebook</div>
-						<div class="tiny light text-muted">Customize the title and tag your notebook</div>
+						<div class="tiny light text-muted">Customize the title of your notebook and add biological tags</div>
 					</div>
 
 				</div>
@@ -363,6 +363,25 @@
 						</div>
 						<div class="col-lg-5 pl-lg-4 pt-3 pt-lg-0">
 							<select class="ontology-select hidden" data-ontology="disease" name="tags" placeholder="Select one or more diseases..."></select>
+						</div>
+					</div>
+					
+					<!-- Small Molecule -->
+					<div class="row px-4 px-lg-3 pb-3">
+						<div class="col-lg-3 bold text-lg-right my-auto">
+							Are the samples treated with a drug or small molecule?
+							<!-- <sup><i class="fa fa-question-circle ml-1" data-toggle="tooltip" title="Placeholder."></i></sup> -->
+						</div>
+						<div class="col-lg-1 pt-1 pt-lg-0">
+							<div class="border-grey rounded d-table mt-lg-1 overflow-hidden my-auto">
+								<input type="radio" id="drug-radio-yes" name="drug-radio" value="yes" class="d-none">
+								<label for="drug-radio-yes" class="radio-label px-2 py-1 cursor-pointer d-table-cell">Yes</label>
+								<input type="radio" id="drug-radio-no" name="drug-radio" value="no" class="d-none" checked>
+								<label for="drug-radio-no" class="radio-label px-2 py-1 cursor-pointer d-table-cell">No</label>
+							</div>
+						</div>
+						<div class="col-lg-5 pl-lg-4 pt-3 pt-lg-0">
+							<select class="ontology-select hidden" data-ontology="drug_ontology" name="tags" placeholder="Select one or more drugs or small molecules..."></select>
 						</div>
 					</div>
 					

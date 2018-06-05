@@ -352,7 +352,7 @@ def generate_notebook():
 			'tools': [{'tool_string': x, 'parameters': p.get(x, {})} for x in p.keys()],
 			'data': {'source': d['source'], 'parameters': {'gse': d['gse'], 'platform': d['gpl']} if 'gse' in d.keys() and 'gpl' in d.keys() else {'uid': d['uid']}},
 			'signature': signature,
-			'tags': tags
+			'terms': tags
 		}
 
 		# Get tools
@@ -360,8 +360,8 @@ def generate_notebook():
 		selected_tools = [tools[x['tool_string']] for x in c['tools']]
 		
 		# Return result
-		# return render_template('analyze/results.html', notebook_configuration=json.dumps(c), notebook_configuration_dict=c, selected_tools=selected_tools, dev=dev)
-		return json.dumps(c)
+		return render_template('analyze/results.html', notebook_configuration=json.dumps(c), notebook_configuration_dict=c, selected_tools=selected_tools, dev=dev)
+		# return json.dumps(c)
 
 	# Redirect to analyze page
 	else:

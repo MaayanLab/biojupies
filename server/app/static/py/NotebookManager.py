@@ -104,9 +104,13 @@ def upload_notebook(notebook, notebook_configuration, time, engine):
 	# Get notebook ID
 	notebook_id = pd.read_sql_query('SELECT id FROM notebook WHERE notebook_uid = "{}"'.format(notebook_uid), engine)['id'][0]
 
-	# Upload dataframe
+	# Notebook-tool dataframe
 	notebook_tool_dataframe = pd.DataFrame({'tool_fk': [tool_dict[x['tool_string']] for x in notebook_configuration['tools']], 'notebook_fk': notebook_id})
 	notebook_tool_dataframe.to_sql('notebook_tool', engine, if_exists='append', index=False)
+
+	# Notebook-tag dataframe
+	notebook_tag_dataframe = pd.DataFrame({'ontology_term_fk': [x for x in notebook_configuration['terms']], 'notebook_fk': notebook_id})
+	notebook_tag_dataframe.to_sql('notebook_ontology_term', engine, if_exists='append', index=False)
 
 	# Return
 	return notebook_uid
