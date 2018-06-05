@@ -39,7 +39,7 @@ def plot(results, plot_counter, order=None):
 
 	# Loop through genes 
 	for geneset_label, gene_symbols in results['gene_symbols'].items():
-		display(Markdown('### '+geneset_label.title()))
+		display(Markdown('### '+geneset_label))
 		for gene_symbol in list(gene_symbols):
 
 			# Plot
@@ -60,17 +60,17 @@ def plot(results, plot_counter, order=None):
 				plot_dataframe['dataset'] = dataset['label']
 
 				# Order
-				order = ('LEAN', 'ALOall', 'OIOall') if 'LEAN' in group_dataframe['Group'].unique() else ('WT', 'LepDB', 'LepDBWR')
+				order = ('Control', 'ALOall', 'OIOall') if 'Control' in group_dataframe['Group'].unique() else ('WT', 'LepDBWR', 'LepDB')
 
 				# Plot
 				ax = sns.boxplot(x='Group', y='logCPM', data=plot_dataframe, ax=axes[i], order=order)
-				ax.set(xlabel='', ylabel='logCPM' if not i else '', title='logFC={logFC:.2f}, P-value={FDR:.2e}'.format(**results['signatures'][dataset['label']].rename(columns={'adj.P.Val': 'FDR'}).loc[gene_symbol]))
-				ax.set(xlabel='', ylabel='logCPM' if not i else '')
-			plt.suptitle(gene_symbol)
+				ax.set(xlabel='', ylabel='Gene Expression (logCPM)' if not i else '', title='logFC={logFC:.2f}, P-value={FDR:.2e}'.format(**results['signatures'][dataset['label']].rename(columns={'adj.P.Val': 'FDR'}).loc[gene_symbol]))
+				ax.set(xlabel='', ylabel='Gene Expression (logCPM)' if not i else '')
+			plt.suptitle(gene_symbol+' | Gene Expression', fontsize=17)
 			fig.subplots_adjust(top=0.82)
 			plt.show()
-			gene_symbol_upper = gene_symbol.upper()
-			display(Markdown('**{gene_symbol}**: [MGI](http://www.informatics.jax.org/searchtool/Search.do?query={gene_symbol}), [Harmonizome](http://amp.pharm.mssm.edu/Harmonizome/gene/{gene_symbol_upper})'.format(**locals())))
+			gene_symbol_upper = gene_symbol.upper() # add ARCHS4
+			display(Markdown('**{gene_symbol}**: [MGI](http://www.informatics.jax.org/searchtool/Search.do?query={gene_symbol}), [Harmonizome](http://amp.pharm.mssm.edu/Harmonizome/gene/{gene_symbol_upper}), [ARCHS4](https://amp.pharm.mssm.edu/archs4/search/genepage.php?gene={gene_symbol_upper})'.format(**locals())))
 			display(Markdown(''))
 				# g.set_axis_labels("", "logCPM").set_titles("{gene_symbol}".format(**locals()));
 

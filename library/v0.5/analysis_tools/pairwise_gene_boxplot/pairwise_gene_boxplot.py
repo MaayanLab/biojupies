@@ -39,7 +39,7 @@ def plot(results, plot_counter, order=None):
 
 	# Loop through genes 
 	for geneset_label, gene_symbols in results['gene_symbols'].items():
-		display(Markdown('### '+geneset_label.title()))
+		display(Markdown('### '+geneset_label))
 		for gene_symbol in list(gene_symbols):
 
 			# Plot
