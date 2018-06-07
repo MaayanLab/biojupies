@@ -10,6 +10,7 @@
 ##### 1. General support #####
 import os
 import pandas as pd
+import geode
 from rpy2.robjects import r, pandas2ri
 pandas2ri.activate()
 
@@ -62,10 +63,24 @@ def limma(dataset, group_A, group_B, data='subset'):
 ########## 2. CD
 #############################################
 
-def cd(dataset, group_A, group_B, normalization='rawdata', log=False):
+def cd(dataset, group_A, group_B):
 
-	# Get design
-	processed_data = make_design_matrix(dataset[normalization].copy(), group_A, group_B)
+	# Create sample class
+	sampleclass = []
+	for sample in dataset['rawdata'].columns:
+		if sample in group_A:
+			sampleclass.append(1)
+		elif sample in group_B:
+			sampleclass.append(2)
+		else:
+			sampleclass.append(0)
 
-	# Add
-	return pandas2ri.ri2py(r.cd(pandas2ri.py2ri(processed_data['expression']), pandas2ri.py2ri(processed_data['design']), log)).sort_values('CD', ascending=False).set_index('gene_symbol')
+	# Calculate CD
+	print(dataset['rawdata'].head())
+	cd = geode.chdir(data=dataset['rawdata'].values, sampleclass=sampleclass, genes=dataset['rawdata'].index)
+
+	# Create dataframe
+	cd_dataframe = pd.DataFrame(cd, columns=['CD', 'gene_symbol']).set_index('gene_symbol').sort_values('CD', ascending=False)
+
+	# Return
+	return cd_dataframe
