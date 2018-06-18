@@ -14,7 +14,7 @@ import numpy as np
 from IPython.display import display, Markdown, HTML
 
 ##### 2. Other libraries #####
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))), 'core_scripts', 'shared', 'shared.py'))
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))), 'core_scripts', 'shared'))
 from shared import *
 
 #######################################################
@@ -33,7 +33,7 @@ def run(enrichr_results, signature_label):
 	libraries = {
 		'ChEA_2016': '### A. ChEA (experimentally validated targets)',
 		'ENCODE_TF_ChIP-seq_2015': '### B. ENCODE (experimentally validated targets)',
-		'ARCHS4_TFs_Coexp': '### C. (coexpressed genes)'
+		'ARCHS4_TFs_Coexp': '### C. ARCHS4 (coexpressed genes)'
 	}
 
 	# Initialize results

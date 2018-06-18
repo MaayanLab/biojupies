@@ -32,7 +32,7 @@ def run(enrichr_results, signature_label):
 	# Libraries
 	libraries = {
 		'KEA_2015': '### A. KEA (experimentally validated targets)',
-		'ARCHS4_Kinases_Coexp': '### B. (coexpressed genes)'
+		'ARCHS4_Kinases_Coexp': '### B. ARCHS4 (coexpressed genes)'
 	}
 
 	# Initialize results
