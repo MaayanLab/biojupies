@@ -63,7 +63,7 @@ def limma(dataset, group_A, group_B, data='subset'):
 ########## 2. CD
 #############################################
 
-def cd(dataset, group_A, group_B):
+def cd(dataset, group_A, group_B, log=False):
 
 	# Create sample class
 	sampleclass = []
@@ -75,9 +75,14 @@ def cd(dataset, group_A, group_B):
 		else:
 			sampleclass.append(0)
 
+	# Log transform
+	if log:
+		data = np.log10(dataset['rawdata']+1)
+	else:
+		data = dataset['rawdata']
+
 	# Calculate CD
-	print(dataset['rawdata'].head())
-	cd = geode.chdir(data=dataset['rawdata'].values, sampleclass=sampleclass, genes=dataset['rawdata'].index)
+	cd = geode.chdir(data=data.values, sampleclass=sampleclass, genes=dataset['rawdata'].index)
 
 	# Create dataframe
 	cd_dataframe = pd.DataFrame(cd, columns=['CD', 'gene_symbol']).set_index('gene_symbol').sort_values('CD', ascending=False)
