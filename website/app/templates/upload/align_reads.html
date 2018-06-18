@@ -201,24 +201,28 @@
 	// Submit alignment job
 	function submit_alignment() {
 
-		// Initialize form data
-		var settings = {};
-
-		// Remove disabled options
-		$('.sample-select option').prop('disabled', false);
-
-		// Loop through form
-		$.each($('#alignment-settings-form').serializeArray(), function(index, elem) {
-			settings[elem['name']] = elem['value'];
-		});
-
 		// Validate paired end
-		if (($('.sample-select:not(:checked)').length) && (settings['sequencing-type'] === 'paired-end')) {
-			alert('Please select all pairs of samples for the paired-end sequencing.')
+		if (($('.sample-select option:disabled').length < $('.sample-select option:not(:contains("Select"))').length) && ($('[name="sequencing-type"]:checked').val() === 'paired-end')) {
+			alert('Please select all pairs of samples for the paired-end sequencing.');
 		} else {
+
+			// Initialize form data
+			var settings = {};
+
+			// Remove disabled options
+			$('.sample-select option').prop('disabled', false);
+
+			// Loop through form
+			$.each($('#alignment-settings-form').serializeArray(), function (index, elem) {
+				if (elem['name'].indexOf('-outname') > -1 ) {
+					elem['value'] = '{{ upload_uid }}-'+elem['value']
+				}
+				settings[elem['name']] = elem['value'];
+			});
 
 			// Loading modal
 			$('#loading-modal').modal({"backdrop": "static"});
+
 			// AJAX Request
 			$.ajax({
 				url: "{{ url_for('launch_alignment_api') }}",
