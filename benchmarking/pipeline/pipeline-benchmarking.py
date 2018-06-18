@@ -26,10 +26,13 @@ version = 'v0.6'
 # sys.path.append('pipeline/scripts')
 sys.path.append('/Users/denis/Documents/Projects/jupyter-notebook/notebook-generator/library/{}/core_scripts/load'.format(version))
 sys.path.append('/Users/denis/Documents/Projects/jupyter-notebook/notebook-generator/library/{}/core_scripts/signature'.format(version))
+sys.path.append('/Users/denis/Documents/Projects/jupyter-notebook/notebook-generator/library/{}'.format(version))
 # import Support3 as S
 # import Benchmarking as P
 import load
 import signature
+import analysis_tools.enrichr.enrichr as enrichr
+import analysis_tools.tf_enrichment.tf_enrichment as tf_enrichment
 
 #############################################
 ########## 2. General Setup
@@ -149,7 +152,7 @@ def buildMetadataJson(infile, outfile, outfileRoot):
 def signatureJobs():
     json_list = glob.glob('s1-signature_metadata.dir/json/*.json')
     for json_file in json_list:
-        for method in ['cd']:
+        for method in ['limma', 'cd']:
             outdir = 's2-signatures.dir/'+method
             if not os.path.exists(outdir):
                 os.makedirs(outdir)
@@ -174,13 +177,117 @@ def computeSignatures(infile, outfile):
     method = os.path.basename(outfile).split('-')[-1][:-len('.txt')]
     signature_dataframe = getattr(signature, method)(dataset=dataset, group_A=signature_metadata['control'], group_B=signature_metadata['perturbation'])
 
+    # Sort
+    if 'CD' in signature_dataframe.columns:
+        signature_dataframe['score'] = abs(signature_dataframe['CD'])
+    elif 'P.Value' in signature_dataframe.columns:
+        signature_dataframe['score'] = -np.log10(signature_dataframe['P.Value'])
+
     # Write
-    signature_dataframe.to_csv(outfile, sep='\t')
+    signature_dataframe.sort_values('score', ascending=False).to_csv(outfile, sep='\t')
+
+#######################################################
+#######################################################
+########## S3. Enrichr Submission
+#######################################################
+#######################################################
+
+#############################################
+########## 1. Submit Genesets
+#############################################
+
+@follows(mkdir('s3-genesets.dir'))
+
+@transform(computeSignatures,
+           regex(r'.*/(.*)/(.*).txt'),
+           r's3-genesets.dir/\1/\2-geneset.json')
+
+def submitGenesets(infile, outfile):
+
+    # Print
+    print('Doing {}...'.format(outfile))
+
+    # Load signature
+    signature_dataframe = pd.read_table(infile, index_col='gene_symbol')
+
+    # Submit geneset
+    ids = enrichr.run(signature_dataframe)
+
+    # Create outdir
+    if not os.path.exists(os.path.dirname(outfile)):
+        os.makedirs(os.path.dirname(outfile))
+
+    # Write to outfile
+    with open(outfile, 'w') as openfile:
+        openfile.write(json.dumps(ids, indent=4))
+
+#######################################################
+#######################################################
+########## S4. Enrichr Analysis
+#######################################################
+#######################################################
+
+#############################################
+########## 1. Analyze Genesets
+#############################################
+
+@follows(mkdir('s4-enrichment.dir'))
+
+@transform(submitGenesets,
+           regex(r'.*/(.*)/(.*)-geneset.json'),
+           r's4-enrichment.dir/\1/\2-enrichment.txt')
+
+def analyzeGenesets(infile, outfile):
+
+    # Print
+    print('Doing {}...'.format(outfile))
+
+    # Read IDs
+    with open(infile) as openfile:
+        enrichr_results = json.loads(openfile.read())
+
+    # Calculate enrichment
+    tf_dataframe = tf_enrichment.run(enrichr_results, '')['enrichment_dataframe']
+
+    # Get TF
+    tf_dataframe['TF'] = [x.split('_')[0] for x in tf_dataframe['term_name']]
+    tf_dataframe = tf_dataframe.replace('### A. ChEA (experimentally validated targets)', 'ChEA_2016').replace('### B. ENCODE (experimentally validated targets)', 'ENCODE_TF_ChIP-seq_2015').replace('### C. ARCHS4 (coexpressed genes)', 'ARCHS4_TFs_Coexp').drop('overlapping_genes', axis=1)
+
+    # Create outdir
+    if not os.path.exists(os.path.dirname(outfile)):
+        os.makedirs(os.path.dirname(outfile))
+
+    # Write
+    tf_dataframe.to_csv(outfile, sep='\t', index=False)
+
+#######################################################
+#######################################################
+########## S5. Get Ranks
+#######################################################
+#######################################################
+
+#############################################
+########## 1. Get TF Ranks
+#############################################
+
+@follows(mkdir('s5-ranks.dir'))
+
+@transform(analyzeGenesets,
+           regex(r'.*/(.*)/(.*)-enrichment.txt'),
+           add_inputs(r''),
+           r's5-ranks.dir/\1/\2-ranks.json')
+
+def getRanks(infile, outfile):
+
+    # Print
+    print(infile, outfile)
+    # print('Doing {}...'.format(outfile))
+
 
 ##################################################
 ##################################################
 ########## Run pipeline
 ##################################################
 ##################################################
-pipeline_run([sys.argv[-1]], multiprocess=1, verbose=1)
+pipeline_run([sys.argv[-1]], multiprocess=10, verbose=1)
 print('Done!')

@@ -19,3 +19,5 @@ biojupies*
 website/flask/static/uploads
 database/.ruffus_history.sqlite
 database-new
+.Rhistory
+rawdata

@@ -56,65 +56,56 @@ import signature
 
 @follows(mkdir('s1-signature_metadata.dir'))
 
-@files(None,
-       's1-signature_metadata.dir/signature_metadata.json')
+@files('rawdata/p53_MDM2_p21_RNA.xlsx',
+       's1-signature_metadata.dir/signature_metadata.csv')
 
-def getSignatureMetadata(infile, outfile):
+def processMetadata(infile, outfile):
 
-    # Create engine
-    engine = create_engine(os.environ['SQLALCHEMY_DATABASE_URI'])
-
-    # Fetch data
-    notebook_dataframe = pd.read_sql_query('SELECT notebook_uid, notebook_configuration FROM notebook WHERE dataset IN (SELECT DISTINCT dataset_accession FROM dataset d LEFT JOIN sample_new s ON d.id=s.dataset_fk LEFT JOIN platform_new p ON p.id=s.platform_fk WHERE organism = "Human")', engine).set_index('notebook_uid')
-
-    # Load JSON
-    notebook_dataframe['notebook_configuration'] = [json.loads(x) for x in notebook_dataframe['notebook_configuration']]
-
-    # Get groups of samples
-    for group in ['A', 'B']:
-        notebook_dataframe[group] = [str(x['signature'][group]['samples']) if x.get('signature') else None for x in notebook_dataframe['notebook_configuration']]
+    # Read
+    signature_dataframe = pd.read_excel(infile, index_col='biojupies')
 
     # Filter
-    notebook_dataframe = notebook_dataframe.dropna().drop_duplicates(['A', 'B'])
-
-    # Add dataset
-    for index, rowData in notebook_dataframe.iterrows():
-        rowData['notebook_configuration']['signature'].update({'dataset': rowData['notebook_configuration']['data']['parameters']})
-        del rowData['notebook_configuration']['signature']['method']
-
-    # Convert to dict
-    signature_metadata = {index: rowData['notebook_configuration']['signature'] for index, rowData in notebook_dataframe.iterrows() if rowData['notebook_configuration']['signature']}
+    signature_dataframe = signature_dataframe[['cell_line', 'cell_type', 'pert_type', 'gene_targets']].fillna('')
 
     # Write
-    with open(outfile, 'w') as openfile:
-        openfile.write(json.dumps(signature_metadata, indent=4))
+    signature_dataframe.to_csv(outfile)#, sep='\t')
 
 #############################################
-########## 2. Split Files
+########## 1. Split Files
 #############################################
 
 @follows(mkdir('s1-signature_metadata.dir/json'))
 
-@subdivide(getSignatureMetadata,
+@subdivide('rawdata/p53_MDM2_p21_RNA.xlsx',
            formatter(),
            's1-signature_metadata.dir/json/*.json',
            's1-signature_metadata.dir/json/')
 
 def splitSignatures(infile, outfile, outfileRoot):
 
-    # Load JSON
-    with open(infile) as openfile:
-        signature_metadata = json.loads(openfile.read())
+    # Read
+    signature_dataframe = pd.read_excel(infile, index_col='biojupies')
 
-    # Loop
-    for key, value in signature_metadata.items():
+    # Loop through rows
+    for index, rowData in signature_dataframe.iterrows():
+        
+        # Check if human
+        if rowData['organism'] == 'human' and index not in ['pYOLeicSn']:
+            
+            # Process metadata
+            signature_metadata = {
+                'control': rowData['ctrl_ids'].strip().split(' '),
+                'perturbation': rowData['pert_ids'].strip().split(' '),
+                'gse': rowData['geo_id'],
+                'platform': rowData['platform']
+            }
 
-        # Get outfile
-        outfile = '{outfileRoot}{key}.json'.format(**locals())
+            # Get outfile
+            outfile = '{outfileRoot}{index}.json'.format(**locals())
 
-        # Write
-        with open(outfile, 'w') as openfile:
-            openfile.write(json.dumps(value, indent=4))
+            # Write
+            with open(outfile, 'w') as openfile:
+                openfile.write(json.dumps(signature_metadata, indent=4))
 
 #######################################################
 #######################################################
@@ -138,24 +129,17 @@ def generateSignatures(infile, outfile):
     print('Doing {}...'.format(outfile))
 
     # Read metadata
-    try:
-        with open(infile) as openfile:
-            signature_metadata = json.loads(openfile.read())
+    with open(infile) as openfile:
+        signature_metadata = json.loads(openfile.read())
 
-        # Load dataset
-        if signature_metadata['dataset'].get('gse'):
-            dataset = load.archs4(gse=signature_metadata['dataset']['gse'], platform=signature_metadata['dataset']['platform'])
-        else:
-            dataset = load.upload(uid=signature_metadata['dataset']['uid'])
+    # Load dataset
+    dataset = load.archs4(gse=signature_metadata['gse'], platform=signature_metadata['platform'])
 
-        # Calculate signature
-        signature_dataframe = signature.cd(dataset=dataset, log=False, group_A=signature_metadata['A']['samples'], group_B=signature_metadata['B']['samples'])
+    # Calculate signature
+    signature_dataframe = signature.cd(dataset=dataset, log=False, group_A=signature_metadata['control'], group_B=signature_metadata['perturbation'])
 
-        # Write
-        signature_dataframe.to_csv(outfile, sep='\t')
-    except:
-        os.system('touch {}'.format(outfile))
-        print('Error.')
+    # Write
+    signature_dataframe.to_csv(outfile, sep='\t')
 
 #######################################################
 #######################################################
@@ -214,7 +198,7 @@ def mergeSignatures(infiles, outfile):
 @follows(mkdir('s4-correlation.dir'))
 
 @files(mergeSignatures,
-       's4-correlation.dir/gene-correlation.txt')
+       's4-correlation.dir/signature-correlation.txt')
 
 def correlateSignatures(infile, outfile):
 
@@ -222,14 +206,14 @@ def correlateSignatures(infile, outfile):
     signature_dataframe = pd.read_table(infile, index_col='gene_symbol')
 
     # Get top genes
-    top_genes = signature_dataframe.var(axis=1).sort_values(ascending=False).index[:1000]
+    top_genes = signature_dataframe.var(axis=1).sort_values(ascending=False).index[:5000]
 
     # Filter
     filtered_signature_dataframe = signature_dataframe.loc[top_genes]#.apply(ss.zscore, axis=1).drop(['Q0FknOiJz'], axis=1)
 
     # Calculate pairwise correlations
-    correlation_dataframe = round(filtered_signature_dataframe.T.corr(method='pearson'), ndigits=3)
-    correlation_dataframe.index.name = 'gene_symbol'
+    correlation_dataframe = round(filtered_signature_dataframe.corr(method='spearman'), ndigits=3)
+    correlation_dataframe.index.name = 'notebook_uid'
 
     # Write
     correlation_dataframe.to_csv(outfile, sep='\t')
