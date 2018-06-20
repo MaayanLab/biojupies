@@ -39,7 +39,7 @@ import ReadManager as RM
 #############################################
 ##### 1. Flask App #####
 # General
-dev = True
+dev = False
 entry_point = '/biojupies-dev' if dev else '/biojupies'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
 
@@ -708,7 +708,6 @@ def launch_alignment_api():
 
 	# Get form
 	alignment_settings = request.form.to_dict()
-
 	# Get sample files
 	if alignment_settings['sequencing-type'] == 'single-end':
 		samples = [{'outname': value[:-len('.fastq.gz')], 'file1': value, 'file2': None} for key, value in alignment_settings.items() if key.startswith('file')]

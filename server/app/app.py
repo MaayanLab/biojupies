@@ -81,7 +81,7 @@ def generate():
 	development = os.environ['DEVELOPMENT'] == 'True'
 	try:
 		### Development
-		if development:
+		if development or request.method == 'GET':
 
 			# Open example.json
 			with open('example.json', 'r') as openfile:
@@ -89,7 +89,7 @@ def generate():
 
 			# Generate, Execute and Convert to HTML
 			notebook = generate_notebook(notebook_configuration, annotations)
-			notebook = execute_notebook(notebook, execute=True,to_html=True)
+			notebook = execute_notebook(notebook, execute=True, to_html=True)
 		
 			# Return
 			return notebook
