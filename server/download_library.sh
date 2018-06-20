@@ -1,4 +1,3 @@
-echo $LIBRARY_VERSION
 cd app/static
 rm -r library
 mkdir library
