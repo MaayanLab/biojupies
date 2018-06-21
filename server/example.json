@@ -1,0 +1,37 @@
+{
+  "notebook": {
+    "title": "GSE89952 Analysis Notebook | BioJupiessssss",
+    "live": "False",
+    "version": "v0.6"
+  },
+  "tools": [
+    {
+      "tool_string": "pca",
+      "parameters": {
+        "nr_genes": "2500",
+        "normalization": "logCPM",
+        "z_score": "True"
+      }
+    },
+    {
+      "tool_string": "clustergrammer",
+      "parameters": {
+        "nr_genes": "2500",
+        "normalization": "logCPM",
+        "z_score": "True"
+      }
+    },
+    {
+      "tool_string": "library_size_analysis",
+      "parameters": {}
+    }
+  ],
+  "data": {
+    "source": "archs4",
+    "parameters": {
+      "gse": "GSE89952",
+      "platform": "GPL13112"
+    }
+  },
+  "signature": {}
+}

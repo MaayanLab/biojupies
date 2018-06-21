@@ -1,7 +1,0 @@
-# Versions
-c=maayanlab/biojupies-notebooks
-docker build -t $c .;
-docker run -it -p 8888:8888 -e NOTEBOOK_UID=qSYxvJnDT $c:$v;
-
-# Push
-docker push $c;
