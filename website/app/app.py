@@ -39,7 +39,7 @@ import ReadManager as RM
 #############################################
 ##### 1. Flask App #####
 # General
-dev = False
+dev = True
 entry_point = '/biojupies-dev' if dev else '/biojupies'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
 
