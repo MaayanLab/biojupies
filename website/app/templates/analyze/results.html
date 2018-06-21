@@ -166,7 +166,7 @@
 				$('<a>', {
 					'class': 'twitter-share-button',
 					'data-size': 'large',
-					'href': "https://twitter.com/intent/tweet?text={{ notebook_configuration_dict['notebook']['title'] }}&url={{ url_for('view_notebook', notebook_uid='', _external=True)}}"+notebook_uid+"&hashtags=biojupies,jupyter,bioinformatics&via=MaayanLab"
+					'href': "https://twitter.com/intent/tweet?text={{ notebook_configuration_dict['notebook']['title'] }} {{ url_for('view_notebook', notebook_uid='', _external=True)}}" + notebook_uid +"&url=https://doi.org/10.1101/352476&hashtags=biojupies,jupyter,bioinformatics&via=MaayanLab"
 				})
 			)
 
