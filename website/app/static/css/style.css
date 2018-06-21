@@ -87,10 +87,14 @@ body {
 .w-auto { width: auto !important; }
 .ml-neg { margin-left: -5px; }
 .text-underline { text-decoration: underline; }
+.no-underline { text-decoration: none !important; }
 .overflow-hidden { overflow: hidden; }
 /* Hidden */
 .hidden { display: none !important; }
+/* Other */
 .w-50px { width: 50px; }
+.w-65px { width: 65px; }
+/* .mt-1.5 { margin-top: 10px; } */
 
 /********************************/
 /***** INDEX ********************/

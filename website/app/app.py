@@ -241,6 +241,7 @@ def add_tools():
 ### - Defining optiona notebook and tool parameters.
 ### Links to: generate_notebook().
 ### Accessible from: add_tools().
+##### CHECK QUERIES
 
 @app.route(entry_point+'/analyze/configure', methods=['GET', 'POST'])
 def configure_analysis():
@@ -260,13 +261,13 @@ def configure_analysis():
 
 			# Get metatada for processed datasets
 			if 'gse' in request.form.keys():
-				j = pd.read_sql_query('SELECT DISTINCT CONCAT(sample_accession, "---", sample_title) AS sample_info, variable, value FROM sample_new s LEFT JOIN dataset d ON d.id=s.dataset_fk LEFT JOIN sample_metadata_new sm ON s.id=sm.sample_fk WHERE dataset_accession = "{}"'.format(f.get('gse')), engine).pivot(index='sample_info', columns='variable', values='value')
+				j = pd.read_sql_query('SELECT DISTINCT CONCAT(sample_accession, "---", sample_title) AS sample_info, variable, value FROM sample_new s LEFT JOIN dataset d ON d.id=s.dataset_fk LEFT JOIN sample_metadata_new sm ON s.id=sm.sample_fk WHERE dataset_accession = "{}"'.format(f.get('gse')).replace('"', ''), engine).pivot(index='sample_info', columns='variable', values='value')
 				j = pd.concat([pd.DataFrame({'accession': [x.split('---')[0] for x in j.index], 'sample': [x.split('---')[1] for x in j.index]}, index=j.index), j], axis=1).reset_index(drop=True).fillna('')
 				j = j[[col for col, colData in j.iteritems() if len(colData.unique()) > 1]]
 
 			# Get metadata for user-submitted dataset
 			else:
-				j = pd.read_sql_query('SELECT DISTINCT sample_name AS sample, variable, value FROM user_dataset ud LEFT JOIN user_sample us ON ud.id=us.user_dataset_fk LEFT JOIN user_sample_metadata usm ON us.id=usm.user_sample_fk WHERE ud.dataset_uid="{}"'.format(request.form.get('uid')), engine)
+				j = pd.read_sql_query('SELECT DISTINCT sample_name AS sample, variable, value FROM user_dataset ud LEFT JOIN user_sample us ON ud.id=us.user_dataset_fk LEFT JOIN user_sample_metadata usm ON us.id=usm.user_sample_fk WHERE ud.dataset_uid="{}"'.format(request.form.get('uid')).replace('"', ''), engine)
 				j = j.pivot(index='sample', columns='variable', values='value').reset_index()
 		
 			# Return result
@@ -303,6 +304,7 @@ def configure_analysis():
 ### Displays the loading screen during notebook generation, and the link to the generated notebook once the process is complete.
 ### Links to: view_notebook().
 ### Accessible from: configure_analysis().
+##### CHECK QUERIES
 
 @app.route(entry_point+'/analyze/results', methods=['GET', 'POST'])
 def generate_notebook():
@@ -373,11 +375,13 @@ def generate_notebook():
 ### Displays the generated notebook to the user using nbviewer.
 ### Links to: none.
 ### Accessible from: generate_notebook().
+##### CHECK QUERIES
 
 @app.route(entry_point+'/notebook/<notebook_uid>')
 def view_notebook(notebook_uid):
 
 	# Get notebook data
+	notebook_uid = notebook_uid.replace('"', '')
 	notebook_query = pd.read_sql_query('SELECT notebook_url, notebook_configuration FROM notebooks WHERE notebook_uid="{notebook_uid}"'.format(**locals()), engine).to_dict(orient='index')
 
 	# Check if notebook has been found
