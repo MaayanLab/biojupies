@@ -109,8 +109,9 @@ def upload_notebook(notebook, notebook_configuration, time, engine):
 	notebook_tool_dataframe.to_sql('notebook_tool', engine, if_exists='append', index=False)
 
 	# Notebook-tag dataframe
-	notebook_tag_dataframe = pd.DataFrame({'ontology_term_fk': [x for x in notebook_configuration['terms']], 'notebook_fk': notebook_id})
-	notebook_tag_dataframe.to_sql('notebook_ontology_term', engine, if_exists='append', index=False)
+	if notebook_configuration.get('terms'):
+		notebook_tag_dataframe = pd.DataFrame({'ontology_term_fk': [x for x in notebook_configuration.get('terms')], 'notebook_fk': notebook_id})
+		notebook_tag_dataframe.to_sql('notebook_ontology_term', engine, if_exists='append', index=False)
 
 	# Return
 	return notebook_uid
