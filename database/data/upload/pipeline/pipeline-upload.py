@@ -26,14 +26,7 @@ import Upload as P
 ##### 1. Variables #####
 from sqlalchemy import create_engine, MetaData
 engine = create_engine(os.environ['SQLALCHEMY_DATABASE_URI']+'?charset=utf8')
-# engine.execute('SET FOREIGN_KEY_CHECKS = 0;')
-# engine.execute('truncate table dataset;')
-# engine.execute('truncate table platform_new;')
-# engine.execute('truncate table sample_metadata_new;')
-# engine.execute('truncate table sample_new;')
-# engine.execute('SET FOREIGN_KEY_CHECKS = 1;')
-
-##### 2. R Connection #####
+version = 'v5'
 
 #######################################################
 #######################################################
@@ -42,7 +35,29 @@ engine = create_engine(os.environ['SQLALCHEMY_DATABASE_URI']+'?charset=utf8')
 #######################################################
 
 #############################################
-########## 1. Upload JSON
+########## 1. Create Tables
+#############################################
+
+@transform('sql/create_tables.sql',
+           suffix('.sql'),
+           '.txt')
+
+def createTables(infile, outfile):
+
+    # Read file
+    with open(infile) as openfile:
+        query = openfile.read().format(**globals()).replace('\n', '')
+
+    # Execute
+    for statement in query.split(';'):
+        if statement:
+            engine.execute(statement)
+
+    # Create outfile
+    os.system('touch {}'.format(outfile))
+
+#############################################
+########## 2. Upload JSON
 #############################################
 
 @follows(mkdir('s1-upload_datasets.dir'))
@@ -62,22 +77,44 @@ def uploadJson(infile, outfile):
     dataset_accession = os.path.basename(infile).split('-')[0]
 
     # Check if dataset exists
-    if not P.exists(dataset_accession):
+    if not P.exists(dataset_accession, version):
 
         # Upload dataset
-        P.upload_dataset(dataset)
+        P.upload_dataset(dataset, version)
 
         # Upload platform
-        P.upload_platform(dataset)
+        P.upload_platform(dataset, version)
 
         # Upload samples
-        P.upload_samples(dataset)
+        P.upload_samples(dataset, version)
 
         # Upload sample metadata
-        P.upload_sample_metadata(dataset)
+        P.upload_sample_metadata(dataset, version)
 
     # Create outfile
     # os.system('touch {}'.format(outfile))
+
+#############################################
+########## 3. Rename Tables
+#############################################
+
+@transform('sql/rename_tables.sql',
+           suffix('.sql'),
+           '.txt')
+
+def renameTables(infile, outfile):
+
+    # Read file
+    with open(infile) as openfile:
+        query = openfile.read().format(**globals()).replace('\n', '')
+
+    # Execute
+    for statement in query.split(';'):
+        if statement:
+            engine.execute(statement)
+
+    # Create outfile
+    os.system('touch {}'.format(outfile))
 
 #######################################################
 #######################################################

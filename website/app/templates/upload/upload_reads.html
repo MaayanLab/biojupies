@@ -135,6 +135,8 @@
 						$('[form="read-upload-form"]').prop('disabled', false).toggleClass('black white bg-white bg-blue');
 					}
 					console.log("end")
+
+					// Call FASTQ Upload Status API
 				}
 				xhr.upload.addEventListener('progress', function (evt) {
 					if (evt.lengthComputable) {

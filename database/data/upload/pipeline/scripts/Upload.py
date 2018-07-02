@@ -48,33 +48,33 @@ def upload_data(data, keys, table, reset_counter=True):
 ########## 1. Check if dataset exists
 #############################################
 
-def exists(accession):
-    return len(pd.read_sql_query('SELECT * FROM dataset WHERE dataset_accession = "{}"'.format(accession), engine).index)
+def exists(accession, version):
+    return len(pd.read_sql_query('SELECT * FROM dataset_{version} WHERE dataset_accession = "{accession}"'.format(**locals()), engine).index)
 
 #############################################
 ########## 2. Upload dataset
 #############################################
 
-def upload_dataset(dataset):
+def upload_dataset(dataset, version):
 
     dataset_types = {'rnaseq': 1, 'microarray': 2}
     dataset.update({'dataset_type_fk': dataset_types[dataset['type']]})
-    dataset['dataset_id'] = upload_data(data=dataset, keys=['dataset_title', 'dataset_accession', 'summary', 'date', 'dataset_type_fk'], table='dataset')
+    dataset['dataset_id'] = upload_data(data=dataset, keys=['dataset_title', 'dataset_accession', 'summary', 'date', 'dataset_type_fk'], table='dataset_'+version)
 
 #############################################
 ########## 3. Upload platform
 #############################################
 
-def upload_platform(dataset):
+def upload_platform(dataset, version):
 
-    upload_data(data=dataset, keys=['platform_accession'], table='platform_new')
-    dataset['platform_id'] = engine.execute(tables['platform_new'].select().where(tables['platform_new'].columns['platform_accession'] == dataset['platform_accession'])).fetchall()[0]['id']
+    upload_data(data=dataset, keys=['platform_accession'], table='platform_'+version)
+    dataset['platform_id'] = engine.execute(tables['platform_'+version].select().where(tables['platform_'+version].columns['platform_accession'] == dataset['platform_accession'])).fetchall()[0]['id']
 
 #############################################
 ########## 4. Upload samples
 #############################################
 
-def upload_samples(dataset):
+def upload_samples(dataset, version):
 
     # Create sample dataframe
     sample_dataframe = pd.DataFrame(dataset['samples']).T.rename(columns={'index': 'Index'}).reset_index().rename(columns={'index': 'sample_accession', 'Sample Title': 'sample_title'})[['sample_accession', 'sample_title']]
@@ -84,22 +84,22 @@ def upload_samples(dataset):
     sample_dataframe['platform_fk'] = dataset['platform_id']
 
     # Upload
-    sample_dataframe.to_sql('sample_new', engine, if_exists='append', index=False)
+    sample_dataframe.to_sql('sample_'+version, engine, if_exists='append', index=False)
 
     # Get IDs
-    dataset['sample_ids'] = pd.DataFrame(engine.execute(tables['sample_new'].select().where(and_(tables['sample_new'].columns['sample_accession'].in_(sample_dataframe['sample_accession']), tables['sample_new'].columns['dataset_fk'] == dataset['dataset_id'], tables['sample_new'].columns['platform_fk'] == dataset['platform_id']))).fetchall()).rename(columns={0: 'sample_fk', 1: 'sample_accession'})[['sample_fk', 'sample_accession']]
+    dataset['sample_ids'] = pd.DataFrame(engine.execute(tables['sample_'+version].select().where(and_(tables['sample_'+version].columns['sample_accession'].in_(sample_dataframe['sample_accession']), tables['sample_'+version].columns['dataset_fk'] == dataset['dataset_id'], tables['sample_'+version].columns['platform_fk'] == dataset['platform_id']))).fetchall()).rename(columns={0: 'sample_fk', 1: 'sample_accession'})[['sample_fk', 'sample_accession']]
 
 #############################################
 ########## 4. Upload sample metadata
 #############################################
 
-def upload_sample_metadata(dataset):
+def upload_sample_metadata(dataset, version):
 
     # Create metadata dataframe
     sample_metadata_dataframe = pd.melt(pd.DataFrame(dataset['samples']).T.reset_index(), id_vars='index').merge(dataset['sample_ids'], left_on='index', right_on='sample_accession')[['sample_fk', 'variable', 'value']]
 
     # Upload
-    sample_metadata_dataframe.to_sql('sample_metadata_new', engine, if_exists='append', index=False)
+    sample_metadata_dataframe.to_sql('sample_metadata_'+version, engine, if_exists='append', index=False)
 
 #######################################################
 #######################################################

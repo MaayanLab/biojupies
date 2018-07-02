@@ -39,7 +39,7 @@ import ReadManager as RM
 #############################################
 ##### 1. Flask App #####
 # General
-dev = True
+dev = False
 entry_point = '/biojupies-dev' if dev else '/biojupies'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
 
@@ -261,13 +261,14 @@ def configure_analysis():
 
 			# Get metatada for processed datasets
 			if 'gse' in request.form.keys():
-				j = pd.read_sql_query('SELECT DISTINCT CONCAT(sample_accession, "---", sample_title) AS sample_info, variable, value FROM sample_new s LEFT JOIN dataset d ON d.id=s.dataset_fk LEFT JOIN sample_metadata_new sm ON s.id=sm.sample_fk WHERE dataset_accession = "{}"'.format(f.get('gse')).replace('"', ''), engine).pivot(index='sample_info', columns='variable', values='value')
+				j = pd.read_sql_query('SELECT DISTINCT CONCAT(sample_accession, "---", sample_title) AS sample_info, variable, value FROM sample_new s LEFT JOIN dataset d ON d.id=s.dataset_fk LEFT JOIN sample_metadata_new sm ON s.id=sm.sample_fk WHERE dataset_accession = "{}"'.format(f.get('gse').replace('"', '')), engine)
+				j = j.pivot(index='sample_info', columns='variable', values='value')
 				j = pd.concat([pd.DataFrame({'accession': [x.split('---')[0] for x in j.index], 'sample': [x.split('---')[1] for x in j.index]}, index=j.index), j], axis=1).reset_index(drop=True).fillna('')
 				j = j[[col for col, colData in j.iteritems() if len(colData.unique()) > 1]]
 
 			# Get metadata for user-submitted dataset
 			else:
-				j = pd.read_sql_query('SELECT DISTINCT sample_name AS sample, variable, value FROM user_dataset ud LEFT JOIN user_sample us ON ud.id=us.user_dataset_fk LEFT JOIN user_sample_metadata usm ON us.id=usm.user_sample_fk WHERE ud.dataset_uid="{}"'.format(request.form.get('uid')).replace('"', ''), engine)
+				j = pd.read_sql_query('SELECT DISTINCT sample_name AS sample, variable, value FROM user_dataset ud LEFT JOIN user_sample us ON ud.id=us.user_dataset_fk LEFT JOIN user_sample_metadata usm ON us.id=usm.user_sample_fk WHERE ud.dataset_uid="{}"'.format(request.form.get('uid').replace('"', '')), engine)
 				j = j.pivot(index='sample', columns='variable', values='value').reset_index()
 		
 			# Return result
@@ -550,6 +551,8 @@ def upload_reads():
 			uploaded_files = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['filenames']
 			samples = [x for x in uploaded_files if x.startswith(upload_uid) and x.endswith('.fastq.gz')]
 
+			### If UID doesn't exist in the database and files are matched, upload UID and files to database
+
 			return render_template('upload/align_reads.html', upload_uid=upload_uid, samples=samples)
 
 	# Alignment status
@@ -666,6 +669,8 @@ def upload_table_api():
 	# Upload to database
 	TM.uploadToDatabase(data, dataset_uid, engine)
 
+	### Add table-alignment job FK, if provided
+
 	# Get results
 	dataset_uid_json = json.dumps({'dataset_uid': dataset_uid})
 	
@@ -745,6 +750,8 @@ def launch_alignment_api():
 			req =  urllib.request.Request(url)
 			resp = urllib.request.urlopen(req).read().decode('utf-8')
 			print(resp)
+
+			### Add job to database, adding foreign key for upload
 
 	return json.dumps({'alignment_uid': alignment_uid})
 

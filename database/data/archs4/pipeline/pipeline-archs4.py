@@ -26,7 +26,7 @@ import Support3 as S
 ########## 2. General Setup
 #############################################
 ##### 1. Variables #####
-h5_files = glob.glob('rawdata.dir/v2/*.h5')
+h5_files = glob.glob('rawdata.dir/v5/*.h5')
 
 #######################################################
 #######################################################
@@ -74,7 +74,7 @@ def makeSampleTable(infiles, outfile):
 
 	# Filter samples
 	results_dataframe['count'] = [len(x.split(', ')) for x in results_dataframe['gsm']]
-	results_dataframe = results_dataframe[results_dataframe['count'] > 5]
+	results_dataframe = results_dataframe[results_dataframe['count'] > 3]
 
 	# Drop duplicate GSE
 	results_dataframe.drop_duplicates('gse', inplace=True)
@@ -131,10 +131,11 @@ def downloadSeriesMatrices(infile, outfiles, outfile_root):
 					request = urllib.request.urlopen(urllib.request.Request(url2, headers={"Accept-Encoding": "gzip"})).read()
 				except:
 					print('Error downloading {url1} and {url2}'.format(**locals()))
+					os.system('touch {}'.format(outfile))
 					continue
 
 			# Get Sample Metadata
-			data = gzip.decompress(request).decode('utf-8')
+			data = gzip.decompress(request).decode('utf-8', 'ignore')
 			filtered_data = pd.DataFrame([x.replace('"', '').split('\t') for x in data.split('\n') if x.startswith('!Sample_characteristics_ch1') or x.startswith('!Sample_geo_accession')]).T
 			filtered_data.columns = filtered_data.iloc[0]
 			filtered_data = filtered_data.drop(0).set_index('!Sample_geo_accession')
@@ -198,7 +199,7 @@ def getSeriesAnnotations(infile, outfiles, outfile_root):
 ### Input: ARCHS4 H5 datasets for mouse and human.
 ### Output: HDF5 data packages containing data and sample metadata for each series-platform.
 
-@follows(mkdir('s4-series_h5.dir'))
+# @follows(mkdir('s4-series_h5.dir'))
 
 @subdivide(h5_files,
 		   formatter(),
@@ -376,7 +377,7 @@ def uploadData(infiles, outfile):
 
 	# Get Bucket
 	client = storage.Client()
-	bucket = client.get_bucket('archs4-packages-v2')
+	bucket = client.get_bucket('archs4-packages-v5')
 
 	# Upload
 	print('Doing {}'.format(h5_file))
@@ -394,5 +395,5 @@ def uploadData(infiles, outfile):
 ########## Run pipeline
 ##################################################
 ##################################################
-pipeline_run([sys.argv[-1]], multiprocess=1, verbose=1, forcedtorun_tasks=[])
+pipeline_run([sys.argv[-1]], multiprocess=5, verbose=1, forcedtorun_tasks=[])
 print('Done!')
