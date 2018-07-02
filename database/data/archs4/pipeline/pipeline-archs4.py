@@ -249,52 +249,54 @@ def packageData(infiles, outfiles, outfile_root):
 		i += 1
 
 		# Generate outfile
-		outfile = '{outfile_root}{rowData[gse]}-{rowData[gpl]}.h5'.format(
-			**locals())
+		outfile = '{outfile_root}{rowData[gse]}-{rowData[gpl]}.h5'.format(**locals())
 
 		# Check if exists
 		if not os.path.isfile(outfile):
 
 			# Open h5
-			print('Writing {rowData[gse]}-{rowData[gpl]} ({i}/{rows})...'.format(**locals()))
+			# print('Writing {rowData[gse]}-{rowData[gpl]} ({i}/{rows})...'.format(**locals()))
 			of = h5py.File(outfile, 'w')
 
 			# Data
 			data_grp = of.create_group('data')
-			data_grp.create_dataset(
-				'expression', data=[expr[x] for x in rowData['sample_index']])
+			data_grp.create_dataset('expression', data=[expr[x] for x in rowData['sample_index']])
 
 			# Metadata
 			gene_grp = of.create_group('meta/gene')
-			gene_grp.create_dataset(
-				'symbol', data=genes, dtype=h5py.special_dtype(vlen=str))
+			gene_grp.create_dataset('symbol', data=genes, dtype=h5py.special_dtype(vlen=str))
 
 			# Add sample title and accession
 			sample_metadata_grp = of.create_group('meta/sample')
-			sample_metadata_grp.create_dataset('Sample_title', data=[
-											sample_titles[x] for x in rowData['sample_index']], dtype=h5py.special_dtype(vlen=str))
-			sample_metadata_grp.create_dataset('Sample_geo_accession', data=[
-                            sample_accessions[x] for x in rowData['sample_index']], dtype=h5py.special_dtype(vlen=str))
+			sample_metadata_grp.create_dataset('Sample_title', data=[sample_titles[x] for x in rowData['sample_index']], dtype=h5py.special_dtype(vlen=str))
+			sample_metadata_grp.create_dataset('Sample_geo_accession', data=[sample_accessions[x] for x in rowData['sample_index']], dtype=h5py.special_dtype(vlen=str))
 
 			# Add sample metadata
-			series_file = 's1-series_matrices.dir/{gse}-{gpl}.txt'.format(
-				**rowData)
+			series_file = 's2-series_matrices.dir/{gse}-{gpl}.txt'.format(**rowData)
 			if os.path.isfile(series_file):
-				print('Adding metadata')
+				cols = []
 				try:
-					series_dataframe = pd.read_table(series_file).set_index('Unnamed: 0').rename(columns={
-						'Sample_title': 'Sample_title_2'}).loc[[sample_accessions[x].decode('utf-8') for x in rowData['index']]].T.dropna().T
-					for column in series_dataframe.columns:
+					# Get data
+					series_metadata_dataframe = pd.read_table(series_file).set_index('Unnamed: 0').rename(columns={'Sample_title': 'Sample_title_2'}).loc[[sample_accessions[x].decode('utf-8') for x in rowData['sample_index']]].T.dropna().T
+					for column in series_metadata_dataframe.columns:
 						try:
-							sample_metadata_grp.create_dataset(
-								column, data=series_dataframe[column], dtype=h5py.special_dtype(vlen=str))
+							sample_metadata_grp.create_dataset(column, data=series_metadata_dataframe[column], dtype=h5py.special_dtype(vlen=str))
+							cols.append(column)
 						except:
-							print('Error adding {}'.format(column))
+							pass
+
+					# Print
+					totcol = len(series_metadata_dataframe.columns)
+					ncol = len(cols)
+					message = 'Wrote {rowData[gse]}-{rowData[gpl]} ({i}/{rows}), with {ncol}/{totcol} metadata columns.'.format(**locals())
 				except:
-					print('Error adding metadata')
+					message = 'Wrote {rowData[gse]}-{rowData[gpl]} ({i}/{rows}), without metadata.'
 
 			# Close
 			of.close()
+
+			# Print
+			print(message)
 
 #######################################################
 #######################################################

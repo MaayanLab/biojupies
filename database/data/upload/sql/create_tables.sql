@@ -1,4 +1,5 @@
-CREATE TABLE IF NOT EXISTS `dataset_{version}` (
+DROP TABLE IF EXISTS `sample_metadata_{version}`, `sample_{version}`, `dataset_{version}`, `platform_{version}`;
+CREATE TABLE `dataset_{version}` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `dataset_accession` varchar(35) NOT NULL DEFAULT '',
   `dataset_title` text NOT NULL,
@@ -11,7 +12,7 @@ CREATE TABLE IF NOT EXISTS `dataset_{version}` (
   CONSTRAINT `dataset_ibfk_1_{version}` FOREIGN KEY (`dataset_type_fk`) REFERENCES `dataset_type` (`id`)
 );
 
-CREATE TABLE IF NOT EXISTS `platform_{version}` (
+CREATE TABLE `platform_{version}` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `platform_accession` varchar(15) NOT NULL,
   `organism` varchar(11) DEFAULT NULL,
@@ -19,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `platform_{version}` (
   UNIQUE KEY `platform_accession` (`platform_accession`)
 );
 
-CREATE TABLE IF NOT EXISTS `sample_{version}` (
+CREATE TABLE `sample_{version}` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `sample_accession` varchar(15) NOT NULL,
   `sample_title` varchar(255) NOT NULL,
@@ -33,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `sample_{version}` (
   CONSTRAINT `sample_{version}_ibfk_2` FOREIGN KEY (`platform_fk`) REFERENCES `platform_{version}` (`id`)
 );
 
-CREATE TABLE IF NOT EXISTS `sample_metadata_{version}` (
+CREATE TABLE `sample_metadata_{version}` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `variable` text,
   `value` text,
