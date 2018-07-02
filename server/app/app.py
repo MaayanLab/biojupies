@@ -36,7 +36,7 @@ from NotebookManager import *
 #############################################
 ##### 1. Flask App #####
 # General
-dev = False
+dev = True
 entry_point = '/notebook-generator-server-dev' if dev else '/notebook-generator-server'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
 
@@ -170,7 +170,7 @@ def samples():
 	# Get Sample Dataframe
 	gse_string = '("'+'", "'.join(gse_list)+'")'
 	# sample_dataframe = pd.read_sql_query('SELECT gse, gsm, gpl, sample_title FROM series se LEFT JOIN sample sa ON se.id=sa.series_fk LEFT JOIN platform p ON p.id=sa.platform_fk WHERE gse in {}'.format(gse_string), engine, index_col='gse')
-	sample_dataframe = pd.read_sql_query('SELECT dataset_accession AS gse, sample_accession AS gsm, platform_accession AS gpl, sample_title FROM dataset d LEFT JOIN sample_new s ON d.id=s.dataset_fk LEFT JOIN platform_new p ON p.id=s.platform_fk WHERE dataset_accession in {}'.format(gse_string), engine, index_col='gse')
+	sample_dataframe = pd.read_sql_query('SELECT dataset_accession AS gse, sample_accession AS gsm, platform_accession AS gpl, sample_title FROM dataset_v5 d LEFT JOIN sample_v5 s ON d.id=s.dataset_fk LEFT JOIN platform_v5 p ON p.id=s.platform_fk WHERE dataset_accession in {}'.format(gse_string), engine, index_col='gse')
 
 	# Initialize result dict
 	result = {gse:{} for gse in gse_list}

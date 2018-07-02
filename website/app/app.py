@@ -39,7 +39,7 @@ import ReadManager as RM
 #############################################
 ##### 1. Flask App #####
 # General
-dev = False
+dev = True
 entry_point = '/biojupies-dev' if dev else '/biojupies'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
 
@@ -133,34 +133,34 @@ def search_data():
 	page = int(request.args.get('page', '1'))
 
 	# Get counts
-	dataset_nr = pd.read_sql_query('SELECT COUNT(DISTINCT dataset_accession) FROM dataset', engine).iloc[0,0]
-	sample_nr = pd.read_sql_query('SELECT COUNT(DISTINCT sample_accession) FROM sample_new', engine).iloc[0,0]
+	dataset_nr = pd.read_sql_query('SELECT COUNT(DISTINCT dataset_accession) FROM dataset_v5', engine).iloc[0,0]
+	sample_nr = pd.read_sql_query('SELECT COUNT(DISTINCT sample_accession) FROM sample_v5', engine).iloc[0,0]
 
 	###
 	# Initialize database query
 	session = Session()
-	db_query = session.query(tables['dataset'], tables['platform_new'], func.count(tables['sample_new'].columns['sample_accession']).label('nr_samples')) \
-					.join(tables['sample_new']) \
-					.join(tables['platform_new']) \
+	db_query = session.query(tables['dataset_v5'], tables['platform_v5'], func.count(tables['sample_v5'].columns['sample_accession']).label('nr_samples')) \
+					.join(tables['sample_v5']) \
+					.join(tables['platform_v5']) \
 					.filter(or_( \
-						tables['dataset'].columns['dataset_title'].like('% '+q+' %'), \
-						tables['dataset'].columns['summary'].like('% '+q+' %'), \
-						tables['dataset'].columns['dataset_accession'].like(q)
+						tables['dataset_v5'].columns['dataset_title'].like('% '+q+' %'), \
+						tables['dataset_v5'].columns['summary'].like('% '+q+' %'), \
+						tables['dataset_v5'].columns['dataset_accession'].like(q)
 					)) \
-					.group_by(tables['dataset'].columns['dataset_accession']) \
+					.group_by(tables['dataset_v5'].columns['dataset_accession']) \
 							.having(and_( \
-								tables['platform_new'].columns['organism'].in_(organisms), \
-								func.count(tables['sample_new'].columns['sample_accession']) >= min_samples,
-								func.count(tables['sample_new'].columns['sample_accession']) <= max_samples
+								tables['platform_v5'].columns['organism'].in_(organisms), \
+								func.count(tables['sample_v5'].columns['sample_accession']) >= min_samples,
+								func.count(tables['sample_v5'].columns['sample_accession']) <= max_samples
 							))
 
 	# Sort query results
 	if sortby == 'asc':
-		db_query = db_query.order_by(func.count(tables['sample_new'].columns['sample_accession']).asc())
+		db_query = db_query.order_by(func.count(tables['sample_v5'].columns['sample_accession']).asc())
 	elif sortby == 'desc':
-		db_query = db_query.order_by(func.count(tables['sample_new'].columns['sample_accession']).desc())
+		db_query = db_query.order_by(func.count(tables['sample_v5'].columns['sample_accession']).desc())
 	elif sortby == 'new':
-		db_query = db_query.order_by(tables['dataset'].columns['date'].desc())
+		db_query = db_query.order_by(tables['dataset_v5'].columns['date'].desc())
 
 	# Finish query
 	query_dataframe = pd.DataFrame(db_query.all())
@@ -222,8 +222,9 @@ def add_tools():
 		# Number of tools
 		nr_tools = len(tools)
 
-		# Notebook Generation
-		req =  urllib.request.Request('http://amp.pharm.mssm.edu/notebook-generator-server/api/version') # this will make the method "POST"
+		# Version
+		dev_str = '-dev' if dev else ''
+		req =  urllib.request.Request('http://amp.pharm.mssm.edu/notebook-generator-server{}/api/version'.format(dev_str)) # this will make the method "POST"
 		version = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['latest_library_version']
 		
 		# Return result
@@ -261,7 +262,7 @@ def configure_analysis():
 
 			# Get metatada for processed datasets
 			if 'gse' in request.form.keys():
-				j = pd.read_sql_query('SELECT DISTINCT CONCAT(sample_accession, "---", sample_title) AS sample_info, variable, value FROM sample_new s LEFT JOIN dataset d ON d.id=s.dataset_fk LEFT JOIN sample_metadata_new sm ON s.id=sm.sample_fk WHERE dataset_accession = "{}"'.format(f.get('gse').replace('"', '')), engine)
+				j = pd.read_sql_query('SELECT DISTINCT CONCAT(sample_accession, "---", sample_title) AS sample_info, variable, value FROM sample_v5 s LEFT JOIN dataset_v5 d ON d.id=s.dataset_fk LEFT JOIN sample_metadata_v5 sm ON s.id=sm.sample_fk WHERE dataset_accession = "{}"'.format(f.get('gse').replace('"', '')), engine)
 				j = j.pivot(index='sample_info', columns='variable', values='value')
 				j = pd.concat([pd.DataFrame({'accession': [x.split('---')[0] for x in j.index], 'sample': [x.split('---')[1] for x in j.index]}, index=j.index), j], axis=1).reset_index(drop=True).fillna('')
 				j = j[[col for col, colData in j.iteritems() if len(colData.unique()) > 1]]
@@ -341,13 +342,14 @@ def generate_notebook():
 		else:
 			signature = {}
 
-		# Notebook Generation
-		req =  urllib.request.Request('http://amp.pharm.mssm.edu/notebook-generator-server/api/version') # this will make the method "POST"
-		version = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['latest_library_version']
-
 		# Get tags
 		tags = d.get('tags', [])
 		tags = tags if isinstance(tags, list) else [tags]
+
+		# Version
+		dev_str = '-dev' if dev else ''
+		req =  urllib.request.Request('http://amp.pharm.mssm.edu/notebook-generator-server{}/api/version'.format(dev_str)) # this will make the method "POST"
+		version = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['latest_library_version']
 
 		# Generate notebook configuration
 		c = {
@@ -929,7 +931,7 @@ def example():
 
 	# Select dataset
 	dataset_accession = 'GSE100207'
-	dataset = pd.read_sql_query('SELECT platform_accession, dataset_accession, dataset_title, summary, date, count(*) AS nr_samples, organism FROM dataset d LEFT JOIN sample_new s ON d.id=s.dataset_fk LEFT JOIN platform_new p ON p.id=s.platform_fk WHERE dataset_accession = "{}"'.format(dataset_accession), engine).drop_duplicates().T.to_dict()[0]
+	dataset = pd.read_sql_query('SELECT platform_accession, dataset_accession, dataset_title, summary, date, count(*) AS nr_samples, organism FROM dataset_v5 d LEFT JOIN sample_v5 s ON d.id=s.dataset_fk LEFT JOIN platform_v5 p ON p.id=s.platform_fk WHERE dataset_accession = "{}"'.format(dataset_accession), engine).drop_duplicates().T.to_dict()[0]
 	# dataset['date'] = dataset['date'].strftime('%b %d, %Y')
 	return render_template('analyze/example.html', dataset=dataset)
 
