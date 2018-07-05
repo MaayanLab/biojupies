@@ -88,7 +88,7 @@ def load_data(notebook, data_configuration, core_options):
 	notebook = addCell(notebook, cell, 'markdown', 'load_dataset')
 
 	# Add Data
-	cell = "# Load dataset\ndataset = load_dataset(source='{}'".format(data_configuration['source'])+add_parameters(data_configuration['parameters'])+")\n\n# Preview expression data\ndataset['rawdata'].head()"
+	cell = "# Load dataset\ndataset = load_dataset(source='{}'".format(data_configuration['source'])+add_parameters(data_configuration['parameters'])+")\n\n# Preview expression data\npreview_data(dataset)"
 	notebook = addCell(notebook, cell)
 	cell = "**Table 1 | RNA-seq expression data.** The table displays the first 5 rows of the quantified RNA-seq expression dataset.  Rows represent genes, columns represent samples, and values show the number of mapped reads."
 	notebook = addCell(notebook, cell, 'markdown')
