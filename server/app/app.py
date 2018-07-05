@@ -24,6 +24,7 @@ from flask_sqlalchemy import SQLAlchemy
 import sys, os, json, time, re
 import pandas as pd
 import pymysql
+import h5py
 pymysql.install_as_MySQLdb()
 
 ##### 3. Custom modules #####
@@ -142,6 +143,33 @@ def generate():
 			error_response = log_error(notebook_configuration, ansi_escape.sub('', str(e)), annotations, engine)
 
 			return error_response
+
+#############################################
+########## 3. Download
+#############################################
+
+@app.route(entry_point+'/download', methods=['GET', 'POST'])
+def download():
+
+	# Load HDF5 File
+	print(request.args.to_dict())
+	h5 = '/download/{gse}-{platform}.h5'.format(**request.args.to_dict())
+	with open(h5, 'wb') as openfile:
+		openfile.write(urllib.request.urlopen('https://storage.googleapis.com/archs4-packages-{}/'.format(request.args.get('version'))+h5.split('/')[-1]).read())
+	f = h5py.File(h5, 'r')
+		
+	# Get data
+	if request.args.get('content') == 'expression':
+		results = pd.DataFrame(data=f['data']['expression'].value, columns=[x for x in f['meta']['gene']['symbol'].value], index=[x for x in f['meta']['sample']['Sample_geo_accession'].value]).T
+		results.index.name = 'gene_symbol'
+	elif request.args.get('content') == 'metadata':
+		results = pd.DataFrame({key: [x for x in value.value] if type(value) == h5py._hl.dataset.Dataset else [x for x in [y for y in value.items()][0][1].value] for key, value in f['meta']['sample'].items()}).set_index('Sample_geo_accession').rename(columns={'Sample_title': 'Sample Title'})
+		
+	# Convert to string
+	results_str = results.to_csv(sep='\t')
+
+	return results_str
+
 
 #######################################################
 #######################################################
