@@ -291,9 +291,18 @@ def configure_analysis():
 			for tool_string in t.keys():
 				t[tool_string]['parameters'] = p_dict[tool_string]
 			t = [t[x] for x in tools]
+
+			# Notebook title
+			if f.get('group_a_label') and f.get('group_b_label'):
+				notebook_title = ' vs '.join([f.get('group_a_label'), f.get('group_b_label')])
+			elif f.get('gse'):
+				notebook_title = f.get('gse')
+			else:
+				notebook_title = 'RNA-seq'
+			notebook_title += ' Analysis Notebook | BioJupies'
 		
 			# Return result
-			return render_template('analyze/review_analysis.html', t=t, f=f)
+			return render_template('analyze/review_analysis.html', t=t, f=f, notebook_title=notebook_title)
 
 	# Redirect to analyze page
 	else:

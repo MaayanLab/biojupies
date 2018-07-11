@@ -302,7 +302,7 @@
 <!-- ### Displays notebook configuration card. -->
 <!-- ### Used in: configure_analysis(). -->
 
-{% macro notebook_settings(gse, group_a_label, group_b_label, ontologies) %}
+{% macro notebook_settings(notebook_title) %}
 
 	<div class="row">
 		<div class="col-12">
@@ -332,7 +332,7 @@
 							<!-- <sup><i class="fa fa-question-circle ml-1" data-toggle="tooltip" title="Placeholder."></i></sup> -->
 						</div>
 						<div class="col-lg-6 pt-2 pt-lg-0">
-							<input class="form-control tiny nodecoration" type="text" name="notebook_title" value="{{ ' vs '.join([group_a_label, group_b_label]) if group_a_label and group_b_label else gse }}{{' ' if gse else ''}}Analysis Notebook | BioJupies">
+							<input class="form-control tiny nodecoration" type="text" name="notebook_title" value="{{ notebook_title }}">
 						</div>
 					</div>
 

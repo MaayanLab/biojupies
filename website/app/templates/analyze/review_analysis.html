@@ -38,7 +38,7 @@
 			<form id="review-analysis-form" action="{{ url_for('generate_notebook') }}" method="post">
 
 				<!-- Notebook Settings -->
-				{{ macros.notebook_settings(f['gse'], f.get('group_a_label'), f.get('group_b_label'), ontologies) }}
+				{{ macros.notebook_settings(notebook_title) }}
 
 				<!-- Tool Settings -->
 				{% for tool in t %}
