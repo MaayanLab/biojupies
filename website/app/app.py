@@ -39,7 +39,7 @@ import ReadManager as RM
 #############################################
 ##### 1. Flask App #####
 # General
-dev = True
+dev = False
 entry_point = '/biojupies-dev' if dev else '/biojupies'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
 
@@ -563,6 +563,8 @@ def upload_reads():
 			samples = [x for x in uploaded_files if x.startswith(upload_uid) and x.endswith('.fastq.gz')]
 
 			### If UID doesn't exist in the database and files are matched, upload UID and files to database
+			if len(samples):
+				RM.uploadToDatabase(upload_uid, samples, session = Session(), tables=tables)
 
 			return render_template('upload/align_reads.html', upload_uid=upload_uid, samples=samples)
 
@@ -939,7 +941,7 @@ def help():
 def example():
 
 	# Select dataset
-	dataset_accession = 'GSE100207'
+	dataset_accession = 'GSE88741'
 	dataset = pd.read_sql_query('SELECT platform_accession, dataset_accession, dataset_title, summary, date, count(*) AS nr_samples, organism FROM dataset_v5 d LEFT JOIN sample_v5 s ON d.id=s.dataset_fk LEFT JOIN platform_v5 p ON p.id=s.platform_fk WHERE dataset_accession = "{}"'.format(dataset_accession), engine).drop_duplicates().T.to_dict()[0]
 	# dataset['date'] = dataset['date'].strftime('%b %d, %Y')
 	return render_template('analyze/example.html', dataset=dataset)

@@ -33,7 +33,7 @@ from io import StringIO
 #################################################################
 
 #############################################
-########## 1. Get UID
+########## 1. Merge counts
 #############################################
 
 def mergeCounts(alignment_uid):
@@ -68,4 +68,27 @@ def mergeCounts(alignment_uid):
 
 	# Return
 	return count_dataframe#json.dumps(count_dataframe.to_dict(orient='split'))
+
+
+#############################################
+########## 1. Upload UID
+#############################################
+
+def uploadToDatabase(upload_uid, samples, session, tables):
+
+    # Fetch ID
+    query = session.query(tables['fastq_upload'].columns['id']).filter(tables['fastq_upload'].columns['upload_uid'] == upload_uid).all()
+    
+    # If query is empty
+    if len(query) == 0:
+
+        # Get ID
+        upload_id = session.execute(tables['fastq_upload'].insert().values([{'upload_uid': upload_uid}])).lastrowid
+        
+        # Upload samples
+        session.execute(tables['fastq_file'].insert().values([{'filename': sample[12:], 'fastq_upload_fk': upload_id} for sample in samples]))
+
+    # Close session
+    session.commit()
+    session.close()
 

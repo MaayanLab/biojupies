@@ -152,3 +152,21 @@ CREATE TABLE notebook_ontology_term (
 	FOREIGN KEY (notebook_fk) REFERENCES notebook(id),
 	FOREIGN KEY (ontology_term_fk) REFERENCES ontology_term(id)
 );
+
+CREATE TABLE fastq_upload (
+	`id` INT AUTO_INCREMENT PRIMARY KEY,
+	`upload_uid` VARCHAR(30) UNIQUE,
+	`date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE fastq_file (
+	`id` INT AUTO_INCREMENT PRIMARY KEY,
+	`fastq_upload_fk` INT,
+	`filename` TEXT,
+	FOREIGN KEY (fastq_upload_fk) REFERENCES fastq_upload(id)
+);
+
+CREATE TABLE alignment (
+	`id` INT AUTO_INCREMENT PRIMARY KEY,
+	`alignment_uid` VARCHAR(30) UNIQUE
+);
