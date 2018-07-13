@@ -166,7 +166,11 @@ CREATE TABLE fastq_file (
 	FOREIGN KEY (fastq_upload_fk) REFERENCES fastq_upload(id)
 );
 
-CREATE TABLE alignment (
+CREATE TABLE fastq_alignment (
 	`id` INT AUTO_INCREMENT PRIMARY KEY,
-	`alignment_uid` VARCHAR(30) UNIQUE
+	`alignment_uid` VARCHAR(30) UNIQUE,
+	`fastq_upload_fk` INT,
+	`species` VARCHAR(3),
+	`date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	FOREIGN KEY (fastq_upload_fk) REFERENCES fastq_upload(id)
 );

@@ -76,19 +76,65 @@ def mergeCounts(alignment_uid):
 
 def uploadToDatabase(upload_uid, samples, session, tables):
 
-    # Fetch ID
-    query = session.query(tables['fastq_upload'].columns['id']).filter(tables['fastq_upload'].columns['upload_uid'] == upload_uid).all()
-    
-    # If query is empty
-    if len(query) == 0:
+	# Fetch ID
+	query = session.query(tables['fastq_upload'].columns['id']).filter(tables['fastq_upload'].columns['upload_uid'] == upload_uid).all()
+		
+	# Try
+	try:
 
-        # Get ID
-        upload_id = session.execute(tables['fastq_upload'].insert().values([{'upload_uid': upload_uid}])).lastrowid
-        
-        # Upload samples
-        session.execute(tables['fastq_file'].insert().values([{'filename': sample[12:], 'fastq_upload_fk': upload_id} for sample in samples]))
+		# If query is empty
+		if len(query) == 0:
 
-    # Close session
-    session.commit()
-    session.close()
+			# Upload and get ID
+			upload_id = session.execute(tables['fastq_upload'].insert().values([{'upload_uid': upload_uid}])).lastrowid
+			
+			# Upload samples
+			session.execute(tables['fastq_file'].insert().values([{'filename': sample[12:], 'fastq_upload_fk': upload_id} for sample in samples]))
 
+		# Close session
+		session.commit()
+
+	except:
+
+		Rollback
+		session.rollback()
+
+	session.close()
+
+
+#############################################
+########## 1. Upload UID
+#############################################
+
+def uploadJob(jobs, session, tables):
+
+	# Get first job
+	job = jobs[0]['outname']
+
+	# Get UIDs
+	alignment_uid, upload_uid, sample = job.split('-', 2)
+	species = sample.split('-')[-1]
+
+	# Add new alignment job with UID, upload FK, and organism
+	query = session.query(tables['fastq_alignment'].columns['id']).filter(tables['fastq_alignment'].columns['alignment_uid'] == alignment_uid).all()
+
+	try:
+
+		# If query is empty
+		if len(query) == 0:
+
+			# Get ID
+			upload_id = session.query(tables['fastq_upload'].columns['id']).filter(tables['fastq_upload'].columns['upload_uid'] == upload_uid).all()[0][0]
+			
+			# Upload samples
+			session.execute(tables['fastq_alignment'].insert().values([{'alignment_uid': alignment_uid, 'fastq_upload_fk': upload_id, 'species': species}]))
+
+		# Close session
+		session.commit()
+
+	except:
+
+		Rollback
+		session.rollback()
+
+	session.close()

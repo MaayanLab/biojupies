@@ -39,7 +39,7 @@ import ReadManager as RM
 #############################################
 ##### 1. Flask App #####
 # General
-dev = False
+dev = True
 entry_point = '/biojupies-dev' if dev else '/biojupies'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
 
@@ -581,6 +581,9 @@ def upload_reads():
 		print('done!')
 		jobs = job_dataframe.loc[[index for index, rowData in job_dataframe.iterrows() if rowData['outname'].startswith(alignment_uid)]].to_dict(orient='records')
 
+		### Add job to database, adding foreign key for upload
+		RM.uploadJob(jobs, session=Session(), tables=tables)
+
 		return render_template('upload/alignment_status.html', alignment_uid=alignment_uid, jobs=jobs)
 
 	# Preview table
@@ -763,8 +766,6 @@ def launch_alignment_api():
 			req =  urllib.request.Request(url)
 			resp = urllib.request.urlopen(req).read().decode('utf-8')
 			print(resp)
-
-			### Add job to database, adding foreign key for upload
 
 	return json.dumps({'alignment_uid': alignment_uid})
 
