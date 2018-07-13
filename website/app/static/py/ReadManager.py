@@ -39,7 +39,7 @@ from io import StringIO
 def mergeCounts(alignment_uid):
 
 	# Get samples
-	req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username=biojupies&password=sequencing')
+	req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
 	uploaded_files = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['filenames']
 	samples = [x for x in uploaded_files if x.startswith(alignment_uid) and x.endswith('_gene.tsv')]
 

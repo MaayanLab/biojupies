@@ -43,9 +43,9 @@ RUN echo "r <- getOption('repos'); r['CRAN'] <- 'http://cran.us.r-project.org'; 
 RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("limma");'
 RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("edgeR");'
 
-ENV LIBRARY_VERSION=v0.7.2
+ENV LIBRARY_VERSION=v0.7.4
 
-COPY . /notebook-generator-server
+COPY . /notebook-generator-server  
 WORKDIR /notebook-generator-server
 RUN chmod +x boot.sh download_library.sh; ./download_library.sh
 

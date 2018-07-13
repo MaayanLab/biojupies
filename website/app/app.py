@@ -558,7 +558,7 @@ def upload_reads():
 		else:
 
 			# Get samples
-			req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username=biojupies&password=sequencing')
+			req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
 			uploaded_files = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['filenames']
 			samples = [x for x in uploaded_files if x.startswith(upload_uid) and x.endswith('.fastq.gz')]
 
@@ -576,7 +576,7 @@ def upload_reads():
 
 		# Get jobs
 		print('performing request...')
-		req =  urllib.request.Request('https://amp.pharm.mssm.edu/cloudalignment/progress?username=biojupies&password=sequencing')
+		req =  urllib.request.Request('https://amp.pharm.mssm.edu/cloudalignment/progress?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
 		job_dataframe = pd.DataFrame(json.loads(urllib.request.urlopen(req).read().decode('utf-8'))).T
 		print('done!')
 		jobs = job_dataframe.loc[[index for index, rowData in job_dataframe.iterrows() if rowData['outname'].startswith(alignment_uid)]].to_dict(orient='records')
@@ -584,7 +584,7 @@ def upload_reads():
 		### Add job to database, adding foreign key for upload
 		RM.uploadJob(jobs, session=Session(), tables=tables)
 
-		return render_template('upload/alignment_status.html', alignment_uid=alignment_uid, jobs=jobs)
+		return render_template('upload/alignment_status.html', alignment_uid=alignment_uid, jobs=jobs, elysium_username=os.environ['ELYSIUM_USERNAME'], elysium_password=os.environ['ELYSIUM_PASSWORD'])
 
 	# Preview table
 	elif request.args.get('table'):
@@ -752,7 +752,7 @@ def launch_alignment_api():
 		sample['outname'] = alignment_uid+'-'+sample['outname']+'-'+alignment_settings['organism'].replace('human', 'hs').replace('mouse', 'mm')
 
 		# Get jobs
-		req =  urllib.request.Request('https://amp.pharm.mssm.edu/cloudalignment/progress?username=biojupies&password=sequencing')
+		req =  urllib.request.Request('https://amp.pharm.mssm.edu/cloudalignment/progress?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
 		job_dataframe = pd.DataFrame(json.loads(urllib.request.urlopen(req).read().decode('utf-8'))).T[['outname', 'status']]
 
 		# Check if alignment hasn't been submitted yet (fix to add support for different organisms)
@@ -760,7 +760,7 @@ def launch_alignment_api():
 
 			# Get URL parameters
 			params = '&'.join(['{key}={value}'.format(**locals()) for key, value in sample.items() if value])+'&organism='+alignment_settings['organism']
-			url = "https://amp.pharm.mssm.edu/cloudalignment/createjob?username=biojupies&password=sequencing&"+params
+			url = "https://amp.pharm.mssm.edu/cloudalignment/createjob?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&".format(**os.environ)+params
 
 			# Launch alignment jobs
 			req =  urllib.request.Request(url)
@@ -784,7 +784,7 @@ def merge_counts_api():
 	alignment_uid = request.args.get('alignment_uid')#'RTBO2Vk5xvV'
 
 	# Get samples
-	req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username=biojupies&password=sequencing')
+	req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
 	uploaded_files = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['filenames']
 	samples = [x for x in uploaded_files if x.startswith(alignment_uid) and x.endswith('_gene.tsv')]
 

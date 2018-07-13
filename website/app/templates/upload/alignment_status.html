@@ -67,7 +67,7 @@
     // Get status of alignment every 10 seconds
     function getStatus() {
         $.getJSON(
-            "https://amp.pharm.mssm.edu/cloudalignment/progress?username=biojupies&password=sequencing",
+            "https://amp.pharm.mssm.edu/cloudalignment/progress?username={{ elysium_username }}&password={{ elysium_password }}",
             function (data) {
 
                 // Check status
