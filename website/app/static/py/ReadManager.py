@@ -96,7 +96,6 @@ def uploadToDatabase(upload_uid, samples, session, tables):
 
 	except:
 
-		Rollback
 		session.rollback()
 
 	session.close()
@@ -110,6 +109,7 @@ def uploadJob(jobs, session, tables):
 
 	# Get first job
 	job = jobs[0]['outname']
+	paired = jobs[0]['datalink'].count('https://s3.amazonaws.com/biodos') > 1
 
 	# Get UIDs
 	alignment_uid, upload_uid, sample = job.split('-', 2)
@@ -127,14 +127,13 @@ def uploadJob(jobs, session, tables):
 			upload_id = session.query(tables['fastq_upload'].columns['id']).filter(tables['fastq_upload'].columns['upload_uid'] == upload_uid).all()[0][0]
 			
 			# Upload samples
-			session.execute(tables['fastq_alignment'].insert().values([{'alignment_uid': alignment_uid, 'fastq_upload_fk': upload_id, 'species': species}]))
+			session.execute(tables['fastq_alignment'].insert().values([{'alignment_uid': alignment_uid, 'fastq_upload_fk': upload_id, 'species': species, 'paired': paired}]))
 
 		# Close session
 		session.commit()
 
 	except:
 
-		Rollback
 		session.rollback()
 
 	session.close()
