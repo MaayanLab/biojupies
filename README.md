@@ -1,7 +1,7 @@
 # BioJupies
 Automated generation of Jupyter Notebooks for RNA-seq data analysis via user interface.
 
-### Table of Contents
+## Overview
 1. [What is BioJupies?](#what-is-biojupies)
 2. [How can I generate a notebook using BioJupies?](#how-can-i-generate-a-notebook-using-biojupies)
 3. [What data can be analyzed with BioJupies?](#what-data-can-be-analyzed-with-biojupies)
