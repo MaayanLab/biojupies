@@ -31,7 +31,9 @@ Users can upload their RNA-seq datasets for analysis at https://amp.pharm.mssm.e
 The Enrichment Analysis and Small Molecule Query plugins currently support datasets uploaded with **gene symbols** as row identifiers. When uploading datasets with different identifiers (e.g. ENSEMBL IDs, Entrez IDs), please note that these plugins may not work properly. 
 
 ## What analyses can BioJupies perform?
-BioJupies currently provides **14 RNA-seq data analysis plugins**, divided into four categories: Exploratory Data Analysis, Differential Gene Expression, Enrichment Analysis, and Small Molecule Queries.
+BioJupies currently provides **14 RNA-seq data analysis plugins**, divided into four categories.
+
+![Screenshot of the BioJupies upload page.](img/tools.png)
 
 For more information about the analysis plugins, visit https://github.com/MaayanLab/biojupies-plugins.
 
