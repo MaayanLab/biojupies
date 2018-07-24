@@ -24,6 +24,8 @@ Generating a notebook using BioJupies requires three steps:
 2. Second, **add one or more computational tools** to analyze the data. BioJupies currently supports 14 plugins to perform exploratory data analysis, differential gene expression, enrichment analysis, and small molecule queries.
 3. Third, **generate the notebook** with the desired settings. The notebook will be served to you through a URL, and can be easily downloaded and rerun on your local computer.
 
+<br>
+
 ## How can I upload my RNA-seq data to BioJupies?
 Users can upload their RNA-seq datasets for analysis at https://amp.pharm.mssm.edu/biojupies/upload.
 
@@ -34,6 +36,8 @@ BioJupies currently supports uploading **RNA-seq datasets in the FASTQ format** 
 **Note**: While the user may successfully generate a notebook from normalized gene expression counts or microarray data tables, the tools are **NOT** yet optimized to handle such data. Such results should be interpreted with caution.
 
 The Enrichment Analysis and Small Molecule Query plugins currently support datasets uploaded with **gene symbols** as row identifiers. When uploading datasets with different identifiers (e.g. ENSEMBL IDs, Entrez IDs), please note that these plugins may return empty results.
+
+<br>
 
 ## What analyses can BioJupies perform?
 BioJupies currently provides **14 RNA-seq data analysis plugins**, divided 
@@ -49,6 +53,8 @@ Developers are welcome to contribute their own RNA-seq data analysis plugins for
 Once integrated, the plugin will be made available to all users for notebook generation. Source code for plugins is available at https://github.com/MaayanLab/biojupies-plugins.
 
 To contribute your plug-in, please visit https://amp.pharm.mssm.edu/biojupies/contribute.
+
+<br>
 
 ## How can I download and rerun my notebooks?
 After generating a notebook, users can download and execute it locally using the `maayanlab/biojupies-notebooks` Docker container.
@@ -81,6 +87,8 @@ docker run -it -p 8888:8888 -e NOTEBOOK_UID=5DAHiejHN maayanlab/biojupies-notebo
 ![Screenshot of the a local Jupyter Server.](img/local_notebook.png)
 
 For more information about reusing notebooks, see https://amp.pharm.mssm.edu/biojupies/docker.
+
+<br>
 
 ## References
 BioJupies is available as a pre-print on **BioRxiv**:
