@@ -20,6 +20,7 @@ RUN apt-get update && apt-get install -y python3-setuptools
 RUN apt-get update && apt-get install -y nginx uwsgi-core
 RUN apt-get update && apt-get install -y libpcre3 libpcre3-dev
 RUN pip3 install uwsgi
+RUN pip3 install xlrd
 
 RUN mkdir biojupies
 COPY . /biojupies
