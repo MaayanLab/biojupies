@@ -1,12 +1,13 @@
 # BioJupies
 Automated generation of Jupyter Notebooks for RNA-seq data analysis via user interface.
 
-## Overview
+### Table of Contents
 1. [What is BioJupies?](#what-is-biojupies)
 2. [How can I generate a notebook using BioJupies?](#how-can-i-generate-a-notebook-using-biojupies)
-3. [What data can be analyzed with BioJupies?](#what-data-can-be-analyzed-with-biojupies)
+3. [How can I upload my RNA-seq data to BioJupies?](#how-can-i-upload-my-rna-seq-data-to-biojupies)
+4. [What analyses can BioJupies perform?](#what-analyses-can-biojupies-perform)
 
-## What is BioJupies?
+##-What is BioJupies?
 BioJupies is a web server which allows users to automatically generate Jupyter Notebooks from RNA-seq datasets through an intuitive interface, with no knowledge of coding required. The BioJupies can be accessed for free from http://biojupies.cloud.
 ![Screenshot of the BioJupies website landing page.](img/website.png)
 
@@ -20,13 +21,19 @@ Generating a notebook using BioJupies requires three steps:
 2. Second, **add one or more computational tools** to analyze the data. BioJupies currently supports 14 plugins to perform exploratory data analysis, differential gene expression, enrichment analysis, and small molecule queries.
 3. Third, **generate the notebook** with the desired settings. The notebook will be served to you through a URL, and can be easily downloaded and rerun on your local computer.
 
-## What data can be analyzed with BioJupies?
-BioJupies allows users to upload **RNA-seq datasets in the FASTQ format**, or **tables of gene-level counts**.
+## How can I upload my RNA-seq data to BioJupies?
+Users can upload their RNA-seq datasets for analysis at https://amp.pharm.mssm.edu/biojupies/upload. BioJupies currently supports uploading **RNA-seq datasets in the FASTQ format** or **tables of gene-level counts**.
 
-**Notes**: While the user may successfully generate a notebook from normalized gene expression counts or microarray data tables, we do not recommend doing so since the tools are **NOT** yet optimized to handle such data. Such results should be interpreted with caution.
+![Screenshot of the BioJupies upload page.](img/upload.png)
+
+**Note**: While the user may successfully generate a notebook from normalized gene expression counts or microarray data tables, we do not recommend doing so since the tools are **NOT** yet optimized to handle such data. Such results should be interpreted with caution.
 
 The Enrichment Analysis and Small Molecule Query plugins currently support datasets uploaded with **gene symbols** as row identifiers. When uploading datasets with different identifiers (e.g. ENSEMBL IDs, Entrez IDs), please note that these plugins may not work properly. 
 
+## What analyses can BioJupies perform?
+BioJupies currently provides **14 RNA-seq data analysis plugins**, divided into four categories: Exploratory Data Analysis, Differential Gene Expression, Enrichment Analysis, and Small Molecule Queries.
+
+For more information about the analysis plugins, visit https://github.com/MaayanLab/biojupies-plugins.
 
 ```
 Give examples
