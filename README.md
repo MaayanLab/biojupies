@@ -78,16 +78,9 @@ docker run -it -p 8888:8888 -e NOTEBOOK_UID=5DAHiejHN maayanlab/biojupies-notebo
 
 For more information about reusing notebooks, see https://amp.pharm.mssm.edu/biojupies/docker.
 
-
 ## References
-The BioJupies is currently 
+BioJupies is currently published as a pre-print on **BioRxiv**:
 [BioJupies: Automated Generation of Interactive Notebooks for RNA-seq Data Analysis in the Cloud](https://doi.org/10.1101/352476) Torre, D., Lachmann, A., and Ma’ayan, A. (2018)
 
 ## License
 This project is licensed under the Apache-2.0 License - see the [LICENSE.md](LICENSE.md) file for details
-
-
-# BioJupies
----
-
-Jupyter Notebooks provide an advent mean for making bioinformatics data analyses more transparent, accessible and reusable. However, creating notebooks requires a degree of programming expertise which is often prohibitive for common users. BioJupies is a Jupyter Notebook generator that enables users to easily create, store, and deploy Jupyter Notebooks containing RNA-seq data analyses. Through an intuitive interface, novice users can rapidly generate tailored reports to analyze their own RNA-seq data, or fetch data from over 4000 published studies currently available on the NCBI Gene Expression Omnibus (GEO). Users can additionally upload their own data for analysis, either as raw sequencing files or gene expression matrices with counts. The reports contain interactive data visualizations of the samples, differential expression and enrichment analyses, and queries of signatures against the LINCS L1000 dataset for small molecule that can either mimic or reverse the signatures. Generated notebooks are permanently stored on the cloud, made available through a public URL, and can be cited through a unique Digital Object Identifier (DOI). By combining an intuitive user interface for Jupyter Notebook generation, with options to upload customized analysis scripts, BioJupies Generator addresses computational needs of both experimental and computational biologists. The BioJupies web interface is available at: http://biojupies.cloud, and the BioJupies Chrome extension is available at: https://chrome.google.com/webstore/detail/biojupies-generator/picalhhlpcjhonibabfigihelpmpadel.
