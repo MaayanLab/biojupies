@@ -11,7 +11,7 @@ Automated generation of Jupyter Notebooks for RNA-seq data analysis via user int
 7. [References](#references)
 
 ## What is BioJupies?
-BioJupies is a web server which allows users to automatically generate Jupyter Notebooks from RNA-seq datasets through an intuitive interface, with no knowledge of coding required. The BioJupies can be accessed for free from http://biojupies.cloud.
+BioJupies is a web server which allows users to automatically generate Jupyter Notebooks from RNA-seq datasets through an intuitive interface, with no knowledge of coding required. It can be accessed for free from http://biojupies.cloud.
 ![Screenshot of the BioJupies website landing page.](img/website.png)
 
 ## How can I generate a notebook using BioJupies?
@@ -25,9 +25,11 @@ Generating a notebook using BioJupies requires three steps:
 3. Third, **generate the notebook** with the desired settings. The notebook will be served to you through a URL, and can be easily downloaded and rerun on your local computer.
 
 ## How can I upload my RNA-seq data to BioJupies?
-Users can upload their RNA-seq datasets for analysis at https://amp.pharm.mssm.edu/biojupies/upload. BioJupies currently supports uploading **RNA-seq datasets in the FASTQ format** or **tables of gene-level counts**.
+Users can upload their RNA-seq datasets for analysis at https://amp.pharm.mssm.edu/biojupies/upload.
 
 ![Screenshot of the BioJupies upload page.](img/upload.png)
+
+BioJupies currently supports uploading **RNA-seq datasets in the FASTQ format** or **tables of gene-level counts**.
 
 **Note**: While the user may successfully generate a notebook from normalized gene expression counts or microarray data tables, the tools are **NOT** yet optimized to handle such data. Such results should be interpreted with caution.
 
@@ -44,15 +46,15 @@ For more information about the plugins and access to the source code, visit http
 ## Can I contribute my RNA-seq analysis tools?
 Developers are welcome to contribute their own RNA-seq data analysis plugins for integration in BioJupies.
 
-Once integrated, the plugin will be made available to all users of BioJupies for generation of notebooks. Source code for all plugins is available at https://github.com/MaayanLab/biojupies-plugins.
+Once integrated, the plugin will be made available to all users for notebook generation. Source code for plugins is available at https://github.com/MaayanLab/biojupies-plugins.
 
 To contribute your plug-in, please visit https://amp.pharm.mssm.edu/biojupies/contribute.
 
 ## How can I download and rerun my notebooks?
-After generating a BioJupies notebook, users can download, execute and customize it locally using the `maayanlab/biojupies-notebooks` Docker container.
+After generating a notebook, users can download and execute it locally using the `maayanlab/biojupies-notebooks` Docker container.
 
-To achieve this, the following steps are required:
-1. Pull the latest version of the Docker container from the console by running:
+To do this, the following steps are required:
+1. Pull the latest version of the Docker container from the console:
 
 ``` bash 
 docker pull maayanlab/biojupies-notebooks
@@ -62,24 +64,26 @@ docker pull maayanlab/biojupies-notebooks
 
 ![Screenshot of the a BioJupies notebook UID.](img/notebook_uid.png)
 
-3. Launch the Docker container. **Note:** replace `5DAHiejHN` with the UID of the notebook you wish to rerun.
+3. Launch the Docker container.
 
 ``` bash 
 docker run -it -p 8888:8888 -e NOTEBOOK_UID=5DAHiejHN maayanlab/biojupies-notebooks
 ```
 
+**Note: replace `5DAHiejHN` with the UID of the notebook you wish to rerun.**
+
 4. Access the local Jupyter Notebook server from your browser at port 8888.
 
 ![Screenshot of the a local Jupyter Server.](img/local_server.png)
 
-5. Rerun the analysis and customize it by adding your code.
+5. Execute and customize your notebook from the Jupyter server.
 
 ![Screenshot of the a local Jupyter Server.](img/local_notebook.png)
 
 For more information about reusing notebooks, see https://amp.pharm.mssm.edu/biojupies/docker.
 
 ## References
-BioJupies is currently published as a pre-print on **BioRxiv**:
+BioJupies is available as a pre-print on **BioRxiv**:
 [BioJupies: Automated Generation of Interactive Notebooks for RNA-seq Data Analysis in the Cloud](https://doi.org/10.1101/352476) Torre, D., Lachmann, A., and Ma’ayan, A. (2018)
 
 ## License
