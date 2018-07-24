@@ -7,7 +7,7 @@ Automated generation of Jupyter Notebooks for RNA-seq data analysis via user int
 3. [How can I upload my RNA-seq data to BioJupies?](#how-can-i-upload-my-rna-seq-data-to-biojupies)
 4. [What analyses can BioJupies perform?](#what-analyses-can-biojupies-perform)
 
-##-What is BioJupies?
+## What is BioJupies?
 BioJupies is a web server which allows users to automatically generate Jupyter Notebooks from RNA-seq datasets through an intuitive interface, with no knowledge of coding required. The BioJupies can be accessed for free from http://biojupies.cloud.
 ![Screenshot of the BioJupies website landing page.](img/website.png)
 
