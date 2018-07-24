@@ -39,7 +39,8 @@ import ReadManager as RM
 #############################################
 ##### 1. Flask App #####
 # General
-dev = True
+with open('dev.txt') as openfile:
+	dev = bool(openfile.read())
 entry_point = '/biojupies-dev' if dev else '/biojupies'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
 
@@ -651,6 +652,7 @@ def upload_dataframe_api():
 	# Set index
 	dataframe.set_index(dataframe.columns[0], inplace=True)
 	dataframe.index.name = ''
+	dataframe.index = dataframe.index.astype(str)
 
 	# Convert to JSON
 	dataframe_json = json.dumps(dataframe.fillna('NA').to_dict(orient='split'))

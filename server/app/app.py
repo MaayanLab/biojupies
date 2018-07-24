@@ -37,7 +37,8 @@ from NotebookManager import *
 #############################################
 ##### 1. Flask App #####
 # General
-dev = False
+with open('dev.txt') as openfile:
+	dev = bool(openfile.read())
 entry_point = '/notebook-generator-server-dev' if dev else '/notebook-generator-server'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
 
