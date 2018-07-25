@@ -89,25 +89,25 @@
 
 				</div>
 			</div>
-			<div id="{{id}}-info" class="collapse border-grey mx-2 border-top-0 rounded-bottom tiny {{ 'show' if i == 0 else '' }}">
+			<div id="{{id}}-info" class=" border-grey mx-2 border-top-0 rounded-bottom tiny {{ 'show' if i == 0 else '' }}">
 				<div class="py-3">
 
 					<!-- Summary -->
 					<div class="row px-3">
-						<div class="col-1 bold">Summary</div>
-						<div class="col-11 text-muted light pl-4">{{ dataset['summary']|safe }}</div>
+						<div class="col-2 col-lg-1 bold">Summary</div>
+						<div class="col-10 col-lg-11 text-muted light pl-4">{{ dataset['summary']|safe }}</div>
 					</div>
 
 					<!-- Organism -->
 					<div class="row px-3 pt-3">
-						<div class="col-1 bold">Organism</div>
-						<div class="col-11 text-muted light pl-4 font-italic">{{ dataset['organism'].replace('Human', 'Homo sapiens').replace('Mouse', 'Mus musculus') }}</div>
+						<div class="col-2 col-lg-1 bold">Organism</div>
+						<div class="col-10 col-lg-11 text-muted light pl-4 font-italic">{{ dataset['organism'].replace('Human', 'Homo sapiens').replace('Mouse', 'Mus musculus') }}</div>
 					</div>
 
 					<!-- Source -->
 					<div class="row px-3 pt-3">
-						<div class="col-1 bold">Source</div>
-						<div class="col-6 text-muted light pl-4"><a target="_blank" href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={{ dataset['dataset_accession'] }}">https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={{ dataset['dataset_accession'] }}</a></div>
+						<div class="col-2 col-lg-1 bold">Source</div>
+						<div class="col-10 col-lg-11 text-muted light pl-4"><a target="_blank" href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={{ dataset['dataset_accession'] }}">https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={{ dataset['dataset_accession'] }}</a></div>
 					</div>
 
 					<!-- Repository -->
