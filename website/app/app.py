@@ -586,11 +586,15 @@ def upload_reads():
 		job_dataframe = pd.DataFrame(json.loads(urllib.request.urlopen(req).read().decode('utf-8'))).T
 		print('done!')
 		jobs = job_dataframe.loc[[index for index, rowData in job_dataframe.iterrows() if rowData['outname'].startswith(alignment_uid)]].to_dict(orient='records')
+		if len(jobs):
 
-		### Add job to database, adding foreign key for upload
-		RM.uploadJob(jobs, session=Session(), tables=tables)
+			### Add job to database, adding foreign key for upload
+			RM.uploadJob(jobs, session=Session(), tables=tables)
 
-		return render_template('upload/alignment_status.html', alignment_uid=alignment_uid, jobs=jobs, elysium_username=os.environ['ELYSIUM_USERNAME'], elysium_password=os.environ['ELYSIUM_PASSWORD'])
+			return render_template('upload/alignment_status.html', alignment_uid=alignment_uid, jobs=jobs, elysium_username=os.environ['ELYSIUM_USERNAME'], elysium_password=os.environ['ELYSIUM_PASSWORD'])
+
+		else:
+			abort(404)
 
 	# Preview table
 	elif request.args.get('table'):
@@ -971,6 +975,13 @@ def example():
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('errors/404.html'), 404
+
+#############################################
+########## 2. 500
+#############################################
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template('errors/500.html'), 500
 
 #######################################################
 #######################################################
