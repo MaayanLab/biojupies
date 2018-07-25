@@ -5,7 +5,7 @@
 
 Automated generation of Jupyter Notebooks for RNA-seq data analysis via user interface.
 
-RNA-seq analysis plugins available at https://github.com/MaayanLab/biojupies-plugins.
+Source code for the RNA-seq analysis plugins available at https://github.com/MaayanLab/biojupies-plugins.
 
 ### Overview
 1. [What is BioJupies?](#what-is-biojupies)
