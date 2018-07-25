@@ -47,7 +47,7 @@ The Enrichment Analysis and Small Molecule Query plugins currently support datas
 BioJupies currently provides **14 RNA-seq data analysis plugins**, divided 
 into four categories.
 
-For more information about the plugins and access to the source code, visit https://github.com/MaayanLab/biojupies-plugins.
+For more information about the plugins, visit https://github.com/MaayanLab/biojupies-plugins.
 
 ![Screenshot of the BioJupies upload page.](img/tools.png)
 
