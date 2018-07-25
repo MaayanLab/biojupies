@@ -52,9 +52,9 @@ For more information about the plugins and access to the source code, visit http
 ![Screenshot of the BioJupies upload page.](img/tools.png)
 
 ## Can I contribute my RNA-seq analysis tools?
-Developers are welcome to contribute their own RNA-seq data analysis plugins for integration in BioJupies.
+Developers are welcome to contribute their own RNA-seq data analysis plugins for integration in BioJupies. Once integrated, the plugin will be made available to all users for notebook generation.
 
-Once integrated, the plugin will be made available to all users for notebook generation. Source code for plugins is available at https://github.com/MaayanLab/biojupies-plugins.
+Source code for plugins is available at https://github.com/MaayanLab/biojupies-plugins.
 
 To contribute your plug-in, please visit https://amp.pharm.mssm.edu/biojupies/contribute.
 
