@@ -19,6 +19,7 @@
 ##### 1. Flask modules #####
 from flask import Flask, request, render_template, Response
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 
 ##### 2. Python modules #####
 import sys, os, json, time, re
@@ -47,6 +48,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']#+'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 engine = db.engine
+
+# Cross origin
+CORS(app, resources=r'{}/api/*'.format(entry_point))
 
 ##### 2. Variables #####
 # Latest library version
