@@ -40,7 +40,7 @@ import ReadManager as RM
 ##### 1. Flask App #####
 # General
 with open('dev.txt') as openfile:
-	dev = bool(openfile.read())
+	dev = openfile.read() == 'True'
 entry_point = '/biojupies-dev' if dev else '/biojupies'
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
 
