@@ -394,18 +394,23 @@ def generate_notebook():
 def view_notebook(notebook_uid):
 
 	# Get notebook data
-	notebook_uid = notebook_uid.replace('"', '')
-	notebook_query = pd.read_sql_query('SELECT notebook_url, notebook_configuration FROM notebooks WHERE notebook_uid="{notebook_uid}"'.format(**locals()), engine).to_dict(orient='index')
+	session = Session()
+	db_query = session.query(tables['notebook'].columns['notebook_title'], tables['notebook'].columns['version']) \
+						.filter(tables['notebook'].columns['notebook_uid'] == notebook_uid)
+	query_results = [x._asdict() for x in db_query.all()]
+	session.close()
 
 	# Check if notebook has been found
-	if len(notebook_query):
+	if len(query_results) == 1:
+
+		# Get notebook data
+		notebook_dict = query_results[0]
 
 		# Get Nbviewer URL and Title
-		nbviewer_url = 'http://nbviewer.jupyter.org/urls/'+notebook_query[0]['notebook_url'].replace('https://', '')
-		title = json.loads(notebook_query[0]['notebook_configuration'])['notebook']['title']
+		nbviewer_url = 'https://nbviewer.jupyter.org/urls/storage.googleapis.com/jupyter-notebook-generator/{notebook_uid}/{notebook_dict[notebook_title]}.ipynb'.format(**locals())
 
 		# Return result
-		return render_template('analyze/notebook.html', nbviewer_url=nbviewer_url, title=title)
+		return render_template('analyze/notebook.html', nbviewer_url=nbviewer_url, title=notebook_dict['notebook_title'])
 
 	# Return 404
 	else:
@@ -951,7 +956,25 @@ def example():
 
 #######################################################
 #######################################################
-########## 6. Run App
+########## 6. Handlers
+#######################################################
+#######################################################
+##### 404 and error handlers.
+
+##################################################
+########## 3.1 Error Handlers
+##################################################
+
+#############################################
+########## 1. 404
+#############################################
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('errors/404.html'), 404
+
+#######################################################
+#######################################################
+########## 7. Run App
 #######################################################
 #######################################################
 
