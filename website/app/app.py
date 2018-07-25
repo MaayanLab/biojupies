@@ -170,7 +170,7 @@ def search_data():
 	# Filter dataset
 	nr_results = len(query_dataframe.index)
 	query_dataframe = query_dataframe.iloc[(page-1)*10:page*10]
-	nr_results_displayed = len(query_dataframe.index)
+	nr_results_displayed = max(len(query_dataframe.index), 10)
 
 	# Get pages
 	nr_pages = math.ceil(nr_results/10)
@@ -180,6 +180,12 @@ def search_data():
 		pages = [x+1 for x in range(nr_pages-3, nr_pages) if x>-1][-3:]
 	else:
 		pages = [page-1, page, page+1]
+
+	# Add ...
+	if nr_pages not in pages:
+		if nr_pages-1 not in pages:
+			pages.append('...')
+		pages.append(nr_pages)
 
 	# Highlight searched term
 	if len(query_dataframe.index):

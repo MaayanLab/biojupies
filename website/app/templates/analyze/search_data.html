@@ -46,7 +46,7 @@
 					<div class="d-inline-block">
 						<label class="tiny ml-2 light font-italic pt-3 pt-xl-1">
 							{% if nr_results %}
-									Displaying {{nr_results_displayed*(page-1)+1}}-{{nr_results_displayed*(page)}} of {{nr_results}} results
+									Displaying {{nr_results_displayed*(page-1)+1}}-{{ ([nr_results_displayed*(page), nr_results]|sort)[0] }} of {{nr_results}} results
 							{% else %}
 									Displaying 0 of 0 results
 							{% endif %}
@@ -126,7 +126,7 @@
 				<a href="{{ url_for('search_data', q=q, min_samples=min_samples, max_samples=max_samples, sortby=sortby, organism=organism, page=1) }}" class="nodecoration black border-grey px-2 py-1 border-right-0 d-table-cell rounded-left"> << </a>
 				<a href="{{ url_for('search_data', q=q, min_samples=min_samples, max_samples=max_samples, sortby=sortby, organism=organism, page=page-1 if page-1 > 1 else 1) }}" class="nodecoration black border-grey px-2 py-1 border-right-0 d-table-cell"> < </a>
 				{% for page_nr in pages %}
-					<a href="{{ url_for('search_data', q=q, min_samples=min_samples, max_samples=max_samples, sortby=sortby, organism=organism, page=page_nr) }}" class="nodecoration border-grey px-2 py-1 border-right-0 d-table-cell {{ 'bg-blue white regular' if page_nr == page else 'black' }}">{{page_nr}}</a>
+					<a href="{{ url_for('search_data', q=q, min_samples=min_samples, max_samples=max_samples, sortby=sortby, organism=organism, page=page_nr) if page_nr != '...' else '#' }}" class="nodecoration border-grey px-2 py-1 border-right-0 d-table-cell {{ 'bg-blue white regular' if page_nr == page else 'black' }}">{{page_nr}}</a>
 				{% endfor %}
 				<a href="{{ url_for('search_data', q=q, min_samples=min_samples, max_samples=max_samples, sortby=sortby, organism=organism, page=page+1 if page+1 < nr_pages else nr_pages) }}" class="nodecoration black border-grey px-2 py-1 border-right-0 d-table-cell"> > </a>
 				<a href="{{ url_for('search_data', q=q, min_samples=min_samples, max_samples=max_samples, sortby=sortby, organism=organism, page=nr_pages) }}" class="nodecoration black border-grey px-2 py-1 d-table-cell rounded-right"> >> </a>
