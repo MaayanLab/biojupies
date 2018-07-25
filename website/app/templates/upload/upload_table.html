@@ -19,7 +19,7 @@
 	<div class="row">
 		<div class="light very-small my-1 col-lg-8 col-xl-9 text-justify">
 			Use the form below to upload your <b>gene expression table file</b>.
-			This file should contain <b>genes on rows</b>, <b>samples on columns</b>, and <b>gene expression counts</b> as values.
+			This file should contain <b>gene symbols on rows</b>, <b>samples on columns</b>, and <b>gene expression counts</b> as values.
 			Once you have uploaded the desired file, click <b>Continue</b> to proceed.
 		</div>
 		<div class="col-lg-4 col-xl-3 my-auto text-center pt-3 pt-lg-0">
@@ -53,7 +53,8 @@
 			</div>
 
 			<!-- Disclaimer -->
-			<div class="mt-0 mt-sm-5 light tiny text-muted text-center pt-3 mb-5"><b>Note:</b> The dataset submission tool is optimized for analysis of gene expression quantified <b>raw RNA-seq read counts</b>. The tool will also accept normalized RNA-seq and microarray datasets; however, <span class="font-italic">the analysis tools are currently not optimized for the analysis of such data.</span></div>
+			<div class="mt-0 mt-sm-4 light tiny text-muted text-left pt-2"><b>Note:</b> the tool is currently optimized for analysis of <b>raw RNA-seq read counts</b>. While it is possible to load normalized RNA-seq and microarray datasets, <span class="font-italic">the analysis plugins are currently not optimized for such data, thus results should be interpreted accordingly.</span></div>
+			<div class="mt-0 light tiny text-muted text-left pt-2 mb-5">It is recommended to use <b>gene symbols</b> as row identifiers. While other identifier systems (e.g. Ensembl or Entrez IDs) are accepted, enrichment analyses and small molecule queries may not perform optimally. Automated identifier conversion is currently under development.</div>
 
 		</div>
 	</div>
