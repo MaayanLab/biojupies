@@ -967,6 +967,36 @@ def example():
 	# dataset['date'] = dataset['date'].strftime('%b %d, %Y')
 	return render_template('analyze/example.html', dataset=dataset)
 
+##################################################
+########## 3.2 APIs
+##################################################
+
+#############################################
+########## 1. Statistics
+#############################################
+
+@app.route(entry_point+'/api/stats')
+def stats_api():
+	
+	# Get object
+	obj = request.args.get('obj')
+
+	# Check object
+	if obj in ['notebook', 'tool', 'dataset_v5', 'user_dataset', 'fastq_file']:
+
+		# Create statement
+		statement = 'SELECT count(*) FROM {}'.format(obj)
+
+		# Fix for tools
+		if obj == 'tool':
+			statement += ' WHERE display = 1'
+
+		# Return
+		return json.dumps({'n': str(pd.read_sql_query(statement, engine).iloc[0, 0])})
+	else:
+		abort(404)
+
+
 #######################################################
 #######################################################
 ########## 6. Handlers
