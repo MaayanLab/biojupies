@@ -55,7 +55,8 @@
 	</div>
 </div>
 
-<div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<!-- Modal -->
+<!-- <div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -67,7 +68,7 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
 
 
 {% endblock %}
@@ -77,11 +78,11 @@
 <script type="text/javascript">
 
 	// Preview
-	$(".pop").on('click', function(evt) {
-	   $('.modal-title').html($(evt.target).parents('.collapse').prev().find('.col-11 div').eq(1).html()); // here asign the image to the modal when the user click the enlarge link
-	   $('#modal-image').attr('src', $(evt.target).attr('src')); // here asign the image to the modal when the user click the enlarge link
-	   $('#imagemodal').modal('show'); // imagemodal is the id attribute assigned to the bootstrap modal, then i use the show function
-	});
+	// $(".pop").on('click', function(evt) {
+	//    $('.modal-title').html($(evt.target).parents('.collapse').prev().find('.col-11 div').eq(1).html()); // here asign the image to the modal when the user click the enlarge link
+	//    $('#modal-image').attr('src', $(evt.target).attr('src')); // here asign the image to the modal when the user click the enlarge link
+	//    $('#imagemodal').modal('show'); // imagemodal is the id attribute assigned to the bootstrap modal, then i use the show function
+	// });
 
 	// Tool Checkbox Listener
 	$('.tool-checkbox').click(function(evt) {
