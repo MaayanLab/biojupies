@@ -8,6 +8,8 @@
 </head>
 <body style="width: 100%; height: 100%;">
 	<iframe src="{{nbviewer_url}}" style="width: 99%; height: 100%; border: none;"></iframe>
-	<script type="text/javascript">if ((location.protocol === 'https:') && (location.hostname != 'localhost')) { location.href = 'http:' + window.location.href.substring(window.location.protocol.length); }</script>	
+	{% if not https %}
+		<script type="text/javascript">if ((location.protocol === 'https:') && (location.hostname != 'localhost')) { location.href = 'http:' + window.location.href.substring(window.location.protocol.length); }</script>	
+	{% endif %}
 </body>
 </html>
