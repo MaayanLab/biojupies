@@ -982,17 +982,18 @@ def stats_api():
 	obj = request.args.get('obj')
 
 	# Check object
-	if obj in ['notebook', 'tool', 'dataset_v5', 'user_dataset', 'fastq_file']:
+	if obj in ['notebook', 'tool', 'dataset_v5', 'user_dataset', 'fastq_file', 'sample_v5']:
 
-		# Create statement
-		statement = 'SELECT count(*) FROM {}'.format(obj)
-
-		# Fix for tools
+		# Get notebook data
+		session = Session()
+		query = session.query(func.count(tables[obj].columns['id']))
 		if obj == 'tool':
-			statement += ' WHERE display = 1'
+			query = query.filter(tables[obj].columns['display'] == 1)
+		n = query.all()[0][0]
+		session.close()
 
 		# Return
-		return json.dumps({'n': str(pd.read_sql_query(statement, engine).iloc[0, 0])})
+		return json.dumps({'n': n})
 	else:
 		abort(404)
 
