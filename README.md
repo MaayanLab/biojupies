@@ -47,16 +47,12 @@ The Enrichment Analysis and Small Molecule Query plugins currently support datas
 
 ## What analyses can BioJupies perform?
 BioJupies currently provides **14 RNA-seq data analysis plugins**, divided 
-into four categories.
-
-For more information about the plugins, visit https://github.com/MaayanLab/biojupies-plugins.
+into four categories. For more information about the plugins, visit https://github.com/MaayanLab/biojupies-plugins.
 
 ![Screenshot of the BioJupies upload page.](img/tools.png)
 
 ## Can I contribute my RNA-seq analysis tools?
-Developers are welcome to contribute their own RNA-seq data analysis plugins for integration in BioJupies. Once integrated, the plugin will be made available to all users for notebook generation.
-
-Source code for plugins is available at https://github.com/MaayanLab/biojupies-plugins.
+Developers are welcome to contribute their own RNA-seq data analysis plugins for integration in BioJupies. Once integrated, the plugin will be made available to all users for notebook generation and published on the BioJupies plugins [GitHub repository](https://github.com/MaayanLab/biojupies-plugins).
 
 To contribute your plug-in, please visit https://amp.pharm.mssm.edu/biojupies/contribute.
 
