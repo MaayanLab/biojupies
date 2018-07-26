@@ -40,6 +40,7 @@ body {
 	/*color: rgba(0, 111, 235, 1) !important;*/
 	/*color: rgba(0, 122, 231, 1) !important;*/
 .blue { color: rgba(0, 106, 230, 1) !important; }
+.darkgrey { color: rgba(0,0,0,.6) !important; }
 .grey { color: rgba(0,0,0,.5) !important; }
 .black { color: rgba(0,0,0,1) !important; }
 .white { color: white !important; }
