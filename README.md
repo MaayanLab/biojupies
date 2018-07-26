@@ -3,7 +3,7 @@
 ![Datasets Available](https://img.shields.io/badge/dynamic/json.svg?url=https://amp.pharm.mssm.edu/biojupies/api/stats?obj=dataset_v5&label=RNA-seq%20datasets%20available&query=$.n&colorB=green)
 ![Plugins](https://img.shields.io/badge/dynamic/json.svg?url=https://amp.pharm.mssm.edu/biojupies/api/stats?obj=tool&label=analysis%20plugins&query=$.n&colorB=yellow)
 
-Automated generation of Jupyter Notebooks for RNA-seq data analysis via user interface.
+Automated generation of Jupyter Notebooks for RNA-seq data analysis via user interface (http://biojupies.cloud).
 
 Source code for the RNA-seq analysis plugins available at https://github.com/MaayanLab/biojupies-plugins.
 
