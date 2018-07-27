@@ -871,14 +871,14 @@ def contribute():
 @app.route(entry_point+'/api/contribute', methods=['GET', 'POST'])
 def contribute_plugin_api():
 	# Upload
-	# session = Session()
-	# try:
-	# 	rowid = session.execute(tables['contribution'].insert().values([request.form.to_dict()])).lastrowid
-	# 	session.commit()
-	# except:
-	# 	rowid = None
-	# 	session.rollback()
-	# session.close()
+	session = Session()
+	try:
+		rowid = session.execute(tables['contribution'].insert().values([request.form.to_dict()])).lastrowid
+		session.commit()
+	except:
+		rowid = None
+		session.rollback()
+	session.close()
 	return json.dumps({'contribution_id': 'rowid'})
 
 #######################################################
