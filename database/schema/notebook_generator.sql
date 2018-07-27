@@ -174,3 +174,12 @@ CREATE TABLE fastq_alignment (
 	`date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	FOREIGN KEY (fastq_upload_fk) REFERENCES fastq_upload(id)
 );
+
+CREATE TABLE contribution (
+	`id` INT AUTO_INCREMENT PRIMARY KEY,
+	`name` VARCHAR(50),
+	`description` TEXT,
+	`github_link` TEXT,
+	`email` VARCHAR(50),
+	`date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

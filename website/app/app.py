@@ -869,10 +869,17 @@ def contribute():
 ### Called by: contribute().
 
 @app.route(entry_point+'/api/contribute', methods=['GET', 'POST'])
-def contribute_api():
-	# Read Uploaded File
-	file = request.files.get('file')
-	return json.dumps({'file': file.read().decode('utf-8'), 'filename': file.filename, 'extension': file.filename.split('.')[-1]})
+def contribute_plugin_api():
+	# Upload
+	# session = Session()
+	# try:
+	# 	rowid = session.execute(tables['contribution'].insert().values([request.form.to_dict()])).lastrowid
+	# 	session.commit()
+	# except:
+	# 	rowid = None
+	# 	session.rollback()
+	# session.close()
+	return json.dumps({'contribution_id': 'rowid'})
 
 #######################################################
 #######################################################
