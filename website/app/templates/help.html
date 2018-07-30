@@ -11,10 +11,10 @@
 	<!-- <div class="row"> -->
 		<!-- <div class="col-8 large mt-4 pl-4">BioJupies Help Center</div> -->
 	<!-- </div> -->
-	<div class="row mt-5">
+	<div class="row my-5">
 
 		<!-- Left Panel -->
-		<div class="col-3">
+		<div class="d-none d-xl-block col-xl-3">
 
 			<!-- Wrapper -->
 			<nav id="categories" class="position-fixed">
@@ -48,30 +48,21 @@
 		</div>
 
 		<!-- Right Panel -->
-		<div class="col-8">
+		<div class="col-12 col-xl-8">
 
 			<!-- Content -->
-			<div data-offset="0">
+			<div data-offset="0" class="pl-5 pr-3">
 
 				<!-- Category -->
 				{% for category in categories %}
-					<div id="{{ category['title'].lower().replace(' ', '_') }}" class="highlight large bold">{{ category['title'] }}</div>
+					<div id="{{ category['title'].lower().replace(' ', '_') }}" class="large bold {{ 'mt-4' if loop.index > 1 else '' }}">{{ category['title'] }}</div>
 
 					<!-- Section -->
 					{% for section in category['sections'] %}
 						{% if section['title'] %}
-							<div class="nav nav-pills medium bold" id="{{ section['title'].lower().replace(' ', '_') }}">{{ section['title'] }}</div>
+							<div class="nav nav-pills medium bold mt-3" id="{{ section['title'].lower().replace(' ', '_') if section.get('title') else loop.index }}">{{ section['title'] }}</div>
 						{% endif %}
-						<div>{{ section['text'] }}<br></div>
-						<br>
-						<br>
-						<br>
-						<br>
-						<br>
-						<br>
-						<br>
-						<br>
-						<br>
+						<div class="mt-2">{{ section['text'] }}<br></div>
 					{% endfor %}
 
 				{% endfor %}

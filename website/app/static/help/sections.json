@@ -1,31 +1,75 @@
 [
     {
-        "title": "Getting Started",
+        "title": "Introduction",
         "sections": [
             {
                 "title": "What is BioJupies?",
-                "text": "..."
+                "text": "BioJupies is a web server that enables automated creation, storage, and deployment of Jupyter Notebooks containing RNA-seq data analyses. Through an intuitive interface, novice users can rapidly generate tailored reports to analyze and visualize their own raw sequencing files, their gene expression tables, or fetch data from >5,500 published studies containing >250,000 preprocessed RNA-seq samples. Generated notebooks have executable code of the entire pipeline, rich narrative text, interactive data visualizations, and differential expression and enrichment analyses. The notebooks are permanently stored in the cloud and made available online through a persistent URL. The notebooks are downloadable, customizable, and can run within a Docker container."
             },
             {
                 "title": "What is sdfsBioJupies2?",
-                "text": "..."
+                "text": "BioJupies is a web server that enables automated creation, storage, and deployment of Jupyter Notebooks containing RNA-seq data analyses. Through an intuitive interface, novice users can rapidly generate tailored reports to analyze and visualize their own raw sequencing files, their gene expression tables, or fetch data from >5,500 published studies containing >250,000 preprocessed RNA-seq samples. Generated notebooks have executable code of the entire pipeline, rich narrative text, interactive data visualizations, and differential expression and enrichment analyses. The notebooks are permanently stored in the cloud and made available online through a persistent URL. The notebooks are downloadable, customizable, and can run within a Docker container."
             }
         ]
     },
     {
-        "title": "asjdnkasjd",
+        "title": "Generating Notebooks",
         "sections": [
             {
-                "title": "sdfsdfsd",
-                "text": "lkdfgklsdgfkjd"
+                "title": "What is BioJudfhgfdpies?",
+                "text": "BioJupies is a web server that enables automated creation, storage, and deployment of Jupyter Notebooks containing RNA-seq data analyses. Through an intuitive interface, novice users can rapidly generate tailored reports to analyze and visualize their own raw sequencing files, their gene expression tables, or fetch data from >5,500 published studies containing >250,000 preprocessed RNA-seq samples. Generated notebooks have executable code of the entire pipeline, rich narrative text, interactive data visualizations, and differential expression and enrichment analyses. The notebooks are permanently stored in the cloud and made available online through a persistent URL. The notebooks are downloadable, customizable, and can run within a Docker container."
             },
             {
-                "title": "asd",
-                "text": "lkdfgklsdgfkjd"
+                "title": "What is sdfsBfdghfdghioJupies2?",
+                "text": "BioJupies is a web server that enables automated creation, storage, and deployment of Jupyter Notebooks containing RNA-seq data analyses. Through an intuitive interface, novice users can rapidly generate tailored reports to analyze and visualize their own raw sequencing files, their gene expression tables, or fetch data from >5,500 published studies containing >250,000 preprocessed RNA-seq samples. Generated notebooks have executable code of the entire pipeline, rich narrative text, interactive data visualizations, and differential expression and enrichment analyses. The notebooks are permanently stored in the cloud and made available online through a persistent URL. The notebooks are downloadable, customizable, and can run within a Docker container."
+            }
+        ]
+    },
+    {
+        "title": "Uploading RNA-seq Data",
+        "sections": [
+            {
+                "title": "What is BiofdghfdghJfdghfdghupies?",
+                "text": "BioJupies is a web server that enables automated creation, storage, and deployment of Jupyter Notebooks containing RNA-seq data analyses. Through an intuitive interface, novice users can rapidly generate tailored reports to analyze and visualize their own raw sequencing files, their gene expression tables, or fetch data from >5,500 published studies containing >250,000 preprocessed RNA-seq samples. Generated notebooks have executable code of the entire pipeline, rich narrative text, interactive data visualizations, and differential expression and enrichment analyses. The notebooks are permanently stored in the cloud and made available online through a persistent URL. The notebooks are downloadable, customizable, and can run within a Docker container."
             },
             {
-                "title": "dfdfggdfg",
-                "text": "lkdfgklsdgfkjd"
+                "title": "What isffghfdghdghfdgh sdfsBioJupies2?",
+                "text": "BioJupies is a web server that enables automated creation, storage, and deployment of Jupyter Notebooks containing RNA-seq data analyses. Through an intuitive interface, novice users can rapidly generate tailored reports to analyze and visualize their own raw sequencing files, their gene expression tables, or fetch data from >5,500 published studies containing >250,000 preprocessed RNA-seq samples. Generated notebooks have executable code of the entire pipeline, rich narrative text, interactive data visualizations, and differential expression and enrichment analyses. The notebooks are permanently stored in the cloud and made available online through a persistent URL. The notebooks are downloadable, customizable, and can run within a Docker container."
+            }
+        ]
+    },
+    {
+        "title": "Reusing Notebooks",
+        "sections": [
+            {
+                "title": "What is BiofdghfdghfddghJupies?",
+                "text": "BioJupies is a web server that enables automated creation, storage, and deployment of Jupyter Notebooks containing RNA-seq data analyses. Through an intuitive interface, novice users can rapidly generate tailored reports to analyze and visualize their own raw sequencing files, their gene expression tables, or fetch data from >5,500 published studies containing >250,000 preprocessed RNA-seq samples. Generated notebooks have executable code of the entire pipeline, rich narrative text, interactive data visualizations, and differential expression and enrichment analyses. The notebooks are permanently stored in the cloud and made available online through a persistent URL. The notebooks are downloadable, customizable, and can run within a Docker container."
+            },
+            {
+                "title": "What isfdghffgdhfdghdgh sdfsBioJupies2?",
+                "text": "BioJupies is a web server that enables automated creation, storage, and deployment of Jupyter Notebooks containing RNA-seq data analyses. Through an intuitive interface, novice users can rapidly generate tailored reports to analyze and visualize their own raw sequencing files, their gene expression tables, or fetch data from >5,500 published studies containing >250,000 preprocessed RNA-seq samples. Generated notebooks have executable code of the entire pipeline, rich narrative text, interactive data visualizations, and differential expression and enrichment analyses. The notebooks are permanently stored in the cloud and made available online through a persistent URL. The notebooks are downloadable, customizable, and can run within a Docker container."
+            }
+        ]
+    },
+    {
+        "title": "Contributing Plugins",
+        "sections": [
+            {
+                "title": "What is fghdfhg?",
+                "text": "BioJupies is a web server that enables automated creation, storage, and deployment of Jupyter Notebooks containing RNA-seq data analyses. Through an intuitive interface, novice users can rapidly generate tailored reports to analyze and visualize their own raw sequencing files, their gene expression tables, or fetch data from >5,500 published studies containing >250,000 preprocessed RNA-seq samples. Generated notebooks have executable code of the entire pipeline, rich narrative text, interactive data visualizations, and differential expression and enrichment analyses. The notebooks are permanently stored in the cloud and made available online through a persistent URL. The notebooks are downloadable, customizable, and can run within a Docker container."
+            },
+            {
+                "title": "What isfdghfdgh sdfsBifdghfdghoJupies2?",
+                "text": "BioJupies is a web server that enables automated creation, storage, and deployment of Jupyter Notebooks containing RNA-seq data analyses. Through an intuitive interface, novice users can rapidly generate tailored reports to analyze and visualize their own raw sequencing files, their gene expression tables, or fetch data from >5,500 published studies containing >250,000 preprocessed RNA-seq samples. Generated notebooks have executable code of the entire pipeline, rich narrative text, interactive data visualizations, and differential expression and enrichment analyses. The notebooks are permanently stored in the cloud and made available online through a persistent URL. The notebooks are downloadable, customizable, and can run within a Docker container."
+            }
+        ]
+    },
+    {
+        "title": "Terms of Use",
+        "sections": [
+            {
+                "title": null,
+                "text": "BioJupies is a web server that enables automated creation, storage, and deployment of Jupyter Notebooks containing RNA-seq data analyses. Through an intuitive interface, novice users can rapidly generate tailored reports to analyze and visualize their own raw sequencing files, their gene expression tables, or fetch data from >5,500 published studies containing >250,000 preprocessed RNA-seq samples. Generated notebooks have executable code of the entire pipeline, rich narrative text, interactive data visualizations, and differential expression and enrichment analyses. The notebooks are permanently stored in the cloud and made available online through a persistent URL. The notebooks are downloadable, customizable, and can run within a Docker container."
             }
         ]
     }
