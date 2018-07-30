@@ -957,7 +957,9 @@ def notebook_api(notebook_uid):
 
 @app.route(entry_point+'/help')
 def help():
-	return render_template('help.html')
+	with open('app/static/help/sections.json') as openfile:
+		categories = json.load(openfile)
+	return render_template('help.html', categories=categories)
 
 #############################################
 ########## 2. Example Dataset
