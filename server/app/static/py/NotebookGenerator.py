@@ -46,7 +46,7 @@ def addCell(notebook, content, celltype='code', task=None):
 
 def add_parameters(configuration_dict):
 	parameters = ", " if len(configuration_dict) else ""
-	return parameters+", ".join(['='.join([str(key), str(value) if str(value).isnumeric() or not value or '.' in str(value) else "'"+str(value)+"'"]) for key, value in configuration_dict.items()])
+	return parameters+", ".join(['='.join([str(key), str(value) if str(value).isnumeric() or not value or '.' in str(value) or '[' in str(value) else "'"+str(value)+"'"]) for key, value in configuration_dict.items()])
 
 #############################################
 ########## 2. Add Introduction
@@ -255,7 +255,7 @@ def generate_notebook(notebook_configuration, annotations):
 	notebook = nbf.v4.new_notebook()
 
 	# Initialize Notebook
-	notebook['cells'].append(nbf.v4.new_code_cell("# Initialize Notebook\n%run ../library/"+notebook_configuration['notebook']['version']+"""/init.ipy\nHTML('''<script> code_show=true;  function code_toggle() {  if (code_show){  $('div.input').hide();  } else {  $('div.input').show();  }  code_show = !code_show }  $( document ).ready(code_toggle); </script> <form action="javascript:code_toggle()"><input type="submit" value="Toggle Code"></form>''')"""))
+	notebook['cells'].append(nbf.v4.new_code_cell("# Initialize Notebook\n%run ../library"+''+"""/init.ipy\nHTML('''<script> code_show=true;  function code_toggle() {  if (code_show){  $('div.input').hide();  } else {  $('div.input').show();  }  code_show = !code_show }  $( document ).ready(code_toggle); </script> <form action="javascript:code_toggle()"><input type="submit" value="Toggle Code"></form>''')"""))
 	
 	# Add Intro
 	notebook = add_introduction(notebook=notebook, notebook_configuration=notebook_configuration, tool_metadata=annotations['tools'])
