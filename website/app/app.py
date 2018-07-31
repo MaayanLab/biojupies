@@ -959,7 +959,7 @@ def notebook_api(notebook_uid):
 def help():
 	with open('app/static/help/sections.json') as openfile:
 		categories = json.load(openfile)
-	return render_template('help.html', categories=categories)
+	return render_template('help.html', categories=categories, entry_point=entry_point)
 
 #############################################
 ########## 2. Example Dataset

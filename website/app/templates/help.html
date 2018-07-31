@@ -14,7 +14,7 @@
 	<div class="row my-5">
 
 		<!-- Left Panel -->
-		<div class="d-none d-xl-block col-xl-3">
+		<div class="d-none d-xl-block col-xl-3 pl-0 ml-0">
 
 			<!-- Wrapper -->
 			<nav id="categories" class="position-fixed">
@@ -34,7 +34,7 @@
 							<!-- Section loop -->
 							{% for section in category['sections'] %}
 								{% if section['title'] %}
-									<a class="nav-link tiny rounded-0" href="#{{ section['title'].lower().replace(' ', '_') }}">{{ section['title'] }}</a>
+									<a class="pl-4 nav-link tiny rounded-0" href="#{{ section['title'].lower().replace(' ', '_') }}">{{ section['title'] }}</a>
 								{% endif %}
 							{% endfor %}
 
@@ -48,10 +48,10 @@
 		</div>
 
 		<!-- Right Panel -->
-		<div class="col-12 col-xl-8">
+		<div class="col-12 col-xl-9">
 
 			<!-- Content -->
-			<div data-offset="0" class="pl-5 pr-3">
+			<div data-offset="0" class="pl-5">
 
 				<!-- Category -->
 				{% for category in categories %}
@@ -59,10 +59,14 @@
 
 					<!-- Section -->
 					{% for section in category['sections'] %}
+
+						<!-- Title -->
 						{% if section['title'] %}
-							<div class="nav nav-pills medium bold mt-3" id="{{ section['title'].lower().replace(' ', '_') if section.get('title') else loop.index }}">{{ section['title'] }}</div>
+							<div class="nav nav-pills medium bold {{ 'mt-4' if loop.index > 1 else 'mt-2' }}" id="{{ section['title'].lower().replace(' ', '_') if section.get('title') else loop.index }}">{{ section['title'] }}</div>
 						{% endif %}
-						<div class="mt-2">{{ section['text'] }}<br></div>
+
+						<!-- Text -->
+						<div class="mt-2">{{ section['text'].replace('entrypoint', entry_point) | safe }}</div>
 					{% endfor %}
 
 				{% endfor %}
@@ -79,6 +83,13 @@
 <script type="text/javascript">
 	// Activate Scrollspy
 	$('body').scrollspy({ target: '#categories' })
+
+	// Activate iframes asynchronously
+	// $(document).ready(function() {
+	// 	$('iframe').each(function(index, elem) {
+	// 		$(elem).attr('src', $(elem).attr('id'));
+	// 	})
+	// })
 </script>
 
 {% endblock %}
