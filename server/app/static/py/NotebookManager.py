@@ -95,6 +95,8 @@ def upload_notebook(notebook, notebook_configuration, time, engine):
 	### New Upload
 	# Upload dataset
 	dataset = notebook_configuration['data']['parameters'].get('gse') if notebook_configuration['data']['parameters'].get('gse') else notebook_configuration['data']['parameters'].get('uid')
+	if not dataset:
+		dataset = 'gtex'
 	notebook_dataframe = pd.Series({'notebook_uid': notebook_uid, 'notebook_title': notebook_configuration['notebook']['title'], 'notebook_configuration': json.dumps(notebook_configuration), 'version': notebook_configuration['notebook']['version'], 'time': time, 'dataset': dataset}).to_frame().T
 	notebook_dataframe.to_sql('notebook', engine, if_exists='append', index=False)
 
