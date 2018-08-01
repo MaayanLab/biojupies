@@ -221,12 +221,12 @@
 	    $('#configure-signature-form').submit(function(evt) {
 	    	var a_samples = $('#sample-table button[data-group="a"]').length,
 	    		b_samples = $('#sample-table button[data-group="b"]').length;
-	    	if (a_samples < 3) {
+	    	if (a_samples < 2) {
 		    	evt.preventDefault();
-		    	alert('Please add more samples to the '+$('[name="group_a_label"]').val()+' group.\n\nGroups are required to contain at least 3 samples. However, the group has '+a_samples+'.')
-	    	} else if (b_samples < 3) {
+		    	alert('Please add more samples to the '+$('[name="group_a_label"]').val()+' group.\n\nGroups are required to contain at least 2 samples. However, the group has '+a_samples+'.')
+	    	} else if (b_samples < 2) {
 		    	evt.preventDefault();
-		    	alert('Please add more samples to the '+$('[name="group_b_label"]').val()+' group.\n\nGroups are required to contain at least 3 samples. However, the group has '+b_samples+'.')
+		    	alert('Please add more samples to the '+$('[name="group_b_label"]').val()+' group.\n\nGroups are required to contain at least 2 samples. However, the group has '+b_samples+'.')
 
 	    	}
 	    })
