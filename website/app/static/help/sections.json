@@ -13,19 +13,19 @@
         "sections": [
             {
                 "title": "Overview",
-                "text": "BioJupies allows users to generate <b>customized analysis notebooks from RNA-seq data</b> through an intuitive interface, with no knowledge of coding required.<div class='mt-3'>Generating a notebook requires three steps:<ol class='mt-3'><li><b>Select the data you wish to analyze</b>. To achieve this, users can upload their own RNA-seq data either as FASTQ files or as tables of gene counts, </li></ol></div>"
+                "text": "<div>BioJupies allows users to generate <b>customized analysis notebooks from RNA-seq data</b> through an intuitive interface, with no knowledge of coding required.</div><div class='mt-3'>Generating a notebook requires three steps:<img src='entrypoint/workflow.png' class='mb-1'><ol><li><b>Select the data you wish to analyze</b>. You can upload your own RNA-seq data - either as raw FASTQ files or as tables containing gene counts - or search over 8,000 publicly available datasets published in the Gene Expression Omnibus and processed by ARCHS4.</li><li><b>Add Data Analysis Plugins</b>. After selecting the data, you can choose from over 10 data visualization and analysis plugins which will analyze the RNA-seq dataset and embed interactive results in the resulting notebook.</li><li><b>Generate your notebook</b>. Once you have selected the tools, you can generate the notebook directly from the BioJupies website. The notebook will be returned to you through a permanent, public URL.</li></ol></div><div>To start generating you notebook, visit <a href='https://amp.pharm.mssm.edu/biojupies/analyze' target='_blank'>https://amp.pharm.mssm.edu/biojupies/analyze</a>.</div>"
             },
             {
                 "title": "Uploading your Data",
-                "text": ""
+                "text": "<div>BioJupies allows you to generate customized Jupyter Notebooks by uploading your RNA-seq from <a href='https://amp.pharm.mssm.edu/biojupies/upload' target='_blank'>https://amp.pharm.mssm.edu/biojupies/upload</a>.<img src='entrypoint/upload_data.png'>Data can be uploaded in two formats: <ol><li><b>FASTQ Files.</b> You can upload raw sequencing data in the .fastq.gz format directly to BioJupies. The web server will align your reads to the selected reference genome and generate a notebook from the estimated gene counts. For more information about uploading FASTQ files, click <a href='#uploading_fastq_files'>here</a>.</li><li><b>Gene Count Tables.</b> If you already performed sequence alignment, you can upload text files containing raw gene counts. Uploaded files must have gene symbols on rows and samples on columns. For more information about uploading gene counts, click <a href='#uploading_gene_counts'>here</a>.</li></ol></div><div class='mt-2'>Once you have uploaded your data, proceed to <a href='#adding_analysis_plugins'>Adding Analysis Plugins</a>.</div>"
             },
             {
                 "title": "Searching Published Data",
-                "text": ""
+                "text": "<div>In addition to uploading your data, BioJupies users can also analyze over 8,000 publicly available datasets published in the Gene Expression Omnibus and processed by ARCHS4 from <a href='https://amp.pharm.mssm.edu/biojupies/analyze/search' target='_blank'>https://amp.pharm.mssm.edu/biojupies/analyze/search</a>.<img src='entrypoint/search.png'>Users can filter datasets by using text-based search, filter by organism, or by number of RNA-seq samples contained in the dataset. By clicking on More Info you can access a detailed description of the dataset and a link to its landing page on the Gene Expression Omnibus.</div><div class='mt-3'>Once you have selected a dataset, click Analyze and proceed to <a href='#adding_analysis_plugins'>Adding Analysis Plugins</a>.</div>"
             },
             {
                 "title": "Adding Analysis Plugins",
-                "text": ""
+                "text": "<div></div>"
             },
             {
                 "title": "Selecting Groups",
@@ -154,7 +154,7 @@
             },
             {
                 "title": "5. Using the Chrome Extension",
-                "text": "<iframe class='mt-2 mb-3 d-block' width='560' height='315' src='https://www.youtube.com/embed/hb4J7z57CtQ' frameborder='0' allow='autoplay; encrypted-media' allowfullscreen></iframe>Instructions on installing and using the BioJupies Google Chrome extension. For more information see the <a href='#chrome_extension'>Chrome Extension</a> ."
+                "text": "<iframe class='mt-2 mb-3 d-block' width='560' height='315' src='https://www.youtube.com/embed/hb4J7z57CtQ' frameborder='0' allow='autoplay; encrypted-media' allowfullscreen></iframe>Instructions on installing and using the BioJupies Google Chrome extension. For more information see the <a href='#chrome_extension'>Chrome Extension</a> section."
             },
             {
                 "title": "6. Reusing Notebooks",
