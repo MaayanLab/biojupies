@@ -411,11 +411,15 @@ def view_notebook(notebook_uid):
 		# Get notebook data
 		notebook_dict = query_results[0]
 
+		# Whether to display HTTPS (Clustergrammer and L1000FWD only support HTTPS iframe in version >=v0.8)
+		https = float('.'.join(notebook_dict['version'][1:].split('.')[:2])) > 0.7
+
 		# Get Nbviewer URL and Title
 		nbviewer_url = 'https://nbviewer.jupyter.org/urls/storage.googleapis.com/jupyter-notebook-generator/{notebook_uid}/{notebook_dict[notebook_title]}.ipynb'.format(**locals())
 
-		# Whether to display HTTPS (Clustergrammer and L1000FWD only support HTTPS iframe in version >=v0.8)
-		https = float('.'.join(notebook_dict['version'][1:].split('.')[:2])) > 0.7
+		# Replace HTTPS
+		if not https:
+			nbviewer_url = nbviewer_url.replace('https://', 'http://')
 
 		# Return result
 		return render_template('analyze/notebook.html', nbviewer_url=nbviewer_url, title=notebook_dict['notebook_title'], https=https)
