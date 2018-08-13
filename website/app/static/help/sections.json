@@ -25,23 +25,23 @@
             },
             {
                 "title": "Adding Analysis Plugins",
-                "text": "<div></div>"
+                "text": "<div>Once you have selected a dataset you wish to analyze, you can <b>add one or more RNA-seq analysis plugins</b> to analyze your data and embed interactive results and plots in your notebook. <img src='entrypoint/add_plugins.png'> You can toggle plugins by clicking on the Add or Remove buttons displayed on the right of each card. You can access additional information about each plugin by clicking on the More Info button. <img src='entrypoint/plugin_info.png'> Once you have selected the desired plugins, click Continue. If you only selected plugins in the Exploratory Data Analysis category, proceed to <a href='#customizing_parameters'>Customizing Parameters</a>; otherwise proceed to <a href='#selecting_groups'>Selecting Groups</a>.</div>"
             },
             {
                 "title": "Selecting Groups",
-                "text": ""
+                "text": "<div>If you select one or more plugins in the Differential Expression, Enrichment Analysis or Small Molecule Query categories, you are required to specify two groups of samples to compare in order to generate a gene expression signature. To achieve this, you can select the samples you wish to assign to each group using the interface shown below.<img src='entrypoint/selecting_groups.png'>To assign samples to the desired group, you can use the dropdown menu displayed on the left of each sample in the table. Optionally, you can name the groups of samples using the text boxes provided. The Predict Groups feature will automatically predict the samples belonging to each group by searching the provided name in the corresponding sample metadata. This feature can be turned off by using the provided switch.</div><div class='mt-3'>Once you have selected the desired groups, click Continue and proceed to <a href='#customizing_parameters'>Customizing Parameters</a>.</div>"
             },
             {
                 "title": "Customizing Parameters",
-                "text": ""
+                "text": "<div>After the desired dataset and plugins have been selected, your notebook is ready to be generated. In the final step, you can customize your notebook by changing its title, adding biological tags, or modifying optional parameters for each of the selected plugins.<img src='entrypoint/notebook_configuration.png'>To tag your notebook, you can select tens of thousands of biological terms coming from multiple databases and ontologies. You can specify whether the analyzed samples are affected by a specific disease, small molecule treatment or gene perturbation.<img src='entrypoint/plugin_configuration.png'>You can additionally modify parameters for each of the selected tools, such as the normalization technique before displaying the heatmap and the number of genes to display.</div><div class='mt-3'>Once you have selected the desired settings, click on Generate Notebook and proceed to the <a href='#generating_the_notebook'>next step</a>.</div>"
             },
             {
                 "title": "Generating the Notebook",
-                "text": ""
+                "text": "<div>Once you have selected the desired settings, you can request a notebook by clicking on Generate Notebook. This process can take between 10 seconds to 3 minutes, depending on the size of the RNA-seq dataset and the selected plugins. Once the notebook is completed, a link will be displayed on the website.<img src='entrypoint/notebook_result.png'>Your notebook is accessible from a permanent, public URL, displayed using nbviewer.</div>"
             },
             {
                 "title": "Accessing the Notebook",
-                "text": ""
+                "text": "<div>Once completed, you can access the notebook at the permanent notebook URL.<img src='entrypoint/notebook_preview.png'></div>"
             }
         ]
     },
@@ -49,20 +49,28 @@
         "title": "Uploading RNA-seq Data",
         "sections": [
             {
-                "title": "Uploading FASTQ Files",
-                "text": ""
-            },
-            {
-                "title": "Launching Alignment Jobs",
-                "text": ""
-            },
-            {
-                "title": "Adding Sample Metadata",
-                "text": ""
+                "title": null,
+                "text": "With BioJupies you can automatically generate a Jupyter Notebook by uploading your own RNA-seq data at <a href='https://amp.pharm.mssm.edu/biojupies/upload' target='_blank'>https://amp.pharm.mssm.edu/biojupies/upload</a>.<img src='entrypoint/upload_data.png'>Data can be uploaded in two formats: <ol><li><b>FASTQ Files.</b> You can upload raw sequencing data in the .fastq.gz format directly to BioJupies. The web server will align your reads to the selected reference genome and generate a notebook from the estimated gene counts. For more information about uploading FASTQ files, click <a href='#uploading_fastq_files'>here</a>.</li><li><b>Gene Count Tables.</b> If you already performed sequence alignment, you can upload text files containing raw gene counts. Uploaded files must have gene symbols on rows and samples on columns. For more information about uploading gene counts, click <a href='#uploading_gene_counts'>here</a>.</li></ol></div>"
             },
             {
                 "title": "Uploading Gene Counts",
-                "text": ""
+                "text": "If you have a matrix of gene-level counts, you can upload it using the expression table file upload page, available at <a href='https://amp.pharm.mssm.edu/biojupies/upload/table' target='_blank'>https://amp.pharm.mssm.edu/biojupies/upload/table</a>.<img src='entrypoint/upload_table.png'>In order to successfully upload a table, your file should follow the following format:<ul class='mt-2'><li>Have <b>gene symbols</b> on the rows. While other gene identifiers are supported (e.g. Ensembl IDs, Entrez IDs), gene symbols will provide the best results for downstream enrichment analysis and small molecule queries.</li><li>Have <b>sample names on the columns</b>.</li><li>Have <b>raw gene expression counts</b> as values.</li></ul>"
+            },
+            {
+                "title": "Uploading FASTQ Files",
+                "text": "<img src='entrypoint/upload_reads_1.png'><img src='entrypoint/upload_reads_2.png'>"
+            },
+            {
+                "title": "Launching Alignment Jobs",
+                "text": "<img src='entrypoint/align_reads.png'><img src='entrypoint/single_end.png'><img src='entrypoint/paired_end.png'>"
+            },
+            {
+                "title": "Viewing Job Status",
+                "text": "<img src='entrypoint/alignment_status.png'>"
+            },
+            {
+                "title": "Adding Sample Metadata",
+                "text": "<img src='entrypoint/add_metadata.png'>"
             }
         ]
     },
@@ -75,27 +83,27 @@
             },
             {
                 "title": "Installing the Extension",
-                "text": ""
+                "text": "<img src='entrypoint/chrome_webstore.png'>"
             },
             {
                 "title": "Searching Data",
-                "text": ""
+                "text": "<img src='entrypoint/geo_search.png'>"
             },
             {
                 "title": "Adding Analysis Plugins ",
-                "text": ""
+                "text": "<img src='entrypoint/chrome_adding_plugins.png'>"
             },
             {
                 "title": "Selecting Groups ",
-                "text": ""
+                "text": "<img src='entrypoint/chrome_adding_groups.png'>"
             },
             {
                 "title": "Customizing Parameters ",
-                "text": ""
+                "text": "<img src='entrypoint/chrome_notebook_configuration.png'>"
             },
             {
                 "title": "Generating a Notebook ",
-                "text": ""
+                "text": "<img src='entrypoint/chrome_access_notebook.png'>"
             }
         ]
     },
