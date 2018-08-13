@@ -860,31 +860,6 @@ def merge_counts_api():
 def contribute():
 	return render_template('contribute.html')
 
-##################################################
-########## 3.2 APIs
-##################################################
-
-#############################################
-########## 1. Contribute API
-#############################################
-### Uploads a contributed file to the cloud and the details to the database.
-### Input: Script file uploaded by the user (supports .py, .R) and annotations by a form.
-### Output: The submission UID.
-### Called by: contribute().
-
-@app.route(entry_point+'/api/contribute', methods=['GET', 'POST'])
-def contribute_plugin_api():
-	# Upload
-	session = Session()
-	try:
-		rowid = session.execute(tables['contribution'].insert().values([request.form.to_dict()])).lastrowid
-		session.commit()
-	except:
-		rowid = None
-		session.rollback()
-	session.close()
-	return json.dumps({'contribution_id': 'rowid'})
-
 #######################################################
 #######################################################
 ########## 5. Docker

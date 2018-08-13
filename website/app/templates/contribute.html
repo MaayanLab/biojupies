@@ -23,10 +23,10 @@
 		<div class="col-lg-6 order-last order-lg-first mt-3 pt-4 pt-lg-0">
 
 			<!-- Workflow -->
-			{{ macros.workflow_step('fa fa-book fa-3x', 1, '#005A5E', 'Download the template notebook', 'Download the template Jupyter Notebook from the <a href="https://github.com/MaayanLab/biojupies-plugins/tree/master/contribute" target="_blank" class="bold white text-underline">BioJupies GitHub repository</a>.') }}
-			{{ macros.workflow_step('fa fa-code fa-3x', 2, '#017277', 'Add your code', 'Add your RNA-seq analysis code to the notebook.<br><b>Note: BioJupies currently supports Python 3 and R.</b>') }}
-			{{ macros.workflow_step('fab fa-github fa-4x', 3, '#259BA0', 'Upload it to GitHub', 'Upload the notebook containing your RNA-seq analysis plugin to GitHub.') }}
-			{{ macros.workflow_step('fa fa-upload fa-3x', 4, '#5ac2c7', 'Fill the submission form', 'Submit your plugin using the form <span class="d-none d-lg-inline-block">on the right</span><span class="d-inline-block d-lg-none">above</span>. Once integrated, it will be made available to users for notebook generation.', arrow=False) }}
+			{{ macros.workflow_step('fab fa-github fa-4x', 1, '#005A5E', 'Fork the GitHub repository', 'Create a new fork in the <a href="https://github.com/MaayanLab/biojupies-plugins/" target="_blank" class="bold white text-underline">MaayanLab/biojupies-plugins</a> GitHub repository.') }}
+			{{ macros.workflow_step('fa fa-code fa-3x', 2, '#017277', 'Add your code', 'Add your RNA-seq analysis code following the <a href="https://github.com/MaayanLab/biojupies-plugins/tree/master/contribute" target="_blank" class="bold white text-underline">plugin submission guidelines</a> provided.') }}
+			{{ macros.workflow_step('fa fa-code-branch fa-4x', 3, '#259BA0', 'Create a Pull Request', '<a href="https://github.com/MaayanLab/biojupies-plugins/compare" target="_blank" class="bold white text-underline">Create a new pull request</a> to merge your plugin to the Biojupies plugin library.') }}
+			{{ macros.workflow_step('fa fa-wrench fa-4x', 4, '#5ac2c7', 'Use your Plugin', 'Once integrated, your plugin will be made publicly available for generation of RNA-seq analysis notebooks.', arrow=False) }}
 
 		</div>
 
@@ -42,101 +42,14 @@
 					<div class="bold small mt-4 mb-2 grey">Can I contribute my plugin to BioJupies?</div>
 					<div class="mb-3">Users are welcome to contribute their tools for integration as BioJupies plugins. We accept submissions for plugins performing <b>wide varieties of RNA-seq data analyses</b>, such as data visualizations, differential gene expression, and more.</div>
 					
-					<div class="bold small mt-4 mb-2 grey">How do I submit a plugin?</div>
-					<div class="mb-3">To submit your plugin, follow the instructions <span class='d-none d-lg-inline-block'>on the left</span><span class='d-inline-block d-lg-none'>below</span> or on the <a href="https://github.com/MaayanLab/biojupies-plugins/tree/master/contribute" target="_blank" class="regular">BioJupies GitHub repository</a>, then complete the form below:</div>
+					<!-- <div class="bold small mt-4 mb-2 grey">How do I submit a plugin?</div> -->
+					<!-- <div class="mb-3">To submit your plugin, follow the instructions <span class='d-none d-lg-inline-block'>on the left</span><span class='d-inline-block d-lg-none'>below</span> or on the <a href="https://github.com/MaayanLab/biojupies-plugins/tree/master/contribute" target="_blank" class="regular">BioJupies GitHub repository</a>, then complete the form below:</div> -->
 				</div>
 			</div>
 
-			<!-- Form -->
-			<form id="plugin-submission-form">
-				<div class="row bg-lightgrey border-grey rounded pt-3 pb-2 mx-1">
-					<div id="form-wrapper" class="col-12">
-						<!-- <div class="text-left small darkgrey mb-2">Plugin Submission Form</div> -->
-						
-						<!-- Name -->
-						<div class="row mb-3">
-							<div class="col-3 my-auto text-right">
-								<div class="extra-bold darkgrey">Name</div>
-							</div>
-							<div class="col-9 my-auto">
-								<input type="text" name="name" maxlength="50" placeholder="Insert the name of the plugin." class="w-100 nodecoration border-grey rounded pl-2 py-1 light very-small" required>
-							</div>
-						</div>
-		
-						<!-- Description -->
-						<div class="row mb-3">
-							<div class="col-3 my-auto text-right">
-								<div class="extra-bold darkgrey">Description</div>
-							</div>
-							<div class="col-9 my-auto">
-								<input type="text" name="description" placeholder="Insert a brief description for the plugin." class="w-100 nodecoration border-grey rounded pl-2 py-1 light very-small" required>
-							</div>
-						</div>
-		
-						<!-- GitHub Link -->
-						<div class="row mb-3">
-							<div class="col-3 my-auto text-right">
-								<div class="extra-bold darkgrey">GitHub Link</div>
-							</div>
-							<div class="col-9 my-auto">
-								<input type="url" name="github_link" placeholder="Insert a link to the source code on GitHub." class="w-100 nodecoration border-grey rounded pl-2 py-1 light very-small" required>
-							</div>
-						</div>
-		
-						<!-- Email -->
-						<div class="row mb-3">
-							<div class="col-3 my-auto text-right">
-								<div class="extra-bold darkgrey">
-									Email
-									<!-- <sup><i class="fa fa-info-circle ml-1" data-toggle="tooltip" title=""></i></sup> -->
-								</div>
-							</div>
-							<div class="col-9 my-auto">
-								<input type="email" name="email" maxlength="50" placeholder="Insert a contact email." class="w-100 nodecoration border-grey rounded pl-2 py-1 light very-small" required>
-							</div>
-						</div>
-
-						<!-- Submit -->
-						<div class="row">
-							<div class="col-12 my-auto text-right">
-								<button type="submit" class="btn text-center w-100 mb-1 bg-blue white border-grey light very-small mb-1 nodecoration">Submit <i class="fas fa-angle-double-right ml-1"></i></button>
-							</div>
-						</div>
-
-					</div>
-					<div id="status-wrapper" class="col-12 d-none small light text-center py-5 px-5"></div>
-				</div>
-			</form>
 		</div>
 
 	</div>
 </div>
 
-{% endblock %}
-
-{% block footer %}
-<script type="text/javascript">
-	$('#plugin-submission-form').submit(function(evt) {
-
-		// Prevent submission
-		evt.preventDefault();
-
-		// AJAX
-		$.ajax({	
-			url: "{{ url_for('contribute_plugin_api') }}",
-			method: "POST",
-			data: $('#plugin-submission-form').serializeArray(),
-			// contentType: "application/json; charset=utf-8",
-			dataType: 'json',
-			success: function(res) {
-				$('#form-wrapper').addClass('d-none');
-				$('#status-wrapper').removeClass('d-none');
-				$('#status-wrapper').html('<div class="mb-3">Thank you for the submission.</div><div>We will contact you soon about integrating your plugin to BioJupies.</div>');
-			},
-			error: function(e) {
-				$('#status-wrapper').html('<div class="mb-3">Sorry, there has been an error submitting the plugin.</div><div>Please try again soon, or contact us at avi.maayan@mssm.edu.</div>');
-			}
-		})
-	})
-</script>
 {% endblock %}
