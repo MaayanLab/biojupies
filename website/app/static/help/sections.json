@@ -290,7 +290,8 @@
                 "text": [
                     "After clicking on <span class='bg-lightgrey border-grey rounded px-2 py-1 micro text-muted'>Generate Notebook</span> a notebook generation job is submitted to the BioJupies server, and a loader is displayed on the window.",
                     "<img src='entrypoint/chrome_generating_notebook.png'>",
-                    "The process of notebook generation typically takes <b>between 10 seconds to 3 minutes</b>, depending on the number of plugins selected and on the size of the RNA-seq dataset."                ]
+                    "The process of notebook generation typically takes <b>between 10 seconds to 3 minutes</b>, depending on the number of plugins selected and on the size of the RNA-seq dataset."
+                ]
             },
             {
                 "title": "Accessing the Notebook ",
@@ -360,7 +361,11 @@
             {
                 "title": null,
                 "text": [
-                    "Source code for BioJupies is available at <a href='https://github.com/MaayanLab/biojupies' target='_blank'>https://github.com/MaayanLab/biojupies</a>, under the <a href='http://www.apache.org/licenses/LICENSE-2.0' target='_blank'>Apache License 2.0</a>. Provided gene expression files are available under the <a href='https://creativecommons.org/licenses/by-nc-sa/4.0/' target='_blank'>Creative Commons Attribution 4.0 International License</a>.<div class='mt-2'>BioJupies is free to use for non-commercial purposes. For commercial use, please contact <a href='http://www.ip.mountsinai.org/' target='_blank'>MSIP</a>."
+                    "Source code for BioJupies is available at <a href='https://github.com/MaayanLab/biojupies' target='_blank'>https://github.com/MaayanLab/biojupies</a> under the <a href='http://www.apache.org/licenses/LICENSE-2.0' target='_blank'>Apache License 2.0</a>.",
+                    "<div class='mt-3'></div>",
+                    "Provided gene expression files are available under the <a href='https://creativecommons.org/licenses/by-nc-sa/4.0/' target='_blank'>Creative Commons Attribution 4.0 International License</a>.",
+                    "<div class='mt-3'></div>",
+                    "BioJupies is free to use for non-commercial purposes. For commercial use, please contact <a href='http://www.ip.mountsinai.org/' target='_blank'>MSIP</a>."
                 ]
             }
         ]
