@@ -172,7 +172,9 @@
                     "<li>Whether the FASTQ files were generated using <b>single-end sequencing</b> or <b>paired-end sequencing</b>.</li></ol>",
                     "By selecting <b>single-end sequencing</b>, the FASTQ files will be individually aligned to the reference genome and will each return one column in the resulting dataset.",
                     "<img src='entrypoint/single_end.png'>",
-                    "By selecting <b>paired-end sequencing</b>, you will be required to specify which pairs of FASTQ files have been generated from the same biological sample. The pairs will be used to perform a paired alignment, and will each return one column in the resulting dataset. Samples can be optionally renamed using the text boxes provided.",
+                    "By selecting <b>paired-end sequencing</b>, you will be required to specify which pairs of FASTQ files have been generated from the same biological sample.",
+                    "<div class='mt-3'></div>",
+                    "The pairs will be used to perform paired alignment and will each return one column in the resulting dataset. Samples can be optionally renamed using the text boxes provided.",
                     "<img src='entrypoint/paired_end.png'>",
                     "Once you have selected the desired alignment settings, click <span class='bg-blue border-grey rounded px-2 py-1 micro text-white'>Continue <i class='fa fa-angle-right ml-1'></i></span> to launch the alignment jobs, then proceed to the <a href='#viewing_job_status'>next step</a>."
                 ]
@@ -180,27 +182,31 @@
             {
                 "title": "Viewing Job Status",
                 "text": [
-                    "After launching an alignment job, users are redirected to a webpage which displays the status of the job for each sample. Alignment jobs may have four statuses:",
-                    "<ol><li><b>Waiting</b>. Indicates a job which is queued, and will be executed as soon as resources are available.</li>",
-                    "<li><b>Submitted</b>. Indicates a job which is currently being performed.</li>",
-                    "<li><b>Completed</b>. Indicates a job which is completed.</li>",
-                    "<li><b>Failed</b>. Indicates a job which has failed.</li></ol>",
-                    "Jobs usually take under 15 minutes to complete. BioJupies currently supports concurrent alignment of two jobs at a time. If the user requests more than two jobs, the additional ones will be set to Waiting status and executed as soon as resources become available.",
-                    "The alignment jobs will continue until completion even if the user exits the page. The status can be accessed again from the same permanent URL.",
+                    "After the alignment jobs have been launched, you will be redirected to a page displaying the status of the jobs.",
                     "<img src='entrypoint/alignment_status.png'>",
-                    "Once the alignment jobs have completed, the user can click on Continue and proceed to <a href='#adding_sample_metadata'>Adding Sample Metadata</a>."
+                    "Alignment jobs may have four statuses:",
+                    "<ol class='mt-2'><li class='nomargin'><img src='https://amp.pharm.mssm.edu/cloudalignment/images/pending.png' class='w-50px nomargin py-1 pr-2'><b>Waiting</b>. Indicates a queued job, which will be executed when resources are available.</li>",
+                    "<li class='nomargin'><img src='https://amp.pharm.mssm.edu/cloudalignment/images/submitted.png' class='w-50px nomargin py-1 pr-2'><b>Submitted</b>. Indicates a job which is currently being performed.</li>",
+                    "<li class='nomargin'><img src='https://amp.pharm.mssm.edu/cloudalignment/images/completed.png' class='w-50px nomargin py-1 pr-2'><b>Completed</b>. Indicates a job which has completed successfully.</li>",
+                    "<li class='nomargin'><img src='https://amp.pharm.mssm.edu/cloudalignment/images/error.png' class='w-50px nomargin py-1 pr-2'><b>Failed</b>. Indicates a job which has failed.</li></ol>",
+                    "Most jobs should complete in <b>around 10-15 minutes</b>. BioJupies currently supports concurrent alignment of two jobs at a time. If users requests more than two jobs at the same times, additional jobs will be added to the queue. For more information about the alignment pipeline, visit <a href='https://amp.pharm.mssm.edu/cloudalignment/elysium.html' target='_blank'>Elysium</a>.",
+                    "<div class='mt-3'></div>",
+                    "The alignment jobs will <b>continue running</b> if the user exits the page. The job status will remain accessible from the same unique URL.",
+                    "<div class='mt-3'></div>",
+                    "Once the alignment jobs have completed, click <span class='bg-blue border-grey rounded px-2 py-1 micro text-white'>Continue <i class='fa fa-angle-right ml-1'></i></span> to proceed to the <a href='#adding_sample_metadata'>next step</a>."
                 ]
             },
             {
                 "title": "Adding Sample Metadata",
                 "text": [
-                    "Once a user has uploaded their dataset to BioJupies, either by direct table upload or through sequencing, they are required to describe the samples by adding metadata.",
+                    "Before analyzing your RNA-seq data, BioJupies requires you to <b>add information describing the samples</b> contained in the dataset, such as the experimental group they belong to (e.g. wild type or knock-out, healthy or diseased).",
                     "<div class='mt-3'></div>",
-                    "This can be performed in two ways:",
-                    "<ol><li>By <b>manually specifying groups</b> the samples belong to using the input boxes</li>",
-                    "<li>By <b>uploading a table</b> containing information about the specified samples. The table should have all the sample names on the rows, and indicate different metadata values on the columns.</li></ol>",
+                    "This information can be used to <b>extract knowledge</b> from the data more efficiently in the subsequent downstream analysis steps.",
                     "<img src='entrypoint/add_metadata.png'>",
-                    "Once the user has added the desired metadata, they can click on Continue and proceed to <a href='#adding_analysis_plugins'>Adding Analysis Plugins</a>."
+                    "You can add information about your RNA-seq samples in two ways:",
+                    "<ol><li>By <b>manually specifying groups</b> the samples belong to, using the text boxes on the left.</li>",
+                    "<li>By <b>uploading a table</b> containing information about the specified samples. The table must have sample names on the rows, and can contain any number of columns specifying different properties of the uploaded samples.</li></ol>",
+                    "Once you have added the desired information, click <span class='bg-blue border-grey rounded px-2 py-1 micro text-white'>Continue <i class='fa fa-angle-right ml-1'></i></span> to upload your dataset to BioJupies. You can then proceed to <a href='#adding_analysis_plugins'>Adding Analysis Plugins</a>."
                 ]
             }
         ]

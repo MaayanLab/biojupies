@@ -97,6 +97,7 @@ body {
 /* Other */
 .w-50px { width: 50px; }
 .w-65px { width: 65px; }
+.nomargin { margin: 0 !important; }
 /* .mt-1.5 { margin-top: 10px; } */
 
 /********************************/
@@ -478,7 +479,6 @@ input:checked + .radio-label {
 #categories nav a.active + nav { display: block; }
 
 #help li { margin-top: 13px; }
-
 #help img { margin: 10px auto 15px auto; max-width: 100%;; }
 
 .selectize-control.multi .selectize-input [data-value] {
