@@ -64,7 +64,11 @@
 						{% endif %}
 
 						<!-- Text -->
-						<div class="mt-2">{{ section['text'].replace('entrypoint', entry_point+'/app/static/img/help/') | safe }}</div>
+						<div class="mt-2">
+							{% for text in section['text'] %}
+								{{ text.replace('entrypoint', entry_point+'/app/static/img/help/') | safe }}
+							{% endfor %}
+						</div>
 					{% endfor %}
 
 				{% endfor %}

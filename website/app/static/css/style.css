@@ -9,7 +9,7 @@ html {
 }
 
 body {
-  font-family: "Nunito" !important;
+  font-family: "Nunito", Helvetica, sans-serif !important;
   font-weight: 300 !important;
   height: 100%;
   margin: 0;
