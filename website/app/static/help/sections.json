@@ -17,18 +17,35 @@
                 "title": "Overview",
                 "text": [
                     "BioJupies allows users to generate <b>customized analysis notebooks from RNA-seq data</b> through an intuitive interface, with no knowledge of coding required.",
+                    "<div class='mt-2'></div>",
                     "Generating a notebook requires three steps:",
                     "<img src='entrypoint/workflow.png' class='mb-1'>",
-                    "<ol><li><b>Select the data you wish to analyze</b>. You can upload your own RNA-seq data - either as raw FASTQ files or as tables containing gene counts - or search over 8,000 publicly available datasets published in the Gene Expression Omnibus and processed by ARCHS4.</li><li><b>Add Data Analysis Plugins</b>. After selecting the data, you can choose from over 10 data visualization and analysis plugins which will analyze the RNA-seq dataset and embed interactive results in the resulting notebook.</li><li><b>Generate your notebook</b>. Once you have selected the tools, you can generate the notebook directly from the BioJupies website. The notebook will be returned to you through a permanent, public URL.</li></ol>",
-                    "To start generating you notebook, visit <a href='https://amp.pharm.mssm.edu/biojupies/analyze' target='_blank'>https://amp.pharm.mssm.edu/biojupies/analyze</a>."
+                    "<ol><li><b>Select the data you wish to analyze</b>. You can upload your own RNA-seq data - either as raw FASTQ files or as tables containing gene counts - or search over 8,000 publicly available datasets published in the Gene Expression Omnibus and processed by ARCHS4.</li>",
+                    "<li><b>Add Data Analysis Plugins</b>. After selecting the data, you can choose from over 10 data visualization and analysis plugins which will analyze the RNA-seq dataset and embed interactive results in the resulting notebook.</li>",
+                    "<li><b>Generate your notebook</b>. Once you have selected the tools, you can generate the notebook directly from the BioJupies website. The notebook will be returned to you through a permanent, public URL.</li></ol>"
+                ]
+            },
+            {
+                "title": "Getting Started",
+                "text": [
+                    "To start generating your notebook, visit <a href='https://amp.pharm.mssm.edu/biojupies/analyze' target='_blank'>https://amp.pharm.mssm.edu/biojupies/analyze</a>.",
+                    "<img src='entrypoint/get_started.png'>",
+                    "First, you will be required to specify the <b>dataset you wish to analyze</b>. Three options are available:",
+                    "<ol><li><b>Search Published Datasets</b>. By means of a search engine, you can rapidly find and analyze over 8,000 publicly available datasets published in the Gene Expression Omnibus and processed by ARCHS4.</li>",
+                    "<li><b>Upload Your Dataset</b>. BioJupies allows you to upload your own RNA-seq dataset, either as raw FASTQ sequencing files, or as processed gene expression count tables.</li>",
+                    "<li><b>Use an Example Dataset</b>. To learn how to generate notebook, BioJupies also provides an example dataset.</li></ol>"
                 ]
             },
             {
                 "title": "Uploading your Data",
                 "text": [
-                    "BioJupies allows you to generate customized Jupyter Notebooks by uploading your RNA-seq from <a href='https://amp.pharm.mssm.edu/biojupies/upload' target='_blank'>https://amp.pharm.mssm.edu/biojupies/upload</a>.",
+                    "BioJupies allows you to generate customized analysis notebooks by uploading your own RNA-seq datasets.",
+                    "To upload your data, visit <a href='https://amp.pharm.mssm.edu/biojupies/upload' target='_blank'>https://amp.pharm.mssm.edu/biojupies/upload</a>.",
                     "<img src='entrypoint/upload_data.png'>",
-                    "Data can be uploaded in two formats: <ol><li><b>FASTQ Files.</b> You can upload raw sequencing data in the .fastq.gz format directly to BioJupies. The web server will align your reads to the selected reference genome and generate a notebook from the estimated gene counts. For more information about uploading FASTQ files, click <a href='#uploading_fastq_files'>here</a>.</li><li><b>Gene Count Tables.</b> If you already performed sequence alignment, you can upload text files containing raw gene counts. Uploaded files must have gene symbols on rows and samples on columns. For more information about uploading gene counts, click <a href='#uploading_gene_counts'>here</a>.</li></ol>",
+                    "<div class='mt-2'></div>",
+                    "Data can be uploaded in two formats: <ol>",
+                    "<li><b>FASTQ Files.</b> You can upload raw sequencing data in the .fastq.gz format directly to BioJupies. The web server will align your reads to the selected reference genome and generate a notebook from the estimated gene counts. For more information about uploading FASTQ files, click <a href='#uploading_fastq_files'>here</a>.</li>",
+                    "<li><b>Gene Count Tables.</b> If you already performed sequence alignment, you can upload text files containing raw gene counts. Uploaded files must have gene symbols on rows and samples on columns. For more information about uploading gene counts, click <a href='#uploading_gene_counts'>here</a>.</li></ol>",
                     "<div class='mt-3'></div>",
                     "Once you have uploaded your data, proceed to <a href='#adding_analysis_plugins'>Adding Analysis Plugins</a>."
                 ]
@@ -36,56 +53,72 @@
             {
                 "title": "Searching Published Data",
                 "text": [
-                    "In addition to uploading your data, BioJupies users can also analyze over 8,000 publicly available datasets published in the Gene Expression Omnibus and processed by ARCHS4 from <a href='https://amp.pharm.mssm.edu/biojupies/analyze/search' target='_blank'>https://amp.pharm.mssm.edu/biojupies/analyze/search</a>.",
+                    "In addition to uploading your data, BioJupies users can also analyze over 8,000 publicly available datasets published in the Gene Expression Omnibus and processed by ARCHS4.",
+                    "<div class='mt-2'></div>",
+                    "To search the pre-processed RNA-seq datasets indexed by BioJupies, visit <a href='https://amp.pharm.mssm.edu/biojupies/analyze/search' target='_blank'>https://amp.pharm.mssm.edu/biojupies/analyze/search</a>.",
                     "<img src='entrypoint/search.png'>",
-                    "Users can filter datasets by using text-based search, filter by organism, or by number of RNA-seq samples contained in the dataset. By clicking on More Info you can access a detailed description of the dataset and a link to its landing page on the Gene Expression Omnibus.",
+                    "You can find datasets relevant to your interests by using a <b>text-based search engine</b>, sort results by date of publication, or filter them by selecting the organism or the number of samples contained within the dataset.",
                     "<div class='mt-3'></div>",
-                    "Once you have selected a dataset, click Analyze and proceed to <a href='#adding_analysis_plugins'>Adding Analysis Plugins</a>."
+                    "The <span class='bg-lightgrey border-grey rounded px-2 py-1 micro text-muted'>More Info <i class='fa fa-angle-down ml-1'></i></span> buttons allows you to access a detailed description of the dataset, as well as a link to its landing page on the Gene Expression Omnibus.",
+                    "<div class='mt-3'></div>",
+                    "Once you have identified the desired dataset, click on <span class='bg-blue border-grey rounded px-2 py-1 micro text-white'>Analyze <i class='fa fa-angle-right ml-1'></i></span> to proceed to the <a href='#adding_analysis_plugins'>next step</a>."
                 ]
             },
             {
                 "title": "Adding Analysis Plugins",
                 "text": [
-                    "Once you have selected a dataset you wish to analyze, you can <b>add one or more RNA-seq analysis plugins</b> to analyze your data and embed interactive results and plots in your notebook.",
+                    "Once you have selected or uploaded a dataset to BioJupies, you can <b>add one or more RNA-seq analysis plugins</b> using the interface shown below. The selected plugins will <b>analyze the dataset</b> and <b>embed interactive plots and visualizations</b> in the resulting notebook.",
                     "<img src='entrypoint/add_plugins.png'>",
-                    "You can toggle plugins by clicking on the Add or Remove buttons displayed on the right of each card. You can access additional information about each plugin by clicking on the More Info button.",
+                    "BioJupies currently supports a variety of RNA-seq data analysis plugins divided in <b>multiple categories</b>, such as Exploratory Data Analysis, Differential Expression Analysis, and Enrichment Analysis.",
+                    "<div class='mt-3'></div>",
+                    "You can <b>toggle plugins</b> by clicking on the <span class='bg-blue border-grey rounded px-2 py-1 micro text-white'>Add <i class='fa fa-plus ml-1'></i></span> or <span class='bg-blue border-grey rounded px-2 py-1 micro text-white'>Remove <i class='fa fa-minus ml-1'></i></span> buttons displayed on the right of each card. Additional information regarding each plugin, including links to interactive examples and plugin source code on GitHub, are available by clicking on <span class='bg-lightgrey border-grey rounded px-2 py-1 micro text-muted'>More Info <i class='fa fa-angle-down ml-1'></i></span> .",
                     "<img src='entrypoint/plugin_info.png'>",
-                    "Once you have selected the desired plugins, click Continue. If you only selected plugins in the Exploratory Data Analysis category, proceed to <a href='#customizing_parameters'>Customizing Parameters</a>; otherwise proceed to <a href='#selecting_groups'>Selecting Groups</a>."
+                    "Once you have selected the desired plugins, click on <span class='bg-blue border-grey rounded px-2 py-1 micro text-white'>Continue <i class='fa fa-angle-right ml-1'></i></span>.",
+                    "<div class='mt-3'></div>",
+                    "If you only selected plugins in the Exploratory Data Analysis category, proceed to <a href='#customizing_parameters'>Customizing Parameters</a>; otherwise proceed to <a href='#selecting_groups'>Selecting Groups</a>."
                 ]
             },
             {
                 "title": "Selecting Groups",
                 "text": [
-                    "If you select one or more plugins in the Differential Expression, Enrichment Analysis or Small Molecule Query categories, you are required to specify two groups of samples to compare in order to generate a gene expression signature. To achieve this, you can select the samples you wish to assign to each group using the interface shown below.",
+                    "If you have selected select one or more plugins in the <b>Differential Expression, Enrichment Analysis or Small Molecule Query</b> categories, you are required to specify <b>two groups of samples</b>.",
+                    "<div class='mt-3'></div>",
+                    "The two groups will be used to perform a <b>differential gene expression analysis</b> and identify a gene expression signature from the data. Groups are defined using the interface below:",
                     "<img src='entrypoint/selecting_groups.png'>",
-                    "To assign samples to the desired group, you can use the dropdown menu displayed on the left of each sample in the table. Optionally, you can name the groups of samples using the text boxes provided. The Predict Groups feature will automatically predict the samples belonging to each group by searching the provided name in the corresponding sample metadata. This feature can be turned off by using the provided switch.</div><div class='mt-3'>Once you have selected the desired groups, click Continue and proceed to <a href='#customizing_parameters'>Customizing Parameters</a>."
+                    "You can define the groups of samples in two ways:",
+                    "<ol><li><b>Specify the group names</b> in the input boxes provided. BioJupies will automatically predict the samples belonging to each group based on the sample metadata provided. You can turn this feature off by clicking on the toggle button displayed beside Predict Groups on the right.</li>",
+                    "<li><b>Use the dropdown buttons</b> to manually select the samples assigned to each group.</li></ol>",
+                    "<div class='mt-3'></div>",
+                    "In order to improve the statistical validity of the differential expression analysis, BioJupies required that <b>groups contain at least two RNA-seq samples</b>.",
+                    "<div class='mt-3'></div>",
+                    "Once you have selected the desired groups, click <span class='bg-blue border-grey rounded px-2 py-1 micro text-white'>Continue <i class='fa fa-angle-right ml-1'></i></span> to proceed to the <a href='#customizing_parameters'>next step</a>."
                 ]
             },
             {
                 "title": "Customizing Parameters",
                 "text": [
-                    "After the desired dataset and plugins have been selected, your notebook is ready to be generated. In the final step, you can customize your notebook by changing its title, adding biological tags, or modifying optional parameters for each of the selected plugins.",
+                    "After selecting the desired RNA-seq dataset and analysis plugins, you can <b>customize your notebook</b> by changing its title, adding biological tags, or modifying optional parameters for each of the selected plugins.",
                     "<img src='entrypoint/notebook_configuration.png'>",
-                    "To tag your notebook, you can select tens of thousands of biological terms coming from multiple databases and ontologies. You can specify whether the analyzed samples are affected by a specific disease, small molecule treatment or gene perturbation.",
+                    "To customize your analysis, click on the <span class='bg-lightgrey border-grey rounded px-2 py-1 micro text-muted'>Modify Parameters <i class='fa fa-angle-down ml-1'></i></span> button displayed on the right of each plugin. BioJupies allows you to optionally <b>modify analysis parameters</b> for a selection of RNA-seq analysis plugins.",
                     "<img src='entrypoint/plugin_configuration.png'>",
-                    "You can additionally modify parameters for each of the selected tools, such as the normalization technique before displaying the heatmap and the number of genes to display.",
                     "<div class='mt-3'></div>",
-                    "Once you have selected the desired settings, click on Generate Notebook and proceed to the <a href='#generating_the_notebook'>next step</a>."
+                    "Once you have selected the desired settings, click on <span class='bg-blue border-grey rounded px-2 py-1 micro text-white'>Generate Notebook</span> to generate the analysis."
                 ]
             },
             {
                 "title": "Generating the Notebook",
                 "text": [
-                    "Once you have selected the desired settings, you can request a notebook by clicking on Generate Notebook. This process can take between 10 seconds to 3 minutes, depending on the size of the RNA-seq dataset and the selected plugins. Once the notebook is completed, a link will be displayed on the website.",
-                    "<img src='entrypoint/notebook_result.png'>",
-                    "Your notebook is accessible from a permanent, public URL, displayed using nbviewer."
+                    "After clicking on <span class='bg-blue border-grey rounded px-2 py-1 micro text-white'>Generate Notebook</span> a notebook generation job is submitted to the BioJupies server, and a loader is displayed on the webpage.",
+                    "<img src='entrypoint/generating_notebook.png'>",
+                    "The process of notebook generation typically takes <b>between 10 seconds to 3 minutes</b>, depending on the number of plugins selected and on the size of the RNA-seq dataset."
                 ]
             },
             {
                 "title": "Accessing the Notebook",
                 "text": [
-                    "Once completed, you can access the notebook at the permanent notebook URL.",
-                    "<img src='entrypoint/notebook_preview.png'>"
+                    "Once the notebook has been generated, a link is displayed on the website.",
+                    "<img src='entrypoint/notebook_result.png'>",
+                    "To access the results of your analysis, click on <span class='bg-blue border-grey rounded px-2 py-1 micro text-white'>Open Notebook</span>. The notebook is permanently stored on BioJupies and can be accessed at any time through the same persistent, public URL."
                 ]
             }
         ]
@@ -96,43 +129,52 @@
             {
                 "title": null,
                 "text": [
-                    "With BioJupies you can automatically generate a Jupyter Notebook by uploading your own RNA-seq data at <a href='https://amp.pharm.mssm.edu/biojupies/upload' target='_blank'>https://amp.pharm.mssm.edu/biojupies/upload</a>.",
+                    "BioJupies allows users to <b>generate complete analysis notebooks from their own RNA-seq data</b> through an intuitive web interface, with no knowledge of coding required. To start uploading your data, visit <a href='https://amp.pharm.mssm.edu/biojupies/upload' target='_blank'>https://amp.pharm.mssm.edu/biojupies/upload</a>.",
                     "<img src='entrypoint/upload_data.png'>",
-                    "Data can be uploaded in two formats: <ol><li><b>FASTQ Files.</b> You can upload raw sequencing data in the .fastq.gz format directly to BioJupies. The web server will align your reads to the selected reference genome and generate a notebook from the estimated gene counts. For more information about uploading FASTQ files, click <a href='#uploading_fastq_files'>here</a>.</li><li><b>Gene Count Tables.</b> If you already performed sequence alignment, you can upload text files containing raw gene counts. Uploaded files must have gene symbols on rows and samples on columns. For more information about uploading gene counts, click <a href='#uploading_gene_counts'>here</a>.</li></ol>"
+                    "Data can be uploaded in two formats:",
+                    "<ol><li><b>Gene Count Tables.</b> If you already performed sequence alignment, you can upload text files containing raw gene counts. Uploaded files must have gene symbols on rows and samples on columns. For more information about uploading gene counts, click <a href='#uploading_gene_counts'>here</a>.</li>",
+                    "<li><b>FASTQ Files.</b> You can upload raw sequencing data in the .fastq.gz format directly to BioJupies. The web server will align your reads to the selected reference genome and generate a notebook from the estimated gene counts. For more information about uploading FASTQ files, click <a href='#uploading_fastq_files'>here</a>.</li></ol>"
                 ]
             },
             {
                 "title": "Uploading Gene Counts",
                 "text": [
-                    "If you have a matrix of gene-level counts, you can upload it using the expression table file upload page, available at <a href='https://amp.pharm.mssm.edu/biojupies/upload/table' target='_blank'>https://amp.pharm.mssm.edu/biojupies/upload/table</a>.",
+                    "If your RNA-seq data has already been processed, you can upload a table file containing of gene expression counts at <a href='https://amp.pharm.mssm.edu/biojupies/upload/table' target='_blank'>https://amp.pharm.mssm.edu/biojupies/upload/table</a>.",
                     "<img src='entrypoint/upload_table.png'>",
-                    "In order to successfully upload a table, your file should follow the following format:<ul class='mt-2'><li>Have <b>gene symbols</b> on the rows. While other gene identifiers are supported (e.g. Ensembl IDs, Entrez IDs), gene symbols will provide the best results for downstream enrichment analysis and small molecule queries.</li><li>Have <b>sample names on the columns</b>.</li><li>Have <b>raw gene expression counts</b> as values.</li></ul>"
+                    "In order to successfully upload an RNA-seq dataset, your file must have the following format:",
+                    "<ul><li>Have <b>gene identifiers on the rows</b>. We recommend using <a href='https://www.genenames.org/' target='_blank'>HGNC Gene Symbols</a> to label genes, as several plugins in the Enrichment Analysis and Small Molecule Query categories are optimized for such identifiers. BioJupies also supports other identifier systems such as <b>Ensembl IDs</b> and <b>Entrez IDs</b>; however, please note that plugins in the enrichment analysis and small molecule queries may not return optimal results.</li>",
+                    "<li>Have <b>sample names on the columns</b>.</li>",
+                    "<li>Have <b>raw gene expression counts</b> as values. While users may successfully upload and analyze normalized RNA-seq datasets (such as FPKM values or log-transformed data) please note that the <b>analysis plugins are currently optimized for analysis of raw gene counts only</b>.</li>",
+                    "<li>Be stored in the <b>.txt, .tsv, .csv, .xls</b> or <b>.xlsx</b> format.</li></ul>"
                 ]
             },
             {
                 "title": "Uploading FASTQ Files",
                 "text": [
-                    "Users can also upload FASTQ files for analysis. BioJupies will automatically align the reads and estimate gene expression through the web interface. To upload your files, go to <a href='https://amp.pharm.mssm.edu/biojupies/upload/reads' target='_blank'>https://amp.pharm.mssm.edu/biojupies/upload/reads</a>.",
+                    "If you have raw RNA-seq data in the FASTQ format, you can upload the files for analysis by BioJupies at <a href='https://amp.pharm.mssm.edu/biojupies/upload/reads' target='_blank'>https://amp.pharm.mssm.edu/biojupies/upload/reads</a>.",
                     "<img src='entrypoint/upload_reads_1.png'>",
-                    "To upload your files, click on Choose Files and then select the FASTQ files you wish to upload. BioJupies currently limits the upload of files in the .fastq.gz with a maximum file size of 5GB. Once you have selected the desired files, click on Upload Files to continue.",
+                    "To upload your files, click on <button type='button' class='micro'>Choose Files</button> and <b>select the FASTQ files</b> you wish to upload. Files must be <b>compressed using <a href='https://en.wikipedia.org/wiki/Gzip' target='_blank'>gzip</a></b> and <b>must not individually exceed 5GB</b> in size.",
                     "<div class='mt-3'></div>",
-                    "BioJupies will directly upload the selected files to the server. This process can take between a minute to over an hour, depending on the size of the files and on the speed of your internet connection. Upload progress is displayed using loading bars.",
+                    "Once you have selected the desired data, click on <span class='bg-white border-blue text-primary rounded px-2 py-1 micro highlight'>Upload Files</span> . BioJupies will automatically upload the files for analysis using <a href='https://amp.pharm.mssm.edu/cloudalignment/elysium.html' target='_blank'>Elysium</a>.",
                     "<img src='entrypoint/upload_reads_2.png'>",
-                    "Once the upload has completed, the Continue button will be activated. To proceed, click on Continue and go to the <a href='#launching_alignment_jobs'>Launching Alignment Jobs</a> section."
+                    "<b>Upload may take between a minute to over an hour</b>, depending on the size of the files and on the speed of your internet connection.",
+                    "<div class='mt-3'></div>",
+                    "Once the process is completed, the <span class='bg-blue border-grey rounded px-2 py-1 micro text-white'>Continue <i class='fa fa-angle-right ml-1'></i></span> button is activated and will allow you to proceed to the <a href='#launching_alignment_jobs'>next step</a>."
                 ]
             },
             {
                 "title": "Launching Alignment Jobs",
                 "text": [
-                    "Once you have uploaded your FASTQ files, you can specify settings in order to estimate gene expression in an optimal manner. The user is required to specify the following two parameters:",
-                    "<ol><li>The <b>organism</b> from which the RNA-seq samples were generated. This parameter will be used to select the reference genome in order to estimate gene expression. BioJupies currently supports the human and mouse genomes from Ensembl.</li>",
-                    "<li>Whether the FASTQ files were generated using <b>single-end sequencing</b> or <b>paired-end sequencing</b>. This parameter allows BioJupies to determine whether each FASTQ file should be used to generate samples individually, or whether samples should be generated from pairs of files.</li></ol>",
+                    "After the FASTQ files have been uploaded, you can configure the alignment process using the interface below:",
                     "<img src='entrypoint/align_reads.png'>",
-                    "If the user selects <b>single-end sequencing</b>, each FASTQ file will be individually aligned to the reference genome and produce one column in the resulting dataset.",
+                    "In order to estimate gene expression, you are required to specify two parameters:",
+                    "<ol><li>The <b>organism</b> from which the RNA-seq samples were generated. This parameter will be used to select the reference genome for alignment using <a href='https://amp.pharm.mssm.edu/cloudalignment/elysium.html' target='_blank'>Elysium</a>.</li>",
+                    "<li>Whether the FASTQ files were generated using <b>single-end sequencing</b> or <b>paired-end sequencing</b>.</li></ol>",
+                    "By selecting <b>single-end sequencing</b>, the FASTQ files will be individually aligned to the reference genome and will each return one column in the resulting dataset.",
                     "<img src='entrypoint/single_end.png'>",
-                    "If the user selects <b>paired-end sequencing</b>, the user is required to specify pairs of FASTQ files generated from the same biological sample. These pairs will be used in the alignment process to estimate gene expression.",
+                    "By selecting <b>paired-end sequencing</b>, you will be required to specify which pairs of FASTQ files have been generated from the same biological sample. The pairs will be used to perform a paired alignment, and will each return one column in the resulting dataset. Samples can be optionally renamed using the text boxes provided.",
                     "<img src='entrypoint/paired_end.png'>",
-                    "Once the user has selected the desired settings for the alignment step, they can click on the Continue button. This will launch the alignment jobs using the Elysium API. You can then proceed to <a href='#viewing_job_status'>Viewing Job Status</a>."
+                    "Once you have selected the desired alignment settings, click <span class='bg-blue border-grey rounded px-2 py-1 micro text-white'>Continue <i class='fa fa-angle-right ml-1'></i></span> to launch the alignment jobs, then proceed to the <a href='#viewing_job_status'>next step</a>."
                 ]
             },
             {

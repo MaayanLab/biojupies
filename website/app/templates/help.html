@@ -84,7 +84,9 @@
 {% block footer %}
 <script type="text/javascript">
 	// Activate Scrollspy
-	$('body').scrollspy({ target: '#categories' })
+	$(window).on("load", function() {
+		$('body').scrollspy({ target: '#categories' })
+	})
 
 	// Activate iframes asynchronously
 	// $(document).ready(function() {

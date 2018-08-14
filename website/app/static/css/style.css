@@ -71,6 +71,7 @@ body {
 .border-hover-blue:hover { border: 1px solid #3cb2f7 !important; border-bottom: 2px solid #3bb1f7 !important; }
 .border-black-custom { border: 1px solid black !important; border-bottom: 2px solid #8a8a8a !important; }
 .border-grey-light { border: 1px solid rgba(0,0,0,0.1); }
+.border-blue { border: 1px solid #007bff; }
 .border-none { border: none; }
 /*.border-black-custom:focus { border-bottom: 1px solid black !important; }*/
 
@@ -476,7 +477,7 @@ input:checked + .radio-label {
 #categories nav nav { display: none; }
 #categories nav a.active + nav { display: block; }
 
-#help ol li { margin-top: 13px; }
+#help li { margin-top: 13px; }
 
 #help img { margin: 10px auto 15px auto; max-width: 100%;; }
 
