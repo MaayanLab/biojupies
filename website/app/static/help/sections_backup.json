@@ -1,0 +1,56 @@
+[
+    {
+        "title": "Reusing Notebooks",
+        "sections": [
+            {
+                "title": null,
+                "text": [
+                    "Notebooks generated using BioJupies Once a notebook has been generated on BioJupies, it can be easily downloaded and run on the user's local machine. To achieve this, the user must install Docker on their local machine.",
+                    "For more information, see the <a href='docker' target='_blank'>Reusing Notebooks</a> page or the <a href='#6._reusing_notebooks'>Video Tutorial</a>."
+                ]
+            },
+            {
+                "title": "Pulling the Docker Container",
+                "text": [
+                    "If you're on Mac OS X, pull the docker container from the terminal.",
+                    "If you're on windows, use the docker quickstart terminal."
+                ]
+            },
+            {
+                "title": "Launching the Docker Container",
+                "text": [
+                    "Afterwards, launch the docker container using the command"
+                ]
+            },
+            {
+                "title": "Executing the Notebook",
+                "text": [
+                    "Finally, navigate to port 8888 and execute your notebook."
+                ]
+            }
+        ]
+    },
+    {
+        "title": "Contributing Plugins",
+        "sections": [
+            {
+                "title": "What are Plugins?",
+                "text": [
+                    "Plugins are snippets of code to analyze data"
+                ]
+            },
+            {
+                "title": "Current Plugins",
+                "text": [
+                    "Currently there are N plugins divided into M categories."
+                ]
+            },
+            {
+                "title": "How to Contribute",
+                "text": [
+                    "To contribute, visit the <a href='contribute' target='_blank'>Contribute Page</a> or the <a href='https://github.com/MaayanLab/biojupies-plugins' target='_blank'>MaayanLab/biojupies-plugins</a> GitHub repository."
+                ]
+            }
+        ]
+    }
+]

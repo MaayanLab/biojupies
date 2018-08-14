@@ -99,7 +99,7 @@
                 "text": [
                     "After selecting the desired RNA-seq dataset and analysis plugins, you can <b>customize your notebook</b> by changing its title, adding biological tags, or modifying optional parameters for each of the selected plugins.",
                     "<img src='entrypoint/notebook_configuration.png'>",
-                    "To customize your analysis, click on the <span class='bg-lightgrey border-grey rounded px-2 py-1 micro text-muted'>Modify Parameters <i class='fa fa-angle-down ml-1'></i></span> button displayed on the right of each plugin. BioJupies allows you to optionally <b>modify analysis parameters</b> for a selection of RNA-seq analysis plugins.",
+                    "To customize your analysis, click on the <span class='bg-lightgrey border-grey rounded px-2 py-1 micro text-muted'>Modify Parameters <i class='fa fa-angle-down ml-1'></i></span> button displayed on the right of each plugin. BioJupies allows you to optionally <b>modify analysis parameters</b> for a subset of RNA-seq analysis plugins.",
                     "<img src='entrypoint/plugin_configuration.png'>",
                     "<div class='mt-3'></div>",
                     "Once you have selected the desired settings, click on <span class='bg-blue border-grey rounded px-2 py-1 micro text-white'>Generate Notebook</span> to generate the analysis."
@@ -215,110 +215,89 @@
         "title": "Chrome Extension",
         "sections": [
             {
-                "title": "Overview ",
+                "title": null,
                 "text": [
-                    "The Chrome Extension enhances the website of the Gene Expression Omnibus by adding buttons which allow the user to generate notebooks."
+                    "In addition to the web server, BioJupies is also freely available for download as a <b>Google Chrome browser extension</b>.",
+                    "<div class='mt-3'></div>",
+                    "The Chrome extension enhances the <b>Gene Expression Omnibus</b> (<a href='https://www.ncbi.nlm.nih.gov/gds' target='_blank'>https://www.ncbi.nlm.nih.gov/gds</a>) DataSet browser, a popular website and repository which indexes tens of thousands of publicly available datasets published in peer-reviewed journals.",
+                    "<div class='mt-3'></div>",
+                    "To achieve this, the extension embeds interfaces which allow users to <b>automatically generate notebooks directly from the GEO website</b>. This allows GEO users to take advantage of the BioJupies notebook generation capabilities without having to leave the website, thus maintaining access to its advanced search features."
                 ]
             },
             {
                 "title": "Installing the Extension",
                 "text": [
-                    "The Chrome Extension can be installed for free on Chrome Web browsers at the <a href='https://chrome.google.com/webstore/detail/biojupies-generator/picalhhlpcjhonibabfigihelpmpadel?hl=en-US' target='_blank'>Chrome Web Store</a>.",
-                    "<img src='entrypoint/chrome_webstore.png'>"
+                    "The Chrome Extension can be installed for free from the Chrome Web Store at the following URL: <a href='https://chrome.google.com/webstore/detail/biojupies-generator/picalhhlpcjhonibabfigihelpmpadel?hl=en-US' target='_blank'>https://chrome.google.com/webstore/detail/biojupies-generator/picalhhlpcjhonibabfigihelpmpadel</a>.",
+                    "<img src='entrypoint/chrome_webstore.png'>",
+                    "To install the extension, click on the <b>Add to Chrome</b> button displayed on the web store. Once installed, the BioJupies icon will be displayed on the top right corner of your Chrome window."
                 ]
             },
             {
                 "title": "Searching Data",
                 "text": [
-                    "Once installed, the Chrome Extension is activated on the search results pages on the Gene Expression Omnibus dataset search.",
+                    "Once the Chrome Extension has been installed, it will be activated on the <b>Gene Expression Omnibus DataSet browser</b>.",
+                    "<div class='mt-2'></div>",
+                    "The extension adds a <img src='entrypoint/chrome_button.png' class='nomargin h-50px'> button beside each RNA-seq dataset which is available for analysis using BioJupies.",
+                    "<div class='mt-3'></div>",
+                    "An example is shown below for <a href='https://www.ncbi.nlm.nih.gov/gds/?term=GSE88741' target='_blank'>https://www.ncbi.nlm.nih.gov/gds/?term=GSE88741</a>.",
                     "<img src='entrypoint/geo_search.png'>",
-                    "Buttons are only displayed besides datasets which have been processed by ARCHS4 and integrated in BioJupies, which is about 8,000. Since GEO contains a large number of diverse datasets in addition to RNA-seq, most entries will not have buttons beside them."
+                    "By clicking on the button, users can proceed to <a href='#adding_analysis_plugins_'>Adding Analysis Plugins</a> in order to <b>generate a customized Jupyter Notebook</b> from the desired dataset entirely through a user interface, with no knowledge of coding required.",
+                    "<div class='mt-3'></div>",
+                    "Note: <b>BioJupies currently supports ~8,000 RNA-seq datasets</b> processed by <a href='https://amp.pharm.mssm.edu/archs4/' target='_blank'>ARCHS4</a>. Since the Gene Expression Omnibus indexes a large number of datasets which have not been generated using RNA-sequencing, <b>many search results will not have a Generate Notebook button</b>.",
+                    "<div class='mt-3'></div>",
+                    "For a complete list of processed datasets see <a href='https://amp.pharm.mssm.edu/biojupies/analyze/search' target='_blank'>https://amp.pharm.mssm.edu/biojupies/analyze/search</a>."
                 ]
             },
             {
                 "title": "Adding Analysis Plugins ",
                 "text": [
-                    "Once you have identified a dataset you wish to analyze, click on the Generate Notebook button. This will trigger a menu where you can choose the data analysis and visualizaton tools to add to the notebook.",
+                    "After clicking on the Generate Notebook button, you can <b>add one or more RNA-seq analysis plugins</b> using the interface shown below. The selected plugins will <b>analyze the dataset and embed interactive plots and visualizations</b> in the resulting notebook.",
                     "<img src='entrypoint/chrome_adding_plugins.png'>",
-                    "Click on the cards to add or remove the tools. Once you have made your selection, click on Next to proceed."
+                    "You can <b>toggle plugins</b> by clicking on each card. Plugins highlighted in blue will be added to your notebook. Once you have selected the desired plugins, click on <span class='bg-lightgrey border-grey rounded px-2 py-1 micro text-muted'>Next</span> .",
+                    "<div class='mt-3'></div>",
+                    "If you only selected plugins in the Exploratory Data Analysis category, proceed to <a href='#customizing_parameters_'>Customizing Parameters</a>; otherwise proceed to <a href='#selecting_groups_'>Selecting Groups</a>."
                 ]
             },
             {
                 "title": "Selecting Groups ",
                 "text": [
-                    "If you have selected tools aside from Exploratory Data Analysis, you are required to specify two groups of samples in order to generate a differential gene expression signature.",
+                    "If you have selected select one or more plugins in the <b>Differential Expression, Enrichment Analysis or Small Molecule Query</b> categories, you are required to specify <b>two groups of samples</b>.",
+                    "<div class='mt-3'></div>",
+                    "The two groups will be used to perform a <b>differential gene expression analysis</b> and identify a gene expression signature from the data. Groups are defined using the interface below:",
                     "<img src='entrypoint/chrome_adding_groups.png'>",
-                    "To select the groups, click beside the sample names you wish to assign to group A on the left, then the samples you wish to add to group B on the right. Optionally, you can specify the names of the groups using the text boxes displayed below."
+                    "To define the groups of samples:",
+                    "<ol><li><b>Select the IDs on the left column</b> to assign samples to Group A.</li>",
+                    "<li><b>Select the IDs on the right column</b> to assign samples to Group B.</li>",
+                    "<li>Optionally, <b>name the groups</b> using the text boxes displayed at the bottom of the window.</li></ol>",
+                    "<div class='mt-3'></div>",
+                    "In order to improve the statistical validity of the differential expression analysis, BioJupies required that <b>groups contain at least three RNA-seq samples</b>.",
+                    "<div class='mt-3'></div>",
+                    "Once you have selected the desired groups, click <span class='bg-lightgrey border-grey rounded px-2 py-1 micro text-muted'>Next</span> to proceed to the <a href='#customizing_parameters_'>next step</a>."
                 ]
             },
             {
                 "title": "Customizing Parameters ",
                 "text": [
-                    "Once you have selected the desired plugins, you can customize the analysis by changing the notebook title or modifying optional tool parameters",
+                    "After selecting the desired RNA-seq dataset and analysis plugins, you can <b>customize your notebook</b> by changing its title or modifying optional parameters for each of the selected plugins.",
                     "<img src='entrypoint/chrome_notebook_configuration.png'>",
-                    "After this, click on Generate Notebook to generate your notebook"
+                    "To customize your analysis, click on the <i class='fa fa-caret-down text-muted mx-1'></i> button displayed on the right of each plugin name. BioJupies allows you to optionally <b>modify analysis parameters</b> for a subset of RNA-seq analysis plugins.",
+                    "<div class='mt-3'></div>",
+                    "Once you have selected the desired settings, click on <span class='bg-lightgrey border-grey rounded px-2 py-1 micro text-muted'>Generate Notebook</span> to generate the analysis."
                 ]
             },
             {
-                "title": "Generating a Notebook ",
+                "title": "Generating the Notebook ",
                 "text": [
-                    "After clicking on generate notebook, a notebook generation job is launched. This process typically takes between 10 seconds to 3 minutes, depending on the size of the dataset and the number of plugins added. Once completed, a permanent link to your notebook is displayed.",
-                    "<img src='entrypoint/chrome_access_notebook.png'>",
-                    "To access your notebook, Click on Open notebook."
-                ]
-            }
-        ]
-    },
-    {
-        "title": "Reusing Notebooks",
-        "sections": [
-            {
-                "title": null,
-                "text": [
-                    "Once a notebook has been generated on BioJupies, it can be easily downloaded and run on the user's local machine. To achieve this, the user must install Docker on their local machine.",
-                    "For more information, see the <a href='docker' target='_blank'>Reusing Notebooks</a> page or the <a href='#6._reusing_notebooks'>Video Tutorial</a>."
-                ]
-            },
-            {
-                "title": "Pulling the Docker Container",
-                "text": [
-                    "If you're on Mac OS X, pull the docker container from the terminal.",
-                    "If you're on windows, use the docker quickstart terminal."
-                ]
-            },
-            {
-                "title": "Launching the Docker Container",
-                "text": [
-                    "Afterwards, launch the docker container using the command"
-                ]
+                    "After clicking on <span class='bg-lightgrey border-grey rounded px-2 py-1 micro text-muted'>Generate Notebook</span> a notebook generation job is submitted to the BioJupies server, and a loader is displayed on the window.",
+                    "<img src='entrypoint/chrome_generating_notebook.png'>",
+                    "The process of notebook generation typically takes <b>between 10 seconds to 3 minutes</b>, depending on the number of plugins selected and on the size of the RNA-seq dataset."                ]
             },
             {
                 "title": "Accessing the Notebook ",
                 "text": [
-                    "Finally, navigate to port 8888 and execute your notebook."
-                ]
-            }
-        ]
-    },
-    {
-        "title": "Contributing Plugins",
-        "sections": [
-            {
-                "title": "What are Plugins?",
-                "text": [
-                    "Plugins are snippets of code to analyze data"
-                ]
-            },
-            {
-                "title": "Current Plugins",
-                "text": [
-                    "Currently there are N plugins divided into M categories."
-                ]
-            },
-            {
-                "title": "How to Contribute",
-                "text": [
-                    "To contribute, visit the <a href='contribute' target='_blank'>Contribute Page</a> or the <a href='https://github.com/MaayanLab/biojupies-plugins' target='_blank'>MaayanLab/biojupies-plugins</a> GitHub repository."
+                    "Once the notebook has been generated, a link is displayed on the window.",
+                    "<img src='entrypoint/chrome_notebook_link.png'>",
+                    "To access the results of your analysis, click on <span class='bg-primary border-grey rounded px-2 py-1 micro text-white'>Open Notebook</span>. The notebook is permanently stored on BioJupies and can be accessed at any time through the same persistent, public URL."
                 ]
             }
         ]
