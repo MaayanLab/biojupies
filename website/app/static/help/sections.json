@@ -44,8 +44,8 @@
                     "<img src='entrypoint/upload_data.png'>",
                     "<div class='mt-2'></div>",
                     "Data can be uploaded in two formats: <ol>",
-                    "<li><b>FASTQ Files.</b> You can upload raw sequencing data in the .fastq.gz format directly to BioJupies. The web server will align your reads to the selected reference genome and generate a notebook from the estimated gene counts. For more information about uploading FASTQ files, click <a href='#uploading_fastq_files'>here</a>.</li>",
-                    "<li><b>Gene Count Tables.</b> If you already performed sequence alignment, you can upload text files containing raw gene counts. Uploaded files must have gene symbols on rows and samples on columns. For more information about uploading gene counts, click <a href='#uploading_gene_counts'>here</a>.</li></ol>",
+                    "<li><b>Gene Count Tables.</b> If you already performed sequence alignment, you can upload text files containing raw gene counts. Uploaded files must have gene symbols on rows and samples on columns. For more information about uploading gene counts, click <a href='#uploading_gene_counts'>here</a>.</li>",
+                    "<li><b>FASTQ Files.</b> You can upload raw sequencing data in the .fastq.gz format directly to BioJupies. The web server will align your reads to the selected reference genome and generate a notebook from the estimated gene counts. For more information about uploading FASTQ files, click <a href='#uploading_fastq_files'>here</a>.</li></ol>",
                     "<div class='mt-3'></div>",
                     "Once you have uploaded your data, proceed to <a href='#adding_analysis_plugins'>Adding Analysis Plugins</a>."
                 ]
