@@ -428,6 +428,23 @@ def view_notebook(notebook_uid):
 	else:
 		abort(404)
 
+#############################################
+########## 11. GTEx Interface
+#############################################
+### Allows users to generate notebooks from GTEx data.
+### Links to: .
+### Accessible from: .
+
+@app.route(entry_point+'/gtex')
+def gtex():
+
+	# GTEx sample metadata
+	# gtex_dataframe = pd.read_sql_table('gtex_metadata', engine)
+	gtex_dataframe = pd.read_sql_query('SELECT * FROM gtex_metadata LIMIT 500', engine)
+
+	# Return
+	return render_template('analyze/gtex.html', gtex_dataframe=gtex_dataframe)
+
 ##################################################
 ########## 2.2 APIs
 ##################################################
@@ -919,7 +936,7 @@ def notebook_api(notebook_uid):
 
 #######################################################
 #######################################################
-########## 5. Help
+########## 6. Help
 #######################################################
 #######################################################
 ##### Help center.
