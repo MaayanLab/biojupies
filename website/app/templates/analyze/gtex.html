@@ -18,7 +18,7 @@
 	<hr width="100%" class="my-4">
 	<div class="row">
 		<div class="light very-small my-1 col-lg-8 col-xl-9 text-justify">
-			Select samples from GTEx dataset.
+			Using the tables below, you can select <b>two groups of samples</b> from the GTEx dataset. Gene expression in the two groups will be compared in the final Jupyter Notebook. To assign samples to a group, <b>filter the table using the provided menus</b> and <b>use the checkboxes</b>; then click Continue to proceed.
 		</div>
 		<div class="col-lg-4 col-xl-3 my-auto text-center pt-3 pt-lg-0">
 			<button class="btn black border-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
@@ -36,8 +36,40 @@
             <div class="row">
                 {% for i in range(2) %}
                     <div class="col-6">
+                        
+                        <!-- Title -->
                         <div class='medium text-center my-3'>Select samples for Group {{ loop.index }}</div>
-                        {{ gtex_dataframe.to_html(index=False, classes='gtex-table micro', table_id='sample-group-'+(loop.index|string)) | safe }}
+
+                        <!-- Table -->
+                        <div class="gtex-loader pt-5">
+                            <div class="small light text-center">Loading samples...</div>
+                            <div class="loader"></div>
+                        </div>
+                        <table class='gtex-table d-none tiny display w-100'>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Age</th>
+                                    <th>Gender</th>
+                                    <th>Tissue</th>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th>Age</th>
+                                    <th>Gender</th>
+                                    <th>Tissue</th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+
                     </div>
                 {% endfor %}
             </div>
@@ -55,29 +87,99 @@
 
     // Data Table
     $(document).ready(function () {
-        $('.gtex-table').DataTable({
-            initComplete: function () {
-                this.api().columns().every(function () {
-                    var column = this;
-                    var select = $('<select><option value=""></option></select>')
-                        .appendTo($(column.footer()).empty())
-                        .on('change', function () {
-                            var val = $.fn.dataTable.util.escapeRegex(
-                                $(this).val()
-                            );
 
-                            column
-                                .search(val ? '^' + val + '$' : '', true, false)
-                                .draw();
-                        });
+        // Load GTEx metadata
+        $.ajax({
+            url: "{{ url_for('gtex_api') }}",
+            dataType: "json",
+            method: "POST",
+            success: function(json) {
 
-                    column.data().unique().sort().each(function (d, j) {
-                        select.append('<option value="' + d + '">' + d + '</option>')
-                    });
-                });
+                // Loop through tables
+                $('.gtex-table').each(function(index, elem) {
+
+                    // Create table
+                    var table = $(elem).DataTable({
+                        data: json,
+                        dom: 'Bfrtip',
+                        columns: [
+                            {data: 'checkbox', orderable: false, className: 'select-checkbox'},
+                            {data: 'Age', orderable: false},
+                            {data: 'Gender', orderable: false},
+                            {data: 'Tissue', orderable: false}
+                        ],
+                        select: {
+                            style: 'multi'
+                        },
+                        buttons: [
+                            {
+                                text: 'Select all',
+                                action: function () {
+                                    table.rows().select();
+                                }
+                            },
+                            {
+                                text: 'Select none',
+                                action: function () {
+                                    table.rows().deselect();
+                                }
+                            }
+                        ],
+                        initComplete: function () {
+                            this.api().columns().every(function () {
+                                var column = this;
+                                if (column.index() > 0)
+                                {
+                                    var select = $('<select><option value=""></option></select>')
+                                        .appendTo($(column.header()).empty())
+                                        .on('change', function () {
+                                            var val = $.fn.dataTable.util.escapeRegex(
+                                                $(this).val()
+                                            );
+
+                                            column
+                                                .search(val ? '^' + val + '$' : '', true, false)
+                                                .draw();
+                                        });
+
+                                    column.data().unique().sort().each(function (d, j) {
+                                        select.append('<option value="' + d + '">' + d + '</option>')
+                                    });
+                                }
+                            });
+                        }
+                    })
+
+                })
+
+                // Show table
+                $('.gtex-table').removeClass('d-none');
+                $('.gtex-loader').addClass('d-none');
             }
-        });
-    });
+        })
+    })
+            // initComplete: function () {
+            //     this.api().columns().every(function () {
+            //         var column = this;
+            //         var select = $('<select><option value=""></option></select>')
+            //             .appendTo($(column.footer()).empty())
+            //             .on('change', function () {
+            //                 var val = $.fn.dataTable.util.escapeRegex(
+            //                     $(this).val()
+            //                 );
+
+            //                 column
+            //                     .search(val ? '^' + val + '$' : '', true, false)
+            //                     .draw();
+            //             });
+
+            //         column.data().unique().sort().each(function (d, j) {
+            //             select.append('<option value="' + d + '">' + d + '</option>')
+            //         });
+            //     });
+            // }
+        // });
+    // });
 
 
 </script>

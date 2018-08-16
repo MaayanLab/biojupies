@@ -438,16 +438,16 @@ def view_notebook(notebook_uid):
 @app.route(entry_point+'/gtex')
 def gtex():
 
-	# GTEx sample metadata
-	# gtex_dataframe = pd.read_sql_table('gtex_metadata', engine)
-	gtex_dataframe = pd.read_sql_query('SELECT * FROM gtex_metadata LIMIT 500', engine)
-
 	# Return
-	return render_template('analyze/gtex.html', gtex_dataframe=gtex_dataframe)
+	return render_template('analyze/gtex.html')
 
 ##################################################
 ########## 2.2 APIs
 ##################################################
+
+#############################################
+########## 1. Ontology API
+#############################################
 ### Returns a JSON of ontology terms.
 ### Input: a string specifying the ontology term category, specified by a GET parameter.
 ### Output: a JSON containing a list of elements with the following structure: [{"term_id": "", "term_name": "", "term_description": ""}, ...]
@@ -478,6 +478,22 @@ def ontology_api():
 
 	# Return
 	return json.dumps(query_dataframe.to_dict(orient='records'))
+
+#############################################
+########## 2. GTEx API
+#############################################
+### Returns a JSON containing GTEx sample metadata
+### Links to: .
+### Accessible from: .
+
+@app.route(entry_point+'/api/gtex', methods=['POST'])
+def gtex_api():
+
+	# Read data
+	gtex_data = pd.read_sql_query('SELECT "" AS checkbox, AGE AS Age, SMTS AS Tissue, SEX AS Gender FROM gtex_metadata LIMIT 50', engine).replace('1', 'Male').replace('2', 'Female').to_dict(orient='records')
+
+	# Return
+	return json.dumps(gtex_data)
 
 #######################################################
 #######################################################
