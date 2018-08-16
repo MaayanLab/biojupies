@@ -36,40 +36,42 @@
             <div class="row">
                 {% for i in range(2) %}
                     <div class="col-6">
-                        
-                        <!-- Title -->
-                        <div class='medium text-center my-3'>Select samples for Group {{ loop.index }}</div>
+                        <div class="mx-1 px-4 bg-lightgrey rounded border-custom">
 
-                        <!-- Table -->
-                        <div class="gtex-loader pt-5">
-                            <div class="small light text-center">Loading samples...</div>
-                            <div class="loader"></div>
+                            <!-- Title -->
+                            <div class='medium text-center my-3'>Select Samples for Group {{ loop.index }}</div>
+    
+                            <!-- Table -->
+                            <div class="gtex-loader pt-5">
+                                <div class="small light text-center">Loading samples...</div>
+                                <div class="loader"></div>
+                            </div>
+                            <table class='gtex-table d-none tiny display w-100 text-center'>
+                                <thead class='very-small'>
+                                    <tr>
+                                        <th></th>
+                                        <th>Age</th>
+                                        <th>Gender</th>
+                                        <th>Tissue</th>
+                                    </tr>
+                                    <tr>
+                                        <th></th>
+                                        <th>Age</th>
+                                        <th>Gender</th>
+                                        <th>Tissue</th>
+                                    </tr>
+                                </thead>
+                                <tfoot>
+                                    <tr>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+
                         </div>
-                        <table class='gtex-table d-none tiny display w-100'>
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>Age</th>
-                                    <th>Gender</th>
-                                    <th>Tissue</th>
-                                </tr>
-                                <tr>
-                                    <th></th>
-                                    <th>Age</th>
-                                    <th>Gender</th>
-                                    <th>Tissue</th>
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                </tr>
-                            </tfoot>
-                        </table>
-
                     </div>
                 {% endfor %}
             </div>
@@ -101,6 +103,7 @@
                     // Create table
                     var table = $(elem).DataTable({
                         data: json,
+                        aaSorting: [],
                         dom: 'Bfrtip',
                         columns: [
                             {data: 'checkbox', orderable: false, className: 'select-checkbox'},
@@ -113,13 +116,13 @@
                         },
                         buttons: [
                             {
-                                text: 'Select all',
+                                text: 'Select All',
                                 action: function () {
-                                    table.rows().select();
+                                    table.rows({filter: 'applied'}).select();
                                 }
                             },
                             {
-                                text: 'Select none',
+                                text: 'Deselect All',
                                 action: function () {
                                     table.rows().deselect();
                                 }
