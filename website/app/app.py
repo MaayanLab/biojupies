@@ -210,16 +210,22 @@ def search_data():
 def add_tools():
 
 	# Check if dataset has been selected
-	if request.args.get('uid') or request.form.get('gse-gpl'):
+	if request.args.get('uid') or request.form.get('gse-gpl') or request.form.get('gtex-samples-1'):
 
 		# Get dataset information from request
-		selected_data = {'uid': request.args.get('uid'), 'source': 'upload'} if 'uid' in request.args.keys() else {'gse': request.form.get('gse-gpl').split('-')[0], 'gpl': request.form.get('gse-gpl').split('-')[1], 'source': 'archs4'}
+		if request.args.get('uid'):
+			selected_data = {'uid': request.args.get('uid'), 'source': 'upload'}
+		elif request.args.get('gse-gpl'):
+			selected_data = {'gse': request.form.get('gse-gpl').split('-')[0], 'gpl': request.form.get('gse-gpl').split('-')[1], 'source': 'archs4'}
+		elif request.form.get('gtex-samples-1'):
+			selected_data = {'source': 'gtex', 'gtex-samples-1': request.form.get('gtex-samples-1'), 'gtex-samples-2': request.form.get('gtex-samples-2')}
 
 		# Perform tool and section query from database
 		tools, sections = [pd.read_sql_table(x, engine) for x in ['tool', 'section']]
-		tools = tools if dev else tools[tools['display'] == True]
-		if dev:
-			tools = tools[[x not in ['pathway_enrichment', 'tf_enrichment', 'kinase_enrichment', 'mirna_enrichment'] for x in tools['tool_string']]]
+		tools = tools[tools['display'] == True]
+		# tools = tools if dev else tools[tools['display'] == True]
+		# if dev:
+			# tools = tools[[x not in ['pathway_enrichment', 'tf_enrichment', 'kinase_enrichment', 'mirna_enrichment'] for x in tools['tool_string']]]
 		tools, sections = [x.to_dict(orient='records') for x in [tools, sections]]
 
 		# Combine tools and sections
@@ -263,9 +269,10 @@ def configure_analysis():
 		# Check if requires signature
 		signature_tools = pd.read_sql_query('SELECT tool_string FROM tool WHERE requires_signature = 1', engine)['tool_string'].values
 		requires_signature = any([x in signature_tools for x in [x for x in f.lists()][0][-1]])
+		print(f)
 
 		# Signature generation
-		if requires_signature:
+		if requires_signature and not f.get('source') == 'gtex':
 
 			# Get metatada for processed datasets
 			if 'gse' in request.form.keys():
@@ -337,7 +344,7 @@ def generate_notebook():
 		p = {x:{} for x in d['tool']} if isinstance(d['tool'], list) else {d['tool']: {}}
 		g = {x:[] for x in ['a', 'b', 'none']}
 		for key, value in d.items():
-			if key not in ['sample-table_length']:
+			if key not in ['sample-table_length', 'gtex-samples-1', 'gtex-samples-2']:
 				if '-' in key:
 					if key.split('-')[0] in d['tool']:
 						tool_string, parameter_string = key.split('-')
@@ -349,7 +356,13 @@ def generate_notebook():
 		# Generate signature
 		signature_tools = pd.read_sql_query('SELECT tool_string FROM tool WHERE requires_signature = 1', engine)['tool_string'].values
 		requires_signature = any([x in signature_tools for x in p.keys()])
-		if requires_signature:
+		if d.get('source') == 'gtex':
+			signature = {
+				"method": "limma",
+				"A": {"name": d.get('group_a_label', 'Group 1'), "samples": d['gtex-samples-1'].split(',')},
+				"B": {"name": d.get('group_b_label', 'Group 2'), "samples": d['gtex-samples-2'].split(',')}
+			}
+		elif requires_signature:
 			signature = {
 				"method": "limma",
 				"A": {"name": d.get('group_a_label', ''), "samples": g['a']},
@@ -367,11 +380,21 @@ def generate_notebook():
 		req =  urllib.request.Request('http://amp.pharm.mssm.edu/notebook-generator-server{}/api/version'.format(dev_str)) # this will make the method "POST"
 		version = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['latest_library_version']
 
+		# Get source
+		print(d)
+		if 'gse' in d.keys() and 'gpl' in d.keys():
+			data_parameters = {'gse': d['gse'], 'platform': d['gpl']}
+		elif 'uid' in d.keys():
+			data_parameters = {'uid': d['uid']}
+		elif d['source'] == 'gtex':
+			data_parameters = {'samples': d['gtex-samples-1'].split(',')+d['gtex-samples-2'].split(',')}
+
+
 		# Generate notebook configuration
 		c = {
 			'notebook': {'title': d.get('notebook_title'), 'live': 'False', 'version': version},
 			'tools': [{'tool_string': x, 'parameters': p.get(x, {})} for x in p.keys()],
-			'data': {'source': d['source'], 'parameters': {'gse': d['gse'], 'platform': d['gpl']} if 'gse' in d.keys() and 'gpl' in d.keys() else {'uid': d['uid']}},
+			'data': {'source': d['source'], 'parameters': data_parameters},
 			'signature': signature,
 			'terms': tags
 		}
@@ -490,7 +513,7 @@ def ontology_api():
 def gtex_api():
 
 	# Read data
-	gtex_data = pd.read_sql_query('SELECT "" AS checkbox, AGE AS Age, SMTS AS Tissue, SEX AS Gender, SAMPID AS id FROM gtex_metadata LIMIT 100', engine).replace('1', 'Male').replace('2', 'Female').to_dict(orient='records')
+	gtex_data = pd.read_sql_query('SELECT "" AS checkbox, AGE AS Age, SMTS AS Tissue, SEX AS Gender, SAMPID AS id FROM gtex_metadata', engine).replace('1', 'Male').replace('2', 'Female').to_dict(orient='records')
 
 	# Return
 	return json.dumps(gtex_data)

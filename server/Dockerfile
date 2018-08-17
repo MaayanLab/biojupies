@@ -44,7 +44,7 @@ RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("limma")
 RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("edgeR");'
 RUN . /notebook-generator-server/venv/bin/activate && pip3 install flask-cors
 
-ENV LIBRARY_VERSION=v0.8.2
+ENV LIBRARY_VERSION=v0.8.3
 
 COPY . /notebook-generator-server  
 WORKDIR /notebook-generator-server
