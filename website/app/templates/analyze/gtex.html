@@ -7,6 +7,41 @@
 <!-- Content -->
 {% block content %}
 
+<style>
+.dataTables_length, .dataTables_filter, .dataTables_info, .dataTables_paginate {
+    font-size: 10pt;
+}
+.select-info {
+    display: none;
+}
+.paginate_button {
+    background-color: white;
+    border: 1px solid #c9c9c9 !important;
+    border-bottom: 2px solid #d5d5d5 !important;
+    border-radius: .25rem !important;
+}
+.paginate_button:not(.disabled):hover {
+    background: #007bff !important;
+}
+.dataTables_filter input {
+    border: 1px solid #c9c9c9 !important;
+    border-radius: .25rem !important;
+}
+.dataTables_info {
+    max-width: 50%;
+}
+[role="row"] { cursor: pointer;; }
+[role="row"].selected { background-color: #007bff !important; color: white !important;}
+/* [role="row"].selected td::before { border-color: white !important; } */
+
+.dataTables_wrapper select { outline: none !important; background-color: white !important; }
+
+.col-6:first-child {
+    /* border-right: 1px solid rgba(0,0,0,.1); */
+}
+
+</style>
+
 <div class="px-6">
 
 	<!-- Title -->
@@ -31,22 +66,33 @@
 	 <!-- Add Tools Form -->
 	 <div class="row">
 		<hr width="100%" class="mt-4 mb-2">
-		<div class="col-12 px-3 mb-5">
+		<div class="col-12 px-3">
 
             <div class="row">
                 {% for i in range(2) %}
-                    <div class="col-6">
-                        <div class="mx-1 px-4 bg-lightgrey rounded border-custom">
+                    <div class="col-6 mt-2 mb-4">
+                        <div class="mt-0 mb-4 pb-3 px-3">
 
                             <!-- Title -->
-                            <div class='medium text-center my-3'>Select Samples for Group {{ loop.index }}</div>
+                            <div class='mt-3 mb-0 gtex-table-header d-none'>
+                                <div class="px-5">
+                                    <span class='medium bold mb-2'>Group {{ loop.index }}</span>
+                                    <span class='float-right very-small light mt-1'>
+                                        <span id="nr-samples-{{ loop.index }}">0</span>
+                                        <span> samples selected</span>
+                                    </span>
+                                </div>
+                                <hr width="100%" class="mt-3 mb-4">
+                            </div>
     
-                            <!-- Table -->
-                            <div class="gtex-loader pt-5">
+                            <!-- Loader -->
+                            <div class="gtex-loader my-5">
                                 <div class="small light text-center">Loading samples...</div>
                                 <div class="loader"></div>
                             </div>
-                            <table class='gtex-table d-none tiny display w-100 text-center'>
+
+                            <!-- Table -->
+                            <table class='gtex-table d-none tiny w-100 text-center'>
                                 <thead class='very-small'>
                                     <tr>
                                         <th></th>
@@ -104,7 +150,8 @@
                     var table = $(elem).DataTable({
                         data: json,
                         aaSorting: [],
-                        dom: 'Bfrtip',
+                        // dom: 'Bfrtip',
+                        pagingType: 'simple',
                         columns: [
                             {data: 'checkbox', orderable: false, className: 'select-checkbox'},
                             {data: 'Age', orderable: false},
@@ -114,20 +161,20 @@
                         select: {
                             style: 'multi'
                         },
-                        buttons: [
-                            {
-                                text: 'Select All',
-                                action: function () {
-                                    table.rows({filter: 'applied'}).select();
-                                }
-                            },
-                            {
-                                text: 'Deselect All',
-                                action: function () {
-                                    table.rows().deselect();
-                                }
-                            }
-                        ],
+                        // buttons: [
+                        //     {
+                        //         text: 'Select All',
+                        //         action: function () {
+                        //             table.rows({filter: 'applied'}).select();
+                        //         }
+                        //     },
+                        //     {
+                        //         text: 'Deselect All',
+                        //         action: function () {
+                        //             table.rows().deselect();
+                        //         }
+                        //     }
+                        // ],
                         initComplete: function () {
                             this.api().columns().every(function () {
                                 var column = this;
@@ -157,6 +204,7 @@
 
                 // Show table
                 $('.gtex-table').removeClass('d-none');
+                $('.gtex-table-header').removeClass('d-none');
                 $('.gtex-loader').addClass('d-none');
             }
         })
