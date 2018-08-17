@@ -36,8 +36,37 @@
 
 .dataTables_wrapper select { outline: none !important; background-color: white !important; }
 
-.col-6:first-child {
-    /* border-right: 1px solid rgba(0,0,0,.1); */
+.select-checkbox:before {
+    border: 1px solid black !important;
+    border-radius: 3px !important;
+    width: 19px !important;
+    height: 19px !important;
+    margin-top: -9px !important;
+    margin-left: -9px !important;
+}
+
+.selected .select-checkbox:after {
+    font-family: "FontAwesome";
+    font-size: 17pt;
+    text-shadow: none !important;
+    margin-top: -25px !important;
+    margin-left: -7px !important;
+}
+
+.select-all {
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 8px;
+}
+
+.select-all.active:before {
+    content: "\2714";
+    font-family: "FontAwesome";
+    font-size: 17pt;
+    text-shadow: none !important;
+    margin-top: -16px !important;
+    margin-left: -9px !important;
+    position: absolute;
 }
 
 </style>
@@ -57,7 +86,7 @@
 		</div>
 		<div class="col-lg-4 col-xl-3 my-auto text-center pt-3 pt-lg-0">
 			<button class="btn black border-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
-			<button class="btn navigate white border-custom bg-blue nodecoration" form="" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">
+			<button class="btn navigate white border-custom bg-blue nodecoration" onclick="submitForm();">
 				Continue<i class="fa fa-angle-right ml-2"></i>
 			</button>
 		</div>
@@ -70,7 +99,11 @@
 
             <div class="row">
                 {% for i in range(2) %}
-                    <div class="col-6 mt-2 mb-4">
+                    <div class="col-6 gtex-table-col mt-2 mb-4">
+
+                        <!-- Sample IDs -->
+                        <input type="hidden" class="selected-samples" data-group="{{ loop.index }}">
+
                         <div class="mt-0 mb-4 pb-3 px-3">
 
                             <!-- Title -->
@@ -78,7 +111,7 @@
                                 <div class="px-5">
                                     <span class='medium bold mb-2'>Group {{ loop.index }}</span>
                                     <span class='float-right very-small light mt-1'>
-                                        <span id="nr-samples-{{ loop.index }}">0</span>
+                                        <span class="nr-samples" data-group="{{ loop.index }}">0</span>
                                         <span> samples selected</span>
                                     </span>
                                 </div>
@@ -92,7 +125,7 @@
                             </div>
 
                             <!-- Table -->
-                            <table class='gtex-table d-none tiny w-100 text-center'>
+                            <table class='gtex-table d-none tiny w-100 text-center mb-3'>
                                 <thead class='very-small'>
                                     <tr>
                                         <th></th>
@@ -101,20 +134,12 @@
                                         <th>Tissue</th>
                                     </tr>
                                     <tr>
-                                        <th></th>
+                                        <th><div class='select-all'></div></th>
                                         <th>Age</th>
                                         <th>Gender</th>
                                         <th>Tissue</th>
                                     </tr>
                                 </thead>
-                                <tfoot>
-                                    <tr>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                    </tr>
-                                </tfoot>
                             </table>
 
                         </div>
@@ -133,6 +158,12 @@
 {% block footer %}
 <script type="text/javascript">
 
+    // Submit form
+    submitForm = function() {
+        console.log($('input[data-group=1]').data('id'));
+        console.log($('input[data-group=2]').data('id'));
+    }
+
     // Data Table
     $(document).ready(function () {
 
@@ -150,7 +181,6 @@
                     var table = $(elem).DataTable({
                         data: json,
                         aaSorting: [],
-                        // dom: 'Bfrtip',
                         pagingType: 'simple',
                         columns: [
                             {data: 'checkbox', orderable: false, className: 'select-checkbox'},
@@ -161,20 +191,9 @@
                         select: {
                             style: 'multi'
                         },
-                        // buttons: [
-                        //     {
-                        //         text: 'Select All',
-                        //         action: function () {
-                        //             table.rows({filter: 'applied'}).select();
-                        //         }
-                        //     },
-                        //     {
-                        //         text: 'Deselect All',
-                        //         action: function () {
-                        //             table.rows().deselect();
-                        //         }
-                        //     }
-                        // ],
+                        fnCreatedRow: function (nRow, aData, iDataIndex) {
+                            $(nRow).attr('data-sampleid', aData['id']); // or whatever you choose to set as the id
+                        },
                         initComplete: function () {
                             this.api().columns().every(function () {
                                 var column = this;
@@ -200,38 +219,48 @@
                         }
                     })
 
+                    // Add listener for checkbox
+                    table.on('click', '.select-all', function(evt) {
+
+                        // Get button
+                        var $button = $(this);
+                        // Deselect and select
+                        if (table.rows({ selected: true }).count() > 0) {
+                            table.rows().deselect();
+                            $button.removeClass('active');
+                        } else if (table.rows({ filter: 'applied' }).count() == table.rows().count()) {
+                            alert('Please select at least one filter in the table such as age, gender or tissue.')
+                        } else {
+                            table.rows({ filter: 'applied' }).select();
+                            $button.addClass('active');
+                        }
+
+                    })
+
+                    // Add update number of samples
+                    table.on('select deselect', function(evt) {
+                        var $col = $(evt.target).parents('.gtex-table-col'),
+                            selected_rows = table.rows({ selected: true }),
+                            ids = Array.from(selected_rows.data().pluck('id'));
+
+                        // Update number
+                        $col.find('.gtex-table-header .nr-samples').html(selected_rows.count());
+
+                        // Add samples to HTML
+                        $col.find('.selected-samples').data('id', ids);
+
+                    })
+
                 })
 
                 // Show table
                 $('.gtex-table').removeClass('d-none');
                 $('.gtex-table-header').removeClass('d-none');
                 $('.gtex-loader').addClass('d-none');
+
             }
         })
     })
-            // initComplete: function () {
-            //     this.api().columns().every(function () {
-            //         var column = this;
-            //         var select = $('<select><option value=""></option></select>')
-            //             .appendTo($(column.footer()).empty())
-            //             .on('change', function () {
-            //                 var val = $.fn.dataTable.util.escapeRegex(
-            //                     $(this).val()
-            //                 );
-
-            //                 column
-            //                     .search(val ? '^' + val + '$' : '', true, false)
-            //                     .draw();
-            //             });
-
-            //         column.data().unique().sort().each(function (d, j) {
-            //             select.append('<option value="' + d + '">' + d + '</option>')
-            //         });
-            //     });
-            // }
-        // });
-    // });
-
 
 </script>
 {% endblock %}
