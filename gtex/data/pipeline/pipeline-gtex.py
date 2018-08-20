@@ -123,8 +123,8 @@ def filterGenes(infiles, outfile):
 #############################################
 
 @follows(mkdir('s2-h5.dir'))
-
-@merge((filterGenes, filterMetadata),
+@merge(('s1-filtered_data.dir/GTEx_Analysis_2016-01-15_v7_RNASeQCv1.1.8_gene_reads_filtered.feather', filterMetadata),
+       # @merge((filterGenes, filterMetadata),
        's2-h5.dir/gtex_counts.h5')
 
 def buildHDF5(infiles, outfile):
@@ -154,7 +154,8 @@ def buildHDF5(infiles, outfile):
 
     # Add sample title and accession
     sample_metadata_grp = f.create_group('meta/sample')
-    for col in ['SAMPID', 'SMTS', 'SMTSD', 'AGE', 'SEX']:
+    # for col in metadata_dataframe.columns:
+    for col in ['SAMPID', 'SMTS', 'SMTSD', 'AGE', 'SEX', 'SMNABTCH']:
         sample_metadata_grp.create_dataset(col, data=metadata_dataframe[col].astype(str), dtype=h5py.special_dtype(vlen=str))
 
     # Close file
