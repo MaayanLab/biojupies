@@ -12,8 +12,8 @@ import os, urllib.request, urllib.parse, json
 
 def download_notebook():
 
-	# Check environmentas variable for notebook UID
-	notebook_uid = os.environ.get('NOTEBOOK_UID')
+	# Get notebook UID
+	notebook_uid = input("\nPlease provide the UID of the notebook you wish to download, then press enter:\n")
 
 	# If exists
 	if notebook_uid:
