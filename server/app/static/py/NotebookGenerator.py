@@ -67,7 +67,7 @@ def add_introduction(notebook, notebook_configuration, tool_metadata):
 
 	# Add Intro
 	if 'gse' in notebook_configuration['data']['parameters'].keys():
-		cell = """# {notebook[title]}\n---\n# Introduction\nThis notebook contains an analyis of GEO dataset {data[parameters][gse]} (https://www.ncbi.nlm.nih.gov/gds/?term={data[parameters][gse]}) created using the BioJupies Generator.""".format(**notebook_configuration)
+		cell = """# {notebook[title]}\n---\n# Introduction\nThis notebook contains an analyis of GEO dataset {data[parameters][gse]} (https://www.ncbi.nlm.nih.gov/gds/?term={data[parameters][gse]}) created using BioJupies. For more information on how this notebook was generated, please visit <a href='http://biojupies.cloud' target='_blank'>http://biojupies.cloud</a>.].""".format(**notebook_configuration)
 	else:
 		cell = """# {notebook[title]}\n---\n# Introduction\nThis notebook contains an analyis of a user-submitted dataset created using the BioJupies Generator.""".format(**notebook_configuration)
 	cell += """\n### Table of Contents\nThe notebook is divided into the following sections:\n<ol>{}</ol>""".format(sections_str)
