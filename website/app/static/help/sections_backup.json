@@ -52,5 +52,16 @@
                 ]
             }
         ]
+    },
+    {
+        "title": "Troubleshooting",
+        "sections": [
+            {
+                "title": null,
+                "text": [
+                    "BioJupies is currently available as a pre-print on bioRxiv: <a href='https://www.biorxiv.org/content/early/2018/06/20/352476' target='_blank'>https://www.biorxiv.org/content/early/2018/06/20/352476</a>"
+                ]
+            }
+        ]
     }
 ]

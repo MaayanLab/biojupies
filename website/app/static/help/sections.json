@@ -348,15 +348,40 @@
             {
                 "title": null,
                 "text": [
-                    "BioJupies notebooks should display correctly on most modern browsers and operating systems. However, <b>some users may experience issues visualizing parts of notebooks or interactive plots</b>.",
-                    "<div class='mt-3'></div>",
-                    "In this section, you can find <b>instructions on visualizing notebooks which are not displayed correctly</b> and more detailed information on the technology used to generate and display the notebooks."
+                    "In this section, you can find <b>instructions on troubleshooting BioJupies notebooks</b>:",
+                    "<ul><li>For information on the components required to render notebooks, see <a href='#software_requirements'>Software Requirements</a>.</li>",
+                    "<li>If you are experiencing issues visualizing individual plots, see <a href='#troubleshooting_plots'>Troubleshooting Plots</a>.</li>",
+                    "<li>If you are experiencing issues visualizing parts of a notebook, see <a href='#troubleshooting_notebooks'>Troubleshooting Notebooks</a>.</li></ul>"
                 ]
             },
             {
-                "title": "Visualizing Notebooks",
+                "title": "Software Requirements",
                 "text": [
-                    "<div class='mt-3'></div>"
+                    "To generate and display notebooks, BioJupies relies on the <b>following technologies</b>:",
+                    "<ul><li><b>Jupyter Notebook</b> (<a href='http://jupyter.org/' target='_blank'>http://jupyter.org/</a>) to create notebook files.</li>",
+                    "<li><b>Jupyter nbviewer</b> (<a href='http://nbviewer.jupyter.org/' target='_blank'>http://nbviewer.jupyter.org/</a>) to display notebooks online.</li>",
+                    "<li><b>WebGL</b> (<a href='https://www.khronos.org/webgl/' target='_blank'>https://www.khronos.org/webgl/</a>) to render interactive 2D and 3D visualizations generated using Plotly (<a href='https://plot.ly/' target='_blank'>https://plot.ly/</a>).</li></ul>",
+                    "Support for WebGL is present in Firefox 4+, Google Chrome 9+, Opera 12+, Safari 5.1+, Internet Explorer 11+, and Microsoft Edge build 10240+. However, the user's device must also have hardware that supports these features.",
+                    "<div class='mt-3'></div>",
+                    "In some cases, users may experience <b>issues visualizing interactive plots on BioJupies notebooks</b>. To solve these issues, see <a href='#troubleshooting_plots'>Troubleshooting Plots</a> or <a href='#generating_static_plots'>Generating Static Plots</a>."
+                ]
+            },
+            {
+                "title": "Troubleshooting Plots",
+                "text": [
+                    "If you are experiencing <b>issues visualizing interactive plots</b>, "
+                ]
+            },
+            {
+                "title": "Generating Static Plots",
+                "text": [
+                    "..."
+                ]
+            },
+            {
+                "title": "Troubleshooting Notebooks",
+                "text": [
+                    "..."
                 ]
             }
         ]
@@ -369,7 +394,7 @@
                 "text": [
                     "BioJupies is currently available as a pre-print on bioRxiv at <a href='https://doi.org/10.1101/352476' target='_blank'>https://doi.org/10.1101/352476</a>.",
                     "<div class='mt-3'></div>",
-                    "<embed src='https://www.biorxiv.org/content/biorxiv/early/2018/06/20/352476.full.pdf#zoom=75' width='100%' height='785px'>"
+                    "<embed src='' width='100%' height='785px'>https://www.biorxiv.org/content/biorxiv/early/2018/06/20/352476.full.pdf#zoom=75"
                 ]
             }
         ]
