@@ -215,7 +215,7 @@ def add_tools():
 		# Get dataset information from request
 		if request.args.get('uid'):
 			selected_data = {'uid': request.args.get('uid'), 'source': 'upload'}
-		elif request.args.get('gse-gpl'):
+		elif request.form.get('gse-gpl'):
 			selected_data = {'gse': request.form.get('gse-gpl').split('-')[0], 'gpl': request.form.get('gse-gpl').split('-')[1], 'source': 'archs4'}
 		elif request.form.get('gtex-samples-1'):
 			selected_data = {'source': 'gtex', 'gtex-samples-1': request.form.get('gtex-samples-1'), 'gtex-samples-2': request.form.get('gtex-samples-2')}
@@ -344,7 +344,7 @@ def generate_notebook():
 		p = {x:{} for x in d['tool']} if isinstance(d['tool'], list) else {d['tool']: {}}
 		g = {x:[] for x in ['a', 'b', 'none']}
 		for key, value in d.items():
-			if key not in ['sample-table_length', 'gtex-samples-1', 'gtex-samples-2']:
+			if key not in ['sample-table_length', 'gtex-samples-1', 'gtex-samples-2', 'static_plots']:
 				if '-' in key:
 					if key.split('-')[0] in d['tool']:
 						tool_string, parameter_string = key.split('-')
@@ -353,21 +353,31 @@ def generate_notebook():
 						if value not in ['none', 'no', 'yes']:
 							g[value[0]].append(key.rpartition('-')[0])
 
+		### NEW
+		# Plot type static
+		if d.get('static-plots') == 'yes':
+			static_tools = pd.read_sql_query('SELECT tool_string FROM tool t LEFT JOIN parameter p ON t.id=p.tool_fk WHERE parameter_string = "plot_type"', engine)['tool_string'].values
+			for tool in static_tools:
+				if tool in p.keys():
+					p[tool]['plot_type'] = 'static'
+		### NEW
+
 		# Generate signature
 		signature_tools = pd.read_sql_query('SELECT tool_string FROM tool WHERE requires_signature = 1', engine)['tool_string'].values
 		requires_signature = any([x in signature_tools for x in p.keys()])
-		if d.get('source') == 'gtex':
-			signature = {
-				"method": "limma",
-				"A": {"name": d.get('group_a_label', 'Group 1'), "samples": d['gtex-samples-1'].split(',')},
-				"B": {"name": d.get('group_b_label', 'Group 2'), "samples": d['gtex-samples-2'].split(',')}
-			}
-		elif requires_signature:
-			signature = {
-				"method": "limma",
-				"A": {"name": d.get('group_a_label', ''), "samples": g['a']},
-				"B": {"name": d.get('group_b_label', ''), "samples": g['b']}
-			}
+		if requires_signature:
+			if d.get('source') == 'gtex':
+				signature = {
+					"method": "limma",
+					"A": {"name": d.get('group_a_label', 'Group 1'), "samples": d['gtex-samples-1'].split(',')},
+					"B": {"name": d.get('group_b_label', 'Group 2'), "samples": d['gtex-samples-2'].split(',')}
+				}
+			else:
+				signature = {
+					"method": "limma",
+					"A": {"name": d.get('group_a_label', ''), "samples": g['a']},
+					"B": {"name": d.get('group_b_label', ''), "samples": g['b']}
+				}
 		else:
 			signature = {}
 
