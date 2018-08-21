@@ -105,7 +105,7 @@ def analyze():
 
 	# Get options
 	options = [
-		{'link': 'search_data', 'icon': 'search', 'title': 'Published Data', 'description': 'Search thousands of published, publicly available datasets'},
+		{'link': 'published_data', 'icon': 'search', 'title': 'Published Data', 'description': 'Search thousands of published, publicly available datasets'},
 		{'link': 'upload', 'icon': 'upload', 'title': 'Your Data', 'description': 'Upload your own gene expression data for analysis'},
 		{'link': 'example', 'icon': 'question-circle', 'title': 'Example Data', 'description': 'Learn to generate notebooks with an example dataset'}
 	]
@@ -117,8 +117,24 @@ def analyze():
 ########## 3. Search Data
 #############################################
 ### Allows users to search indexed GEO datasets using text-based queries and other filtering parameters and to select them for notebook generation.
-### Links to: add_tools().
+### Links to: search_data(), gtex().
 ### Accessible from: analyze(), navbar.
+
+
+@app.route(entry_point+'/analyze/published_data')
+def published_data():
+	options = [
+		{'link': 'search_data', 'image': 'geo', 'title': 'Gene Expression Omnibus', 'description': 'Search thousands of RNA-seq datasets published on <a href="https://www.ncbi.nlm.nih.gov/geo/" target="_blank">GEO</a>'},
+		{'link': 'gtex', 'image': 'gtex', 'title': 'GTEx', 'description': 'Analyze RNA-seq samples from the publicly available <a href="https://www.gtexportal.org/home/" target="_blank">GTEx Portal</a>'}
+	]
+	return render_template('analyze/published_data.html', options=options)
+
+#############################################
+########## 3. Search Data
+#############################################
+### Allows users to search indexed GEO datasets using text-based queries and other filtering parameters and to select them for notebook generation.
+### Links to: add_tools().
+### Accessible from: published_data(), navbar.
 
 @app.route(entry_point+'/analyze/search')
 def search_data():
