@@ -242,7 +242,7 @@ def add_tools():
 
 		# Auto select DE and Enrichr for GTEx
 		if request.form.get('gtex-samples-1'):
-			ix = [index for index, rowData in tools.iterrows() if rowData['tool_string'] in ['signature_table', 'enrichr']]
+			ix = [index for index, rowData in tools.iterrows() if rowData['tool_string'] in ['signature_table', 'enrichr', 'volcano_plot', 'go_enrichment']]
 			tools.loc[ix, 'default_selected'] = 1
 		# tools = tools if dev else tools[tools['display'] == True]
 		# if dev:
