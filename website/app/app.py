@@ -545,7 +545,7 @@ def ontology_api():
 def gtex_api():
 
 	# Read data
-	gtex_data = pd.read_sql_query('SELECT "" AS checkbox, AGE AS Age, SMTS AS Tissue, SEX AS Gender, SAMPID AS id FROM gtex_metadata', engine).replace('1', 'Male').replace('2', 'Female').to_dict(orient='records')
+	gtex_data = pd.read_sql_query('SELECT "" AS checkbox, AGE AS Age, SMTSD AS Tissue, SEX AS Gender, SAMPID AS id FROM gtex_metadata', engine).replace('1', 'Male').replace('2', 'Female').to_dict(orient='records')
 
 	# Return
 	return json.dumps(gtex_data)
