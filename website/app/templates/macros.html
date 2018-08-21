@@ -29,7 +29,11 @@
 
 	<div class="{{colsize}} text-center mb-1 mb-lg-0">
 			<a class="display-1 px-5 py-4 black border-custom rounded d-inline-block" href="{{ url_for(option['link']) }}">
+			{% if option.get('icon') %}
 				<i class="fa fa-{{option['icon']}} my-3"></i>
+			{% else %}
+				<img src="{{ url_for('static', filename='img/logos/{image}.png'.format(**option)) }}" class="w-100"></i>
+			{% endif %}
 			</a>
 		<a class="large mt-3 nodecoration black d-block" href="{{ url_for(option['link']) }}">{{option['title']}}</a>
 		<div class="light small mt-2 pb-5 px-0 px-lg-3 px-xl-5">{{option['description']|safe}}</div>

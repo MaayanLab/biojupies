@@ -348,40 +348,44 @@
             {
                 "title": null,
                 "text": [
-                    "In this section, you can find <b>instructions on troubleshooting BioJupies notebooks</b>:",
+                    "This section contains <b>instructions on troubleshooting issues related to BioJupies notebooks</b>.",
                     "<ul><li>For information on the components required to render notebooks, see <a href='#software_requirements'>Software Requirements</a>.</li>",
-                    "<li>If you are experiencing issues visualizing individual plots, see <a href='#troubleshooting_plots'>Troubleshooting Plots</a>.</li>",
-                    "<li>If you are experiencing issues visualizing parts of a notebook, see <a href='#troubleshooting_notebooks'>Troubleshooting Notebooks</a>.</li></ul>"
+                    "<li>If you are experiencing issues visualizing notebooks, see <a href='#troubleshooting_notebooks'>Troubleshooting Notebooks</a>.</li>",
+                    "<li>If you wish to generate static notebooks, see <a href='#generating_static_notebooks'>Generating Static Notebooks</a>.</li></ul>"
                 ]
             },
             {
                 "title": "Software Requirements",
                 "text": [
-                    "To generate and display notebooks, BioJupies relies on the <b>following technologies</b>:",
-                    "<ul><li><b>Jupyter Notebook</b> (<a href='http://jupyter.org/' target='_blank'>http://jupyter.org/</a>) to create notebook files.</li>",
-                    "<li><b>Jupyter nbviewer</b> (<a href='http://nbviewer.jupyter.org/' target='_blank'>http://nbviewer.jupyter.org/</a>) to display notebooks online.</li>",
-                    "<li><b>WebGL</b> (<a href='https://www.khronos.org/webgl/' target='_blank'>https://www.khronos.org/webgl/</a>) to render interactive 2D and 3D visualizations generated using Plotly (<a href='https://plot.ly/' target='_blank'>https://plot.ly/</a>).</li></ul>",
-                    "Support for WebGL is present in Firefox 4+, Google Chrome 9+, Opera 12+, Safari 5.1+, Internet Explorer 11+, and Microsoft Edge build 10240+. However, the user's device must also have hardware that supports these features.",
-                    "<div class='mt-3'></div>",
-                    "In some cases, users may experience <b>issues visualizing interactive plots on BioJupies notebooks</b>. To solve these issues, see <a href='#troubleshooting_plots'>Troubleshooting Plots</a> or <a href='#generating_static_plots'>Generating Static Plots</a>."
-                ]
-            },
-            {
-                "title": "Troubleshooting Plots",
-                "text": [
-                    "If you are experiencing <b>issues visualizing interactive plots</b>, "
-                ]
-            },
-            {
-                "title": "Generating Static Plots",
-                "text": [
-                    "..."
+                    "BioJupies relies on the following software to generate and display notebooks:",
+                    "<ol><li><b>Jupyter Notebook</b> (<a href='http://jupyter.org/' target='_blank'>http://jupyter.org/</a>) to create notebook files.</li>",
+                    "<li><b>Jupyter nbviewer</b> (<a href='http://nbviewer.jupyter.org/' target='_blank'>http://nbviewer.jupyter.org/</a>) to render notebooks online.</li>",
+                    "<li><b>WebGL</b> (<a href='https://www.khronos.org/webgl/' target='_blank'>https://www.khronos.org/webgl/</a>) to display interactive 2D and 3D visualizations.</li></ol>",
+                    "Support for WebGL is present in Firefox 4+, Google Chrome 9+, Opera 12+, Safari 5.1+, Internet Explorer 11+, and Microsoft Edge build 10240+. However, the user's device must also have hardware that supports these features."
                 ]
             },
             {
                 "title": "Troubleshooting Notebooks",
                 "text": [
-                    "..."
+                    "In some cases, <b>users may experience issues visualizing interactive plots</b> on generated notebooks. These may include:",
+                    "<ul><li><b>Plots appearing blank in the notebook</b>. This is likely caused by an error loading WebGL on your browser. The issue can be usually resolved by clicking on the empty plot area, refreshing the notebook URL, or opening the URL on a different window or browser.</li>",
+                    "<li>Plots displaying the <b>\"WebGL is not supported by your browser\"</b> error message. This issue is commonly resolved by updating your browser to the newest available version. </li>",
+                    "<li><b>Notebooks only displaying partially</b>. This issue may be caused by an issue with the nbviewer notebook rendering service, or by an error loading WebGL on your browser. This is commonly resolved by refreshing the notebook URL, or opening the URL on a different window or browser. </li></ul>",
+                    "<div class='mt-3'></div>",
+                    "If one or more of these issues persist, follow the instructions below to <a href='#generating_static_notebooks'>Generate Static Notebooks</a>."
+                ]
+            },
+            {
+                "title": "Generating Static Notebooks",
+                "text": [
+                    "If you are experiencing problems displaying interactive visualizations, BioJupies provides you with the option to <b>generate notebooks containing static plots</b>.",
+                    "Since static plots do not require WebGL and necessitate less memory to render, selecting this option will allow generated notebooks to be displayed more reliably.",
+                    "<div class='mt-3'></div>",
+                    "This option can be selected in two ways. First, you can <b>toggle the option on individual plots</b> by selecting the Plot Type: 'static' parameter in the final step of notebook generation, as shown below:",
+                    "<img src='entrypoint/static_pca.png' class='my-3'>",
+                    "Second, you can <b>toggle the option for all plots in a notebook</b> by selecting the \"Would you like your notebook to only display static plots?\" option, as shown below:",
+                    "<img src='entrypoint/static_notebook.png' class='my-3'>",
+                    "This option will force all interactive plots to be displayed statically in the final Jupyter Notebook."
                 ]
             }
         ]
