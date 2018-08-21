@@ -52,7 +52,7 @@ def index():
 	sample_indices = [index for index, sample in enumerate(f['meta']['sample']['SAMPID']) if sample in samples]
 
 	# Subset expression data based on sample IDs
-	expression_subset = pd.DataFrame(f['data']['expression'][:, sample_indices], columns=samples, index=f['meta']['gene']['symbol']).rename_axis('gene_symbol')
+	expression_subset = pd.DataFrame(f['data']['expression'][:, sample_indices], columns=f['meta']['sample']['SAMPID'][sample_indices], index=f['meta']['gene']['symbol']).rename_axis('gene_symbol')
 
 	# Get metadata
 	metadata_subset = pd.DataFrame({x: f['meta']['sample'][x][sample_indices] for x in f['meta']['sample'].keys()}).set_index('SAMPID').rename(columns={'SMTS': 'Tissue Type', 'SMTSD': 'Detailed Tissue Type', 'SEX': 'Gender', 'AGE': 'Age', 'SMNABTCH': 'Batch'}).drop('Batch', axis=1)
