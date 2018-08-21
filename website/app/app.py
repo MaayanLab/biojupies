@@ -234,11 +234,16 @@ def add_tools():
 		elif request.form.get('gse-gpl'):
 			selected_data = {'gse': request.form.get('gse-gpl').split('-')[0], 'gpl': request.form.get('gse-gpl').split('-')[1], 'source': 'archs4'}
 		elif request.form.get('gtex-samples-1'):
-			selected_data = {'source': 'gtex', 'gtex-samples-1': request.form.get('gtex-samples-1'), 'gtex-samples-2': request.form.get('gtex-samples-2')}
+			selected_data = {'source': 'gtex', 'gtex-samples-1': request.form.get('gtex-samples-1'), 'gtex-samples-2': request.form.get('gtex-samples-2'), 'group_a_label': request.form.get('gtex-group-1'), 'group_b_label': request.form.get('gtex-group-2')}
 
 		# Perform tool and section query from database
 		tools, sections = [pd.read_sql_table(x, engine) for x in ['tool', 'section']]
 		tools = tools[tools['display'] == True]
+
+		# Auto select DE and Enrichr for GTEx
+		if request.form.get('gtex-samples-1'):
+			ix = [index for index, rowData in tools.iterrows() if rowData['tool_string'] in ['signature_table', 'enrichr']]
+			tools.loc[ix, 'default_selected'] = 1
 		# tools = tools if dev else tools[tools['display'] == True]
 		# if dev:
 			# tools = tools[[x not in ['pathway_enrichment', 'tf_enrichment', 'kinase_enrichment', 'mirna_enrichment'] for x in tools['tool_string']]]
@@ -355,12 +360,13 @@ def generate_notebook():
 
 		# Get form
 		d = {key:value if len(value) > 1 else value[0] for key, value in request.form.lists()}
+		print(d)
 
 		# Get parameters and groups
 		p = {x:{} for x in d['tool']} if isinstance(d['tool'], list) else {d['tool']: {}}
 		g = {x:[] for x in ['a', 'b', 'none']}
 		for key, value in d.items():
-			if key not in ['sample-table_length', 'gtex-samples-1', 'gtex-samples-2', 'static_plots']:
+			if key not in ['sample-table_length', 'gtex-samples-1', 'gtex-samples-2', 'gtex-group-1', 'gtex-group-2', 'static_plots']:
 				if '-' in key:
 					if key.split('-')[0] in d['tool']:
 						tool_string, parameter_string = key.split('-')
@@ -385,8 +391,8 @@ def generate_notebook():
 			if d.get('source') == 'gtex':
 				signature = {
 					"method": "limma",
-					"A": {"name": d.get('group_a_label', 'Group 1'), "samples": d['gtex-samples-1'].split(',')},
-					"B": {"name": d.get('group_b_label', 'Group 2'), "samples": d['gtex-samples-2'].split(',')}
+					"A": {"name": d.get('group_a_label', ''), "samples": d['gtex-samples-1'].split(',')},
+					"B": {"name": d.get('group_b_label', ''), "samples": d['gtex-samples-2'].split(',')}
 				}
 			else:
 				signature = {

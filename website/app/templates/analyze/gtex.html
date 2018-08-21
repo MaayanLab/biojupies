@@ -113,12 +113,12 @@
 
                                 <!-- Title -->
                                 <div class='mt-3 mb-0 gtex-table-header d-none'>
-                                    <div class="px-5">
-                                        <span class='medium bold mb-2'>Group {{ loop.index }}</span>
-                                        <span class='float-right very-small light mt-1'>
+                                    <div class="px-1">
+                                        <input type="text" name="gtex-group-{{ loop.index }}" class='small bold mb-2 gtex-group-name rounded nodecoration border-grey px-2 py-1' value="Group {{ loop.index }}" style="width: 65%;">
+                                        <div class='float-right very-small light mt-2'>
                                             <span class="nr-samples" data-group="{{ loop.index }}">0</span>
                                             <span> samples selected</span>
-                                        </span>
+                                        </div>
                                     </div>
                                     <hr width="100%" class="mt-3 mb-4">
                                 </div>
@@ -199,7 +199,7 @@
                                 var column = this;
                                 if (column.index() > 0)
                                 {
-                                    var select = $('<select><option value=""></option></select>')
+                                    var select = $('<select class="gtex-sample-filter"><option value=""></option></select>')
                                         .appendTo($(column.header()).empty())
                                         .on('change', function () {
                                             var val = $.fn.dataTable.util.escapeRegex(
@@ -250,6 +250,16 @@
                         // $col.find('.selected-samples').data('id', ids);
                         $col.find('.selected-samples').val(ids);
 
+                    })
+
+
+                    // Change group names
+                    table.on('change', '.gtex-sample-filter', function (evt) {
+                        var $table = $(this).parents('table'),
+                            group_name = $table.find('.gtex-sample-filter').map(function () { if ($(this).val().length) {return $(this).val()} }).get().reverse().join(', ');
+                            $table.parents('.gtex-table-col').find('.gtex-group-name').first().val(group_name);
+                            console.log(group_name);
+                        
                     })
 
                 })

@@ -59,9 +59,11 @@
 						<div class="text-muted regular very-small mt-3">
 							<span>Dataset:</span>
 							<span class="light font-italic">
-								{% if notebook_configuration_dict['data']['parameters']['gse'] %}
+								{% if notebook_configuration_dict['data']['source'] == 'archs4' %}
 									<a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={{ notebook_configuration_dict['data']['parameters']['gse'] }}" target="_blank">{{ notebook_configuration_dict['data']['parameters']['gse'] }}</a>
-								{% else %}
+								{% elif notebook_configuration_dict['data']['source'] == 'gtex' %}
+									GTEx
+								{% elif notebook_configuration_dict['data']['source'] == 'upload' %}
 									User-submitted
 								{% endif %}
 							</span>
