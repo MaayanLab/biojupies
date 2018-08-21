@@ -10,3 +10,5 @@ backups
 updater
 */dev.txt
 notebooks
+*.icloud
+.DS_Store
