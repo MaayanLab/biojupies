@@ -61,7 +61,7 @@ def execute_notebook(notebook, execute=True, to_html=False, kernel_name='venv'):
 	start_time = time.time()
 
 	# Initialize preprocess
-	ep = ExecutePreprocessor(timeout=600)
+	ep = ExecutePreprocessor(timeout=600, kernel_name=kernel_name)
 
 	# Execute
 	if execute:
