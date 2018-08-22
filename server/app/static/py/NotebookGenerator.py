@@ -43,85 +43,88 @@ def addCell(notebook, content, celltype='code', task=None):
 #############################################
 ########## 1. Add Parameters
 #############################################
+# Adds plugin parameters to the analyze() function
 
 def add_parameters(configuration_dict):
 	parameters = ", " if len(configuration_dict) else ""
-	return parameters+", ".join(['='.join([str(key), str(value) if str(value).isnumeric() or not value or '.' in str(value) or '[' in str(value) else "'"+str(value)+"'"]) for key, value in configuration_dict.items()])
+	return parameters+", ".join(['='.join([str(key), str(value) if str(value).isnumeric() or not value or '.' in str(value) or '[' in str(value) or str(value) in ['True', 'False'] else "'"+str(value)+"'"]) for key, value in configuration_dict.items()])
 
 #############################################
 ########## 2. Add Introduction
 #############################################
+# Adds notebook introduction
 
 def add_introduction(notebook, notebook_configuration, tool_metadata):
 
-	# Get Sections
+	# Initialize list of sections
 	sections = [{'id': 'load_dataset', 'name': 'Load Dataset', 'description': 'Loads and previews the input dataset in the notebook environment.'}]
-	# if len(set([tool_configuration['parameters']['normalization'] for tool_configuration in notebook_configuration['tools'] if 'normalization' in tool_configuration['parameters'].keys()])):
-		# sections.append({'id': 'normalize_dataset', 'name': 'Normalize Dataset', 'description': 'Normalize the dataset prior to downstream analysis.'})
-	# if len(notebook_configuration['signature']):
-		# sections.append({'id': 'generate_signature', 'name': 'Generate Signature', 'description': 'Generates differential gene expression signatures by comparing gene expression between the two groups.'})
+
+	# Adds one section per plugin
 	for tool_configuration in notebook_configuration['tools']:
 		tool_meta = tool_metadata[tool_configuration['tool_string']]
 		sections.append({'id': tool_configuration['tool_string'], 'name': tool_meta['tool_name'], 'description': tool_meta['tool_description']})
+
+	# Create string from section list
 	sections_str = ''.join(['<li><b><a href="#{id}">{name}</a></b> - <i>{description}</i></li>'.format(**x) for x in sections])
 
-	# Add Intro
-	if 'gse' in notebook_configuration['data']['parameters'].keys():
-		cell = """# {notebook[title]}\n---\n# Introduction\nThis notebook contains an analyis of GEO dataset {data[parameters][gse]} (https://www.ncbi.nlm.nih.gov/gds/?term={data[parameters][gse]}) created using BioJupies. For more information on BioJupies, please visit <a href='http://biojupies.cloud' target='_blank'>http://biojupies.cloud</a>.\nIf the notebook is not correctly displayed on your browser, please visit our <a href='https://amp.pharm.mssm.edu/biojupies/help#troubleshooting' target='_blank'>Notebook Troubleshooting Guide</a>.""".format(**notebook_configuration)
-	else:
-		cell = """# {notebook[title]}\n---\n# Introduction\nThis notebook contains an analyis of a user-submitted dataset created using the BioJupies Generator.""".format(**notebook_configuration)
-	cell += """\n### Table of Contents\nThe notebook is divided into the following sections:\n<ol>{}</ol>""".format(sections_str)
-	return addCell(notebook, cell, 'markdown')
+	# Initialize introduction
+	introduction = "# {}\n---\n# Introduction\nThis notebook contains an analyis of ".format(notebook_configuration['notebook']['title'])
+
+	# Add dataset description
+	source = notebook_configuration['data']['source']
+	if source == 'archs4':
+		introduction += "GEO dataset {gse} (https://www.ncbi.nlm.nih.gov/gds/?term={gse})".format(**notebook_configuration['data']['parameters'])
+	elif source == 'gtex':
+		introduction += "the GTEx RNA-seq dataset"
+	elif source == 'upload':
+		introduction += "a user-submitted RNA-seq dataset."
+
+	# Add link to BioJupies and troubleshooting
+	introduction += """ created using BioJupies. For more information on BioJupies, please visit <a href='http://biojupies.cloud' target='_blank'>http://biojupies.cloud</a>.\nIf the notebook is not correctly displayed on your browser, please visit our <a href='https://amp.pharm.mssm.edu/biojupies/help#troubleshooting' target='_blank'>Notebook Troubleshooting Guide</a>.\n### Table of Contents\nThe notebook is divided into the following sections:\n<ol>{}</ol>""".format(sections_str)
+
+	# Return cell
+	return addCell(notebook, introduction, 'markdown')
 
 #############################################
 ########## 3. Load Data
 #############################################
+# Adds the load dataset section
 
 def load_data(notebook, data_configuration, core_options):
 
-	# Section
+	# Initialize section number
 	global section_nr
 	section_nr = 1
 	
-	# Intro text
+	# Add markdown text
 	cell = "---\n# Results\n## <span id='load_dataset'>1. Load Dataset</span>\n"+core_options[data_configuration['source']]['introduction'].format(**data_configuration['parameters'])
 	notebook = addCell(notebook, cell, 'markdown', 'load_dataset')
 
-	# Add Data
+	# Add code to load and preview the dataset
 	cell = "# Load dataset\ndataset = load_dataset(source='{}'".format(data_configuration['source'])+add_parameters(data_configuration['parameters'])+")\n\n# Preview expression data\npreview_data(dataset)"
 	notebook = addCell(notebook, cell)
 	cell = "**Table 1 | RNA-seq expression data.** The table displays the first 5 rows of the quantified RNA-seq expression dataset.  Rows represent genes, columns represent samples, and values show the number of mapped reads."
 	notebook = addCell(notebook, cell, 'markdown')
 
-	# Add Metadata
+	# Add code to load and display the metadata
 	cell = "# Display metadata\ndisplay_metadata(dataset)"
 	notebook = addCell(notebook, cell)
 	cell = "**Table 2 | Sample metadata.** The table displays the metadata associated with the samples in the RNA-seq dataset.  Rows represent RNA-seq samples, columns represent metadata categories."
+
+	# Return cell
 	return addCell(notebook, cell, 'markdown')
 
 #############################################
 ########## 4. Generate Signature
 #############################################
+# Generates the signature
 
 def generate_signature(notebook, signature_configuration, core_options):
 
-	# Section
-	# global section_nr
-	# section_nr += 1
-
-	# Get signature dataframe
-	# signature_dataframe = pd.DataFrame(signature_configuration).T.drop('method').rename(columns={'name': 'Group', 'samples': 'Samples'})
-	# signature_dataframe['Samples'] = [', '.join(x) for x in signature_dataframe['Samples']]
-	# pd.set_option('max.colwidth', -1)
-	# signature_table= signature_dataframe.to_html(index=False)
-
-	# Intro text
-	# cell = "---\n ## <span id='generate_signature'>{section_nr}. Generate Signature</span>\nHere, differential gene expression analysis is performed in order to identify a signature by comparing the following two groups:".format(**globals()) + "<br>{}".format(signature_table)
-	# cell += core_options[signature_configuration['method']]['introduction'].format(**signature_configuration)
-	# notebook = addCell(notebook, cell, 'markdown')
-
-	# Generate Signature
+	# Add code to generate the signature
 	cell = "# Configure signatures\ndataset['signature_metadata'] = {{\n    '{A[name]} vs {B[name]}': {{\n        'A': {A[samples]},\n        'B': {B[samples]}\n    }}\n}}\n\n# Generate signatures\nfor label, groups in dataset['signature_metadata'].items():\n    signatures[label] = generate_signature(group_A=groups['A'], group_B=groups['B'], method='{method}', dataset=dataset)".format(**signature_configuration)
+
+	# Return cell
 	return addCell(notebook, cell, task='generate_signature')
 
 #############################################
@@ -170,6 +173,8 @@ def add_tool(notebook, tool_configuration, tool_metadata, signature_configuratio
 			cell = "# Initialize results\nresults['{tool_string}'] = {{}}\n\n# Loop through results\nfor label, {tool_input}_results in results['{tool_input}'].items():\n\n    # Run analysis\n    results['{tool_string}'][label] = analyze({tool_input}_results={tool_input}_results['results'], tool='{tool_string}', signature_label=label".format(**tool_configuration)+add_parameters(tool_configuration['parameters'])+")\n\n    # Display results\n    plot(results['{tool_string}'][label])".format(**tool_configuration)
 		else:
 			cell = "# Run analysis\nresults['{tool_string}'] = analyze({tool_input}_results=results['{tool_input}']['results']".format(**locals())+", tool='{tool_string}'".format(**tool_configuration)+add_parameters(tool_configuration['parameters'])+")\n\n# Display results\nplot(results['{tool_string}'])".format(**tool_configuration)
+
+	# Return cell
 	return addCell(notebook, cell, task=tool_configuration['tool_string'])
 
 #############################################
@@ -191,8 +196,6 @@ def add_methods(notebook, notebook_configuration, normalization_methods, annotat
 		normalization_methods_section = '##### Data Normalization\n'
 		for normalization_method in normalization_methods:
 			normalization_methods_section += '##### {}\n'.format(annotations['core_options'][normalization_method]['option_name'])+annotations['core_options'][normalization_method]['methods']
-		# normalization_methods_section += '<br><br>Source code and additional information is available on GitHub: <a href="https://github.com/denis-torre/notebook-generator/tree/master/library/{notebook_configuration[notebook][version]}/core_scripts/normalize" target="_blank">https://github.com/denis-torre/notebook-generator/tree/master/library/{notebook_configuration[notebook][version]}/core_scripts/normalize</a>.'.format(**locals())
-		# normalization_methods_section += '<br><br>Source code and additional information are publicly available on <a href="https://github.com/denis-torre/notebook-generator/tree/master/library/{notebook_configuration[notebook][version]}/core_scripts/normalize" target="_blank">GitHub</a>.'.format(**locals())
 		methods.append(normalization_methods_section)
 
 	# Add Signature Methods
@@ -207,10 +210,11 @@ def add_methods(notebook, notebook_configuration, normalization_methods, annotat
 		if selected_tool_metadata['methods']:
 			tool_method = '### {selected_tool_metadata[tool_name]}\n'.format(**locals())+selected_tool_metadata['methods'].format(**tool_configuration['parameters'])#+'<br><br>Source code and additional information are publicly available on <a href="https://github.com/denis-torre/notebook-generator/tree/master/library/{notebook_configuration[notebook][version]}/analysis_tools/{tool_configuration[tool_string]}" target="_blank">GitHub</a>.'.format(**locals())
 			methods.append(tool_method)
-			# methods.append(annotations['tools'][tool_configuration['tool_string']]['methods'].format(**tool_configuration['parameters']))
 
 	# Join
 	cell = "---\n# <span id='methods'>Methods</span>\n"+'\n\n'.join(methods)
+
+	# Return cell
 	return addCell(notebook, cell, 'markdown')
 
 #############################################
@@ -219,12 +223,18 @@ def add_methods(notebook, notebook_configuration, normalization_methods, annotat
 
 def add_references(notebook, notebook_configuration, normalization_methods, annotations):
 
-	# Add References
+	# Get reference dataframes
 	tool_references = pd.DataFrame([annotations['tools'][x['tool_string']] for x in notebook_configuration['tools']])
 	core_options_references = pd.DataFrame([annotations['core_options'][x] for x in [notebook_configuration['data']['source'], notebook_configuration['signature'].get('method')]+list(normalization_methods) if x in annotations['core_options'].keys()])
+
+	# Concatenate dataframes
 	references_dataframe = pd.concat([tool_references, core_options_references]).drop_duplicates('reference').sort_values('reference').drop_duplicates('reference')
 	references_dataframe['id'] = [x.split('.org/')[-1] for x in references_dataframe['reference_link']]
+
+	# Create cell
 	cell = "---\n## <span id='references'>References</span>\n"+'<br>'.join(['{reference} doi: <a id="{id}" href="{reference_link}" target="_blank">{reference_link}</a><br>'.format(**rowData) for index, rowData in references_dataframe.iterrows() if rowData['reference']])
+
+	# Return cell
 	return addCell(notebook, cell, 'markdown')
 
 #############################################
@@ -234,9 +244,9 @@ def add_references(notebook, notebook_configuration, normalization_methods, anno
 def add_footer(notebook):
 
 	# Add Footer
-	# cell = "---\n<div style='text-align: center;'>The Jupyter Notebook Generator is being developed by the Ma'ayan Lab at the Icahn School of Medicine at Mount Sinai<br>and is an open source project available on <a href='https://github.com/denis-torre/notebook-generator'>GitHub</a>.</div>"
-	cell = "---\n<div style='text-align: center;'>The Jupyter Notebook Generator is being developed by the <a href='http://icahn.mssm.edu/research/labs/maayan-laboratory' target='_blank'>Ma'ayan Lab</a> at the <a href='http://icahn.mssm.edu/' target='_blank'>Icahn School of Medicine at Mount Sinai</a><br>and is an open source project available on <a href='https://github.com/denis-torre/notebook-generator'>GitHub</a>.</div>"
+	cell = "---\n<div style='text-align: center;'><a href='http://biojupies.cloud' target='_blank'>BioJupies</a> is being developed by the <a href='http://icahn.mssm.edu/research/labs/maayan-laboratory' target='_blank'>Ma'ayan Lab</a> at the <a href='http://icahn.mssm.edu/' target='_blank'>Icahn School of Medicine at Mount Sinai</a><br>and is an open source project available on <a href='https://github.com/MaayanLab/biojupies'>GitHub</a>.</div>"
 
+	# Return cell
 	return addCell(notebook, cell, 'markdown')
 
 #################################################################
@@ -249,14 +259,16 @@ def add_footer(notebook):
 ########## 1. Generate Notebook
 #############################################
 
-def generate_notebook(notebook_configuration, annotations):
+def generate_notebook(notebook_configuration, annotations, library_version=True):
 
 	# Create Notebook
 	notebook = nbf.v4.new_notebook()
 
 	# Initialize Notebook
-	# notebook['cells'].append(nbf.v4.new_code_cell("""# Initialize Notebook\n%run ../library/init.ipy\nHTML('''<script> code_show=true;  function code_toggle() {  if (code_show){  $('div.input').hide();  } else {  $('div.input').show();  }  code_show = !code_show }  $( document ).ready(code_toggle); </script> <form action="javascript:code_toggle()"><input type="submit" value="Toggle Code"></form>''')"""))
-	notebook['cells'].append(nbf.v4.new_code_cell("# Initialize Notebook\n%run ../library/"+notebook_configuration['notebook']['version']+"""/init.ipy\nHTML('''<script> code_show=true;  function code_toggle() {  if (code_show){  $('div.input').hide();  } else {  $('div.input').show();  }  code_show = !code_show }  $( document ).ready(code_toggle); </script> <form action="javascript:code_toggle()"><input type="submit" value="Toggle Code"></form>''')"""))
+	if library_version:
+		notebook['cells'].append(nbf.v4.new_code_cell("# Initialize Notebook\n%run ../library/"+notebook_configuration['notebook']['version']+"""/init.ipy\nHTML('''<script> code_show=true;  function code_toggle() {  if (code_show){  $('div.input').hide();  } else {  $('div.input').show();  }  code_show = !code_show }  $( document ).ready(code_toggle); </script> <form action="javascript:code_toggle()"><input type="submit" value="Toggle Code"></form>''')"""))
+	else:
+		notebook['cells'].append(nbf.v4.new_code_cell("""# Initialize Notebook\n%run ../library/init.ipy\nHTML('''<script> code_show=true;  function code_toggle() {  if (code_show){  $('div.input').hide();  } else {  $('div.input').show();  }  code_show = !code_show }  $( document ).ready(code_toggle); </script> <form action="javascript:code_toggle()"><input type="submit" value="Toggle Code"></form>''')"""))
 	
 	# Add Intro
 	notebook = add_introduction(notebook=notebook, notebook_configuration=notebook_configuration, tool_metadata=annotations['tools'])

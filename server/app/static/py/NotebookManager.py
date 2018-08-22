@@ -36,7 +36,6 @@ from nbconvert.preprocessors.execute import executenb
 ########## 2. Variables
 #############################################
 ##### 1. Notebook Execution #####
-ep = ExecutePreprocessor(timeout=600, kernel_name='venv')
 # ep = ExecutePreprocessor(timeout=600)
 
 ###
@@ -56,10 +55,13 @@ html_exporter_with_figs = HTMLExporter(config=c)
 ########## 1. Execute Notebook
 #############################################
 
-def execute_notebook(notebook, execute=True, to_html=False):
+def execute_notebook(notebook, execute=True, to_html=False, kernel_name='venv'):
 
 	# Get start time
 	start_time = time.time()
+
+	# Initialize preprocess
+	ep = ExecutePreprocessor(timeout=600)
 
 	# Execute
 	if execute:

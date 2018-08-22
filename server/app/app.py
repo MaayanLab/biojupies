@@ -17,12 +17,12 @@
 ########## 1. Load libraries
 #############################################
 ##### 1. Flask modules #####
-from flask import Flask, request, render_template, Response
+from flask import Flask, request, render_template, Response, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
 ##### 2. Python modules #####
-import sys, os, json, time, re
+import sys, os, json, time, re, urllib.request
 import pandas as pd
 import pymysql
 import h5py
@@ -30,8 +30,8 @@ pymysql.install_as_MySQLdb()
 
 ##### 3. Custom modules #####
 sys.path.append('app/static/py')
-from NotebookGenerator import *
-from NotebookManager import *
+import NotebookGenerator as NG
+import NotebookManager as NM
 
 #############################################
 ########## 2. App Setup
@@ -83,19 +83,18 @@ def generate():
 	annotations = {'tools': tool_metadata, 'core_options': core_script_metadata}
 	print('generating notebook...')
 
-	# Set development
-	development = os.environ['DEVELOPMENT'] == 'True'
+	# Try
 	try:
-		### Development
-		if development or request.method == 'GET':
+		# GET request
+		if request.method == 'GET':
 
 			# Open example.json
 			with open('example.json', 'r') as openfile:
 				notebook_configuration = json.loads(openfile.read())
 
 			# Generate, Execute and Convert to HTML
-			notebook = generate_notebook(notebook_configuration, annotations)
-			notebook = execute_notebook(notebook, execute=True, to_html=True)
+			notebook = NG.generate_notebook(notebook_configuration, annotations, library_version=False)
+			notebook = NM.execute_notebook(notebook, execute=False, to_html=True, kernel_name='python3')
 		
 			# Return
 			return notebook
@@ -104,11 +103,8 @@ def generate():
 		else:
 			# Get Configuration
 			notebook_configuration = request.json
-			# with open('example.json', 'r') as openfile:
-			# 	notebook_configuration = json.loads(openfile.read())
 
 			# Check if notebook exists
-			# matching_notebook = pd.read_sql_query("SELECT * FROM notebooks WHERE notebook_configuration = '{}'".format(json.dumps(notebook_configuration)), engine).to_dict(orient='records')
 			matching_notebook = pd.read_sql_query("SELECT * FROM notebook WHERE notebook_configuration = '{}'".format(json.dumps(notebook_configuration)), engine).to_dict(orient='records')
 
 			# Return existing notebook
@@ -117,24 +113,25 @@ def generate():
 				# Get URL
 				notebook_uid = matching_notebook[0]['notebook_uid']
 
-			# Generte new notebook
+			# Generate new notebook
 			else:
 
-				# Generate and Execute
-				notebook = generate_notebook(notebook_configuration, annotations)
-				notebook, time = execute_notebook(notebook)
+				# Generate notebook
+				notebook = NG.generate_notebook(notebook_configuration, annotations)
+
+				# Execute notebook
+				notebook, time = NM.execute_notebook(notebook)
 
 				# Get URL
-				notebook_uid = upload_notebook(notebook, notebook_configuration, time, engine)
+				notebook_uid = NM.upload_notebook(notebook, notebook_configuration, time, engine)
 
 			# Return
 			return json.dumps({'notebook_uid': notebook_uid, 'notebook_url': 'http://amp.pharm.mssm.edu/biojupies/notebook/'+notebook_uid})
-			# return json.dumps({'notebook_uid': notebook_uid, 'notebook_url': 'http: // nbviewer.jupyter.org/urls/'+notebook_url.split(': //')[-1]})
 
 	except Exception as e:
 
 		# Raise
-		if development:
+		if request.method == 'GET':
 			raise
 		else:
 
@@ -175,7 +172,6 @@ def download():
 	results_str = results.to_csv(sep='\t')
 
 	return Response(results_str, mimetype="txt", headers={"Content-disposition": "attachment; filename={}.txt".format(outfile)})
-
 
 #######################################################
 #######################################################
@@ -256,6 +252,20 @@ def tools():
 	section_dict = pd.read_sql_query(statement, engine).groupby(['id', 'section_name']).aggregate(lambda x: tuple(x)).reset_index().drop('id', axis=1).to_dict(orient='records')
 
 	return json.dumps({'tools': tool_dict, 'sections': section_dict})
+
+
+#######################################################
+#######################################################
+########## 4. Error Handlers
+#######################################################
+#######################################################
+
+#############################################
+########## 1. 404
+#############################################
+@app.errorhandler(404)
+def page_not_found(e):
+    return redirect(url_for('generate'))
 
 #######################################################
 #######################################################
