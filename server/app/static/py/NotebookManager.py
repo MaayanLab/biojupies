@@ -134,16 +134,19 @@ def log_error(notebook_configuration, error, annotations, engine):
 		error_response += ' loading the dataset.<br><br>Please try again with another one.'
 	elif 'generate_signature' in error:
 		error_type = 'generate_signature'
-		error_response += ' generating the signature.<br><br>Please try again with different groups, or remove the tools which require a signature.'
+		error_response += ' generating the signature.<br><br>This is often due to one or more samples having too many null values.<br><br>Please try again with different groups, or remove the tools which require a signature.'
 	elif 'run' in error:
 		tool_name = annotations['tools'][error.split("tool='")[-1].split("'")[0]]['tool_name']
 		error_type = tool_name
-		error_response += ' running {}.<br><br>Please try again by removing the selected tool.'.format(tool_name)
+		response = ' running {}.<br><br>Please try again by removing the selected tool.'.format(tool_name)
+		if tool_name == 'PCA':
+			response.replace('<br><br>', '<br><br>This is often due to one or more samples having too many null values.<br><br>')
+		elif 'L1000CDS2' in tool_name:
+			response.replace('<br><br>', '<br><br>This is likely due to the fact that the tool was unable to identify gene symbols in the dataset.<br><br>')
+		error_response += response
 	else:
 		error_type = 'unspecified'
 		error_response = error_response.replace('error', 'unspecified error.')
-		raise
-	# error_response += '<br><br>The error has been logged.<br>&nbsp</span>'
 
 	# Upload to database
 	error_dataframe = pd.Series({'notebook_configuration': json.dumps(notebook_configuration), 'error': error, 'version': notebook_configuration['notebook']['version'], 'error_type': error_type, 'gse': notebook_configuration['data']['parameters'].get('gse')}).to_frame().T
