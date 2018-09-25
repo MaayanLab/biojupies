@@ -20,6 +20,7 @@
 from flask import Flask, request, render_template, Response, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from flask_mail import Mail
 
 ##### 2. Python modules #####
 import sys, os, json, time, re, urllib.request
@@ -51,6 +52,17 @@ engine = db.engine
 
 # Cross origin
 CORS(app, resources=r'{}/api/*'.format(entry_point))
+
+# Mail
+mail_settings = {
+    "MAIL_SERVER": 'smtp.gmail.com',
+    "MAIL_PORT": 465,
+    "MAIL_USE_SSL": True,
+    "MAIL_USERNAME": os.environ['MAIL_USERNAME'],
+    "MAIL_PASSWORD": os.environ['MAIL_PASSWORD']
+}
+app.config.update(mail_settings)
+mail = Mail(app)
 
 ##### 2. Variables #####
 # Latest library version
@@ -142,7 +154,7 @@ def generate():
 			ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
 
 			# Get response
-			error_response = log_error(notebook_configuration, ansi_escape.sub('', str(e)), annotations, engine)
+			error_response = NM.log_error(notebook_configuration, ansi_escape.sub('', str(e)), annotations, engine, app, mail)
 
 			return error_response
 

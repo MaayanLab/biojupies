@@ -28,6 +28,9 @@ import time
 import urllib.parse
 import nbformat as nbf
 import pandas as pd
+from flask_mail import Message
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import MetaData
 sys.path.append('app/static/py')
 from nbconvert.preprocessors import ExecutePreprocessor
 from nbconvert.preprocessors.execute import executenb
@@ -125,7 +128,7 @@ def upload_notebook(notebook, notebook_configuration, time, engine):
 ########## 3. Log Error
 #############################################
 
-def log_error(notebook_configuration, error, annotations, engine):
+def log_error(notebook_configuration, error, annotations, engine, app, mail):
 
 	# Get error type
 	error_response = '<span> Sorry, there has been an error'
@@ -148,8 +151,24 @@ def log_error(notebook_configuration, error, annotations, engine):
 		error_type = 'unspecified'
 		error_response = error_response.replace('error', 'unspecified error.')
 
-	# Upload to database
-	error_dataframe = pd.Series({'notebook_configuration': json.dumps(notebook_configuration), 'error': error, 'version': notebook_configuration['notebook']['version'], 'error_type': error_type, 'gse': notebook_configuration['data']['parameters'].get('gse')}).to_frame().T
-	error_dataframe.to_sql('error_log', engine, if_exists='append', index=False)
+	# Prepare session
+	Session = sessionmaker(bind=engine)
+	metadata = MetaData()
+	metadata.reflect(bind=engine)
+	tables = metadata.tables
+
+	# Upload
+	session = Session()
+	error_id = session.execute(tables['error_log'].insert({'notebook_configuration': json.dumps(notebook_configuration), 'error': error, 'version': notebook_configuration['notebook']['version'], 'error_type': error_type, 'gse': notebook_configuration['data']['parameters'].get('gse')})).lastrowid
+	session.commit()
+	session.close()
+
+    # Send mail
+	with app.app_context():
+		msg = Message(subject='Notebook Generation Error #{}'.format(error_id),
+						sender=os.environ['MAIL_USERNAME'],
+						recipients=[os.environ['MAIL_RECIPIENT']],
+                    body='https://amp.pharm.mssm.edu/biojupies-dev/error/{error_id}'.format(**locals()))
+		mail.send(msg)
 
 	return error_response
