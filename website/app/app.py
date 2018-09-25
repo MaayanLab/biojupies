@@ -55,15 +55,6 @@ metadata.reflect(bind=engine)
 tables = metadata.tables
 
 ##### 2. Functions #####
-# Longest common substring
-def common_start(sa, sb):
-	def _iter():
-		for a, b in zip(sa, sb):
-			if a == b:
-				yield a
-			else:
-				return
-	return ''.join(_iter()).rstrip('-').rstrip('.').rstrip('_')
 
 #######################################################
 #######################################################
@@ -179,8 +170,12 @@ def search_data():
 	elif sortby == 'new':
 		db_query = db_query.order_by(tables['dataset_v5'].columns['date'].desc())
 
+	# Add query
+	session.execute(tables['search'].insert({'query': q}))
+
 	# Finish query
 	query_dataframe = pd.DataFrame(db_query.all())
+	session.commit()
 	session.close()
 
 	# Filter dataset
