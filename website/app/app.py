@@ -1092,7 +1092,13 @@ def page_not_found(e):
 #############################################
 @app.errorhandler(500)
 def internal_server_error(e):
-    return render_template('errors/500.html'), 500
+	
+	# Log error
+	session = Session()
+	session.execute(tables['error'].insert({'error': str(e)}))
+	session.commit()
+	session.close()
+	return render_template('errors/500.html'), 500
 
 #######################################################
 #######################################################
