@@ -19,6 +19,7 @@
 ##### 1. Flask modules #####
 from flask import Flask, request, render_template, Response, redirect, url_for, abort
 from flask_sqlalchemy import SQLAlchemy
+from flask_mail import Mail
 
 ##### 2. Python modules #####
 import sys, os, json, requests, re, math, itertools, glob, urllib
@@ -33,6 +34,7 @@ pymysql.install_as_MySQLdb()
 sys.path.append('app/static/py')
 import TableManager as TM
 import ReadManager as RM
+import MailManager as MM
 
 #############################################
 ########## 2. App Setup
@@ -53,6 +55,17 @@ Session = sessionmaker(bind=engine)
 metadata = MetaData()
 metadata.reflect(bind=engine)
 tables = metadata.tables
+
+# Mail
+mail_settings = {
+    "MAIL_SERVER": 'smtp.gmail.com',
+    "MAIL_PORT": 465,
+    "MAIL_USE_SSL": True,
+    "MAIL_USERNAME": os.environ['MAIL_USERNAME'],
+    "MAIL_PASSWORD": os.environ['MAIL_PASSWORD']
+}
+app.config.update(mail_settings)
+mail = Mail(app)
 
 ##### 2. Functions #####
 
@@ -1095,9 +1108,12 @@ def internal_server_error(e):
 	
 	# Log error
 	session = Session()
-	session.execute(tables['error'].insert({'error': str(e)}))
+	error_id = session.execute(tables['error'].insert({'error': str(e)})).lastrowid
 	session.commit()
 	session.close()
+
+	# Send email
+	MM.sendMail(id=error_id, content=str(e), error_type='server', app=app, mail=mail)
 	return render_template('errors/500.html'), 500
 
 #######################################################
