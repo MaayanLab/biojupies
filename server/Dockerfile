@@ -45,6 +45,7 @@ RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("edgeR")
 RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("preprocessCore");'
 
 RUN . /notebook-generator-server/venv/bin/activate && pip3 install flask-cors
+RUN . /notebook-generator-server/venv/bin/activate && pip3 install flask-mail
 
 ENV LIBRARY_VERSION=v0.9.3
 
