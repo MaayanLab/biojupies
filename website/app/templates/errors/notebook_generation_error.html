@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+<!-- Title -->
+{% block title %} BioJupies | Notebook Generation Error #{{ error.id }} {% endblock %}
+
+<!-- Content -->
+{% block content %}
+
+	<!-- Carousel Row -->
+	<div class="row px-6">
+		<div class="col-12">
+            <div class="large light mt-5">Notebook Generation Error #{{ error['id'] }}</div>
+            <hr width="100%">
+			<div class="medium light mt-3"><b>Date:</b> {{ error['date'] }}.</div>
+			<div class="medium light mt-3"><b>Dataset Source:</b> {{ error['notebook_configuration']['data']['source'] }}.</div>
+			<div class="medium light mt-3"><b>Type:</b> {{ error['error_type'] | safe }}.</div>
+			<div class="medium light mt-3"><b>Error:</b></div>
+			<div class="tiny light mt-3">{{ error['error'].replace('\n', '<br>') | safe }}</div>
+			<div class="medium light mt-3"><b>Notebook Configuration:</b></div>
+			<textarea class="tiny light mt-3 mb-3 w-100" style="height: 500px;">{{ error['notebook_configuration_json'] | safe }}</textarea>
+		</div>
+	</div>
+
+{% endblock %}

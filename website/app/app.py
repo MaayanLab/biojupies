@@ -68,6 +68,15 @@ app.config.update(mail_settings)
 mail = Mail(app)
 
 ##### 2. Functions #####
+# Longest common substring
+def common_start(sa, sb):
+	def _iter():
+		for a, b in zip(sa, sb):
+			if a == b:
+				yield a
+			else:
+				return
+	return ''.join(_iter()).rstrip('-').rstrip('.').rstrip('_')
 
 #######################################################
 #######################################################
@@ -1115,6 +1124,25 @@ def internal_server_error(e):
 	# Send email
 	MM.sendMail(id=error_id, content=str(e), error_type='server', app=app, mail=mail)
 	return render_template('errors/500.html'), 500
+
+#############################################
+########## 3. Notebook Generation Error
+#############################################
+
+@app.route(entry_point+'/error/<error_id>')
+def notebook_generation_error(error_id):
+	
+	# Query
+	session = Session()
+	db_query = session.query(tables['error_log']).filter(tables['error_log'].columns['id'] == error_id)
+	session.close()
+	
+	# Get results
+	error = db_query.all()[0]._asdict()
+	error['notebook_configuration'] = json.loads(error['notebook_configuration'])
+	error['notebook_configuration_json'] = json.dumps(error['notebook_configuration'], indent=4)
+
+	return render_template('errors/notebook_generation_error.html', error=error)
 
 #######################################################
 #######################################################
