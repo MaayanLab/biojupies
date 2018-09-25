@@ -33,6 +33,7 @@ RUN pip3 install clustergrammer-widget
 RUN echo "r <- getOption('repos'); r['CRAN'] <- 'http://cran.us.r-project.org'; options(repos = r);" > ~/.Rprofile
 RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("limma");'
 RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("edgeR");'
+RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("preprocessCore");'
 
 RUN apt-get update && apt-get install -y wget
 
@@ -41,7 +42,7 @@ RUN pip3 install matplotlib-venn
 RUN mkdir /notebooks /library /download
 
 COPY . /library
-RUN cd /library; python3 download_libraries.py     
+RUN cd /library; python3 download_libraries.py
 
 WORKDIR /notebooks
 

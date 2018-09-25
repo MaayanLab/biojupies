@@ -42,6 +42,8 @@ RUN . /notebook-generator-server/venv/bin/activate && python -m ipykernel instal
 RUN echo "r <- getOption('repos'); r['CRAN'] <- 'http://cran.us.r-project.org'; options(repos = r);" > ~/.Rprofile
 RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("limma");'
 RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("edgeR");'
+RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("preprocessCore");'
+
 RUN . /notebook-generator-server/venv/bin/activate && pip3 install flask-cors
 
 ENV LIBRARY_VERSION=v0.9.3
