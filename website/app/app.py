@@ -353,8 +353,21 @@ def configure_analysis():
 
 			# Get tool query
 			tools = [value for value, key in zip(f.listvalues(), f.keys()) if key == 'tool'][0]
-			tool_query_string = '("'+'","'.join([value for value, key in zip(f.listvalues(), f.keys()) if key == 'tool'][0])+'")'
-			p = pd.read_sql_query('SELECT tool_name, tool_string, tool_description, parameter_name, parameter_description, parameter_string, value, `default` FROM tool t LEFT JOIN parameter p ON t.id=p.tool_fk LEFT JOIN parameter_value pv ON p.id=pv.parameter_fk WHERE t.tool_string IN {}'.format(tool_query_string), engine).set_index(['tool_string'])#.set_index(['tool_name', 'parameter_name', 'parameter_description', 'parameter_string'])
+			session = Session()
+			db_query = session.query(
+					tables['tool'].columns['tool_name'], \
+					tables['tool'].columns['tool_string'], \
+					tables['tool'].columns['tool_description'], \
+					tables['parameter'].columns['parameter_name'], \
+					tables['parameter'].columns['parameter_string'], \
+					tables['parameter'].columns['parameter_description'], \
+					tables['parameter_value'].columns['value'], \
+					tables['parameter_value'].columns['default']) \
+				.join(tables['parameter']) \
+				.join(tables['parameter_value']) \
+				.filter(tables['tool'].columns['tool_string'].in_(tools)).all()
+			session.close()
+			p = pd.DataFrame(db_query).set_index(['tool_string'])#pd.read_sql_query('SELECT tool_name, tool_string, tool_description, parameter_name, parameter_description, parameter_string, value, `default` FROM tool t LEFT JOIN parameter p ON t.id=p.tool_fk LEFT JOIN parameter_value pv ON p.id=pv.parameter_fk WHERE t.tool_string IN {}'.format(tool_query_string), engine).set_index(['tool_string'])#.set_index(['tool_name', 'parameter_name', 'parameter_description', 'parameter_string'])
 
 			# Fix tool parameter data structure
 			t = p[['tool_name', 'tool_description']].drop_duplicates().reset_index().set_index('tool_string', drop=False).to_dict(orient='index')#.groupby('tool_string')[['tool_name', 'tool_description']]#.apply(tuple).to_frame()#drop_duplicates().to_dict(orient='index')
@@ -399,7 +412,6 @@ def generate_notebook():
 
 		# Get form
 		d = {key:value if len(value) > 1 else value[0] for key, value in request.form.lists()}
-		print(d)
 
 		# Get parameters and groups
 		p = {x:{} for x in d['tool']} if isinstance(d['tool'], list) else {d['tool']: {}}
