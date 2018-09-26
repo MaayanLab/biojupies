@@ -29,6 +29,8 @@ import pandas as pd
 import h5py
 
 # Database
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import MetaData
 import pymysql
 pymysql.install_as_MySQLdb()
 
@@ -60,6 +62,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']#+'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 engine = db.engine
+Session = sessionmaker(bind=engine)
+metadata = MetaData()
+metadata.reflect(bind=engine)
+tables = metadata.tables
 
 # Cross origin
 CORS(app, resources=r'{}/api/*'.format(entry_point))
@@ -105,7 +111,6 @@ def generate():
 	core_script_metadata = pd.read_sql_table('core_scripts', engine).set_index('option_string').to_dict(orient='index')
 	annotations = {'tools': tool_metadata, 'core_options': core_script_metadata}
 	print('generating notebook...')
-
 	# Try
 	try:
 		# GET request
@@ -118,7 +123,7 @@ def generate():
 			# Generate, Execute and Convert to HTML
 			notebook = NG.generate_notebook(notebook_configuration, annotations, library_version=False)
 			notebook = NM.execute_notebook(notebook, execute=False, to_html=True, kernel_name='python3')
-		
+
 			# Return
 			return notebook
 
@@ -126,15 +131,18 @@ def generate():
 		else:
 			# Get Configuration
 			notebook_configuration = request.json
+			# notebook_configuration = {"notebook": {"title": "GSE88741 Analysis Notebook | BioJupies", "live": "False", "version": "v0.9.3"}, "tools": [{"tool_string": "pca", "parameters": {"nr_genes": "2500", "normalization": "logCPM", "z_score": "True", "plot_type": "interactive"}}, {"tool_string": "clustergrammer", "parameters": {"nr_genes": "2500", "normalization": "logCPM", "z_score": "True"}}, {"tool_string": "library_size_analysis", "parameters": {"plot_type": "interactive"}}], "data": {"source": "archs4", "parameters": {"gse": "GSE88741", "platform": "GPL16791"}}, "signature": {}, "terms": []}
 
 			# Check if notebook exists
-			matching_notebook = pd.read_sql_query("SELECT * FROM notebook WHERE notebook_configuration = '{}'".format(json.dumps(notebook_configuration)), engine).to_dict(orient='records')
+			session = Session()
+			matching_notebook = session.query(tables['notebook'].columns['notebook_uid']).filter(tables['notebook'].columns['notebook_configuration'] == json.dumps(notebook_configuration)).all()
+			session.close()
 
 			# Return existing notebook
 			if len(matching_notebook):
 
 				# Get URL
-				notebook_uid = matching_notebook[0]['notebook_uid']
+				notebook_uid = matching_notebook[0].notebook_uid
 
 			# Generate new notebook
 			else:
@@ -221,9 +229,17 @@ def samples():
 	gse_list = json.loads(request.get_data())['gse']
 	
 	# Get Sample Dataframe
-	gse_string = '("'+'", "'.join(gse_list)+'")'
-	# sample_dataframe = pd.read_sql_query('SELECT gse, gsm, gpl, sample_title FROM series se LEFT JOIN sample sa ON se.id=sa.series_fk LEFT JOIN platform p ON p.id=sa.platform_fk WHERE gse in {}'.format(gse_string), engine, index_col='gse')
-	sample_dataframe = pd.read_sql_query('SELECT dataset_accession AS gse, sample_accession AS gsm, platform_accession AS gpl, sample_title FROM dataset_v5 d LEFT JOIN sample_v5 s ON d.id=s.dataset_fk LEFT JOIN platform_v5 p ON p.id=s.platform_fk WHERE dataset_accession in {}'.format(gse_string), engine, index_col='gse')
+	session = Session()
+	db_query = session.query(
+			tables['dataset_v5'].columns['dataset_accession'].label('gse'),
+			tables['sample_v5'].columns['sample_title'],
+			tables['sample_v5'].columns['sample_accession'].label('gsm'),
+			tables['platform_v5'].columns['platform_accession'].label('gpl')) \
+		.join(tables['sample_v5']) \
+		.join(tables['platform_v5']) \
+		.filter(tables['dataset_v5'].columns['dataset_accession'].in_(gse_list)).all()
+	session.close()
+	sample_dataframe = pd.DataFrame(db_query).set_index('gse')
 
 	# Initialize result dict
 	result = {gse:{} for gse in gse_list}
