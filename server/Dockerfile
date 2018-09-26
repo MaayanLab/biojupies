@@ -46,6 +46,7 @@ RUN Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("preproc
 
 RUN . /notebook-generator-server/venv/bin/activate && pip3 install flask-cors
 RUN . /notebook-generator-server/venv/bin/activate && pip3 install flask-mail
+RUN . /notebook-generator-server/venv/bin/activate && pip3 install sentry-sdk[flask]==0.3.5
 
 ENV LIBRARY_VERSION=v0.9.3
 

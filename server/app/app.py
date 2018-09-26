@@ -27,6 +27,8 @@ import sys, os, json, time, re, urllib.request
 import pandas as pd
 import pymysql
 import h5py
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 pymysql.install_as_MySQLdb()
 
 ##### 3. Custom modules #####
@@ -38,6 +40,10 @@ import NotebookManager as NM
 ########## 2. App Setup
 #############################################
 ##### 1. Flask App #####
+# Sentry
+if os.getenv('SENTRY_DSN'):
+	sentry_sdk.init(dsn=os.environ['SENTRY_DSN'], integrations=[FlaskIntegration()])
+
 # General
 with open('dev.txt') as openfile:
 	dev = openfile.read() == 'True'

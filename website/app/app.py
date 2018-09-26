@@ -25,6 +25,8 @@ from flask_mail import Mail
 import sys, os, json, requests, re, math, itertools, glob, urllib
 import pandas as pd
 import pymysql
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 from io import StringIO
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import MetaData, or_, and_, func
@@ -34,12 +36,15 @@ pymysql.install_as_MySQLdb()
 sys.path.append('app/static/py')
 import TableManager as TM
 import ReadManager as RM
-import MailManager as MM
 
 #############################################
 ########## 2. App Setup
 #############################################
 ##### 1. Flask App #####
+# Sentry
+if os.getenv('SENTRY_DSN'):
+	sentry_sdk.init(dsn=os.environ['SENTRY_DSN'], integrations=[FlaskIntegration()])
+
 # General
 with open('dev.txt') as openfile:
 	dev = openfile.read() == 'True'
@@ -55,17 +60,6 @@ Session = sessionmaker(bind=engine)
 metadata = MetaData()
 metadata.reflect(bind=engine)
 tables = metadata.tables
-
-# Mail
-mail_settings = {
-    "MAIL_SERVER": 'smtp.gmail.com',
-    "MAIL_PORT": 465,
-    "MAIL_USE_SSL": True,
-    "MAIL_USERNAME": os.environ['MAIL_USERNAME'],
-    "MAIL_PASSWORD": os.environ['MAIL_PASSWORD']
-}
-app.config.update(mail_settings)
-mail = Mail(app)
 
 ##### 2. Functions #####
 # Longest common substring
@@ -1115,14 +1109,6 @@ def page_not_found(e):
 @app.errorhandler(500)
 def internal_server_error(e):
 	
-	# Log error
-	session = Session()
-	error_id = session.execute(tables['error'].insert({'error': str(e)})).lastrowid
-	session.commit()
-	session.close()
-
-	# Send email
-	MM.sendMail(id=error_id, content=str(e), error_type='server', app=app, mail=mail)
 	return render_template('errors/500.html'), 500
 
 #############################################
@@ -1143,6 +1129,10 @@ def notebook_generation_error(error_id):
 	error['notebook_configuration_json'] = json.dumps(error['notebook_configuration'], indent=4)
 
 	return render_template('errors/notebook_generation_error.html', error=error)
+
+@app.route(entry_point+'/err')
+def err():
+	return asd
 
 #######################################################
 #######################################################
