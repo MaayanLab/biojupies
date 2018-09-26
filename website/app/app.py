@@ -19,7 +19,6 @@
 ##### 1. Flask modules #####
 from flask import Flask, request, render_template, Response, redirect, url_for, abort
 from flask_sqlalchemy import SQLAlchemy
-from flask_mail import Mail
 
 ##### 2. Python modules #####
 # General
@@ -306,25 +305,49 @@ def configure_analysis():
 		# Check if requires signature
 		signature_tools = pd.read_sql_query('SELECT tool_string FROM tool WHERE requires_signature = 1', engine)['tool_string'].values
 		requires_signature = any([x in signature_tools for x in [x for x in f.lists()][0][-1]])
-		print(f)
 
 		# Signature generation
 		if requires_signature and not f.get('source') == 'gtex':
 
 			# Get metatada for processed datasets
 			if 'gse' in request.form.keys():
-				j = pd.read_sql_query('SELECT DISTINCT CONCAT(sample_accession, "---", sample_title) AS sample_info, variable, value FROM sample_v5 s LEFT JOIN dataset_v5 d ON d.id=s.dataset_fk LEFT JOIN sample_metadata_v5 sm ON s.id=sm.sample_fk WHERE dataset_accession = "{}"'.format(f.get('gse').replace('"', '')), engine)
-				j = j.pivot(index='sample_info', columns='variable', values='value')
-				j = pd.concat([pd.DataFrame({'accession': [x.split('---')[0] for x in j.index], 'sample': [x.split('---')[1] for x in j.index]}, index=j.index), j], axis=1).reset_index(drop=True).fillna('')
-				j = j[[col for col, colData in j.iteritems() if len(colData.unique()) > 1]]
+
+				# Perform database query
+				session = Session()
+				db_query = session.query(
+						tables['sample_v5'].columns['sample_accession'].label('accession'),
+						tables['sample_metadata_v5'].columns['variable'], \
+						tables['sample_metadata_v5'].columns['value']) \
+					.join(tables['dataset_v5']) \
+					.join(tables['sample_metadata_v5']) \
+					.filter(tables['dataset_v5'].columns['dataset_accession'] == request.form.get('gse')).all()
+				session.close()
+
+				# Read sample dataframe
+				sample_dataframe = pd.DataFrame(db_query).pivot(index='accession', columns='variable',values='value').reset_index()
+				
+				# Remove columns with constant values
+				sample_dataframe = sample_dataframe[[col for col, colData in sample_dataframe.iteritems() if len(colData.unique()) > 1]]
 
 			# Get metadata for user-submitted dataset
 			else:
-				j = pd.read_sql_query('SELECT DISTINCT sample_name AS sample, variable, value FROM user_dataset ud LEFT JOIN user_sample us ON ud.id=us.user_dataset_fk LEFT JOIN user_sample_metadata usm ON us.id=usm.user_sample_fk WHERE ud.dataset_uid="{}"'.format(request.form.get('uid').replace('"', '')), engine)
-				j = j.pivot(index='sample', columns='variable', values='value').reset_index()
+
+				# Perform database query
+				session = Session()
+				db_query = session.query(
+						tables['user_sample'].columns['sample_name'].label('sample'),
+						tables['user_sample_metadata'].columns['variable'], \
+						tables['user_sample_metadata'].columns['value']) \
+					.join(tables['user_dataset']) \
+					.join(tables['user_sample_metadata']) \
+					.filter(tables['user_dataset'].columns['dataset_uid'] == request.form.get('uid')).all()
+				session.close()
+
+				# Read sample dataframe
+				sample_dataframe = pd.DataFrame(db_query).pivot(index='sample', columns='variable', values='value').reset_index()
 		
 			# Return result
-			return render_template('analyze/configure_signature.html', f=f, j=j)
+			return render_template('analyze/configure_signature.html', f=f, sample_dataframe=sample_dataframe)
 
 		else:
 

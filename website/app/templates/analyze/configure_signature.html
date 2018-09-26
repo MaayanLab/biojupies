@@ -94,13 +94,13 @@
 						<thead>
 							<tr>
 								<th class="text-center very-small regular">Group</th>
-								{% for col in j.columns %}
+								{% for col in sample_dataframe.columns %}
 									<th class="text-center very-small regular">{{ col.title() }}</th>
 								{% endfor %}
 							</tr>
 						</thead>
 						<tbody>
-							{% for index, rowData in j.iterrows() %}
+							{% for index, rowData in sample_dataframe.iterrows() %}
 								<tr class="sample-row very-small light text-center px-2 py-1" data-group="none">
 									<td>
 										<div class="dropdown group-dropdown">
@@ -113,7 +113,7 @@
 											<input type="hidden" name="{{rowData.get('accession') if rowData.get('accession') else rowData.get('sample') }}-group" value="none">
 										</div>
 									</td>
-									{% for col in j.columns %}
+									{% for col in sample_dataframe.columns %}
 										<td>{{ rowData[col] }}</td>
 									{% endfor %}
 								</tr>
