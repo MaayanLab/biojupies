@@ -4,6 +4,16 @@
 <!-- Title -->
 {% block title %} BioJupies | Select Tools {% endblock %}
 
+<!-- Head -->
+{% block head %} 
+<style>
+#add-tools-col {
+	/* max-height: 800px; */
+	overflow: scroll;
+}
+</style>
+{% endblock %}
+
 <!-- Content -->
 {% block content %}
 
@@ -33,7 +43,7 @@
 	 <!-- Add Tools Form -->
 	 <div class="row">
 		<hr width="100%" class="mt-4 mb-2">
-		<div class="col-12 px-3 mb-5">
+		<div id="add-tools-col" class="col-12 px-3 mb-5">
 			<form id="add-tools-form">
 
 				<!-- Add tool selection -->
@@ -55,34 +65,11 @@
 	</div>
 </div>
 
-<!-- Modal -->
-<!-- <div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <div class="modal-title medium regular ml-2"></div>
-        <button type="button" class="close nodecoration" data-dismiss="modal"><span class="pt-1 pr-2 large">&times;</span></button>
-      </div>
-      <div class="modal-body text-center">
-        <img src="" id="modal-image" class="w-75">
-      </div>
-    </div>
-  </div>
-</div> -->
-
-
 {% endblock %}
 
 
 {% block footer %}
 <script type="text/javascript">
-
-	// Preview
-	// $(".pop").on('click', function(evt) {
-	//    $('.modal-title').html($(evt.target).parents('.collapse').prev().find('.col-11 div').eq(1).html()); // here asign the image to the modal when the user click the enlarge link
-	//    $('#modal-image').attr('src', $(evt.target).attr('src')); // here asign the image to the modal when the user click the enlarge link
-	//    $('#imagemodal').modal('show'); // imagemodal is the id attribute assigned to the bootstrap modal, then i use the show function
-	// });
 
 	// Tool Checkbox Listener
 	$('.tool-checkbox').click(function(evt) {
