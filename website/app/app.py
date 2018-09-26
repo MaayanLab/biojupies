@@ -22,15 +22,20 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
 
 ##### 2. Python modules #####
+# General
 import sys, os, json, requests, re, math, itertools, glob, urllib
 import pandas as pd
-import pymysql
-import sentry_sdk
-from sentry_sdk.integrations.flask import FlaskIntegration
 from io import StringIO
+
+# Database
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import MetaData, or_, and_, func
+import pymysql
 pymysql.install_as_MySQLdb()
+
+# Sentry
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 
 ##### 3. Custom modules #####
 sys.path.append('app/static/py')
