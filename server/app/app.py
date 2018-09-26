@@ -23,13 +23,18 @@ from flask_cors import CORS
 from flask_mail import Mail
 
 ##### 2. Python modules #####
+# General
 import sys, os, json, time, re, urllib.request
 import pandas as pd
-import pymysql
 import h5py
+
+# Database
+import pymysql
+pymysql.install_as_MySQLdb()
+
+# Sentry
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
-pymysql.install_as_MySQLdb()
 
 ##### 3. Custom modules #####
 sys.path.append('app/static/py')
