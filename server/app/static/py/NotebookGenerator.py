@@ -249,6 +249,32 @@ def add_footer(notebook):
 	# Return cell
 	return addCell(notebook, cell, 'markdown')
 
+#############################################
+########## 9. Validate Configuration
+#############################################
+
+def validate_configuration(notebook_configuration, parameter_dataframe):
+
+	# Validate parameters
+	for i, tool in enumerate(notebook_configuration['tools']):
+		for parameter, value in tool['parameters'].items():
+			# Check if parameter is in allowed values
+			if value not in parameter_dataframe.loc[(tool['tool_string'], parameter), 'value'].tolist():
+				notebook_configuration['tools'][i]['parameters'][parameter] = parameter_dataframe.loc[(tool['tool_string'], parameter)].query('default == 1')['value'].values[0]
+
+	# Validate dataset
+	for key, value in notebook_configuration['data']['parameters'].items():
+		if isinstance(value, list):
+			notebook_configuration['data']['parameters'][key] = [x.replace("'", '') for x in notebook_configuration['data']['parameters'][key]]
+		else:
+			notebook_configuration['data']['parameters'][key] = notebook_configuration['data']['parameters'][key].replace("'", '')
+
+	# Validate signature
+	notebook_configuration['signature']['method'] = notebook_configuration['signature']['method'].replace("'", '')
+	for group in ['A', 'B']:
+		notebook_configuration['signature'][group]['name'] = notebook_configuration['signature'][group]['name'].replace("'", '')
+		notebook_configuration['signature'][group]['samples'] = [x.replace("'", '') for x in notebook_configuration['signature'][group]['samples']]
+
 #################################################################
 #################################################################
 ############### 2. Wrapper ######################################
@@ -263,6 +289,9 @@ def generate_notebook(notebook_configuration, annotations, library_version=True)
 
 	# Create Notebook
 	notebook = nbf.v4.new_notebook()
+
+	# Validate configuration
+	validate_configuration(notebook_configuration, parameter_dataframe=annotations['parameter_dataframe'])
 
 	# Initialize Notebook
 	if library_version:

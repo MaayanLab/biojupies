@@ -109,7 +109,8 @@ def generate():
 	# Get tool metadata
 	tool_metadata = pd.read_sql_table('tool', engine).set_index('tool_string').to_dict(orient='index')
 	core_script_metadata = pd.read_sql_table('core_scripts', engine).set_index('option_string').to_dict(orient='index')
-	annotations = {'tools': tool_metadata, 'core_options': core_script_metadata}
+	parameter_dataframe = pd.read_sql_query('SELECT tool_string, parameter_string, value, `default` FROM tool t LEFT JOIN parameter p ON t.id=p.tool_fk LEFT JOIN parameter_value pv ON p.id=pv.parameter_fk', engine).set_index(['tool_string', 'parameter_string'])
+	annotations = {'tools': tool_metadata, 'core_options': core_script_metadata, 'parameter_dataframe': parameter_dataframe}
 	print('generating notebook...')
 	
 	# Try
@@ -123,7 +124,7 @@ def generate():
 
 			# Generate, Execute and Convert to HTML
 			notebook = NG.generate_notebook(notebook_configuration, annotations, library_version=False)
-			notebook = NM.execute_notebook(notebook, execute=True, to_html=True, kernel_name='python3')
+			notebook = NM.execute_notebook(notebook, execute=False, to_html=True, kernel_name='python3')
 
 			# Return
 			return notebook
@@ -137,7 +138,7 @@ def generate():
 			# Check if notebook exists
 			session = Session()
 			matching_notebook = session.query(tables['notebook'].columns['notebook_uid']).filter(tables['notebook'].columns['notebook_configuration'] == json.dumps(notebook_configuration)).all()
-			session.close()
+			
 
 			# Return existing notebook
 			if len(matching_notebook):

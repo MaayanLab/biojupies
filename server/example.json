@@ -1,8 +1,8 @@
 {
   "notebook": {
-    "title": "GSE89952 Analysis Notebook | BioJupies",
+    "title": "Normal vs Metastatic Analysis Notebook | BioJupies",
     "live": "False",
-    "version": "v0.7.5"
+    "version": "v0.9.3"
   },
   "tools": [
     {
@@ -10,7 +10,8 @@
       "parameters": {
         "nr_genes": "2500",
         "normalization": "logCPM",
-        "z_score": "True"
+        "z_score": "True",
+        "plot_type": "interactive"
       }
     },
     {
@@ -23,15 +24,46 @@
     },
     {
       "tool_string": "library_size_analysis",
+      "parameters": {
+        "plot_type": "interactive"
+      }
+    },
+    {
+      "tool_string": "signature_table",
       "parameters": {}
     }
   ],
   "data": {
     "source": "archs4",
     "parameters": {
-      "gse": "GSE89952",
-      "platform": "GPL13112"
+      "gse": "GSE88741",
+      "platform": "GPL16791"
     }
   },
-  "signature": {}
+  "signature": {
+    "method": "limma",
+    "A": {
+      "name": "Normal",
+      "samples": [
+        "GSM2344965",
+        "GSM2344966",
+        "GSM2344967"
+      ]
+    },
+    "B": {
+      "name": "Metastatic",
+      "samples": [
+        "GSM2344968",
+        "GSM2344969",
+        "GSM2344970",
+        "GSM2344971",
+        "GSM2344972",
+        "GSM2344973",
+        "GSM2344974",
+        "GSM2344975",
+        "GSM2344976"
+      ]
+    }
+  },
+  "terms": []
 }
