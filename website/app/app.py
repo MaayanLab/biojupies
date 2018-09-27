@@ -402,7 +402,6 @@ def configure_analysis():
 ### Displays the loading screen during notebook generation, and the link to the generated notebook once the process is complete.
 ### Links to: view_notebook().
 ### Accessible from: configure_analysis().
-##### CHECK QUERIES
 
 @app.route(entry_point+'/analyze/results', methods=['GET', 'POST'])
 def generate_notebook():
