@@ -168,7 +168,7 @@ def log_error(notebook_configuration, error, annotations, engine, app, mail):
 		msg = Message(subject='Notebook Generation Error #{}'.format(error_id),
 						sender=os.environ['MAIL_USERNAME'],
 						recipients=[os.environ['MAIL_RECIPIENT']],
-                    body='https://amp.pharm.mssm.edu/biojupies-dev/error/{error_id}'.format(**locals()))
+                    body='https://amp.pharm.mssm.edu/biojupies/error/{error_id}'.format(**locals()))
 		mail.send(msg)
 
 	return error_response
