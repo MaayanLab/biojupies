@@ -111,6 +111,7 @@ def generate():
 	core_script_metadata = pd.read_sql_table('core_scripts', engine).set_index('option_string').to_dict(orient='index')
 	annotations = {'tools': tool_metadata, 'core_options': core_script_metadata}
 	print('generating notebook...')
+	
 	# Try
 	try:
 		# GET request
@@ -122,7 +123,7 @@ def generate():
 
 			# Generate, Execute and Convert to HTML
 			notebook = NG.generate_notebook(notebook_configuration, annotations, library_version=False)
-			notebook = NM.execute_notebook(notebook, execute=False, to_html=True, kernel_name='python3')
+			notebook = NM.execute_notebook(notebook, execute=True, to_html=True, kernel_name='python3')
 
 			# Return
 			return notebook
