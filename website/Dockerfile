@@ -22,6 +22,8 @@ RUN apt-get update && apt-get install -y libpcre3 libpcre3-dev
 RUN pip3 install uwsgi
 RUN pip3 install xlrd
 RUN pip3 install sentry-sdk[flask]==0.3.5
+RUN pip3 install bs4
+RUN pip3 install lxml
 
 RUN mkdir biojupies
 COPY . /biojupies
