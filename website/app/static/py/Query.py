@@ -92,6 +92,9 @@ def searchGEO(q):
     # Try
     try:
 
+        # Encode query
+        q = urllib.request.quote(q)
+
         # Search
         esearch = BeautifulSoup(urllib.request.urlopen('http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gds&term={}%20AND%20Expression%20profiling%20by%20high%20throughput%20sequencing[Filter]'.format(q)).read().decode('utf-8'), 'lxml')
 
