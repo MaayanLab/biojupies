@@ -40,6 +40,7 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 sys.path.append('app/static/py')
 import TableManager as TM
 import ReadManager as RM
+import Query as Q
 
 #############################################
 ########## 2. App Setup
@@ -165,41 +166,25 @@ def search_data():
 	sample_nr = pd.read_sql_query('SELECT COUNT(DISTINCT sample_accession) FROM sample_v5', engine).iloc[0,0]
 
 	###
-	# Initialize database query
-	session = Session()
-	db_query = session.query(tables['dataset_v5'], tables['platform_v5'], func.count(tables['sample_v5'].columns['sample_accession']).label('nr_samples')) \
-					.join(tables['sample_v5']) \
-					.join(tables['platform_v5']) \
-					.filter(or_( \
-						tables['dataset_v5'].columns['dataset_title'].like('% '+q+' %'), \
-						tables['dataset_v5'].columns['summary'].like('% '+q+' %'), \
-						tables['dataset_v5'].columns['dataset_accession'].like(q)
-					)) \
-					.group_by(tables['dataset_v5'].columns['dataset_accession']) \
-							.having(and_( \
-								tables['platform_v5'].columns['organism'].in_(organisms), \
-								func.count(tables['sample_v5'].columns['sample_accession']) >= min_samples,
-								func.count(tables['sample_v5'].columns['sample_accession']) <= max_samples
-							))
-
-	# Sort query results
-	if sortby == 'asc':
-		db_query = db_query.order_by(func.count(tables['sample_v5'].columns['sample_accession']).asc())
-	elif sortby == 'desc':
-		db_query = db_query.order_by(func.count(tables['sample_v5'].columns['sample_accession']).desc())
-	elif sortby == 'new':
-		db_query = db_query.order_by(tables['dataset_v5'].columns['date'].desc())
-
-	# Add query
-	session.execute(tables['search'].insert({'query': q}))
-
-	# Finish query
-	query_dataframe = pd.DataFrame(db_query.all())
-	session.commit()
-	session.close()
+	# Search database
+	query_dataframe = Q.searchDatasets(session=Session(), tables=tables, min_samples=min_samples, max_samples=max_samples, organisms=organisms, sortby=sortby, q=q)
 
 	# Filter dataset
 	nr_results = len(query_dataframe.index)
+
+	# GEO Search
+	if not nr_results:
+
+		# Get GSEs
+		gse = Q.searchGEO(q)
+		
+		# Search
+		query_dataframe = Q.searchDatasets(session=Session(), tables=tables, min_samples=min_samples, max_samples=max_samples, organisms=organisms, sortby=sortby, gse=gse)
+
+		# Number of results
+		nr_results = len(query_dataframe.index)
+
+	# Prepare queries to display
 	query_dataframe = query_dataframe.iloc[(page-1)*10:page*10]
 	nr_results_displayed = max(len(query_dataframe.index), 10)
 
@@ -259,9 +244,6 @@ def add_tools():
 		if request.form.get('gtex-samples-1'):
 			ix = [index for index, rowData in tools.iterrows() if rowData['tool_string'] in ['signature_table', 'enrichr', 'volcano_plot', 'go_enrichment']]
 			tools.loc[ix, 'default_selected'] = 1
-		# tools = tools if dev else tools[tools['display'] == True]
-		# if dev:
-			# tools = tools[[x not in ['pathway_enrichment', 'tf_enrichment', 'kinase_enrichment', 'mirna_enrichment'] for x in tools['tool_string']]]
 		tools, sections = [x.to_dict(orient='records') for x in [tools, sections]]
 
 		# Combine tools and sections
