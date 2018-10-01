@@ -28,12 +28,44 @@ from bs4 import BeautifulSoup
 
 #################################################################
 #################################################################
-############### 1. Search Database ##############################
+############### 1. Search Datasets ##############################
 #################################################################
 #################################################################
 
 #############################################
-########## 1. Search datasets
+########## 1. Search GEO
+#############################################
+
+def searchGEO(q):
+
+    # Try
+    try:
+
+        # Encode query
+        q = urllib.request.quote(q)
+
+        # Search
+        esearch = BeautifulSoup(urllib.request.urlopen('http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gds&term={}%20AND%20Expression%20profiling%20by%20high%20throughput%20sequencing[Filter]'.format(q)).read().decode('utf-8'), 'lxml')
+
+        # Get IDs
+        ids = ','.join([x.text for x in esearch.find_all('id')])
+
+        # Summary
+        esummary = BeautifulSoup(urllib.request.urlopen('http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gds&id={}'.format(ids)).read().decode('utf-8'), 'lxml')
+
+        # Get accessions
+        accessions = [x.text for x in esummary.find_all('item', {'name': 'Accession'}) if not x.text.startswith('GSM')]
+
+    # Except
+    except:
+
+        # Empty list
+        accessions = []
+
+    # Return
+    return accessions
+#############################################
+########## 2. Search Database
 #############################################
 
 def searchDatasets(session, tables, min_samples, max_samples, organisms, sortby='asc', q=None, gse=None):
@@ -82,36 +114,3 @@ def searchDatasets(session, tables, min_samples, max_samples, organisms, sortby=
 
     # Return 
     return query_dataframe
-
-#############################################
-########## 2. Search GEO API
-#############################################
-
-def searchGEO(q):
-
-    # Try
-    try:
-
-        # Encode query
-        q = urllib.request.quote(q)
-
-        # Search
-        esearch = BeautifulSoup(urllib.request.urlopen('http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gds&term={}%20AND%20Expression%20profiling%20by%20high%20throughput%20sequencing[Filter]'.format(q)).read().decode('utf-8'), 'lxml')
-
-        # Get IDs
-        ids = ','.join([x.text for x in esearch.find_all('id')])
-
-        # Summary
-        esummary = BeautifulSoup(urllib.request.urlopen('http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gds&id={}'.format(ids)).read().decode('utf-8'), 'lxml')
-
-        # Get accessions
-        accessions = [x.text for x in esummary.find_all('item', {'name': 'Accession'}) if not x.text.startswith('GSM')]
-
-    # Except
-    except:
-
-        # Empty list
-        accessions = []
-
-    # Return
-    return accessions

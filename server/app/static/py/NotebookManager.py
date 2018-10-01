@@ -149,7 +149,7 @@ def log_error(notebook_configuration, error, annotations, engine, app, mail):
 		error_response += response
 	else:
 		error_type = 'unspecified'
-		error_response = error_response.replace('error', 'unspecified error.')
+		# error_response = error_response.replace('error', 'unspecified error.')
 
 	# Prepare session
 	Session = sessionmaker(bind=engine)
