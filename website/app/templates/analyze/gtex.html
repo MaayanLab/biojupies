@@ -274,7 +274,28 @@
 
             }
         })
+
+        // Check sample size
+        $('button[form="select-samples-form"]').click(function(evt) {
+            
+            // Get group size
+            group_1_size = $('#DataTables_Table_0_wrapper tr.selected').length;
+            group_2_size = $('#DataTables_Table_1_wrapper tr.selected').length;
+
+            // Check sizes
+            if ((group_1_size < 2) || (group_2_size < 2)) {
+
+                // Prevent submission
+                evt.preventDefault();
+
+                // Alert
+                alert('Please select at least two samples for each group.')
+
+            }
+        })
+
     })
+
 
 </script>
 {% endblock %}
