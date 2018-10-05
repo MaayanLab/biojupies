@@ -104,7 +104,7 @@
 		<hr width="100%" class="mt-4 mb-2">
 		<div class="col-12 px-3">
 
-            <form id="select-samples-form">
+            <form id="select-samples-form" method="POST" action="{{ url_for('add_tools') }}">
                 <div class="row">
                     {% for i in range(2) %}
                         <div class="col-6 gtex-table-col mt-2 mb-4">
@@ -277,6 +277,9 @@
 
         // Check sample size
         $('button[form="select-samples-form"]').click(function(evt) {
+
+            // Prevent submission
+            evt.preventDefault();
             
             // Get group size
             group_1_size = $('#DataTables_Table_0_wrapper tr.selected').length;
@@ -285,11 +288,13 @@
             // Check sizes
             if ((group_1_size < 2) || (group_2_size < 2)) {
 
-                // Prevent submission
-                evt.preventDefault();
-
                 // Alert
-                alert('Please select at least two samples for each group.')
+                alert('Please select at least two samples for each group using the provided checkboxes.')
+
+            } else {
+
+                // Submit
+                $('#select-samples-form').submit();
 
             }
         })
