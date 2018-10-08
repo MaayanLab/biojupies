@@ -68,7 +68,7 @@ def searchGEO(q):
 ########## 2. Search Database
 #############################################
 
-def searchDatasets(session, tables, min_samples, max_samples, organisms, sortby='asc', q=None, gse=None):
+def searchDatasets(session, tables, min_samples, max_samples, organisms, sortby='asc', q=None):
 
     # Build database query
     db_query = session.query(tables['dataset_v5'], tables['platform_v5'], func.count(tables['sample_v5'].columns['sample_accession']).label('nr_samples')) \
@@ -80,10 +80,9 @@ def searchDatasets(session, tables, min_samples, max_samples, organisms, sortby=
         db_query = db_query.filter(or_( \
                         tables['dataset_v5'].columns['dataset_title'].like('% '+q+' %'), \
                         tables['dataset_v5'].columns['summary'].like('% '+q+' %'), \
-                        tables['dataset_v5'].columns['dataset_accession'].like(q)
+                        tables['dataset_v5'].columns['dataset_accession'].like(q), \
+                        tables['dataset_v5'].columns['dataset_accession'].in_(searchGEO(q))
                     ))
-    else:
-        db_query = db_query.filter(tables['dataset_v5'].columns['dataset_accession'].in_(gse))
 
     # Group query
     db_query = db_query.group_by(tables['dataset_v5'].columns['dataset_accession']) \

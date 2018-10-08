@@ -173,16 +173,16 @@ def search_data():
 	nr_results = len(query_dataframe.index)
 
 	# GEO Search
-	if not nr_results:
+	# if not nr_results:
 
 		# Get GSEs
-		gse = Q.searchGEO(q)
+		# gse = Q.searchGEO(q)
 		
 		# Search
-		query_dataframe = Q.searchDatasets(session=Session(), tables=tables, min_samples=min_samples, max_samples=max_samples, organisms=organisms, sortby=sortby, gse=gse)
+		# query_dataframe = Q.searchDatasets(session=Session(), tables=tables, min_samples=min_samples, max_samples=max_samples, organisms=organisms, sortby=sortby, gse=gse)
 
 		# Number of results
-		nr_results = len(query_dataframe.index)
+		# nr_results = len(query_dataframe.index)
 
 	# Prepare queries to display
 	query_dataframe = query_dataframe.iloc[(page-1)*10:page*10]
