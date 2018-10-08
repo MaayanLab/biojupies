@@ -154,7 +154,7 @@ def search_data():
 	# Get Search Parameters
 	q = request.args.get('q', 'cancer')
 	min_samples = request.args.get('min_samples', 6)
-	max_samples = request.args.get('max_samples', 30)
+	max_samples = request.args.get('max_samples', 50)
 	max_samples = 500 if max_samples == '70' else max_samples
 	sortby = request.args.get('sortby', 'new')
 	organism = request.args.get('organism', 'all')
