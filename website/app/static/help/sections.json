@@ -145,7 +145,7 @@
                     "<ul><li><b><a href='https://www.genenames.org/' target='_blank'>HGNC gene symbols</a> should be the first term in each row</b>. We recommend using HGNC gene symbols as the gene identifiers, since several of the plugin tools in the Enrichment Analysis and Small Molecule Query categories support these identifiers. BioJupies also supports other identifier systems such as <b>Ensembl IDs</b> and <b>Entrez IDs</b>; however, please note that the plugins in the enrichment analysis and small molecule queries may not return optimal results.</li>",
                     "<li>Have <b>sample names on the columns</b>.</li>",
                     "<li>Have <b>raw gene expression counts</b> as values. While users may successfully upload and analyze normalized RNA-seq datasets (such as FPKM values or log-transformed data) please note that the <b>analysis plugins are currently optimized for analysis of raw gene counts only</b>.</li>",
-                    "<li>The uploaded table should be stored in one of the following formats: <b>.txt, .tsv, .csv, .xls</b> or <b>.xlsx</b>.</li></ul>"
+                    "<li>The uploaded table should be stored in one of the following formats: <b>.txt, .tsv, .csv, .xls</b> or <b>.xlsx</b>. An example gene expression table file can be downloaded <a href='app/static/data/biojupies_example_matrix.txt') }}' download>here</a>.</li></ul>"
                 ]
             },
             {
@@ -205,7 +205,7 @@
                     "<img src='entrypoint/add_metadata.png'>",
                     "You can add information about your RNA-seq samples in two ways:",
                     "<ol><li>By <b>manually specifying groups</b> the samples belong to, using the text boxes on the left.</li>",
-                    "<li>By <b>uploading a table</b> containing information about the specified samples. The table must have sample names on the rows, and can contain any number of columns specifying different properties of the uploaded samples. Examples are provided.</li></ol>",
+                    "<li>By <b>uploading a table</b> containing information about the specified samples. The table must have sample names on the rows, and can contain any number of columns specifying different properties of the uploaded samples. An example metadata file can be downloaded <a href='app/static/data/biojupies_example_metadata.txt') }}' download>here</a>.</li></ol>",
                     "Once you have added the required information, click <span class='bg-blue border-grey rounded px-2 py-1 micro text-white'>Continue <i class='fa fa-angle-right ml-1'></i></span> to upload your dataset to BioJupies. You can then proceed to <a href='#adding_analysis_plugins'>Adding Analysis Plugins</a>."
                 ]
             }
