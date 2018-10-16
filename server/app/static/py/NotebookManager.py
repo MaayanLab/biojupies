@@ -96,7 +96,7 @@ def upload_notebook(notebook, notebook_configuration, time, engine):
 
 	# Upload to database
 	notebook_dataframe = pd.Series({'notebook_uid': notebook_uid, 'notebook_url': notebook_url, 'notebook_configuration': json.dumps(notebook_configuration), 'version': notebook_configuration['notebook']['version'], 'gse': notebook_configuration['data']['parameters'].get('gse')}).to_frame().T
-	notebook_dataframe.to_sql('notebooks', engine, if_exists='append', index=False)
+	# notebook_dataframe.to_sql('notebooks', engine, if_exists='append', index=False)
 
 	### New Upload
 	# Upload dataset
