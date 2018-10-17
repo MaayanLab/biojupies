@@ -26,7 +26,7 @@ import Upload as P
 ##### 1. Variables #####
 from sqlalchemy import create_engine, MetaData
 engine = create_engine(os.environ['SQLALCHEMY_DATABASE_URI']+'?charset=utf8')
-version = 'v5'
+version = 'v6'
 
 #######################################################
 #######################################################

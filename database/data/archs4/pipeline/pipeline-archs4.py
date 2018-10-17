@@ -7,6 +7,14 @@
 ##### Affiliation: Ma'ayan Laboratory,
 ##### Icahn School of Medicine at Mount Sinai
 
+###### TO RUN:
+### 1. Create a new folder (e.g. v7) in rawdata.dir and place new H5 files
+### 2. Create a new folder s4-series_h5.dir and symlink to a folder not on cloud storage to store H5 packages
+### 3. Replace new version in uploadData function
+### 4. Remove folders s1, s5, s6
+### 5. Run pipeline
+### In the future, automate this.
+
 #############################################
 ########## 1. Load libraries
 #############################################
@@ -26,7 +34,7 @@ import Support3 as S
 ########## 2. General Setup
 #############################################
 ##### 1. Variables #####
-h5_files = glob.glob('rawdata.dir/v5/*.h5')
+h5_files = glob.glob('rawdata.dir/v6/*.h5')
 
 #######################################################
 #######################################################
@@ -260,7 +268,7 @@ def packageData(infiles, outfiles, outfile_root):
 
 			# Data
 			data_grp = of.create_group('data')
-			data_grp.create_dataset('expression', data=[expr[x] for x in rowData['sample_index']])
+			data_grp.create_dataset('expression', data=[expr[x] for x in rowData['sample_index']], chunks=True, dtype=int, compression="gzip")
 
 			# Metadata
 			gene_grp = of.create_group('meta/gene')
