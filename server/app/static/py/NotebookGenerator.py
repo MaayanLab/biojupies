@@ -195,7 +195,7 @@ def add_methods(notebook, notebook_configuration, normalization_methods, annotat
 	if len(normalization_methods):
 		normalization_methods_section = '##### Data Normalization\n'
 		for normalization_method in normalization_methods:
-			normalization_methods_section += '##### {}\n'.format(annotations['core_options'][normalization_method]['option_name'])+annotations['core_options'][normalization_method]['methods']
+			normalization_methods_section += '##### {}\n'.format(annotations['core_options'][normalization_method]['option_name'])+annotations['core_options'][normalization_method]['methods']+'\n'
 		methods.append(normalization_methods_section)
 
 	# Add Signature Methods
@@ -270,10 +270,11 @@ def validate_configuration(notebook_configuration, parameter_dataframe):
 			notebook_configuration['data']['parameters'][key] = notebook_configuration['data']['parameters'][key].replace("'", '')
 
 	# Validate signature
-	notebook_configuration['signature']['method'] = notebook_configuration['signature']['method'].replace("'", '')
-	for group in ['A', 'B']:
-		notebook_configuration['signature'][group]['name'] = notebook_configuration['signature'][group]['name'].replace("'", '')
-		notebook_configuration['signature'][group]['samples'] = [x.replace("'", '') for x in notebook_configuration['signature'][group]['samples']]
+	if notebook_configuration.get('signature'):
+		notebook_configuration['signature']['method'] = notebook_configuration['signature']['method'].replace("'", '')
+		for group in ['A', 'B']:
+			notebook_configuration['signature'][group]['name'] = notebook_configuration['signature'][group]['name'].replace("'", '')
+			notebook_configuration['signature'][group]['samples'] = [x.replace("'", '') for x in notebook_configuration['signature'][group]['samples']]
 
 #################################################################
 #################################################################
