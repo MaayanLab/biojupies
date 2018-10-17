@@ -85,12 +85,32 @@
               <a class="nav-link ml-3 black d-inline-block d-xl-block" href="#" onclick="window.open('https://twitter.com/intent/tweet?ref_src=twsrc%5Etfw&text=BioJupies: Automated Generation of Interactive Notebooks for RNA-seq Data Analysis in the Cloud http://biojupies.cloud&tw_p=tweetbutton&url=https://doi.org/10.1101/352476&hashtags=biojupies,jupyter,bioinformatics&via=MaayanLab', 'newwindow', 'width=600, height=250'); return false;" target="_blank"><i class="fab fa-twitter medium text-muted"></i></a>
             </li>
             
+            <!-- Login -->
+            {% if not current_user.is_authenticated %}
+              <li class="nav-item pt-2 pt-xl-0 pl-4 pl-xl-0">
+                <a class="nav-link ml-3 black d-inline-block d-xl-block" href="{{ url_for('github.login') }}"><i class="fa fa-user-circle medium text-muted"></i></a>
+              </li>
+              {% else %}
+              <li class="nav-item dropdown pl-2">
+                <a class="nav-link dropdown-toggle nodecoration d-flex align-content-center" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="far fa-user-circle justify-content-center align-self-center medium text-muted"></i>
+                  <span class="ml-2 justify-content-center align-self-center text-muted">{{ current_user.username }} <i class="fa fa-caret-down ml-1 text-muted"></i></span>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a class="dropdown-item" href="{{ url_for('index') }}">Dashboard</a>
+                  <a class="dropdown-item" href="{{ url_for('logout') }}">Log Out</a>
+                </div>
+              </li>
+              {% endif %}
+            
             <!-- BioRxiv -->
-            <li class="nav-item pt-2 pt-xl-0 pl-4 pl-xl-0">
-              <a href="https://doi.org/10.1101/352476" target="_blank" class="nav-link ml-3 no-underline pl-xl-1 d-inline-block d-xl-block">
-                <img class="w-65px" src="{{ url_for('static', filename='img/biorxiv.png') }}">
-              </a>
-            </li>
+            {% if not current_user.is_authenticated %}
+              <li class="nav-item pt-2 pt-xl-0 pl-4 pl-xl-0">
+                <a href="https://doi.org/10.1101/352476" target="_blank" class="nav-link ml-3 no-underline pl-xl-1 d-inline-block d-xl-block">
+                  <img class="w-65px" src="{{ url_for('static', filename='img/biorxiv.png') }}">
+                </a>
+              </li>
+            {% endif %}
             
 
           </ul>

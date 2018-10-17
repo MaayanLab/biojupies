@@ -36,6 +36,10 @@ body {
   list-style-type: none;
 }
 
+.nav-item .dropdown-toggle::after {
+    display: none !important;
+}
+
 /* Styles */
 	/*color: rgba(96, 140, 190, 1) !important;*/
 	/*color: rgba(0, 111, 235, 1) !important;*/

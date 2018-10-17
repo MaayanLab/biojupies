@@ -17,8 +17,16 @@
 ########## 1. Load libraries
 #############################################
 ##### 1. Flask modules #####
-from flask import Flask, request, render_template, Response, redirect, url_for, abort
+from flask import Flask, request, render_template, Response, redirect, url_for, abort, flash
 from flask_sqlalchemy import SQLAlchemy
+from flask_dance.contrib.github import make_github_blueprint, github
+from flask_dance.consumer.backend.sqla import OAuthConsumerMixin, SQLAlchemyBackend
+from flask_dance.consumer import oauth_authorized, oauth_error
+from flask_login import (
+	LoginManager, UserMixin, current_user,
+	login_required, login_user, logout_user
+)
+from werkzeug.contrib.fixers import ProxyFix
 
 ##### 2. Python modules #####
 # General
@@ -43,7 +51,7 @@ import ReadManager as RM
 import Query as Q
 
 #############################################
-########## 2. App Setup
+########## 2. General App Setup
 #############################################
 ##### 1. Flask App #####
 # Sentry
@@ -77,6 +85,130 @@ def common_start(sa, sb):
 				return
 	return ''.join(_iter()).rstrip('-').rstrip('.').rstrip('_')
 
+#############################################
+########## 3. Middleware
+#############################################
+# Prefix middleware
+class PrefixMiddleware(object):
+
+	def __init__(self, app, prefix=''):
+		self.app = app
+		self.prefix = prefix
+
+	def __call__(self, environ, start_response):
+		if environ['PATH_INFO'].startswith(self.prefix):
+			environ['PATH_INFO'] = environ['PATH_INFO'][len(self.prefix):]
+			environ['SCRIPT_NAME'] = self.prefix
+			return self.app(environ, start_response)
+		else:
+			start_response('404', [('Content-Type', 'text/plain')])
+			return ["This url does not belong to the app.".encode()]
+app.wsgi_app = PrefixMiddleware(app.wsgi_app, prefix=entry_point)
+
+# HTTPS fix
+if not os.environ.get('OAUTHLIB_INSECURE_TRANSPORT'):
+	def _force_https(wsgi_app):
+		def wrapper(environ, start_response):
+			environ['wsgi.url_scheme'] = 'https'
+			return wsgi_app(environ, start_response)
+		return wrapper
+	app.wsgi_app = _force_https(app.wsgi_app)
+
+#############################################
+########## 4. OAuth
+#############################################
+# Google Login
+if os.environ.get('OAUTHLIB_INSECURE_TRANSPORT'):
+	os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
+app.secret_key = "supersekrit"
+blueprint = make_github_blueprint(
+	client_id=os.environ['GITHUB_CLIENT_ID'],
+	client_secret=os.environ['GITHUB_CLIENT_SECRET'],
+	redirect_to='index'
+)
+app.register_blueprint(blueprint, url_prefix="/login")
+
+#############################################
+########## 5. Login Manager
+#############################################
+# Tables
+class User(db.Model, UserMixin):
+	id = db.Column(db.Integer, primary_key=True)
+	username = db.Column(db.String(255), unique=True)
+
+class OAuth(db.Model, OAuthConsumerMixin):
+	user_id = db.Column(db.Integer, db.ForeignKey(User.id))
+	user = db.relationship(User)
+
+# Setup login manager
+login_manager = LoginManager()
+login_manager.login_view = 'github.login'
+
+# User loader
+@login_manager.user_loader
+def load_user(user_id):
+	return User.query.get(int(user_id))
+
+# Setup SQLAlchemy backend
+blueprint.backend = SQLAlchemyBackend(OAuth, db.session, user=current_user)
+
+# Create/login local user on successful OAuth login
+@oauth_authorized.connect_via(blueprint)
+def github_logged_in(blueprint, token):
+	if not token:
+		flash("Failed to log in with {name}".format(name=blueprint.name))
+		return
+	# figure out who the user is
+	resp = blueprint.session.get("/user")
+	if resp.ok:
+		username = resp.json()["login"]
+		query = User.query.filter_by(username=username)
+		try:
+			user = query.one()
+		except:  # NoResultFound
+			# create a user
+			user = User(username=username)
+			db.session.add(user)
+			db.session.commit()
+		login_user(user)
+		flash("Successfully signed in with GitHub")
+	else:
+		msg = "Failed to fetch user info from {name}".format(name=blueprint.name)
+		flash(msg, category="error")
+
+# notify on OAuth provider error
+@oauth_error.connect_via(blueprint)
+def github_error(blueprint, error, error_description=None, error_uri=None):
+	msg = (
+		"OAuth error from {name}! "
+		"error={error} description={description} uri={uri}"
+	).format(
+		name=blueprint.name,
+		error=error,
+		description=error_description,
+		uri=error_uri,
+	)
+	flash(msg, category="error")
+
+# Logout handler
+@app.route("/logout")
+@login_required
+def logout():
+	logout_user()
+	flash("You have logged out")
+	return redirect(url_for("index"))
+
+# hook up extensions to app
+db.init_app(app)
+login_manager.init_app(app)
+
+# Create
+# with app.app_context():
+# 	db.create_all()
+# 	db.session.commit()
+# 	print("Database tables created")
+
 #######################################################
 #######################################################
 ########## 2. Notebook Generation
@@ -95,7 +227,7 @@ def common_start(sa, sb):
 ### Links to: analyze().
 
 @app.route(entry_point)
-@app.route(entry_point+'/')
+@app.route('/')
 def index():
 
 	# Get Carousel Images
@@ -112,7 +244,7 @@ def index():
 ### Links to: search_data(), upload_table(), and tutorial().
 ### Accessible from: index().
 
-@app.route(entry_point+'/analyze')
+@app.route('/analyze')
 def analyze():
 
 	# Get options
@@ -133,7 +265,7 @@ def analyze():
 ### Accessible from: analyze(), navbar.
 
 
-@app.route(entry_point+'/analyze/published_data')
+@app.route('/analyze/published_data')
 def published_data():
 	options = [
 		{'link': 'search_data', 'image': 'geo', 'title': 'Gene Expression Omnibus', 'description': 'Search thousands of RNA-seq datasets published on <a href="https://www.ncbi.nlm.nih.gov/geo/" target="_blank">GEO</a>'},
@@ -148,7 +280,7 @@ def published_data():
 ### Links to: add_tools().
 ### Accessible from: published_data(), navbar.
 
-@app.route(entry_point+'/analyze/search')
+@app.route('/analyze/search')
 def search_data():
 
 	# Get Search Parameters
@@ -222,7 +354,7 @@ def search_data():
 ### Links to: configure_analysis().
 ### Accessible from: search_data(), .
 
-@app.route(entry_point+'/analyze/tools', methods=['GET', 'POST'])
+@app.route('/analyze/tools', methods=['GET', 'POST'])
 def add_tools():
 
 	# Check if dataset has been selected
@@ -275,7 +407,7 @@ def add_tools():
 ### Accessible from: add_tools().
 ##### CHECK QUERIES
 
-@app.route(entry_point+'/analyze/configure', methods=['GET', 'POST'])
+@app.route('/analyze/configure', methods=['GET', 'POST'])
 def configure_analysis():
 
 	# Get form
@@ -385,7 +517,7 @@ def configure_analysis():
 ### Links to: view_notebook().
 ### Accessible from: configure_analysis().
 
-@app.route(entry_point+'/analyze/results', methods=['GET', 'POST'])
+@app.route('/analyze/results', methods=['GET', 'POST'])
 def generate_notebook():
 
 	# Check if form has been provided
@@ -482,7 +614,7 @@ def generate_notebook():
 ### Links to: none.
 ### Accessible from: generate_notebook().
 
-@app.route(entry_point+'/notebook/<notebook_uid>')
+@app.route('/notebook/<notebook_uid>')
 def view_notebook(notebook_uid):
 
 	# Get notebook data
@@ -522,7 +654,7 @@ def view_notebook(notebook_uid):
 ### Links to: .
 ### Accessible from: .
 
-@app.route(entry_point+'/gtex')
+@app.route('/gtex')
 def gtex():
 
 	# Return
@@ -540,7 +672,7 @@ def gtex():
 ### Output: a JSON containing a list of elements with the following structure: [{"term_id": "", "term_name": "", "term_description": ""}, ...]
 ### Called by: review_notebook().
 
-@app.route(entry_point+'/api/ontology')
+@app.route('/api/ontology')
 def ontology_api():
 
 	# Get category
@@ -573,7 +705,7 @@ def ontology_api():
 ### Links to: .
 ### Accessible from: .
 
-@app.route(entry_point+'/api/gtex', methods=['POST'])
+@app.route('/api/gtex', methods=['POST'])
 def gtex_api():
 
 	# Read data
@@ -600,7 +732,7 @@ def gtex_api():
 ### Links to: upload_table(), upload_reads().
 ### Accessible from: analyze().
 
-@app.route(entry_point+'/upload')
+@app.route('/upload')
 def upload():
 
 	# Get options
@@ -622,7 +754,7 @@ def upload():
 ### Accessible from: analyze(), navbar.
 ### APIs called: upload_dataframe_api(), upload_table_api().
 
-@app.route(entry_point+'/upload/table', methods=['GET', 'POST'])
+@app.route('/upload/table', methods=['GET', 'POST'])
 def upload_table():
 
 	# Get form
@@ -679,7 +811,7 @@ def upload_table():
 ### Accessible from: upload().
 ### APIs called: upload_dataframe_api(), upload_table_api().
 
-@app.route(entry_point+'/upload/reads', methods=['GET', 'POST'])
+@app.route('/upload/reads', methods=['GET', 'POST'])
 def upload_reads():
 
 	# Alignment settings
@@ -776,7 +908,7 @@ def upload_reads():
 ### Output: the data contained in the uploaded table, provided as a JSON-formatted string generated using pd.to_dict(orient='split')
 ### Called by: upload_table().
 
-@app.route(entry_point+'/api/upload/dataframe', methods=['POST'])
+@app.route('/api/upload/dataframe', methods=['POST'])
 def upload_dataframe_api():
 
 	# Get file
@@ -810,7 +942,7 @@ def upload_dataframe_api():
 ### Output: the data contained in the uploaded table, provided as a JSON-formatted string generated using pd.to_dict(orient='split')
 ### Called by: upload_table().
 
-@app.route(entry_point+'/api/upload/table', methods=['POST'])
+@app.route('/api/upload/table', methods=['POST'])
 def upload_table_api():
 
 	# Read data
@@ -845,7 +977,7 @@ def upload_table_api():
 ### Output: a JSON-formatted string generated using pd.to_dict(orient='split')
 ### Called by: upload_table().
 
-@app.route(entry_point+'/api/upload/example', methods=['POST'])
+@app.route('/api/upload/example', methods=['POST'])
 def example_table_api():
 
 	# Get file
@@ -872,7 +1004,7 @@ def example_table_api():
 ### Output: a JSON-formatted string generated containing one key: dataset_UID.
 ### Called by: upload_reads().
 
-@app.route(entry_point+'/api/upload/launch_alignment', methods=['GET', 'POST'])
+@app.route('/api/upload/launch_alignment', methods=['GET', 'POST'])
 def launch_alignment_api():
 
 	# Get form
@@ -921,7 +1053,7 @@ def launch_alignment_api():
 ### Output: a JSON-formatted string generated using pd.to_dict(orient='split')
 ### Called by: upload_reads().
 
-@app.route(entry_point+'/api/upload/merge_counts', methods=['GET', 'POST'])
+@app.route('/api/upload/merge_counts', methods=['GET', 'POST'])
 def merge_counts_api():
 
 	# Get dataset UID
@@ -976,7 +1108,7 @@ def merge_counts_api():
 ### Accessible from: index().
 ### APIs called: contribute_api()
 
-@app.route(entry_point+'/contribute', methods=['GET', 'POST'])
+@app.route('/contribute', methods=['GET', 'POST'])
 def contribute():
 	return render_template('contribute.html')
 
@@ -997,7 +1129,7 @@ def contribute():
 ### Allows users to re-run notebooks using Docker containers.
 ### Accessible from: navbar.
 
-@app.route(entry_point+'/docker')
+@app.route('/docker')
 def docker():
 	return render_template('docker.html')
 
@@ -1013,7 +1145,7 @@ def docker():
 ### Output: A JSON containing notebook data.
 ### Called by: Docker container.
 
-@app.route(entry_point+'/api/notebook/<notebook_uid>', methods=['GET'])
+@app.route('/api/notebook/<notebook_uid>', methods=['GET'])
 def notebook_api(notebook_uid):
 
 	# Open session
@@ -1054,7 +1186,7 @@ def notebook_api(notebook_uid):
 ### User manual.
 ### Accessible from: navbar.
 
-@app.route(entry_point+'/help')
+@app.route('/help')
 def help():
 	with open('app/static/help/sections.json') as openfile:
 		categories = json.load(openfile)
@@ -1066,7 +1198,7 @@ def help():
 ### Example dataset.
 ### Accessible from: analyze().
 
-@app.route(entry_point+'/analyze/example')
+@app.route('/analyze/example')
 def example():
 
 	# Select dataset
@@ -1083,7 +1215,7 @@ def example():
 ########## 1. Statistics
 #############################################
 
-@app.route(entry_point+'/api/stats')
+@app.route('/api/stats')
 def stats_api():
 	
 	# Get object
@@ -1136,7 +1268,7 @@ def internal_server_error(e):
 ########## 3. Notebook Generation Error
 #############################################
 
-@app.route(entry_point+'/error/<error_id>')
+@app.route('/error/<error_id>')
 def notebook_generation_error(error_id):
 	
 	# Query
@@ -1151,7 +1283,7 @@ def notebook_generation_error(error_id):
 
 	return render_template('errors/notebook_generation_error.html', error=error)
 
-@app.route(entry_point+'/err')
+@app.route('/err')
 def err():
 	return asd
 
