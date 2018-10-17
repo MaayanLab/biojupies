@@ -93,10 +93,27 @@
 		passwd = 'sequencing';
 
 		// Get files
-		var files = $('#fileinput').prop('files');
+		var files = $('#fileinput').prop('files'),
+			oversized_files = [],
+			gb_limit=5;
 
-		// Loop through files
-		$.each(files, function(index, file) {
+		// Check file size
+		$.each(files, function (index, file) {
+			if (file.size > gb_limit*Math.pow(10, 9)) {
+				oversized_files.push(file.name+' ('+(file.size/Math.pow(10,9)).toFixed(2)+' GB)');
+			}
+		})
+		
+		// Check if any file is oversized
+		if (oversized_files.length) {
+
+			// Alert oversized files
+			alert('The following files exceed '+gb_limit+'GB, which is the maximum file size supported by BioJupies. Please remove them to proceed.\n\n • '+oversized_files.join('\n • ')+'\n\nTo analyze the data, we recommend quantifying gene counts using kallisto or STAR, and uploading the generated read counts using the BioJupies table upload (https://amp.pharm.mssm.edu/biojupies/upload).');
+
+		} else {
+			
+			// Loop through files
+			$.each(files, function(index, file) {
 
 			// Add progress bar
 			progress_bar(file['name']);
@@ -150,11 +167,8 @@
 			});
 
 		})
+		}
 	}
-
-	// progress_bar('testfile.fastq.gz');
-	// progress_bar('testfile2.fastq.gz');
-	// progress_bar('testfile2.fastq.gz');
 
 </script>
 
