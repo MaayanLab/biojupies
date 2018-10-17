@@ -125,7 +125,7 @@ app.secret_key = "supersekrit"
 blueprint = make_github_blueprint(
 	client_id=os.environ['GITHUB_CLIENT_ID'],
 	client_secret=os.environ['GITHUB_CLIENT_SECRET'],
-	redirect_to='index'
+	redirect_to='dashboard'
 )
 app.register_blueprint(blueprint, url_prefix="/login")
 
@@ -230,6 +230,10 @@ login_manager.init_app(app)
 @app.route('/')
 def index():
 
+	# Redirect user
+	# if current_user.is_authenticated:
+		# return redirect(url_for('dashboard'))
+	# else:
 	# Get Carousel Images
 	carousel_images = [os.path.basename(x).split('.')[0] for x in glob.glob('app/static/img/carousel/*.png')]#['notebook', 'pca', 'clustergrammer', 'volcano_plot', 'go_enrichment']
 	carousel_images.sort()
@@ -1240,7 +1244,29 @@ def stats_api():
 
 #######################################################
 #######################################################
-########## 6. Handlers
+########## 6. User Routes
+#######################################################
+#######################################################
+##### Handles user account-related templates.
+
+##################################################
+########## 3.1 Dashboard
+##################################################
+
+#############################################
+########## 1. User Dashboard
+#############################################
+
+@app.route('/dashboard')
+def dashboard():
+	if not current_user.is_authenticated:
+		return redirect(url_for('github.login'))
+	else:
+		return render_template('user/dashboard.html')
+
+#######################################################
+#######################################################
+########## 7. Handlers
 #######################################################
 #######################################################
 ##### 404 and error handlers.
