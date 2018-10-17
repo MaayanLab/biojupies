@@ -175,6 +175,7 @@ var addTable = function(dataset) {
 // Dropzone handler
 $("#dropzone").dropzone({ 
 	url: "{{ url_for('upload_dataframe_api') }}",
+	acceptedFiles: ".txt,.csv,.tsv,.xls,.xlsx",
 	success: function(file, response){
 
 		// Parse response
