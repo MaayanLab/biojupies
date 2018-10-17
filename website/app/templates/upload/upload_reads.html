@@ -115,58 +115,58 @@
 			// Loop through files
 			$.each(files, function(index, file) {
 
-			// Add progress bar
-			progress_bar(file['name']);
+				// Add progress bar
+				progress_bar(file['name']);
 
-			// Get Sign Policy
-			$.getJSON("https://amp.pharm.mssm.edu/charon/signpolicy?username=" + username + "&password=" + passwd, function (data) {
+				// Get Sign Policy
+				$.getJSON("https://amp.pharm.mssm.edu/charon/signpolicy?username=" + username + "&password=" + passwd, function (data) {
 
-				// Create Form
-				var FD = new FormData();
-				FD.append('key', data['uid'] + "/{{upload_uid}}-${filename}");
-				FD.append('AWSAccessKeyId', data['cid']);
-				FD.append('acl', 'private');
-				FD.append('success_action_redirect', 'success.html');
-				FD.append('policy', data['policy']);
-				FD.append('signature', data['signature']);
-				FD.append('Content-Type', 'application/octet-stream');
-				FD.append('file', file);
+					// Create Form
+					var FD = new FormData();
+					FD.append('key', data['uid'] + "/{{upload_uid}}-${filename}");
+					FD.append('AWSAccessKeyId', data['cid']);
+					FD.append('acl', 'private');
+					FD.append('success_action_redirect', 'success.html');
+					FD.append('policy', data['policy']);
+					FD.append('signature', data['signature']);
+					FD.append('Content-Type', 'application/octet-stream');
+					FD.append('file', file);
 
-				// Get filename
-				var filename = file['name'];
+					// Get filename
+					var filename = file['name'];
 
-				// Create Request
-				var xhr = new XMLHttpRequest();
-				xhr.open("POST", "https://" + data["bucket"] + ".s3.amazonaws.com/", true);
-				xhr.onloadstart = function (e) {
-					console.log("start")
-				}
-				xhr.onloadend = function (e) {
-					// Set complete status on progress bar
-					$('[data-filename="' + filename + '"] .progress-bar').attr('data-status', 'complete');
-					$('[data-filename="' + filename + '"] .progress-bar-text span:first-child').html('Successfully uploaded ');
-					$('[data-filename="' + filename + '"] .progress-bar-text span:last-child').html('');
-
-					// Activate button if all progress bars are complete
-					if ($('.progress-bar').length === $('.progress-bar[data-status="complete"]').length) {
-						$('[form="read-upload-form"]').prop('disabled', false).toggleClass('black white bg-white bg-blue');
+					// Create Request
+					var xhr = new XMLHttpRequest();
+					xhr.open("POST", "https://" + data["bucket"] + ".s3.amazonaws.com/", true);
+					xhr.onloadstart = function (e) {
+						console.log("start")
 					}
-					console.log("end")
+					xhr.onloadend = function (e) {
+						// Set complete status on progress bar
+						$('[data-filename="' + filename + '"] .progress-bar').attr('data-status', 'complete');
+						$('[data-filename="' + filename + '"] .progress-bar-text span:first-child').html('Successfully uploaded ');
+						$('[data-filename="' + filename + '"] .progress-bar-text span:last-child').html('');
 
-					// Call FASTQ Upload Status API
-				}
-				xhr.upload.addEventListener('progress', function (evt) {
-					if (evt.lengthComputable) {
-						var progress = Math.ceil((evt.loaded / evt.total) * 100)+'%';
-						$('[data-filename="' + filename + '"] .progress-bar').html(progress);
-						$('[data-filename="' + filename + '"] .progress-bar').css('width', progress);
+						// Activate button if all progress bars are complete
+						if ($('.progress-bar').length === $('.progress-bar[data-status="complete"]').length) {
+							$('[form="read-upload-form"]').prop('disabled', false).toggleClass('black white bg-white bg-blue');
+						}
+						console.log("end")
+
+						// Call FASTQ Upload Status API
 					}
-				}, false);
-				xhr.send(FD);
+					xhr.upload.addEventListener('progress', function (evt) {
+						if (evt.lengthComputable) {
+							var progress = Math.ceil((evt.loaded / evt.total) * 100)+'%';
+							$('[data-filename="' + filename + '"] .progress-bar').html(progress);
+							$('[data-filename="' + filename + '"] .progress-bar').css('width', progress);
+						}
+					}, false);
+					xhr.send(FD);
 
-			});
+				});
 
-		})
+			})
 		}
 	}
 
