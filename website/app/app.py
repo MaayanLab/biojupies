@@ -1263,7 +1263,20 @@ def dashboard():
 	if not current_user.is_authenticated:
 		return redirect(url_for('github.login'))
 	else:
-		return render_template('user/dashboard.html')
+
+		# Start session
+		session = Session()
+
+		# Get datasets
+		datasets = session.query(tables['user_dataset']).filter(tables['user_dataset'].columns['user_fk'] == current_user.get_id()).all()
+
+		# Get notebooks
+		notebooks = session.query(tables['notebook']).filter(tables['notebook'].columns['user_fk'] == current_user.get_id()).all()
+
+		# Close session
+		session.close()
+
+		return render_template('user/dashboard.html', datasets=datasets, notebooks=notebooks)
 
 #######################################################
 #######################################################
