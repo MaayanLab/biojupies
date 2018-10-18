@@ -596,7 +596,8 @@ def generate_notebook():
 			'tools': [{'tool_string': x, 'parameters': p.get(x, {})} for x in p.keys()],
 			'data': {'source': d['source'], 'parameters': data_parameters},
 			'signature': signature,
-			'terms': tags
+			'terms': tags,
+			'user_fk': current_user.get_id()
 		}
 
 		# Get tools

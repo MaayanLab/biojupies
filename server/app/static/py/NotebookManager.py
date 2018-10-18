@@ -86,16 +86,19 @@ def upload_notebook(notebook, notebook_configuration, time, engine):
 	notebook_string = nbf.writes(notebook)
 	notebook_uid = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(9))
 
+	# Get user FK
+	user_id = notebook_configuration.pop('user_id', None)
+
 	# Upload to Bucket
 	client = storage.Client()
 	bucket = client.get_bucket('jupyter-notebook-generator')
 	blob = bucket.blob('{notebook_uid}/{notebook_configuration[notebook][title]}.ipynb'.format(**locals()))
 	blob.upload_from_string(notebook_string, content_type='text/html')
 	blob.make_public()
-	notebook_url = urllib.parse.unquote(blob.public_url)
+	# notebook_url = urllib.parse.unquote(blob.public_url)
 
 	# Upload to database
-	notebook_dataframe = pd.Series({'notebook_uid': notebook_uid, 'notebook_url': notebook_url, 'notebook_configuration': json.dumps(notebook_configuration), 'version': notebook_configuration['notebook']['version'], 'gse': notebook_configuration['data']['parameters'].get('gse')}).to_frame().T
+	# notebook_dataframe = pd.Series({'notebook_uid': notebook_uid, 'notebook_url': notebook_url, 'notebook_configuration': json.dumps(notebook_configuration), 'version': notebook_configuration['notebook']['version'], 'gse': notebook_configuration['data']['parameters'].get('gse')}).to_frame().T
 	# notebook_dataframe.to_sql('notebooks', engine, if_exists='append', index=False)
 
 	### New Upload
@@ -103,7 +106,7 @@ def upload_notebook(notebook, notebook_configuration, time, engine):
 	dataset = notebook_configuration['data']['parameters'].get('gse') if notebook_configuration['data']['parameters'].get('gse') else notebook_configuration['data']['parameters'].get('uid')
 	if not dataset:
 		dataset = 'gtex'
-	notebook_dataframe = pd.Series({'notebook_uid': notebook_uid, 'notebook_title': notebook_configuration['notebook']['title'], 'notebook_configuration': json.dumps(notebook_configuration), 'version': notebook_configuration['notebook']['version'], 'time': time, 'dataset': dataset}).to_frame().T
+	notebook_dataframe = pd.Series({'notebook_uid': notebook_uid, 'notebook_title': notebook_configuration['notebook']['title'], 'notebook_configuration': json.dumps(notebook_configuration), 'version': notebook_configuration['notebook']['version'], 'time': time, 'dataset': dataset, 'user_fk': user_id}).to_frame().T
 	notebook_dataframe.to_sql('notebook', engine, if_exists='append', index=False)
 
 	# Get tool IDs
