@@ -127,10 +127,10 @@ def uploadH5(h5_file, dataset_uid):
 ########## 4. Upload to Database
 #############################################
 
-def uploadToDatabase(data, dataset_uid, engine):
+def uploadToDatabase(data, dataset_uid, engine, user_id):
 
 	# Upload dataset and get FK
-	dataset_id = engine.execute('INSERT INTO user_dataset(dataset_uid, dataset_type, status) VALUES ("{}", "expression_table", "complete")'.format(dataset_uid)).lastrowid
+	dataset_id = engine.execute('INSERT INTO user_dataset(dataset_uid, dataset_type, status, user_fk) VALUES ("{dataset_uid}", "expression_table", "complete", {user_id})'.format(**locals())).lastrowid
 
 	# Get metadata
 	metadata_dataframe = pd.DataFrame(index=data['metadata']['index'], columns=data['metadata']['columns'], data=data['metadata']['data']).rename(columns={'index': 'Sample'})
@@ -152,6 +152,7 @@ def uploadToDatabase(data, dataset_uid, engine):
 #############################################
 ########## 5. Upload Table
 #############################################
+### UNUSED?
 
 def uploadTable(data, engine):
 

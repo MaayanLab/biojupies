@@ -964,7 +964,7 @@ def upload_table_api():
 	TM.uploadH5(h5_file, dataset_uid)
 
 	# Upload to database
-	TM.uploadToDatabase(data, dataset_uid, engine)
+	TM.uploadToDatabase(data, dataset_uid, engine, user_id=current_user.get_id())
 
 	### Add table-alignment job FK, if provided
 
