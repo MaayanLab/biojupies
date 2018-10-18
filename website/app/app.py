@@ -597,7 +597,7 @@ def generate_notebook():
 			'data': {'source': d['source'], 'parameters': data_parameters},
 			'signature': signature,
 			'terms': tags,
-			'user_fk': current_user.get_id()
+			'user_id': current_user.get_id()
 		}
 
 		# Get tools

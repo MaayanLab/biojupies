@@ -80,14 +80,11 @@ def execute_notebook(notebook, execute=True, to_html=False, kernel_name='venv'):
 ########## 2. Upload Notebook
 #############################################
 
-def upload_notebook(notebook, notebook_configuration, time, engine):
+def upload_notebook(notebook, notebook_configuration, time, engine, user_id=None):
 
 	# Get UID
 	notebook_string = nbf.writes(notebook)
 	notebook_uid = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(9))
-
-	# Get user FK
-	user_id = notebook_configuration.pop('user_id', None)
 
 	# Upload to Bucket
 	client = storage.Client()
