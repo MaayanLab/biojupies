@@ -233,13 +233,13 @@ def samples():
 	# Get Sample Dataframe
 	session = Session()
 	db_query = session.query(
-			tables['dataset_v5'].columns['dataset_accession'].label('gse'),
-			tables['sample_v5'].columns['sample_title'],
-			tables['sample_v5'].columns['sample_accession'].label('gsm'),
-			tables['platform_v5'].columns['platform_accession'].label('gpl')) \
-		.join(tables['sample_v5']) \
-		.join(tables['platform_v5']) \
-		.filter(tables['dataset_v5'].columns['dataset_accession'].in_(gse_list)).all()
+			tables['dataset_v6'].columns['dataset_accession'].label('gse'),
+			tables['sample_v6'].columns['sample_title'],
+			tables['sample_v6'].columns['sample_accession'].label('gsm'),
+			tables['platform_v6'].columns['platform_accession'].label('gpl')) \
+		.join(tables['sample_v6']) \
+		.join(tables['platform_v6']) \
+		.filter(tables['dataset_v6'].columns['dataset_accession'].in_(gse_list)).all()
 	session.close()
 	sample_dataframe = pd.DataFrame(db_query).set_index('gse')
 
