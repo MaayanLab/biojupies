@@ -1278,6 +1278,53 @@ def dashboard():
 
 		return render_template('user/dashboard.html', datasets=datasets, notebooks=notebooks)
 
+#############################################
+########## 2. Private API
+#############################################
+
+@app.route('/api/private', methods=['GET', 'POST'])
+def private_api():
+
+	# Get form data
+	data = {'table': 'user_dataset', 'uid': 'ETnw5p01YjN'}  # request.json
+
+	# Start database session
+	session = Session()
+
+	# Try
+	try:
+
+		# Get object data
+		object_data = session.query(tables[data['table']]).filter(tables[data['table']].columns[data['table'].replace('user_','')+'_uid'] == data['uid']).all()
+
+		# Check length
+		if len(object_data):
+			# Get object
+			object_data = object_data[0]._asdict()
+
+			# Check if user ID matches with owner of object
+			if object_data['user_fk'] == int(current_user.get_id()):
+
+				# Find value
+				private = 0 if object_data['private'] else 1
+
+				# Set value
+				session.execute(tables[data['table']].update().where(tables[data['table']].columns['id'] == object_data['id']).values({'private': private}))
+
+				# Commit
+				session.commit()
+				print('set to {}'.format(private))
+
+	except:
+		# Rollback
+		session.rollback()
+
+	# Close session
+	session.close()
+
+	return ''
+
+
 #######################################################
 #######################################################
 ########## 7. Handlers
