@@ -2,13 +2,58 @@
 {% import 'macros.html' as macros %}
 
 <!-- Title -->
-{% block title %} BioJupies | Home {% endblock %}
+{% block title %} BioJupies | Dashboard {% endblock %}
 
 <!-- Content -->
 {% block content %}
+
+<style>
+    .mw-20 {
+        min-width: 25px;
+    }
+
+    .nav-link { color: black;  }
+    .nav-link:hover { color: black;  }
+
+</style>
+
+<!-- Introduction row -->
 <div class="row px-6 mt-5">
     <div class="col-12">
-        <div class="large light">Welcome back, {{ current_user.username }}.</div>
+        <!-- <div class="large light">Welcome back, {{ current_user.username }}.</div> -->
+    </div>
+</div>
+
+<!-- Dashboard  -->
+<div class="row px-6 mt-2">
+
+    <!-- Navigation -->
+    <div class="nav flex-column nav-pills very-small light" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+        <a class="nav-link py-2 pr-4 my-1 active" id="home-tab" data-toggle="pill" href="#home" role="tab" aria-controls="home" aria-selected="true"><i class="fas mr-3 mw-20 text-center fa-tachometer-alt"></i>Home</a>
+        <a class="nav-link py-2 pr-4 my-1" id="notebooks-tab" data-toggle="pill" href="#notebooks" role="tab" aria-controls="notebooks" aria-selected="false"><i class="fas mr-3 mw-20 text-center fa-book"></i>Notebooks</a>
+        <a class="nav-link py-2 pr-4 my-1" id="datasets-tab" data-toggle="pill" href="#datasets" role="tab" aria-controls="datasets" aria-selected="false"><i class="fas mr-3 mw-20 text-center fa-dna"></i>Datasets</a>
+    </div>
+
+    <!-- Content -->
+    <div class="tab-content ml-5" id="v-pills-tabContent">
+        <!-- Home tab -->
+        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+            <div class="medium-large mb-3 light">Welcome back, {{ current_user.username }}.</div>
+            <div>Notebook count</div>
+            <div>Dataset count</div>
+            <div>New Notebook</div>
+            <div>New Dataset</div>
+        </div>
+
+        <!-- Notebooks tab -->
+        <div class="tab-pane fade" id="notebooks" role="tabpanel" aria-labelledby="notebooks-tab">
+            <div class="medium-large mb-3 light">Your Notebooks</div>
+        </div>
+        
+        <!-- Datasets tab -->
+        <div class="tab-pane fade" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
+            <div class="medium-large mb-3 light">Your Datasets</div>
+        </div>
     </div>
 </div>
 

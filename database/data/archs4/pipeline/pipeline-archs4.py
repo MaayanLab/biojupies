@@ -368,7 +368,7 @@ def buildSeriesJson(infiles, outfile):
 	f.close()
 
 #############################################
-########## 2. Upload HDF5 packages
+########## 2. Upload HDF5 packages 
 #############################################
 ##### Here we upload the HDF5 packages to Google Cloud.
 ### Input: ARCHS4 HDF5 packages.
@@ -387,7 +387,7 @@ def uploadData(infiles, outfile):
 
 	# Get Bucket
 	client = storage.Client()
-	bucket = client.get_bucket('archs4-packages-v5')
+	bucket = client.get_bucket('archs4-packages-v6')
 
 	# Upload
 	print('Doing {}'.format(h5_file))
