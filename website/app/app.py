@@ -1286,10 +1286,10 @@ def dashboard():
 def edit_object():
 
 	# Get form data
-	data = {'table': 'user_dataset', 'uid': 'ETnw5p01YjN', 'action': 'rename', 'title': 'New Data'}  # request.json
+	data = request.json#()#{'table': 'user_dataset', 'uid': 'ETnw5p01YjN', 'action': 'rename', 'title': 'New Data'}  # request.json
 
 	# Get column name
-	object_type = data['table'].replace('user_','')
+	object_label = data['object_type'].replace('user_','')
 
 	# Start database session
 	session = Session()
@@ -1298,7 +1298,7 @@ def edit_object():
 	try:
 
 		# Get object data
-		object_data = session.query(tables[data['table']]).filter(tables[data['table']].columns[object_type+'_uid'] == data['uid']).all()
+		object_data = session.query(tables[data['object_type']]).filter(tables[data['object_type']].columns[object_label+'_uid'] == data['uid']).all()
 
 		# Check length
 		if len(object_data):
@@ -1315,13 +1315,19 @@ def edit_object():
 					private = 0 if object_data['private'] else 1
 
 					# Set value
-					session.execute(tables[data['table']].update().where(tables[data['table']].columns['id'] == object_data['id']).values({'private': private}))
+					session.execute(tables[data['object_type']].update().where(tables[data['object_type']].columns['id'] == object_data['id']).values({'private': private}))
+
+					# Get response
+					response = {'private': private}
 					print('set to {}'.format(private))
 
 				elif data['action'] == 'rename':
 
 					# Set value
-					session.execute(tables[data['table']].update().where(tables[data['table']].columns['id'] == object_data['id']).values({object_type+'_title': data['title']}))
+					session.execute(tables[data['object_type']].update().where(tables[data['object_type']].columns['id'] == object_data['id']).values({object_label+'_title': data['title']}))
+
+					# Get response
+					response = {'title': data['title']}
 					print('set to {}'.format(data['title']))
 
 				# Commit
@@ -1330,13 +1336,16 @@ def edit_object():
 	except:
 		# Rollback
 		session.close()
+
+		# Get response
+		response = []
 		raise
 		# session.rollback()
 
 	# Close session
 	session.close()
 
-	return ''
+	return json.dumps(response)
 
 
 #######################################################

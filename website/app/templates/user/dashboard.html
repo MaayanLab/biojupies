@@ -30,7 +30,7 @@
     <!-- Content -->
     <div class="tab-content col-10 d-flex flex-fill pl-5" id="v-pills-tabContent">
         <!-- Home tab -->
-        <div class="tab-pane fade show active w-100" id="home" role="tabpanel" aria-labelledby="home-tab">
+        <div class="tab-pane fade w-100" id="home" role="tabpanel" aria-labelledby="home-tab"> <!-- show active -->
 
             <!-- Title -->
             <div class="very-large light">Welcome back, {{ current_user.username }}.</div>
@@ -55,12 +55,14 @@
                     <a class="black bold d-block nodecoration" href="{{ url_for('view_notebook', notebook_uid=notebook['notebook_uid']) }}" target="_blank">{{ notebook['notebook_title'] }}</a>
                     <div class="text-muted tiny font-italic light">Generated {{ notebook['date'].strftime('%B %-d, %Y') }}</div>
                     <a class="black light tiny d-block nodecoration" href="{{ url_for('view_notebook', notebook_uid=notebook['notebook_uid']) }}" target="_blank">{{ url_for('view_notebook', notebook_uid=notebook['notebook_uid'], _external=True) }}</a>
+                    Private <input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ notebook['notebook_uid'] }}" data-object_type="notebook" data-action="change_privacy" {% if notebook['private'] %}checked{% endif %}>
+
                 </div>
             {% endfor %}
         </div>
         
         <!-- Datasets tab -->
-        <div class="tab-pane fade w-100" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
+        <div class="tab-pane fade show active w-100" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
 
             <!-- Title -->
             <div class="very-large mb-3 light">Your Datasets</div>
@@ -75,7 +77,7 @@
                         <span class="ml-5">{{ dataset['samples'] }} samples</span>
                     </div>
                     <a href="{{ url_for('add_tools', uid=dataset['dataset_uid']) }}" target="_blank" class="d-block mt-1 nodecoration">Analyze</a>
-                    <!-- Private <input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ dataset['dataset_uid'] }}" {% if dataset['private'] %}checked{% endif %}> -->
+                    Private <input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ dataset['dataset_uid'] }}" data-object_type="user_dataset" data-action="change_privacy" {% if dataset['private'] %}checked{% endif %}>
                 </div>
             {% endfor %}
 
@@ -86,5 +88,39 @@
 {% endblock %}
 
 {% block footer %}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        // Edit object
+        function edit_object($elem) {
+            $.ajax({
+                url: "{{ url_for('edit_object', _external=True) }}",
+                data: JSON.stringify({'object_type': $elem.data('object_type'), 'uid': $elem.data('uid'), 'action': $elem.data('action'), 'title': $elem.data('title')}),
+                dataType: 'json',
+                contentType: "application/json",
+                method: "POST",
+                success: function(response) {
+                    // Set privacy
+                    if ($elem.data('action') === 'change_privacy') {
+                        $elem.prop('checked', response['private']);
+                        console.log('set '+$elem.data('object_type')+' '+$elem.data('uid')+' privacy to '+response['private']);
+                    }
+                },
+                error: function() {
+                    console.log('error');
+                }
+            })
+        }
+
+        // Private
+        $('.private-checkbox').click(function(evt) {
+            evt.preventDefault();
+            edit_object($elem=$(this), action='change_privacy');
+        })
+
+    })
+</script>
+
 
 {% endblock %}
