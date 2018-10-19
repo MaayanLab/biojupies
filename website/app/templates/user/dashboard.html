@@ -71,7 +71,12 @@
             <!-- Datasets -->
             {% for dataset in datasets %}
                 <div class="border-custom rounded bg-lightgrey px-3 py-2 my-2">
-                    <div class="small light">{{ dataset['dataset_title'] }}</div>
+                    <div class="small light dataset-title">
+                        <span data-uid="{{ dataset['dataset_uid'] }}" data-object_type="user_dataset" data-action="rename">{{ dataset['dataset_title'] }}</span>
+                        <a class="ml-4 micro nodecoration rename-link" data-action="rename" href="#">Rename</a>
+                        <input type="text" class="form-control d-none" value="{{ dataset['dataset_title'] }}">
+                        <a class="micro nodecoration rename-link d-none" data-action="confirm" href="#">Confirm</a>
+                    </div>
                     <div class="text-muted tiny font-italic light my-1">
                         <span>Uploaded {{ dataset['date'].strftime('%B %-d, %Y') }}</span>
                         <span class="ml-5">{{ dataset['samples'] }} samples</span>
@@ -93,10 +98,10 @@
     $(document).ready(function () {
 
         // Edit object
-        function edit_object($elem) {
+        function edit_object($elem, title=null) {
             $.ajax({
                 url: "{{ url_for('edit_object', _external=True) }}",
-                data: JSON.stringify({'object_type': $elem.data('object_type'), 'uid': $elem.data('uid'), 'action': $elem.data('action'), 'title': $elem.data('title')}),
+                data: JSON.stringify({'object_type': $elem.data('object_type'), 'uid': $elem.data('uid'), 'action': $elem.data('action'), 'title': title}),
                 dataType: 'json',
                 contentType: "application/json",
                 method: "POST",
@@ -105,10 +110,13 @@
                     if ($elem.data('action') === 'change_privacy') {
                         $elem.prop('checked', response['private']);
                         console.log('set '+$elem.data('object_type')+' '+$elem.data('uid')+' privacy to '+response['private']);
+                    } else if ($elem.data('action') === 'rename') {
+                        $elem.html(response['title']);
+                        console.log('set '+$elem.data('object_type')+' '+$elem.data('uid')+' title to '+response['title']);
                     }
                 },
                 error: function() {
-                    console.log('error');
+                    alert('Sorry, there has been an error.');
                 }
             })
         }
@@ -116,8 +124,20 @@
         // Private
         $('.private-checkbox').click(function(evt) {
             evt.preventDefault();
-            edit_object($elem=$(this), action='change_privacy');
+            edit_object($elem=$(this));
         })
+
+        // Rename
+        $('.rename-link').click(function (evt) {
+            var $wrapper = $(this).parents('.dataset-title');
+            if ($(this).data('action') == 'confirm') {
+                edit_object($elem=$wrapper.find('span'), title=$wrapper.find('input').val());
+            }
+            $wrapper.children().toggleClass('d-none');
+            // edit_object($elem = $(this));
+        })
+
+
 
     })
 </script>
