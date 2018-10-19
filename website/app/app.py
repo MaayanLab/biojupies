@@ -1268,7 +1268,7 @@ def dashboard():
 		session = Session()
 
 		# Get datasets
-		datasets = session.query(tables['user_dataset']).filter(tables['user_dataset'].columns['user_fk'] == current_user.get_id()).all()
+		datasets = session.query(tables['user_dataset'], func.count(tables['user_sample'].columns['id']).label('samples')).join(tables['user_sample']).filter(tables['user_dataset'].columns['user_fk'] == current_user.get_id()).group_by(tables['user_dataset'].columns['id']).order_by(tables['user_dataset'].columns['date'].desc()).all()
 
 		# Get notebooks
 		notebooks = session.query(tables['notebook']).filter(tables['notebook'].columns['user_fk'] == current_user.get_id()).all()
@@ -1282,11 +1282,14 @@ def dashboard():
 ########## 2. Private API
 #############################################
 
-@app.route('/api/private', methods=['GET', 'POST'])
-def private_api():
+@app.route('/api/edit_object', methods=['GET', 'POST'])
+def edit_object():
 
 	# Get form data
-	data = {'table': 'user_dataset', 'uid': 'ETnw5p01YjN'}  # request.json
+	data = {'table': 'user_dataset', 'uid': 'ETnw5p01YjN', 'action': 'rename', 'title': 'New Data'}  # request.json
+
+	# Get column name
+	object_type = data['table'].replace('user_','')
 
 	# Start database session
 	session = Session()
@@ -1295,7 +1298,7 @@ def private_api():
 	try:
 
 		# Get object data
-		object_data = session.query(tables[data['table']]).filter(tables[data['table']].columns[data['table'].replace('user_','')+'_uid'] == data['uid']).all()
+		object_data = session.query(tables[data['table']]).filter(tables[data['table']].columns[object_type+'_uid'] == data['uid']).all()
 
 		# Check length
 		if len(object_data):
@@ -1303,21 +1306,32 @@ def private_api():
 			object_data = object_data[0]._asdict()
 
 			# Check if user ID matches with owner of object
-			if object_data['user_fk'] == int(current_user.get_id()):
+			if object_data['user_fk'] == int(current_user.get_id()) and current_user.get_id():
 
-				# Find value
-				private = 0 if object_data['private'] else 1
+				# Action
+				if data['action'] == 'change_privacy':
 
-				# Set value
-				session.execute(tables[data['table']].update().where(tables[data['table']].columns['id'] == object_data['id']).values({'private': private}))
+					# Find value
+					private = 0 if object_data['private'] else 1
+
+					# Set value
+					session.execute(tables[data['table']].update().where(tables[data['table']].columns['id'] == object_data['id']).values({'private': private}))
+					print('set to {}'.format(private))
+
+				elif data['action'] == 'rename':
+
+					# Set value
+					session.execute(tables[data['table']].update().where(tables[data['table']].columns['id'] == object_data['id']).values({object_type+'_title': data['title']}))
+					print('set to {}'.format(data['title']))
 
 				# Commit
 				session.commit()
-				print('set to {}'.format(private))
 
 	except:
 		# Rollback
-		session.rollback()
+		session.close()
+		raise
+		# session.rollback()
 
 	# Close session
 	session.close()
