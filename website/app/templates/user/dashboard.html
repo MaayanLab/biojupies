@@ -17,28 +17,24 @@
 
 </style>
 
-<!-- Introduction row -->
-<div class="row px-6 mt-5">
-    <div class="col-12">
-        <!-- <div class="large light">Welcome back, {{ current_user.username }}.</div> -->
-    </div>
-</div>
-
 <!-- Dashboard  -->
-<div class="row px-6 mt-2">
+<div class="row px-6 mt-5">
 
     <!-- Navigation -->
-    <div class="nav flex-column nav-pills small light" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-        <a class="nav-link py-2 pr-4 my-1 active" id="home-tab" data-toggle="pill" href="#home" role="tab" aria-controls="home" aria-selected="true"><i class="fas mr-3 mw-20 text-center fa-tachometer-alt"></i>Home</a>
-        <a class="nav-link py-2 pr-4 my-1" id="notebooks-tab" data-toggle="pill" href="#notebooks" role="tab" aria-controls="notebooks" aria-selected="false"><i class="fas mr-3 mw-20 text-center fa-book"></i>Notebooks</a>
-        <a class="nav-link py-2 pr-4 my-1" id="datasets-tab" data-toggle="pill" href="#datasets" role="tab" aria-controls="datasets" aria-selected="false"><i class="fas mr-3 mw-20 text-center fa-dna"></i>Datasets</a>
+    <div class="nav flex-column col-2 pr-0 nav-pills small light pt-1" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+        <a class="nav-link py-2 pr-0 my-1 active" id="home-tab" data-toggle="pill" href="#home" role="tab" aria-controls="home" aria-selected="true"><i class="fas mr-3 mw-20 text-center fa-tachometer-alt"></i>Home</a>
+        <a class="nav-link py-2 pr-0 my-1" id="notebooks-tab" data-toggle="pill" href="#notebooks" role="tab" aria-controls="notebooks" aria-selected="false"><i class="fas mr-3 mw-20 text-center fa-book"></i>Notebooks</a>
+        <a class="nav-link py-2 pr-0 my-1" id="datasets-tab" data-toggle="pill" href="#datasets" role="tab" aria-controls="datasets" aria-selected="false"><i class="fas mr-3 mw-20 text-center fa-dna"></i>Datasets</a>
     </div>
 
     <!-- Content -->
-    <div class="tab-content ml-5" id="v-pills-tabContent">
+    <div class="tab-content col-10 d-flex flex-fill pl-5" id="v-pills-tabContent">
         <!-- Home tab -->
-        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-            <div class="large mb-3 light">Welcome back, {{ current_user.username }}.</div>
+        <div class="tab-pane fade show active w-100" id="home" role="tabpanel" aria-labelledby="home-tab">
+
+            <!-- Title -->
+            <div class="very-large light">Welcome back, {{ current_user.username }}.</div>
+            <hr width="100%" class="mt-3 mb-4">
             <div>Notebook count</div>
             <div>Dataset count</div>
             <div>New Notebook</div>
@@ -47,10 +43,11 @@
         </div>
 
         <!-- Notebooks tab -->
-        <div class="tab-pane fade" id="notebooks" role="tabpanel" aria-labelledby="notebooks-tab">
+        <div class="tab-pane fade w-100" id="notebooks" role="tabpanel" aria-labelledby="notebooks-tab">
 
             <!-- Title -->
-            <div class="large mb-3 light">Your Notebooks</div>
+            <div class="very-large mb-3 light">Your Notebooks</div>
+            <hr width="100%" class="mt-3 mb-4">
 
             <!-- Notebooks -->
             {% for notebook in notebooks %}
@@ -63,15 +60,21 @@
         </div>
         
         <!-- Datasets tab -->
-        <div class="tab-pane fade" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
-            <div class="large mb-3 light">Your Datasets</div>
+        <div class="tab-pane fade w-100" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
+
+            <!-- Title -->
+            <div class="very-large mb-3 light">Your Datasets</div>
+            <hr width="100%" class="mt-3 mb-4">
 
             <!-- Datasets -->
             {% for dataset in datasets %}
                 <div class="border-custom rounded bg-lightgrey px-3 py-2 my-2">
                     <div class="small light">{{ dataset['dataset_title'] }}</div>
-                    <div class="text-muted tiny font-italic light">Uploaded {{ dataset['date'].strftime('%B %-d, %Y') }}</div>
-                    <a href="{{ url_for('analyze', uid=dataset['dataset_uid']) }}" target="_blank" class="d-block mt-1 nodecoration">Analyze</a>
+                    <div class="text-muted tiny font-italic light my-1">
+                        <span>Uploaded {{ dataset['date'].strftime('%B %-d, %Y') }}</span>
+                        <span class="ml-5">{{ dataset['samples'] }} samples</span>
+                    </div>
+                    <a href="{{ url_for('add_tools', uid=dataset['dataset_uid']) }}" target="_blank" class="d-block mt-1 nodecoration">Analyze</a>
                     <!-- Private <input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ dataset['dataset_uid'] }}" {% if dataset['private'] %}checked{% endif %}> -->
                 </div>
             {% endfor %}
