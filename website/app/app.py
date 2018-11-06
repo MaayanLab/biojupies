@@ -19,7 +19,8 @@
 ##### 1. Flask modules #####
 from flask import Flask, request, render_template, Response, redirect, url_for, abort, flash
 from flask_sqlalchemy import SQLAlchemy
-from flask_dance.contrib.github import make_github_blueprint, github
+# from flask_dance.contrib.github import make_github_blueprint, github
+from flask_dance.contrib.google import make_google_blueprint, google
 from flask_dance.consumer.backend.sqla import OAuthConsumerMixin, SQLAlchemyBackend
 from flask_dance.consumer import oauth_authorized, oauth_error
 from flask_login import (
@@ -122,10 +123,19 @@ if os.environ.get('OAUTHLIB_INSECURE_TRANSPORT'):
 	os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
 app.secret_key = "supersekrit"
-blueprint = make_github_blueprint(
-	client_id=os.environ['GITHUB_CLIENT_ID'],
-	client_secret=os.environ['GITHUB_CLIENT_SECRET'],
-	redirect_to='dashboard'
+# blueprint = make_github_blueprint(
+# 	client_id=os.environ['GITHUB_CLIENT_ID'],
+# 	client_secret=os.environ['GITHUB_CLIENT_SECRET'],
+# 	redirect_to='dashboard'
+# )
+blueprint = make_google_blueprint(
+	client_id=os.environ['GOOGLE_OAUTH_CLIENT_ID'],
+	client_secret=os.environ['GOOGLE_OAUTH_CLIENT_SECRET'],
+	redirect_to='dashboard',
+	scope=[
+		"https://www.googleapis.com/auth/plus.me",
+		"https://www.googleapis.com/auth/userinfo.email",
+	]
 )
 app.register_blueprint(blueprint, url_prefix="/login")
 
@@ -135,7 +145,9 @@ app.register_blueprint(blueprint, url_prefix="/login")
 # Tables
 class User(db.Model, UserMixin):
 	id = db.Column(db.Integer, primary_key=True)
-	username = db.Column(db.String(255), unique=True)
+	email = db.Column(db.String(255), unique=True)
+	given_name = db.Column(db.String(255), unique=True)
+	family_name = db.Column(db.String(255), unique=True)
 
 class OAuth(db.Model, OAuthConsumerMixin):
 	user_id = db.Column(db.Integer, db.ForeignKey(User.id))
@@ -143,7 +155,7 @@ class OAuth(db.Model, OAuthConsumerMixin):
 
 # Setup login manager
 login_manager = LoginManager()
-login_manager.login_view = 'github.login'
+login_manager.login_view = 'google.login'
 
 # User loader
 @login_manager.user_loader
@@ -153,29 +165,31 @@ def load_user(user_id):
 # Setup SQLAlchemy backend
 blueprint.backend = SQLAlchemyBackend(OAuth, db.session, user=current_user)
 
-# Create/login local user on successful OAuth login
+# create/login local user on successful OAuth login
 @oauth_authorized.connect_via(blueprint)
-def github_logged_in(blueprint, token):
+def google_logged_in(blueprint, token):
 	if not token:
-		flash("Failed to log in with {name}".format(name=blueprint.name))
-		return
-	# figure out who the user is
-	resp = blueprint.session.get("/user")
+		print("Failed to log in with Google.")
+		return False
+
+	resp = blueprint.session.get("/oauth2/v2/userinfo")
 	if resp.ok:
-		username = resp.json()["login"]
-		query = User.query.filter_by(username=username)
+		response = resp.json()
+		print(response)
+		email = response["email"]
+		query = User.query.filter_by(email=email)
 		try:
 			user = query.one()
 		except:  # NoResultFound
 			# create a user
-			user = User(username=username)
+			user = User(email=email, given_name=response["given_name"], family_name=response["family_name"])
 			db.session.add(user)
 			db.session.commit()
 		login_user(user)
 		flash("Successfully signed in with GitHub")
 	else:
-		msg = "Failed to fetch user info from {name}".format(name=blueprint.name)
-		flash(msg, category="error")
+		print("Failed to fetch user info from Google.")
+		return False
 
 # notify on OAuth provider error
 @oauth_error.connect_via(blueprint)
@@ -1267,7 +1281,7 @@ def stats_api():
 @app.route('/dashboard')
 def dashboard():
 	if not current_user.is_authenticated:
-		return redirect(url_for('github.login'))
+		return redirect(url_for('google.login'))
 	else:
 
 		# Start session
@@ -1370,7 +1384,7 @@ def edit_object():
 #############################################
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template('errors/404.html'), 404
+	return render_template('errors/404.html'), 404
 
 #############################################
 ########## 2. 500

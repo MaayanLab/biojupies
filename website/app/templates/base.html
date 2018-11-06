@@ -90,13 +90,13 @@
             <!-- Login -->
             {% if not current_user.is_authenticated %}
               <li class="nav-item pt-2 pt-xl-0 pl-4 pl-xl-0">
-                <a class="nav-link ml-3 black d-inline-block d-xl-block" href="{{ url_for('github.login') }}"><i class="fa fa-user-circle medium text-muted"></i></a>
+                <a class="nav-link ml-3 black d-inline-block d-xl-block" href="{{ url_for('google.login') }}"><i class="fa fa-user-circle medium text-muted"></i></a>
               </li>
             {% else %}
               <li class="nav-item dropdown pl-3">
                 <a class="nav-link dropdown-toggle nodecoration d-flex align-content-center" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <i class="far fa-user-circle justify-content-center align-self-center medium text-muted"></i>
-                  <span class="ml-2 justify-content-center align-self-center text-muted">{{ current_user.username }} <i class="fa fa-caret-down ml-1 text-muted"></i></span>
+                  <span class="ml-2 justify-content-center align-self-center text-muted">{{ current_user.given_name }} <i class="fa fa-caret-down ml-1 text-muted"></i></span>
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                   <a class="dropdown-item" href="{{ url_for('dashboard') }}">Dashboard</a>
