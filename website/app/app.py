@@ -846,20 +846,30 @@ def upload_reads():
 
 		# Redirect if UID is short
 		if len(upload_uid) < 11:
-			return redirect(url_for('upload_reads'))
+			abort(404)
 		
 		# Else
 		else:
 
-			# Get samples
-			req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
-			uploaded_files = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['filenames']
-			samples = [x for x in uploaded_files if x.startswith(upload_uid) and x.endswith('.fastq.gz')]
+			# Find alignment
+			session = Session()
+			upload_user_id = session.query(tables['fastq_upload'].columns['user_fk']).filter(tables['fastq_upload'].columns['upload_uid'] == upload_uid).first()
+			session.close()
 
-			### If UID doesn't exist in the database and files are matched, upload UID and files to database
-			if len(samples):
-				RM.uploadToDatabase(upload_uid, samples, session = Session(), tables=tables)
-				return render_template('upload/align_reads.html', upload_uid=upload_uid, samples=samples)
+			# Check if user matches
+			if upload_user_id and ((current_user.get_id() and int(current_user.get_id()) == upload_user_id[0]) or (not upload_user_id[0])):
+
+				# Get samples
+				req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
+				uploaded_files = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['filenames']
+				samples = [x for x in uploaded_files if x.startswith(upload_uid) and x.endswith('.fastq.gz')]
+
+				### If UID doesn't exist in the database and files are matched, upload UID and files to database
+				if len(samples):
+					RM.uploadToDatabase(upload_uid, samples, session = Session(), tables=tables)
+					return render_template('upload/align_reads.html', upload_uid=upload_uid, samples=samples)
+				else:
+					abort(404)
 			else:
 				abort(404)
 
@@ -869,19 +879,29 @@ def upload_reads():
 		# Get form data
 		alignment_uid = request.args.get('alignment')
 
-		# Get jobs
-		print('performing request...')
-		req =  urllib.request.Request('https://amp.pharm.mssm.edu/cloudalignment/progress?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
-		job_dataframe = pd.DataFrame(json.loads(urllib.request.urlopen(req).read().decode('utf-8'))).T
-		print('done!')
-		jobs = job_dataframe.loc[[index for index, rowData in job_dataframe.iterrows() if rowData['outname'].startswith(alignment_uid)]].to_dict(orient='records')
-		if len(jobs):
+		# Find alignment
+		session = Session()
+		alignment_user_id = session.query(tables['fastq_upload'].columns['user_fk']).join(tables['fastq_alignment']).filter(tables['fastq_alignment'].columns['alignment_uid'] == alignment_uid).first()
+		session.close()
 
-			### Add job to database, adding foreign key for upload
-			RM.uploadJob(jobs, session=Session(), tables=tables)
+		# Check if user matches
+		if alignment_user_id and ((current_user.get_id() and int(current_user.get_id()) == alignment_user_id[0]) or (not alignment_user_id[0])):
 
-			return render_template('upload/alignment_status.html', alignment_uid=alignment_uid, jobs=jobs, elysium_username=os.environ['ELYSIUM_USERNAME'], elysium_password=os.environ['ELYSIUM_PASSWORD'])
+			# Get jobs
+			print('performing request...')
+			req =  urllib.request.Request('https://amp.pharm.mssm.edu/cloudalignment/progress?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
+			job_dataframe = pd.DataFrame(json.loads(urllib.request.urlopen(req).read().decode('utf-8'))).T
+			print('done!')
+			jobs = job_dataframe.loc[[index for index, rowData in job_dataframe.iterrows() if rowData['outname'].startswith(alignment_uid)]].to_dict(orient='records')
+			if len(jobs):
 
+				### Add job to database, adding foreign key for upload
+				RM.uploadJob(jobs, session=Session(), tables=tables)
+
+				return render_template('upload/alignment_status.html', alignment_uid=alignment_uid, jobs=jobs, elysium_username=os.environ['ELYSIUM_USERNAME'], elysium_password=os.environ['ELYSIUM_PASSWORD'])
+
+			else:
+				abort(404)
 		else:
 			abort(404)
 
@@ -1292,10 +1312,18 @@ def dashboard():
 		# Get notebooks
 		notebooks = session.query(tables['notebook']).filter(tables['notebook'].columns['user_fk'] == current_user.get_id()).all()
 
+		# Get uploads
+		upload_query = session.query(tables['fastq_upload'], tables['fastq_file']).join(tables['fastq_file']).filter(tables['fastq_upload'].columns['user_fk'] == current_user.get_id()).all()
+		uploads = pd.DataFrame(upload_query).fillna('').groupby(['upload_uid', 'upload_name', 'date'])['filename'].apply(tuple).rename('samples').to_frame().reset_index().sort_values('date').to_dict(orient='records')
+		print(uploads)
+
+		# Get alignment jobs
+		alignments = session.query(tables['fastq_alignment'], tables['fastq_upload']).join(tables['fastq_upload']).filter(tables['fastq_upload'].columns['user_fk'] == current_user.get_id()).all()
+
 		# Close session
 		session.close()
 
-		return render_template('user/dashboard.html', datasets=datasets, notebooks=notebooks)
+		return render_template('user/dashboard.html', datasets=datasets, notebooks=notebooks, uploads=uploads, alignments=alignments)
 
 #############################################
 ########## 2. Private API
