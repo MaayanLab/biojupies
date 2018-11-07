@@ -24,6 +24,9 @@ RUN pip3 install xlrd
 RUN pip3 install sentry-sdk[flask]==0.3.5
 RUN pip3 install bs4
 RUN pip3 install lxml
+RUN pip3 install flask-dance
+RUN pip3 install sqlalchemy-utils
+RUN pip3 install flask-login
 
 RUN mkdir biojupies
 COPY . /biojupies
