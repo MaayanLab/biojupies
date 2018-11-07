@@ -66,37 +66,37 @@
             </li>
 
             <!-- Chrome Extension -->
-            <li class="nav-item pt-2 pt-xl-0 pl-4 pl-xl-0">
-              <a class="nav-link ml-3 black" href="https://chrome.google.com/webstore/detail/biojupies-generator/picalhhlpcjhonibabfigihelpmpadel" target="_blank">Chrome Extension</a>
+            <li class="nav-item pt-2 pt-xl-0 pl-4 pl-xl-0 my-auto">
+              <a class="nav-link ml-3 black d-inline-block" href="https://chrome.google.com/webstore/detail/biojupies-generator/picalhhlpcjhonibabfigihelpmpadel" target="_blank">Chrome Extension</a>
             </li>
 
             <!-- Help -->
-            <li class="nav-item pt-2 pt-xl-0 pl-4 pl-xl-0">
-              <a class="nav-link ml-3 black" href="{{ url_for('help') }}">Help</a>
+            <li class="nav-item pt-2 pt-xl-0 pl-4 pl-xl-0 my-auto">
+              <a class="nav-link ml-3 black d-inline-block" href="{{ url_for('help') }}">Help</a>
             </li>
 
             <!-- GitHub -->
-            <li class="nav-item pt-2 pt-xl-0 pl-4 pl-xl-0">
+            <li class="nav-item pt-2 pt-xl-0 pl-4 pl-xl-0 my-auto">
               <a class="nav-link ml-3 black d-inline-block d-xl-block" href="https://github.com/MaayanLab/biojupies" target="_blank"><i class="fab fa-github medium text-muted"></i></a>
             </li>
 
             <!-- Twitter -->
-            {% if not current_user.is_authenticated %}
+            <!-- {% if not current_user.is_authenticated %}
               <li class="nav-item pt-2 pt-xl-0 pl-4 pl-xl-0">
                 <a class="nav-link ml-3 black d-inline-block d-xl-block" href="#" onclick="window.open('https://twitter.com/intent/tweet?ref_src=twsrc%5Etfw&text=BioJupies: Automated Generation of Interactive Notebooks for RNA-seq Data Analysis in the Cloud http://biojupies.cloud&tw_p=tweetbutton&url=https://doi.org/10.1101/352476&hashtags=biojupies,jupyter,bioinformatics&via=MaayanLab', 'newwindow', 'width=600, height=250'); return false;" target="_blank"><i class="fab fa-twitter medium text-muted"></i></a>
               </li>
-            {% endif %}
+            {% endif %} -->
             
             <!-- Login -->
             {% if not current_user.is_authenticated %}
               <li class="nav-item pt-2 pt-xl-0 pl-4 pl-xl-0">
-                <a class="nav-link ml-3 black d-inline-block d-xl-block" href="{{ url_for('google.login') }}"><i class="fa fa-user-circle medium text-muted"></i></a>
+                <button class="border-grey bg-blue ml-xl-4 ml-2 white nodecoration rounded px-3 py-2 my-auto d-inline-block cursor-pointer" data-toggle="modal" data-target="#login-modal">Sign In</button>
               </li>
             {% else %}
               <li class="nav-item dropdown pl-3">
-                <a class="nav-link dropdown-toggle nodecoration d-flex align-content-center" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a class="nav-link dropdown-toggle nodecoration d-flex align-content-center border-custom rounded ml-2" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <i class="far fa-user-circle justify-content-center align-self-center medium text-muted"></i>
-                  <span class="ml-2 justify-content-center align-self-center text-muted">{{ current_user.given_name }} <i class="fa fa-caret-down ml-1 text-muted"></i></span>
+                  <span class="ml-2 pl-1 justify-content-center align-self-center text-muted">{{ current_user.given_name }} <i class="fa fa-caret-down ml-1 text-muted"></i></span>
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                   <a class="dropdown-item" href="{{ url_for('dashboard') }}">Dashboard</a>
@@ -106,13 +106,13 @@
             {% endif %}
             
             <!-- BioRxiv -->
-            {% if not current_user.is_authenticated %}
+            <!-- {% if not current_user.is_authenticated %}
               <li class="nav-item pt-2 pt-xl-0 pl-4 pl-xl-0">
                 <a href="https://doi.org/10.1101/352476" target="_blank" class="nav-link ml-3 no-underline pl-xl-1 d-inline-block d-xl-block">
                   <img class="w-65px" src="{{ url_for('static', filename='img/biorxiv.png') }}">
                 </a>
               </li>
-            {% endif %}
+            {% endif %} -->
             
 
           </ul>
@@ -127,6 +127,33 @@
 
     <!-- Push -->
     <div class="push"></div>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header text-center">
+            <h5 class="modal-title medium" id="exampleModalLabel">Sign In</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body text-center mb-3">
+            <div class="px-4">
+              Sign in to BioJupies for access to unlimited private notebooks and datasets.
+            </div>
+            <hr width="100%">
+            <a href="{{ url_for('google.login') }}">
+              <img src="{{ url_for('static', filename='img/btn_google_signin_light_normal_web.png') }}" class="mx-3">
+            </a>
+          </div>
+          <!-- <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div> -->
+        </div>
+      </div>
+    </div>
 
   </div> <!-- #outer-container -->
 

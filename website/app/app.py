@@ -182,7 +182,7 @@ def google_logged_in(blueprint, token):
 			user = query.one()
 		except:  # NoResultFound
 			# create a user
-			user = User(email=email, given_name=response["given_name"], family_name=response["family_name"])
+			user = User(email=email, given_name=response.get("given_name"), family_name=response.get("family_name"))
 			db.session.add(user)
 			db.session.commit()
 		login_user(user)

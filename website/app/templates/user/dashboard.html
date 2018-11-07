@@ -30,15 +30,15 @@
     <!-- Content -->
     <div class="tab-content col-10 d-flex flex-fill pl-5" id="v-pills-tabContent">
         <!-- Home tab -->
-        <div class="tab-pane fade w-100" id="home" role="tabpanel" aria-labelledby="home-tab"> <!-- show active -->
+        <div class="tab-pane show active fade w-100" id="home" role="tabpanel" aria-labelledby="home-tab"> <!-- show active -->
 
             <!-- Title -->
-            <div class="very-large light">Welcome back, {{ current_user.username }}.</div>
+            <div class="very-large light">BioJupies Dashboard</div>
             <hr width="100%" class="mt-3 mb-4">
-            <div>Notebook count</div>
+            <!-- <div>Notebook count</div>
             <div>Dataset count</div>
             <div>New Notebook</div>
-            <div>New Dataset</div>
+            <div>New Dataset</div> -->
 
         </div>
 
@@ -50,26 +50,33 @@
             <hr width="100%" class="mt-3 mb-4">
 
             <!-- Notebooks -->
-            {% for notebook in notebooks %}
-                <div class="border-custom rounded bg-lightgrey px-3 py-2 my-2">
-                    <a class="black bold d-block nodecoration" href="{{ url_for('view_notebook', notebook_uid=notebook['notebook_uid']) }}" target="_blank">{{ notebook['notebook_title'] }}</a>
-                    <div class="text-muted tiny font-italic light">Generated {{ notebook['date'].strftime('%B %-d, %Y') }}</div>
-                    <a class="black light tiny d-block nodecoration" href="{{ url_for('view_notebook', notebook_uid=notebook['notebook_uid']) }}" target="_blank">{{ url_for('view_notebook', notebook_uid=notebook['notebook_uid'], _external=True) }}</a>
-                    Private <input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ notebook['notebook_uid'] }}" data-object_type="notebook" data-action="change_privacy" {% if notebook['private'] %}checked{% endif %}>
-
+            {% if notebooks|length %}
+                {% for notebook in notebooks %}
+                    <div class="border-custom rounded bg-lightgrey px-3 py-2 my-2">
+                        <a class="black bold d-block nodecoration" href="{{ url_for('view_notebook', notebook_uid=notebook['notebook_uid']) }}" target="_blank">{{ notebook['notebook_title'] }}</a>
+                        <div class="text-muted tiny font-italic light">Generated {{ notebook['date'].strftime('%B %-d, %Y') }}</div>
+                        <a class="black light tiny d-block nodecoration" href="{{ url_for('view_notebook', notebook_uid=notebook['notebook_uid']) }}" target="_blank">{{ url_for('view_notebook', notebook_uid=notebook['notebook_uid'], _external=True) }}</a>
+                        Private <input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ notebook['notebook_uid'] }}" data-object_type="notebook" data-action="change_privacy" {% if notebook['private'] %}checked{% endif %}>
+                        
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div>
+                    No notebooks.
                 </div>
-            {% endfor %}
+            {% endif %}
         </div>
         
         <!-- Datasets tab -->
-        <div class="tab-pane fade show active w-100" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
+        <div class="tab-pane fade w-100" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
 
             <!-- Title -->
             <div class="very-large mb-3 light">Your Datasets</div>
             <hr width="100%" class="mt-3 mb-4">
-
+            
             <!-- Datasets -->
-            {% for dataset in datasets %}
+            {% if datasets|length %}
+                {% for dataset in datasets %}
                 <div class="border-custom rounded bg-lightgrey px-3 py-2 my-2">
                     <div class="small light dataset-title">
                         <span data-uid="{{ dataset['dataset_uid'] }}" data-object_type="user_dataset" data-action="rename">{{ dataset['dataset_title'] }}</span>
@@ -82,9 +89,14 @@
                         <span class="ml-5">{{ dataset['samples'] }} samples</span>
                     </div>
                     <a href="{{ url_for('add_tools', uid=dataset['dataset_uid']) }}" target="_blank" class="d-block mt-1 nodecoration">Analyze</a>
-                    Private <input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ dataset['dataset_uid'] }}" data-object_type="user_dataset" data-action="change_privacy" {% if dataset['private'] %}checked{% endif %}>
+                    <!-- Private <input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ dataset['dataset_uid'] }}" data-object_type="user_dataset" data-action="change_privacy" {% if dataset['private'] %}checked{% endif %}> -->
                 </div>
-            {% endfor %}
+                {% endfor %}
+            {% else %}
+                <div>
+                    No datasets.
+                </div>
+            {% endif %}
 
         </div>
     </div>
