@@ -175,7 +175,6 @@ def google_logged_in(blueprint, token):
 	resp = blueprint.session.get("/oauth2/v2/userinfo")
 	if resp.ok:
 		response = resp.json()
-		print(response)
 		email = response["email"]
 		query = User.query.filter_by(email=email)
 		try:
@@ -186,14 +185,14 @@ def google_logged_in(blueprint, token):
 			db.session.add(user)
 			db.session.commit()
 		login_user(user)
-		flash("Successfully signed in with GitHub")
+		flash("Successfully signed in with Google")
 	else:
 		print("Failed to fetch user info from Google.")
 		return False
 
 # notify on OAuth provider error
 @oauth_error.connect_via(blueprint)
-def github_error(blueprint, error, error_description=None, error_uri=None):
+def google_error(blueprint, error, error_description=None, error_uri=None):
 	msg = (
 		"OAuth error from {name}! "
 		"error={error} description={description} uri={uri}"

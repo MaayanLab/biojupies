@@ -35,10 +35,13 @@
             <!-- Title -->
             <div class="very-large light">BioJupies Dashboard</div>
             <hr width="100%" class="mt-3 mb-4">
-            <!-- <div>Notebook count</div>
-            <div>Dataset count</div>
-            <div>New Notebook</div>
-            <div>New Dataset</div> -->
+
+            <!-- Options -->
+            <div class="row">
+                {{ macros.dashboard_option(title='Search Published Data', link='analyze', icon='fa fa-search', colsize='col-3') }}
+                {{ macros.dashboard_option(title='Upload Expression Table', link='upload_table', icon='fa fa-table', colsize='col-3') }}
+                {{ macros.dashboard_option(title='Upload FASTQ<br>Files', link='upload_reads', icon='fas fa-dna', colsize='col-3') }}
+            </div>
 
         </div>
 
@@ -62,7 +65,7 @@
                 {% endfor %}
             {% else %}
                 <div>
-                    No notebooks.
+                    You haven't generated any notebooks yet. To get started, please visit <a href="{{ url_for('analyze') }}">{{ url_for('analyze', _external=True) }}</a>.
                 </div>
             {% endif %}
         </div>
@@ -73,7 +76,7 @@
             <!-- Title -->
             <div class="very-large mb-3 light">Your Datasets</div>
             <hr width="100%" class="mt-3 mb-4">
-            
+
             <!-- Datasets -->
             {% if datasets|length %}
                 {% for dataset in datasets %}
@@ -94,7 +97,7 @@
                 {% endfor %}
             {% else %}
                 <div>
-                    No datasets.
+                    You haven't uploaded any datasets yet. To get started, please visit <a href="{{ url_for('upload') }}">{{ url_for('upload', _external=True) }}</a>.
                 </div>
             {% endif %}
 
