@@ -48,7 +48,7 @@ RUN . /notebook-generator-server/venv/bin/activate && pip3 install flask-cors
 RUN . /notebook-generator-server/venv/bin/activate && pip3 install flask-mail
 RUN . /notebook-generator-server/venv/bin/activate && pip3 install sentry-sdk[flask]==0.3.5
 
-ENV LIBRARY_VERSION=v0.10
+ENV LIBRARY_VERSION=v0.10.1
 
 COPY . /notebook-generator-server  
 WORKDIR /notebook-generator-server
