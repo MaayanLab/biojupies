@@ -281,7 +281,6 @@ def analyze():
 ### Links to: search_data(), gtex().
 ### Accessible from: analyze(), navbar.
 
-
 @app.route('/analyze/published_data')
 def published_data():
 	options = [
@@ -1314,7 +1313,10 @@ def dashboard():
 
 		# Get uploads
 		upload_query = session.query(tables['fastq_upload'], tables['fastq_file']).join(tables['fastq_file']).filter(tables['fastq_upload'].columns['user_fk'] == current_user.get_id()).all()
-		uploads = pd.DataFrame(upload_query).fillna('').groupby(['upload_uid', 'upload_name', 'date'])['filename'].apply(tuple).rename('samples').to_frame().reset_index().sort_values('date').to_dict(orient='records')
+		if upload_query:
+			uploads = pd.DataFrame(upload_query).fillna('').groupby(['upload_uid', 'upload_name', 'date'])['filename'].apply(tuple).rename('samples').to_frame().reset_index().sort_values('date').to_dict(orient='records')
+		else:
+			uploads = []
 		print(uploads)
 
 		# Get alignment jobs
