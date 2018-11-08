@@ -379,6 +379,12 @@ def add_tools():
 		# Get dataset information from request
 		if request.args.get('uid'):
 			selected_data = {'uid': request.args.get('uid'), 'source': 'upload'}
+			# Check if dataset is private; if it is, redirect
+			session = Session()
+			dataset = session.query(tables['user_dataset']).filter(tables['user_dataset'].columns['dataset_uid'] == selected_data['uid']).first()
+			session.close()
+			if not dataset or (dataset._asdict()['private'] and dataset._asdict()['user_fk'] != (int(current_user.get_id()) if current_user.get_id() else None)):
+				return redirect(url_for('analyze'))
 		elif request.form.get('gse-gpl'):
 			selected_data = {'gse': request.form.get('gse-gpl').split('-')[0], 'gpl': request.form.get('gse-gpl').split('-')[1], 'source': 'archs4'}
 		elif request.form.get('gtex-samples-1'):
