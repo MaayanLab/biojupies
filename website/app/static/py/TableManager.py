@@ -126,11 +126,13 @@ def uploadH5(h5_file, dataset_uid):
 #############################################
 ########## 4. Upload to Database
 #############################################
-
-def uploadToDatabase(data, dataset_uid, engine, user_id):
+### ToDo
+def uploadToDatabase(data, dataset_uid, engine, user_id, dataset_title, session, tables):
 
 	# Upload dataset and get FK
-	dataset_id = engine.execute('INSERT INTO user_dataset(dataset_uid, dataset_type, status, user_fk) VALUES ("{dataset_uid}", "expression_table", "complete", {user_id})'.format(**locals())).lastrowid
+	dataset_id = session.execute(tables['user_dataset'].insert({'dataset_uid': dataset_uid, 'dataset_title': dataset_title, 'user_fk': user_id})).lastrowid
+	session.commit()
+	session.close()
 
 	# Get metadata
 	metadata_dataframe = pd.DataFrame(index=data['metadata']['index'], columns=data['metadata']['columns'], data=data['metadata']['data']).rename(columns={'index': 'Sample'})

@@ -16,7 +16,7 @@
 <!-- Content -->
 {% block content %}
 
-<div class="px-6">
+<div class="px-6 mb-5">
 
 	<!-- Title -->
 	<div class="row pt-4">
@@ -126,13 +126,9 @@
 
 			<!-- Dropzone -->
 			<div id="dropzone" class="dropzone border-grey rounded mt-3" style="background-image: url({{ url_for('static', filename='img/dropzone/metadata.png') }}); background-size: 100% auto;"></div>
-			<form id="upload-metadata-form" action="{{ url_for('upload_'+uploadtype) }}" method="post">
-				<input type="hidden" id="expression" name="expression" value="{{f.get('expression')}}">
-				<input type="hidden" id="metadata" name="metadata" value="">
-			</form>
 			<div class="tiny mt-2">
 				Supported formats: <span class="font-italic">.txt, .csv, .tsv, .xls, .xlsx</span>.
-				<div class="dropdown show float-right">
+				<div class="dropdown example-dropdown show float-right">
 					<a class="btn bg-white border-custom black nodecoration tiny regular my-auto dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown">
 						Example
 					</a>
@@ -145,12 +141,32 @@
 		</div>
 	</div>
 
+
 	<!-- Uploaded File Preview -->
-	<div class="row mt-4">
-		<div id="preview" class="col-12 pb-5">
+	<div class="row">
+		<div id="preview" class="col-12 d-none mt-1 mb-5">
+			<div class="light medium mt-2 mb-2">Sample Groups</div>
+			<div class="light very-small mb-3">The table below displays a preview of the uploaded sample groups file:</div>
 		</div>
 	</div>
 
+	<form id="upload-metadata-form" action="{{ url_for('upload_'+uploadtype) }}" method="post">
+		<input type="hidden" id="expression" name="expression" value="{{f.get('expression')}}">
+		<input type="hidden" id="metadata" name="metadata" value="">
+
+		<!-- Name Dataset -->
+		{% if current_user.is_authenticated %}
+			<div class="row">
+				<div class="col-12">
+					<div class="light medium mb-2">Name your Dataset</div>
+					<div class="light very-small mb-3"><b>Optionally, insert a name</b> of your dataset. The name will be displayed in your <a href="{{ url_for('dashboard') }}" target="_blank">user dashboard</a> and can be changed at any time.</div>
+					<input type="text" value="Untitled Dataset" class="form-control" name="dataset_title">
+				</div>
+			</div>
+		{% endif %}
+
+	</form>
+		
 </div>
 
 {% endblock %}
@@ -210,7 +226,7 @@ $("#dropzone").dropzone({
 
 
 // Load Example
-$('.dropdown-menu .dropdown-item:first-child').click(function(evt) {
+$('.example-dropdown .dropdown-item:first-child').click(function(evt) {
 
 	// AJAX Query
 	$.ajax({
