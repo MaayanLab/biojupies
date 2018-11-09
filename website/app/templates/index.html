@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 <!-- Title -->
-{% block title %} BioJupies | Generate Tailored RNA-seq Data Analysis Notebooks via User Interface {% endblock %}
+{% block title %} BioJupies | Generate RNA-seq Data Analysis Notebooks via User Interface {% endblock %}
 
 <!-- Head -->
 {% block head %}
@@ -36,6 +36,18 @@
 		<div id="get-started" class="regular small"><a href="{{ url_for('analyze') }}" class="px-4 py-3 border-grey bg-blue white nodecoration rounded">Get Started</a></div>
 	</div>
 	
+</div>
+
+<!-- News Row -->
+<div id="news" class="w-100 bg-lightblue px-5 py-4 text-center small light">
+	<div class="row">
+		<div class="col-2 my-auto">
+			<i class="far fa-user-circle display-4 text-muted"></i>
+		</div>
+		<div class="col-10">
+			BioJupies now supports user accounts! Sign in from the top right corner of the page for access to unlimited private notebooks, RNA-seq datasets and alignment jobs.
+		</div>
+	</div>
 </div>
 
 <!-- How to create notebooks? -->

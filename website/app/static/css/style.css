@@ -85,6 +85,7 @@ body {
 .bg-transparent { background-color: transparent; }
 .highlight { font-weight: 500; font-style: normal; color: #525dff; }
 .bg-blue { background-color: #007bff !important; }
+.bg-lightblue { background-color: #dfefff !important; }
 .bg-grey { background-color: rgba(238, 238, 238, 1) !important; }
 .bg-lightgrey { background-color: #f8f8f9; }
 .bg-black { background-color: black !important; }
