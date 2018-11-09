@@ -82,5 +82,15 @@
 	// Fix fonts
 	$('input:checked').each(function(index, elem) { $(elem).parent().find('button span').last().addClass('white') });
 
+	// Check tools
+	$('[form="add-tools-form"]').click(function(evt) {
+		// Check tools
+		if ($(':checked').length === 0) {
+			// Prevent default
+			evt.preventDefault();
+			alert('Please select at least one analysis plugin to continue.')
+		}
+	})
+
 </script>
 {% endblock %}
