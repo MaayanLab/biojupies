@@ -71,34 +71,34 @@ def searchGEO(q):
 def searchDatasets(session, tables, min_samples, max_samples, organisms, sortby='asc', q=None):
 
     # Build database query
-    db_query = session.query(tables['dataset_v5'], tables['platform_v5'], func.count(tables['sample_v5'].columns['sample_accession']).label('nr_samples')) \
-                    .join(tables['sample_v5']) \
-                    .join(tables['platform_v5'])
+    db_query = session.query(tables['dataset_v6'], tables['platform_v6'], func.count(tables['sample_v6'].columns['sample_accession']).label('nr_samples')) \
+                    .join(tables['sample_v6']) \
+                    .join(tables['platform_v6'])
 
     # Add filters
     if q:
         db_query = db_query.filter(or_( \
-                        tables['dataset_v5'].columns['dataset_title'].like('% '+q+' %'), \
-                        tables['dataset_v5'].columns['summary'].like('% '+q+' %'), \
-                        tables['dataset_v5'].columns['dataset_accession'].like(q), \
-                        tables['dataset_v5'].columns['dataset_accession'].in_(searchGEO(q))
+                        tables['dataset_v6'].columns['dataset_title'].like('% '+q+' %'), \
+                        tables['dataset_v6'].columns['summary'].like('% '+q+' %'), \
+                        tables['dataset_v6'].columns['dataset_accession'].like(q), \
+                        tables['dataset_v6'].columns['dataset_accession'].in_(searchGEO(q))
                     ))
 
     # Group query
-    db_query = db_query.group_by(tables['dataset_v5'].columns['dataset_accession']) \
+    db_query = db_query.group_by(tables['dataset_v6'].columns['dataset_accession']) \
                 .having(and_( \
-                    tables['platform_v5'].columns['organism'].in_(organisms), \
-                    func.count(tables['sample_v5'].columns['sample_accession']) >= min_samples,
-                    func.count(tables['sample_v5'].columns['sample_accession']) <= max_samples
+                    tables['platform_v6'].columns['organism'].in_(organisms), \
+                    func.count(tables['sample_v6'].columns['sample_accession']) >= min_samples,
+                    func.count(tables['sample_v6'].columns['sample_accession']) <= max_samples
                 ))
 
     # Sort query results
     if sortby == 'asc':
-        db_query = db_query.order_by(func.count(tables['sample_v5'].columns['sample_accession']).asc())
+        db_query = db_query.order_by(func.count(tables['sample_v6'].columns['sample_accession']).asc())
     elif sortby == 'desc':
-        db_query = db_query.order_by(func.count(tables['sample_v5'].columns['sample_accession']).desc())
+        db_query = db_query.order_by(func.count(tables['sample_v6'].columns['sample_accession']).desc())
     elif sortby == 'new':
-        db_query = db_query.order_by(tables['dataset_v5'].columns['date'].desc())
+        db_query = db_query.order_by(tables['dataset_v6'].columns['date'].desc())
 
     # Finish query
     query_dataframe = pd.DataFrame(db_query.all())
