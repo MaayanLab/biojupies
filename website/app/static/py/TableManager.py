@@ -94,6 +94,11 @@ def buildH5(data, dataset_uid):
 		for col in metadata_dataframe.columns:
 			sample_metadata_grp.create_dataset(col, data=[x.encode('utf-8') for x in metadata_dataframe[col]], dtype=h5py.special_dtype(vlen=str))
 
+		# Add QC
+		if data.get('qc'):
+			sequencing_grp = f.create_group('meta/sequencing')
+			sequencing_grp.create_dataset('qc', data=data['qc'], dtype=h5py.special_dtype(vlen=str))
+
 		# Close file
 		f.close()
 

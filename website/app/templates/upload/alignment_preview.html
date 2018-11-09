@@ -26,6 +26,7 @@
             <form method="post" action="{{ url_for('upload_reads') }}">
                 <input type="hidden" id="expression" name="expression">
                 <input type="hidden" name="alignment_uid" value="{{ alignment_uid }}">
+                <input type="hidden" name="qc" value="">
                 <button class="btn black border-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
                 <button class="btn navigate white border-custom bg-blue" type="submit">Continue<i class="fa fa-angle-right ml-2"></i></button>
             </form>
@@ -74,7 +75,10 @@ var addTable = function(dataset) {
         success: function(response) {
 
             // Add dataset
-            addTable(response);
+            addTable(response['counts']);
+
+            // Add QC
+            $('[name="qc"]').val(JSON.stringify(response['qc']));
 
         }
     })

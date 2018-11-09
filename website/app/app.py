@@ -1139,8 +1139,36 @@ def merge_counts_api():
 	# Create dataframe
 	count_dataframe = pd.concat(results).pivot_table(index='gene_symbol', columns='sample', values='counts')
 
+	# Get QC info
+	qc_infos = [x for x in uploaded_files if x.startswith(alignment_uid) and x.endswith('_qc.tsv')]
+
+	# Initialize dict
+	qc_results = {}
+
+	# Read
+	for qc_info in qc_infos:
+
+		# Get sample name
+		sample_name = qc_info[(len(alignment_uid)+1)*2:-len('-hs_qc.tsv')]
+
+		# Get counts from S3
+		req =  urllib.request.Request('https://s3.amazonaws.com/biodos/c095573dc866f2db2cd39862ad89f074/'+qc_info)
+
+		# Build dataframe
+		qc = urllib.request.urlopen(req).read().decode('utf-8')
+		
+		# Get summary
+		qc_summary = [x for x in qc.split('\n') if x.startswith('[quant] processed')]
+		
+		# Extract
+		if len(qc_summary) == 1:
+			qc_split = qc_summary[0].split(' ')
+			qc_results[sample_name] = {'processed': qc_split[2], 'pseudoaligned': qc_split[4]}
+		else:
+			qc_results[sample_name] = {}
+
 	# Return
-	return json.dumps(count_dataframe.to_dict(orient='split'))
+	return json.dumps({'counts': count_dataframe.to_dict(orient='split'), 'qc': qc_results})
 
 #############################################
 ########## 6. Upload Reads API
