@@ -46,7 +46,8 @@ function addPreviewTable(response, metadata=true) {
 	}
 
 	// Add
-	$('#preview').html($table);
+	$('#loader').addClass('d-none');
+	$('#preview').append($table).removeClass('d-none');
 }
 
 // Serialize table

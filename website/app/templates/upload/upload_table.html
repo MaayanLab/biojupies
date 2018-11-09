@@ -36,7 +36,8 @@
 			<!-- Expression Table Dropzone -->
 			<div id="dropzone" class="dropzone border-grey rounded" style="background-image: url({{ url_for('static', filename='img/dropzone/expression_table.png') }}); background-size: 100% 100%;"></div>
 			<form id="upload-expression-form"><input type="hidden" id="expression" name="expression" value=""></form>
-			<div id="preview" class="mt-2"></div>
+			<div id="loader" class="mt-2"></div>
+			<div id="preview" class="mt-2 d-none"></div>
 
 			<!-- Formats and Examples -->
 			<div id="formats" class="mt-2 tiny light pl-1">
@@ -103,7 +104,7 @@ $('.dropdown-menu .dropdown-item:first-child').click(function(evt) {
 
 	// Toggle Interfaces
 	$('#dropzone').hide();
-	$('#preview').html($('<div>', {'class': 'text-center medium regular py-5 border-grey rounded'}).html($('<div>', {'class': 'py-3'}).html('Loading Example Matrix...')));
+	$('#loader').html($('<div>', {'class': 'text-center medium regular py-5 border-grey rounded'}).html($('<div>', {'class': 'pb-3'}).html('Loading Example Matrix...')));
 
 	// AJAX Query
 	$.ajax({
