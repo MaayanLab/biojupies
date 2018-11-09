@@ -1153,12 +1153,23 @@ def merge_counts_api():
 @app.route('/api/upload/upload_reads', methods=['GET', 'POST'])
 def upload_reads_api():
 
+	# Get data
+	r = request.json
+
 	# Open database session
 	session = Session()
-	# fix database upload
+
+	# Insert upload UID
+	upload_id = session.execute(tables['fastq_upload'].insert().values([{'upload_uid': r['upload_uid'], 'user_fk': current_user.get_id()}]))
+
+	# Commit
+	session.commit()
 
 	# Close session
 	session.close()
+
+	# Return
+	return json.dumps({'result': 'success'})
 
 #######################################################
 #######################################################

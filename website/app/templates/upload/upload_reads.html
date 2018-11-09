@@ -25,7 +25,7 @@
 		</div>
 		<div class="col-lg-4 col-xl-3 my-auto text-center pt-3 pt-lg-0">
 			<button class="btn black border-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
-			<button class="btn navigate black border-custom bg-white nodecoration" form="read-upload-form" type="submit" formaction="{{ url_for('upload_reads') }}" formmethod="get" disabled="true">Continue<i class="fa fa-angle-right ml-2"></i></button>
+			<button class="btn navigate black border-custom bg-white nodecoration continue-button" onclick="upload();" disabled="true">Continue<i class="fa fa-angle-right ml-2"></i></button>
 		</div>
 	</div>
 
@@ -149,7 +149,7 @@
 
 						// Activate button if all progress bars are complete
 						if ($('.progress-bar').length === $('.progress-bar[data-status="complete"]').length) {
-							$('[form="read-upload-form"]').prop('disabled', false).toggleClass('black white bg-white bg-blue');
+							$('.continue-button').prop('disabled', false).toggleClass('black white bg-white bg-blue');
 						}
 						console.log("end")
 
@@ -168,9 +168,29 @@
 
 			})
 		
-			// Upload to database
-
 		}
+	}
+
+	// Upload read UID to database
+	function upload() {
+				
+		// Upload to database
+		$.ajax({
+			url: "{{ url_for('upload_reads_api') }}",
+			method: "POST",
+			data: JSON.stringify({ "upload_uid": "{{ upload_uid }}" }),
+			contentType: "application/json; charset=utf-8",
+			dataType: 'json',
+			success: function (res) {
+				console.log(res);
+			},
+			error: function (err) {
+				console.log(err);
+			}
+		})
+
+		// Redirect
+		window.location.href = '{{ url_for("upload_reads", upload=upload_uid) }}';
 	}
 
 </script>
