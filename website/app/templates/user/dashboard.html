@@ -23,7 +23,7 @@
         flex: 1 1 auto!important;
     }
     .sample-table-wrapper {
-        height: 500px;
+        max-height: 500px;
         overflow: auto;
     }
 </style>
@@ -45,7 +45,7 @@
         <!--  -->
         <!-- Home tab -->
         <!--  -->
-        <div class="tab-pane fade w-100" id="home" role="tabpanel" aria-labelledby="home-tab"> <!-- show active -->
+        <div class="tab-pane fade show active w-100" id="home" role="tabpanel" aria-labelledby="home-tab"> <!-- show active -->
 
             <!-- Title -->
             <div class="very-large light">BioJupies Dashboard</div>
@@ -114,9 +114,8 @@
                 </table>
 
             {% else %}
-                <div>
-                    You haven't generated any notebooks yet. To get started, please visit <a href="{{ url_for('analyze') }}">{{ url_for('analyze', _external=True) }}</a>.
-                </div>
+                <div class="mb-3">You haven't generated any notebooks yet.</div>
+                <div>To get started, please visit <a href="{{ url_for('analyze') }}">{{ url_for('analyze', _external=True) }}</a>.</div>
             {% endif %}
         </div>
         
@@ -161,9 +160,8 @@
                     </tbody>
                 </table>
             {% else %}
-                <div>
-                    You haven't uploaded any datasets yet. To get started, please visit <a href="{{ url_for('upload') }}">{{ url_for('upload', _external=True) }}</a>.
-                </div>
+                <div class="mb-3">You haven't uploaded any datasets yet.</div>
+                <div>To get started, please visit <a href="{{ url_for('upload') }}">{{ url_for('upload', _external=True) }}</a>.</div>
             {% endif %}
 
         </div>
@@ -171,7 +169,7 @@
         <!--  -->
         <!-- Alignment jobs tab -->
         <!--  -->
-        <div class="tab-pane fade show active w-100" id="alignments" role="tabpanel" aria-labelledby="alignments-tab">
+        <div class="tab-pane fade w-100" id="alignments" role="tabpanel" aria-labelledby="alignments-tab">
 
             <!-- Title -->
             <div class="very-large mb-3 light">Your Alignment Jobs</div>
@@ -223,7 +221,7 @@
                                         <tr>
                                             <td class="font-italic align-middle">{{ status['sample_name'] }}</td>
                                             <td class="align-middle">
-                                                <img src="https://amp.pharm.mssm.edu/cloudalignment/images/{{ status['status'] }}.png" width="35px" class="mr-2">
+                                                <img src="https://amp.pharm.mssm.edu/cloudalignment/images/{{ status['status'].replace('waiting', 'pending') }}.png" width="35px" class="mr-2">
                                                 {{ status['status'].title() }}
                                             </td>
                                         </tr>
