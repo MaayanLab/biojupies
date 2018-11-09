@@ -660,9 +660,6 @@ def view_notebook(notebook_uid):
 			version = float('.'.join(notebook_dict['version'][1:].split('.')[:2]))
 			https = version > 0.7 or version < 0.2
 
-			# Whether to display HTTPS (Clustergrammer and L1000FWD only support HTTPS iframe in version >=v0.8)
-			https = float('.'.join(notebook_dict['version'][1:].split('.')[:2])) > 0.7
-
 			# Get Nbviewer URL and Title
 			nbviewer_url = 'https://nbviewer.jupyter.org/urls/storage.googleapis.com/jupyter-notebook-generator/{notebook_uid}/{notebook_dict[notebook_title]}.ipynb'.format(**locals())
 
@@ -1390,7 +1387,7 @@ def dashboard():
 		# print(uploads)
 
 		# Get alignment jobs
-		alignments = session.query(tables['fastq_alignment']).join(tables['fastq_upload']).filter(tables['fastq_upload'].columns['user_fk'] == current_user.get_id()).order_by(tables['notebook'].columns['date'].desc()).all()
+		alignments = session.query(tables['fastq_alignment']).join(tables['fastq_upload']).filter(tables['fastq_upload'].columns['user_fk'] == current_user.get_id()).order_by(tables['fastq_alignment'].columns['date'].desc()).all()
 
 		# Get statuses
 		if alignments:
@@ -1440,7 +1437,7 @@ def edit_object():
 			object_data = object_data[0]._asdict()
 
 			# Check if user ID matches with owner of object
-			if object_data['user_fk'] == int(current_user.get_id()) and current_user.get_id():
+			if current_user.get_id() and object_data['user_fk'] == int(current_user.get_id()):
 
 				# Action
 				if data['action'] == 'change_privacy':
@@ -1473,8 +1470,8 @@ def edit_object():
 
 		# Get response
 		response = []
-		raise
-		# session.rollback()
+		# raise
+		session.rollback()
 
 	# Close session
 	session.close()
