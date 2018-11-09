@@ -353,7 +353,7 @@ def search_data():
 
 	# Highlight searched term
 	if len(query_dataframe.index):
-		h = lambda x: '<span class="highlight">{}</span>'.format(x)
+		h = lambda x: '<span class="highlight">{}</span>'.format(x) if len(x) > 3 else x
 		for col in ['dataset_title', 'summary']:
 			query_dataframe[col] = [x.replace(q, h(q)).replace(q.title(), h(q.title())).replace(q.lower(), h(q.lower())).replace(q.upper(), h(q.upper())) for x in query_dataframe[col]]
 
@@ -1008,7 +1008,7 @@ def upload_table_api():
 	TM.uploadH5(h5_file, dataset_uid)
 
 	# Upload to database
-	TM.uploadToDatabase(data, dataset_uid, engine, user_id=current_user.get_id(), dataset_title=data.get('dataset_title'), session=Session(), tables=tables)
+	TM.uploadToDatabase(data, dataset_uid, engine, user_id=current_user.get_id(), dataset_title=data.get('dataset_title', 'Untitled Dataset'), session=Session(), tables=tables)
 
 	### Add table-alignment job FK, if provided
 
