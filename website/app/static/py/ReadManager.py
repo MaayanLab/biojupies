@@ -74,7 +74,7 @@ def mergeCounts(alignment_uid):
 ########## 1. Upload UID
 #############################################
 
-def uploadToDatabase(upload_uid, samples, session, tables):
+def uploadToDatabase(upload_uid, samples, session, tables, user_id=None):
 
 	# Fetch ID
 	query = session.query(tables['fastq_upload'].columns['id']).filter(tables['fastq_upload'].columns['upload_uid'] == upload_uid).all()
@@ -86,7 +86,7 @@ def uploadToDatabase(upload_uid, samples, session, tables):
 		if len(query) == 0:
 
 			# Upload and get ID
-			upload_id = session.execute(tables['fastq_upload'].insert().values([{'upload_uid': upload_uid}])).lastrowid
+			upload_id = session.execute(tables['fastq_upload'].insert().values([{'upload_uid': upload_uid, 'user_fk': user_id}])).lastrowid
 			
 			# Upload samples
 			session.execute(tables['fastq_file'].insert().values([{'filename': sample[12:], 'fastq_upload_fk': upload_id} for sample in samples]))
@@ -114,6 +114,31 @@ def uploadJob(jobs, session, tables):
 	# Get UIDs
 	alignment_uid, upload_uid, sample = job.split('-', 2)
 	species = sample.split('-')[-1]
+
+	# Add new alignment job with UID, upload FK, and organism
+	query = session.query(tables['fastq_alignment'].columns['id']).filter(tables['fastq_alignment'].columns['alignment_uid'] == alignment_uid).all()
+
+	try:
+
+		# If query is empty
+		if len(query) == 0:
+
+			# Get ID
+			upload_id = session.query(tables['fastq_upload'].columns['id']).filter(tables['fastq_upload'].columns['upload_uid'] == upload_uid).all()[0][0]
+			
+			# Upload samples
+			session.execute(tables['fastq_alignment'].insert().values([{'alignment_uid': alignment_uid, 'fastq_upload_fk': upload_id, 'species': species, 'paired': paired}]))
+
+		# Close session
+		session.commit()
+
+	except:
+
+		session.rollback()
+
+	session.close()
+
+def uploadAlignmentJob(alignment_uid, upload_uid, paired, species, session, tables):
 
 	# Add new alignment job with UID, upload FK, and organism
 	query = session.query(tables['fastq_alignment'].columns['id']).filter(tables['fastq_alignment'].columns['alignment_uid'] == alignment_uid).all()

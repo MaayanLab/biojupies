@@ -379,12 +379,12 @@ def add_tools():
 		# Get dataset information from request
 		if request.args.get('uid'):
 			selected_data = {'uid': request.args.get('uid'), 'source': 'upload'}
-			# Check if dataset is private; if it is, redirect
+			# Check if dataset is private; if it is, abort
 			session = Session()
 			dataset = session.query(tables['user_dataset']).filter(tables['user_dataset'].columns['dataset_uid'] == selected_data['uid']).first()
 			session.close()
 			if not dataset or (dataset._asdict()['private'] and dataset._asdict()['user_fk'] != (int(current_user.get_id()) if current_user.get_id() else None)):
-				return redirect(url_for('analyze'))
+				return abort(404)
 		elif request.form.get('gse-gpl'):
 			selected_data = {'gse': request.form.get('gse-gpl').split('-')[0], 'gpl': request.form.get('gse-gpl').split('-')[1], 'source': 'archs4'}
 		elif request.form.get('gtex-samples-1'):
@@ -862,7 +862,7 @@ def upload_reads():
 			session.close()
 
 			# Check if user matches
-			if upload_user_id and ((current_user.get_id() and int(current_user.get_id()) == upload_user_id[0]) or (not upload_user_id[0])):
+			if True:#upload_user_id and ((current_user.get_id() and int(current_user.get_id()) == upload_user_id[0]) or (not upload_user_id[0])):
 
 				# Get samples
 				req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
@@ -871,7 +871,7 @@ def upload_reads():
 
 				### If UID doesn't exist in the database and files are matched, upload UID and files to database
 				if len(samples):
-					RM.uploadToDatabase(upload_uid, samples, session = Session(), tables=tables)
+					RM.uploadToDatabase(upload_uid, samples, session = Session(), tables=tables, user_id=current_user.get_id()) ### move this to uploading reads
 					return render_template('upload/align_reads.html', upload_uid=upload_uid, samples=samples)
 				else:
 					abort(404)
@@ -901,7 +901,7 @@ def upload_reads():
 			if len(jobs):
 
 				### Add job to database, adding foreign key for upload
-				RM.uploadJob(jobs, session=Session(), tables=tables)
+				# RM.uploadJob(jobs, session=Session(), tables=tables)
 
 				return render_template('upload/alignment_status.html', alignment_uid=alignment_uid, jobs=jobs, elysium_username=os.environ['ELYSIUM_USERNAME'], elysium_password=os.environ['ELYSIUM_PASSWORD'])
 
@@ -1092,6 +1092,9 @@ def launch_alignment_api():
 			resp = urllib.request.urlopen(req).read().decode('utf-8')
 			print(resp)
 
+	# Upload to database
+	RM.uploadAlignmentJob(alignment_uid=alignment_uid, upload_uid=alignment_settings['upload_uid'], paired=alignment_settings.get('sequencing-type')=='paired-end', species=alignment_settings['organism'].replace('human', 'hs').replace('mouse', 'mm'), session=Session(), tables=tables)
+
 	return json.dumps({'alignment_uid': alignment_uid})
 
 #############################################
@@ -1138,6 +1141,24 @@ def merge_counts_api():
 
 	# Return
 	return json.dumps(count_dataframe.to_dict(orient='split'))
+
+#############################################
+########## 6. Upload Reads API
+#############################################
+### Uploads the upload UID to the database.
+### Input: upload UID.
+### Output: None.
+### Called by: upload_reads().
+
+@app.route('/api/upload/upload_reads', methods=['GET', 'POST'])
+def upload_reads_api():
+
+	# Open database session
+	session = Session()
+	# fix database upload
+
+	# Close session
+	session.close()
 
 #######################################################
 #######################################################
@@ -1318,20 +1339,35 @@ def dashboard():
 		notebooks = session.query(tables['notebook']).filter(tables['notebook'].columns['user_fk'] == current_user.get_id()).all()
 
 		# Get uploads
-		upload_query = session.query(tables['fastq_upload'], tables['fastq_file']).join(tables['fastq_file']).filter(tables['fastq_upload'].columns['user_fk'] == current_user.get_id()).all()
-		if upload_query:
-			uploads = pd.DataFrame(upload_query).fillna('').groupby(['upload_uid', 'upload_name', 'date'])['filename'].apply(tuple).rename('samples').to_frame().reset_index().sort_values('date').to_dict(orient='records')
-		else:
-			uploads = []
-		print(uploads)
+		# upload_query = session.query(tables['fastq_upload'], tables['fastq_file']).join(tables['fastq_file']).filter(tables['fastq_upload'].columns['user_fk'] == current_user.get_id()).all()
+		# if upload_query:
+		# 	uploads = pd.DataFrame(upload_query).fillna('').groupby(['upload_uid', 'upload_name', 'date'])['filename'].apply(tuple).rename('samples').to_frame().reset_index().sort_values('date').to_dict(orient='records')
+		# else:
+		# 	uploads = []
+		# print(uploads)
 
 		# Get alignment jobs
-		alignments = session.query(tables['fastq_alignment'], tables['fastq_upload']).join(tables['fastq_upload']).filter(tables['fastq_upload'].columns['user_fk'] == current_user.get_id()).all()
+		alignments = session.query(tables['fastq_alignment']).join(tables['fastq_upload']).filter(tables['fastq_upload'].columns['user_fk'] == current_user.get_id()).all()
+
+		# Get statuses
+		if alignments:
+
+			# Get progress
+			req =  urllib.request.Request('https://amp.pharm.mssm.edu/cloudalignment/progress?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
+			progress_dataframe = pd.DataFrame(json.loads(urllib.request.urlopen(req).read().decode('utf-8'))).T[['outname', 'status']]
+			progress_dataframe['split'] = [x.split('-')[0] for x in progress_dataframe['outname']]
+			progress_dataframe['sample_name'] = [x.split('-', 2)[-1].split('-', -1)[0] if '-' in x else '' for x in progress_dataframe['outname']]
+			progress = progress_dataframe[progress_dataframe['split'].isin(alignment.alignment_uid for alignment in alignments)].groupby('split')[['sample_name', 'status']].apply(lambda x: x.to_dict(orient='records')).to_dict()
+
+			# Add to alignments
+			alignments = [x._asdict() for x in alignments if progress.get(x.alignment_uid)]
+			for alignment in alignments:
+				alignment['progress'] = progress.get(alignment['alignment_uid'])
 
 		# Close session
 		session.close()
 
-		return render_template('user/dashboard.html', datasets=datasets, notebooks=notebooks, uploads=uploads, alignments=alignments)
+		return render_template('user/dashboard.html', datasets=datasets, notebooks=notebooks, alignments=alignments)
 
 #############################################
 ########## 2. Private API

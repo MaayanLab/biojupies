@@ -47,13 +47,39 @@
 <!-- ### Displays dashboard options with icon, link, and a text description. -->
 <!-- ### Used in: dashboard(). -->
 
-{% macro dashboard_option(title, link, icon, colsize='col-3') %}
+{% macro dashboard_option(title, tablink, routelink, icon, number) %}
 
-	<div class="{{ colsize }} text-center mb-1 mb-lg-0">
-		<a class="display-3 black border-custom rounded d-inline-block" href="{{ url_for(link) }}">
-			<i class="{{ icon }} m-4"></i>
-		</a>
-		<a class="small regular mt-3 nodecoration black d-block" href="{{ link }}">{{ title|safe }}</a>
+	<div class="col-4 text-center">
+		<div class="text-center border-grey rounded d-inline-block overflow-hidden mx-4">
+			
+			<!-- Icon -->
+			<i class="{{ icon }} display-3 black mt-4 mx-5 px-0"></i>
+			
+			<!-- Title -->
+			<div class="small light my-2">{{ number }} {{ title }}</div>
+
+			<!-- Options -->
+			<div class="d-flex border-grey border-bottom-0 border-left-0 border-right-0 very-small">
+
+				<!-- View -->
+				<div class="flex-fill dashboard-link py-1" data-tab="{{ tablink }}">
+					<a href="#" class="black nodecoration w-100 cursor-pointer">View</a>
+				</div>
+
+				<!-- Create -->
+				<div class="flex-fill bg-blue py-1">
+					<a href="{{ url_for(routelink) }}" class="white nodecoration w-100 cursor-pointer">
+						{% if tablink == 'notebooks' %}
+							Create
+						{% elif tablink == 'datasets' %}
+							Upload
+						{% elif tablink == 'alignments' %}
+							Launch
+						{% endif %}
+					</a>
+				</div>
+			</div>
+		</div>
 	</div>
 	
 {% endmacro %}

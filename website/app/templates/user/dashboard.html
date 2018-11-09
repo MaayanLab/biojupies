@@ -14,14 +14,21 @@
 
     .nav-link { color: black;  }
     .nav-link:hover { color: black;  }
-
+    .flex-grow-1 {
+        -ms-flex-positive: 1!important;
+        flex-grow: 1!important;
+    }
+    .flex-fill {
+        -ms-flex: 1 1 auto!important;
+        flex: 1 1 auto!important;
+    }
 </style>
 
 <!-- Dashboard  -->
-<div class="row px-6 mt-5">
+<div class="d-flex flex-row w-100 px-6 mt-5">
 
     <!-- Navigation -->
-    <div class="nav flex-column pr-3 d-inline-block nav-pills small light pt-1" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+    <div class="nav flex-column pr-3 nav-pills small light pt-1" id="v-pills-tab" role="tablist" aria-orientation="vertical">
         <a class="nav-link py-2 my-1 active" id="home-tab" data-toggle="pill" href="#home" role="tab" aria-controls="home" aria-selected="true"><i class="fas mr-3 mw-20 text-center fa-tachometer-alt"></i>Home</a>
         <a class="nav-link py-2 my-1" id="notebooks-tab" data-toggle="pill" href="#notebooks" role="tab" aria-controls="notebooks" aria-selected="false"><i class="fas mr-3 mw-20 text-center fa-book"></i>Notebooks</a>
         <a class="nav-link py-2 my-1" id="datasets-tab" data-toggle="pill" href="#datasets" role="tab" aria-controls="datasets" aria-selected="false"><i class="fas mr-3 mw-20 text-center fa-table"></i>Datasets</a>
@@ -29,22 +36,39 @@
     </div>
 
     <!-- Content -->
-    <div class="tab-content d-flex flex-fill pl-4" id="v-pills-tabContent">
+    <div class="tab-content w-75 pl-3" id="v-pills-tabContent">
 
         <!--  -->
         <!-- Home tab -->
         <!--  -->
-        <div class="tab-pane show active fade w-100" id="home" role="tabpanel" aria-labelledby="home-tab"> <!-- show active -->
+        <div class="tab-pane fade w-100" id="home" role="tabpanel" aria-labelledby="home-tab"> <!-- show active -->
 
             <!-- Title -->
             <div class="very-large light">BioJupies Dashboard</div>
             <hr width="100%" class="mt-3 mb-4">
 
+            <!-- Introduction -->
+            <div>
+                Welcome to the BioJupies user dashboard.
+                The dashboard allows you to keep track of your generated notebooks, uploaded datasets and alignment jobs.
+            </div>
+
+            <div class="mt-3">
+                To get started, use the navigation bar on the left or select one of the options below:
+            </div>
+
             <!-- Options -->
-            <div class="row">
-                {{ macros.dashboard_option(title='Search Published Data', link='published_data', icon='fa fa-search', colsize='col-3') }}
-                {{ macros.dashboard_option(title='Upload Expression Table', link='upload_table', icon='fa fa-table', colsize='col-3') }}
-                {{ macros.dashboard_option(title='Upload FASTQ<br>Files', link='upload_reads', icon='fas fa-dna', colsize='col-3') }}
+            <div class="row mt-4">
+                {{ macros.dashboard_option(title='Notebooks', tablink='notebooks', routelink='analyze', icon='fas fa-book', number=notebooks|length) }}
+                {{ macros.dashboard_option(title='Datasets', tablink='datasets', routelink='upload_table', icon='fas fa-table', number=datasets|length) }}
+                {{ macros.dashboard_option(title='Alignment Jobs', tablink='alignments', routelink='upload_reads', icon='fas fa-dna', number=alignments|length) }}
+            </div>
+
+            <!-- Sharing Info -->
+            <div class="mt-4 text-muted very-small text-light">
+                <!-- <i class="fas fa-retweet large align-middle mr-1"></i> -->
+                <b>Note:</b> all generated notebooks and uploaded data are made <b>private by default</b>.
+                If you wish to share your results, you can change the privacy settings in the related section.
             </div>
 
         </div>
@@ -60,15 +84,31 @@
 
             <!-- Notebooks -->
             {% if notebooks|length %}
-                {% for notebook in notebooks %}
-                    <div class="border-custom rounded bg-lightgrey px-3 py-2 my-2">
-                        <a class="black bold d-block nodecoration" href="{{ url_for('view_notebook', notebook_uid=notebook['notebook_uid']) }}" target="_blank">{{ notebook['notebook_title'] }}</a>
-                        <div class="text-muted tiny font-italic light">Generated {{ notebook['date'].strftime('%B %-d, %Y') }}</div>
-                        <a class="black light tiny d-block nodecoration" href="{{ url_for('view_notebook', notebook_uid=notebook['notebook_uid']) }}" target="_blank">{{ url_for('view_notebook', notebook_uid=notebook['notebook_uid'], _external=True) }}</a>
-                        Private <input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ notebook['notebook_uid'] }}" data-object_type="notebook" data-action="change_privacy" {% if notebook['private'] %}checked{% endif %}>
-                        
-                    </div>
-                {% endfor %}
+
+                <!-- Notebook Intro -->
+                <div class="mb-4">The table below displays your generated notebooks.</div>
+
+                <!-- Notebook Table -->
+                <table class="table table-striped w-100 text-center">
+                    <thead>
+                        <th>Notebook Name</th>
+                        <th>Date</th>
+                        <th>Private</th>
+                        <th>Link</th>
+                    </thead>
+                    <tbody>
+                        {% for notebook in notebooks %}
+                        <tr>
+                            <td>{{ notebook['notebook_title'] }}</td>
+                            <td>{{ notebook['date'].strftime('%B %-d, %Y') }}</td>
+                            <td><input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ notebook['notebook_uid'] }}" data-object_type="notebook" data-action="change_privacy" {% if notebook['private'] %}checked{% endif %}></td>
+                            <td><a href="{{ url_for('view_notebook', notebook_uid=notebook['notebook_uid']) }}" target="_blank"><i class="fa fa-external-link-alt black"></i></a></td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+
             {% else %}
                 <div>
                     You haven't generated any notebooks yet. To get started, please visit <a href="{{ url_for('analyze') }}">{{ url_for('analyze', _external=True) }}</a>.
@@ -87,22 +127,35 @@
 
             <!-- Datasets -->
             {% if datasets|length %}
-                {% for dataset in datasets %}
-                <div class="border-custom rounded bg-lightgrey px-3 py-2 my-2">
-                    <div class="small light dataset-title">
-                        <span data-uid="{{ dataset['dataset_uid'] }}" data-object_type="user_dataset" data-action="rename">{{ dataset['dataset_title'] }}</span>
-                        <a class="ml-4 micro nodecoration rename-link" data-action="rename" href="#">Rename</a>
-                        <input type="text" class="form-control d-none" value="{{ dataset['dataset_title'] }}">
-                        <a class="micro nodecoration rename-link d-none" data-action="confirm" href="#">Confirm</a>
-                    </div>
-                    <div class="text-muted tiny font-italic light my-1">
-                        <span>Uploaded {{ dataset['date'].strftime('%B %-d, %Y') }}</span>
-                        <span class="ml-5">{{ dataset['samples'] }} samples</span>
-                    </div>
-                    <a href="{{ url_for('add_tools', uid=dataset['dataset_uid']) }}" target="_blank" class="d-block mt-1 nodecoration">Analyze</a>
-                    <!-- Private <input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ dataset['dataset_uid'] }}" data-object_type="user_dataset" data-action="change_privacy" {% if dataset['private'] %}checked{% endif %}> -->
-                </div>
-                {% endfor %}
+                <div class="mb-3">The table below displays your uploaded datasets.</div>
+
+                  <!-- Dataset Table -->
+                <table class="table table-striped w-100 text-center">
+                    <thead>
+                        <th>Dataset Name</th>
+                        <th>Date</th>
+                        <th>Samples</th>
+                        <th>Private</th>
+                        <th>Analyze</th>
+                    </thead>
+                    <tbody>
+                        {% for dataset in datasets %}
+                        <tr>
+                            <td class="dataset-title text-left my-auto">
+                                <span data-uid="{{ dataset['dataset_uid'] }}" data-object_type="user_dataset" data-action="rename">{{ dataset['dataset_title'] }}</span>
+                                <a class="ml-4 micro nodecoration rename-link float-right mt-1" data-action="rename" href="#">Rename</a>
+                                <input type="text" class="form-control d-none" value="{{ dataset['dataset_title'] }}">
+                                <a class="micro nodecoration rename-link d-none ml-2" data-action="confirm" href="#">Confirm</a>
+                            </td>
+                            <td>{{ dataset['date'].strftime('%B %-d, %Y') }}</td>
+                            <td>{{ dataset['samples'] }}</td>
+                            <td><input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ dataset['dataset_uid'] }}" data-object_type="user_dataset" data-action="change_privacy" {% if dataset['private'] %}checked{% endif %}></td>
+                            <td><a href="{{ url_for('add_tools', uid=dataset['dataset_uid']) }}" target="_blank"><i class="fa fa-external-link-alt black"></i></a></td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
             {% else %}
                 <div>
                     You haven't uploaded any datasets yet. To get started, please visit <a href="{{ url_for('upload') }}">{{ url_for('upload', _external=True) }}</a>.
@@ -114,33 +167,58 @@
         <!--  -->
         <!-- Alignment jobs tab -->
         <!--  -->
-        <div class="tab-pane fade w-100" id="alignments" role="tabpanel" aria-labelledby="alignments-tab">
+        <div class="tab-pane fade show active w-100" id="alignments" role="tabpanel" aria-labelledby="alignments-tab">
 
             <!-- Title -->
-            <div class="very-large mb-3 light">Your FASTQ Files</div>
+            <div class="very-large mb-3 light">Your Alignment Jobs</div>
             <hr width="100%" class="mt-3 mb-4">
 
             <!-- Datasets -->
             {% if alignments|length %}
+                <div class="mb-3">The list below displays your alignment jobs. Please refresh the page to check live alignment status.</div>
 
                 {% for alignment in alignments %}
 
                     <!-- Alignment -->
-                    <div>
-                        Alignment #{{ loop.index }}
-                        <a data-toggle="collapse" href="#{{ alignment['alignment_uid'] }}" role="button" aria-expanded="false">Expand</a>
-                        <a href="#">Analyze</a>
+                    <div class="bg-lightgrey border-custom rounded mt-2 px-3 py-2 d-table w-100">
+                        <div class="d-table-cell align-middle pr-3">
+                            <img src="{{ url_for('static', filename='img/alignment/'+alignment['species'].replace('mm', 'mouse').replace('hs', 'human')+'.png') }}">
+                        </div>
+                        <div class="d-table-cell align-middle">
+                            <div class="very-small regular mb-2">FASTQ Alignment #{{ loop.index }}</div>
+                            <div class="tiny light text-muted">
+                                <span><span class="font-italic">{{ alignment['species'].replace('mm', 'Mus musculus').replace('hs', 'Homo sapiens') }}</span></span>
+                                <span class="ml-5">{{ alignment['progress']|length }} samples</span>
+                                <span class="ml-5">Launched <span class="font-italic">{{alignment['date'].strftime('%B %e, %Y')}}</span></span>
+                            </div>
+                        </div>
+                        <div class="d-table-cell align-middle card-options">
+                            <div class="d-block">
+                                <button class="btn text-center w-100 mb-1 bg-blue white border-grey light tiny mb-1 nodecoration">
+                                    <a href="{{ url_for('upload_reads', table=alignment['alignment_uid']) }}" class="white nodecoration">Analyze<i class="fa fa-angle-right ml-2"></i></a>
+                                </button>
+                                <button class="btn text-center w-100 border-grey bg-transparent light tiny nodecoration text-muted" data-toggle="collapse" data-target="#{{ alignment['alignment_uid'] }}" aria-expanded="false">
+                                    More Info<i class="fa fa-angle-down ml-1 fa-1x"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Samples -->
-                    <div class="collapse" id="{{ alignment['alignment_uid'] }}">
-                        Statuses from Elysium.
+                    <div class="collapse border-grey border-top-0 mx-2 px-3 py-2 rounded-bottom" id="{{ alignment['alignment_uid'] }}">
+                        {% for status in alignment['progress'] %}
+                        <div>
+                            {{ status['sample_name'] }}
+                            {{ status['status'] }}
+                        </div>
+                        {% endfor %}
                     </div>
+
 
                 {% endfor %}
 
             {% else %}
-                <div class="mb-3">You haven't uploaded any FASTQ files yet.</div>
+                <div class="mb-3">You haven't launched any alignment jobs yet.</div>
                 <div>To get started, please visit <a href="{{ url_for('upload_reads') }}">{{ url_for('upload_reads', _external=True) }}</a>.</div>
             {% endif %}
 
@@ -195,6 +273,11 @@
             }
             $wrapper.children().toggleClass('d-none');
             // edit_object($elem = $(this));
+        })
+
+        // Click listener
+        $('.dashboard-link').click(function(evt) {
+            $('#'+$(this).attr('data-tab')+'-tab').click();
         })
 
 
