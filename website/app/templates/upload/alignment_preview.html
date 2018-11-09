@@ -25,6 +25,7 @@
         <div class="col-lg-4 col-xl-3 my-auto text-center pt-3 pt-lg-0">
             <form method="post" action="{{ url_for('upload_reads') }}">
                 <input type="hidden" id="expression" name="expression">
+                <input type="hidden" name="alignment_uid" value="{{ alignment_uid }}">
                 <button class="btn black border-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
                 <button class="btn navigate white border-custom bg-blue" type="submit">Continue<i class="fa fa-angle-right ml-2"></i></button>
             </form>

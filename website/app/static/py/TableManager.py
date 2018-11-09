@@ -127,10 +127,14 @@ def uploadH5(h5_file, dataset_uid):
 ########## 4. Upload to Database
 #############################################
 ### ToDo
-def uploadToDatabase(data, dataset_uid, engine, user_id, dataset_title, session, tables):
+def uploadToDatabase(data, dataset_uid, engine, user_id, dataset_title, alignment_uid, session, tables):
+
+	# Get alignment FK
+	alignment = session.query(tables['fastq_alignment']).filter(tables['fastq_alignment'].columns['alignment_uid'] == alignment_uid).first()
+	fastq_alignment_fk = None if not alignment else alignment.id
 
 	# Upload dataset and get FK
-	dataset_id = session.execute(tables['user_dataset'].insert({'dataset_uid': dataset_uid, 'dataset_title': dataset_title, 'user_fk': user_id})).lastrowid
+	dataset_id = session.execute(tables['user_dataset'].insert({'dataset_uid': dataset_uid, 'dataset_title': dataset_title, 'user_fk': user_id, 'fastq_alignment_fk': fastq_alignment_fk})).lastrowid
 	session.commit()
 	session.close()
 

@@ -153,6 +153,9 @@
 	<form id="upload-metadata-form" action="{{ url_for('upload_'+uploadtype) }}" method="post">
 		<input type="hidden" id="expression" name="expression" value="{{f.get('expression')}}">
 		<input type="hidden" id="metadata" name="metadata" value="">
+		{% if f.get('alignment_uid') %}
+			<input type="hidden" name="alignment_uid" value="{{ f['alignment_uid'] }}">
+		{% endif %}
 
 		<!-- Name Dataset -->
 		{% if current_user.is_authenticated %}
