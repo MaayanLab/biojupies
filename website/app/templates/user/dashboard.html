@@ -22,10 +22,14 @@
         -ms-flex: 1 1 auto!important;
         flex: 1 1 auto!important;
     }
+    .sample-table-wrapper {
+        height: 500px;
+        overflow: auto;
+    }
 </style>
 
 <!-- Dashboard  -->
-<div class="d-flex flex-row w-100 px-6 mt-5">
+<div class="d-flex flex-row w-100 px-6 mt-5 mb-4">
 
     <!-- Navigation -->
     <div class="nav flex-column pr-3 nav-pills small light pt-1" id="v-pills-tab" role="tablist" aria-orientation="vertical">
@@ -195,7 +199,7 @@
                         <div class="d-table-cell align-middle card-options">
                             <div class="d-block">
                                 <button class="btn text-center w-100 mb-1 bg-blue white border-grey light tiny mb-1 nodecoration">
-                                    <a href="{{ url_for('upload_reads', table=alignment['alignment_uid']) }}" class="white nodecoration">Analyze<i class="fa fa-angle-right ml-2"></i></a>
+                                    <a href="{{ url_for('upload_reads', alignment=alignment['alignment_uid']) }}" class="white nodecoration">Analyze<i class="fa fa-angle-right ml-2"></i></a>
                                 </button>
                                 <button class="btn text-center w-100 border-grey bg-transparent light tiny nodecoration text-muted" data-toggle="collapse" data-target="#{{ alignment['alignment_uid'] }}" aria-expanded="false">
                                     More Info<i class="fa fa-angle-down ml-1 fa-1x"></i>
@@ -205,13 +209,28 @@
                     </div>
 
                     <!-- Samples -->
-                    <div class="collapse border-grey border-top-0 mx-2 px-3 py-2 rounded-bottom" id="{{ alignment['alignment_uid'] }}">
-                        {% for status in alignment['progress'] %}
-                        <div>
-                            {{ status['sample_name'] }}
-                            {{ status['status'] }}
+                    <div class="collapse border-grey border-top-0 mx-2 rounded-bottom" id="{{ alignment['alignment_uid'] }}">
+                        <div class="sample-table-wrapper">
+                            <table class="table table-striped w-100 text-center mb-0">
+                                <thead class="tiny">
+                                    <tr>
+                                        <th>Sample</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="tiny">
+                                    {% for status in alignment['progress'] %}
+                                        <tr>
+                                            <td class="font-italic align-middle">{{ status['sample_name'] }}</td>
+                                            <td class="align-middle">
+                                                <img src="https://amp.pharm.mssm.edu/cloudalignment/images/{{ status['status'] }}.png" width="35px" class="mr-2">
+                                                {{ status['status'].title() }}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
-                        {% endfor %}
                     </div>
 
 
