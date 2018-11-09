@@ -1379,7 +1379,7 @@ def dashboard():
 		datasets = session.query(tables['user_dataset'], func.count(tables['user_sample'].columns['id']).label('samples')).join(tables['user_sample']).filter(tables['user_dataset'].columns['user_fk'] == current_user.get_id()).group_by(tables['user_dataset'].columns['id']).order_by(tables['user_dataset'].columns['date'].desc()).all()
 
 		# Get notebooks
-		notebooks = session.query(tables['notebook']).filter(tables['notebook'].columns['user_fk'] == current_user.get_id()).all()
+		notebooks = session.query(tables['notebook']).filter(tables['notebook'].columns['user_fk'] == current_user.get_id()).order_by(tables['notebook'].columns['date'].desc()).all()
 
 		# Get uploads
 		# upload_query = session.query(tables['fastq_upload'], tables['fastq_file']).join(tables['fastq_file']).filter(tables['fastq_upload'].columns['user_fk'] == current_user.get_id()).all()
@@ -1390,7 +1390,7 @@ def dashboard():
 		# print(uploads)
 
 		# Get alignment jobs
-		alignments = session.query(tables['fastq_alignment']).join(tables['fastq_upload']).filter(tables['fastq_upload'].columns['user_fk'] == current_user.get_id()).all()
+		alignments = session.query(tables['fastq_alignment']).join(tables['fastq_upload']).filter(tables['fastq_upload'].columns['user_fk'] == current_user.get_id()).order_by(tables['notebook'].columns['date'].desc()).all()
 
 		# Get statuses
 		if alignments:
