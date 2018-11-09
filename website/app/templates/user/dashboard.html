@@ -26,10 +26,15 @@
         max-height: 500px;
         overflow: auto;
     }
+    @media (min-width: 992px) {
+        .w-lg-75 {
+            width: 75% !important;
+        }
+    }
 </style>
 
 <!-- Dashboard  -->
-<div class="d-flex flex-row w-100 px-6 mt-5 mb-4">
+<div class="d-lg-flex w-100 px-6 mt-3 mb-4">
 
     <!-- Navigation -->
     <div class="nav flex-column pr-3 nav-pills small light pt-1" id="v-pills-tab" role="tablist" aria-orientation="vertical">
@@ -40,7 +45,7 @@
     </div>
 
     <!-- Content -->
-    <div class="tab-content w-75 pl-3" id="v-pills-tabContent">
+    <div class="tab-content w-100 w-lg-75 pl-3 mt-2 mt-lg-0" id="v-pills-tabContent">
 
         <!--  -->
         <!-- Home tab -->
@@ -145,10 +150,10 @@
                         {% for dataset in datasets %}
                         <tr>
                             <td class="dataset-title text-left my-auto">
-                                <span data-uid="{{ dataset['dataset_uid'] }}" data-object_type="user_dataset" data-action="rename">{{ dataset['dataset_title'] }}</span>
-                                <a class="ml-4 micro nodecoration rename-link float-right mt-1" data-action="rename" href="#">Rename</a>
+                                <span data-uid="{{ dataset['dataset_uid'] }}" data-object_type="user_dataset" data-action="rename" class="rename-dataset d-block d-xl-inline-block">{{ dataset['dataset_title'] }}</span>
+                                <a class="ml-1 ml-xl-4 micro nodecoration rename-link d-block float-xl-right mt-1" data-action="rename" href="#">Rename</a>
                                 <input type="text" class="form-control d-none" value="{{ dataset['dataset_title'] }}">
-                                <a class="micro nodecoration rename-link d-none ml-2" data-action="confirm" href="#">Confirm</a>
+                                <a class="micro nodecoration rename-link d-none ml-2 mt-2" data-action="confirm" href="#">Confirm</a>
                             </td>
                             <td>{{ dataset['date'].strftime('%B %-d, %Y') }}</td>
                             <td>{{ dataset['samples'] }}</td>
@@ -183,15 +188,15 @@
 
                     <!-- Alignment -->
                     <div class="bg-lightgrey border-custom rounded mt-2 px-3 py-2 d-table w-100">
-                        <div class="d-table-cell align-middle pr-3">
+                        <div class="d-table-cell align-middle pr-xl-3">
                             <img src="{{ url_for('static', filename='img/alignment/'+alignment['species'].replace('mm', 'mouse').replace('hs', 'human')+'.png') }}">
                         </div>
                         <div class="d-table-cell align-middle">
                             <div class="very-small regular mb-2">FASTQ Alignment #{{ loop.index }}</div>
                             <div class="tiny light text-muted">
-                                <span><span class="font-italic">{{ alignment['species'].replace('mm', 'Mus musculus').replace('hs', 'Homo sapiens') }}</span></span>
-                                <span class="ml-5">{{ alignment['progress']|length }} samples</span>
-                                <span class="ml-5">Launched <span class="font-italic">{{alignment['date'].strftime('%B %e, %Y')}}</span></span>
+                                <span class="d-block d-xl-inline-block"><span class="font-italic">{{ alignment['species'].replace('mm', 'Mus musculus').replace('hs', 'Homo sapiens') }}</span></span>
+                                <span class="ml-xl-5 d-block d-xl-inline-block">{{ alignment['progress']|length }} samples</span>
+                                <span class="ml-xl-5 d-block d-xl-inline-block">Launched <span class="font-italic">{{alignment['date'].strftime('%B %e, %Y')}}</span></span>
                             </div>
                         </div>
                         <div class="d-table-cell align-middle card-options">
@@ -288,8 +293,8 @@
             if ($(this).data('action') == 'confirm') {
                 edit_object($elem=$wrapper.find('span'), title=$wrapper.find('input').val());
             }
-            $wrapper.children().toggleClass('d-none');
-            // edit_object($elem = $(this));
+            $wrapper.children().toggleClass('d-none').toggleClass('d-block');
+            $wrapper.find('.rename-dataset').toggleClass('d-xl-inline-block');
         })
 
         // Click listener
