@@ -1172,6 +1172,63 @@ def merge_counts_api():
 	return json.dumps({'counts': count_dataframe.to_dict(orient='split'), 'qc': qc_results})
 
 #############################################
+########## 7. Query Elysium API
+#############################################
+### Queries Elysium.
+### Input: JSON requesting information on files, progress.
+### Output: JSON.
+### Called by: several routes.
+
+@app.route('/api/elysium', methods=['GET'])
+def elysium_api():
+
+	# Get data
+	print(request.url)
+	endpoint = request.args.get('request_type')
+
+	# Set parameters
+	if endpoint == 'signpolicy':
+
+		# Build url
+		url = 'https://amp.pharm.mssm.edu/charon/{endpoint}?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ, **locals())
+
+		# Read request
+		data = urllib.request.urlopen(urllib.request.Request(url)).read().decode('utf-8')
+
+	elif endpoint == 'progress':
+
+		# Build url
+		url = 'https://amp.pharm.mssm.edu/cloudalignment/{endpoint}?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ, **locals())
+
+		# Get alignment UID
+		print(request.args)
+		print(request.args.keys())
+		print(str(request.args.keys()))
+		alignment_uid = request.args.get('alignment_uid')
+
+		# Check
+		if isinstance(alignment_uid, str) and len(alignment_uid) == 11:
+
+			# Get job dataframe
+			job_dataframe = pd.DataFrame(json.loads(urllib.request.urlopen(urllib.request.Request(url)).read().decode('utf-8'))).T
+			
+			# Get jobs
+			jobs = job_dataframe.loc[[index for index, rowData in job_dataframe.iterrows() if rowData['outname'].startswith(alignment_uid)]].to_dict(orient='records')
+
+			# Convert to JSON
+			data = json.dumps(jobs)
+
+		else:
+			print(alignment_uid)
+			raise ValueError('Unsupported alignment id.')
+
+	else:
+		raise ValueError('Endpoint not supported.')
+
+	# Return
+	return data
+
+#############################################
 ########## 6. Upload Reads API
 #############################################
 ### Uploads the upload UID to the database.

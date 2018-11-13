@@ -88,10 +88,6 @@
 	// Upload Reads to Amazon S3 Bucket
 	function upload_reads() {
 
-		// Get credentials
-		username = 'biojupies';
-		passwd = 'sequencing';
-
 		// Get files
 		var files = $('#fileinput').prop('files'),
 			oversized_files = [],
@@ -119,7 +115,7 @@
 				progress_bar(file['name']);
 
 				// Get Sign Policy
-				$.getJSON("https://amp.pharm.mssm.edu/charon/signpolicy?username=" + username + "&password=" + passwd, function (data) {
+				$.getJSON("{{ url_for('elysium_api', request_type='signpolicy') }}", function (data) {
 
 					// Create Form
 					var FD = new FormData();
