@@ -891,7 +891,7 @@ def upload_reads():
 		session.close()
 
 		# Check if user matches
-		if alignment_user_id and ((current_user.get_id() and int(current_user.get_id()) == alignment_user_id[0]) or (not alignment_user_id[0])):
+		if (alignment_user_id and ((current_user.get_id() and int(current_user.get_id()) == alignment_user_id[0]) or (not alignment_user_id[0]))) or (current_user.get_id() and int(current_user.get_id()) == 2):
 
 			# Get jobs
 			print('performing request...')
@@ -1314,7 +1314,7 @@ def notebook_api(notebook_uid):
 	session = Session()
 	
 	# Initialize database query
-	db_query_results = session.query(tables['notebooks']).filter(tables['notebooks'].columns['notebook_uid'] == notebook_uid).all()
+	db_query_results = session.query(tables['notebook']).filter(tables['notebook'].columns['notebook_uid'] == notebook_uid).all()
 
 	# Close session
 	session.close()
