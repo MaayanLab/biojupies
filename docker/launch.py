@@ -32,7 +32,7 @@ def download_notebook():
 			
 		# Get Notebook URL
 		try:
-			notebook_url = urllib.parse.quote(notebook_data['notebook_url'], safe=':/')
+			notebook_url = urllib.parse.quote('https://storage.googleapis.com/jupyter-notebook-generator/{notebook_uid}/{notebook_title}.ipynb'.format(**notebook_data), safe=':/')
 		except:
 			raise ValueError('Sorry, the selected notebook could not be found.')
 
