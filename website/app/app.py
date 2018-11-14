@@ -1087,9 +1087,8 @@ def launch_alignment_api():
 			# Get URL parameters
 			params = '&'.join(['{key}={value}'.format(**locals()) for key, value in sample.items() if value])+'&organism='+alignment_settings['organism']
 			url = "https://amp.pharm.mssm.edu/cloudalignment/createjob?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&".format(**os.environ)+params
-
 			# Launch alignment jobs
-			req =  urllib.request.Request(url)
+			req =  urllib.request.Request(url.replace(' ', '%20'))
 			resp = urllib.request.urlopen(req).read().decode('utf-8')
 			print(resp)
 
