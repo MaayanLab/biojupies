@@ -1183,7 +1183,6 @@ def merge_counts_api():
 def elysium_api():
 
 	# Get data
-	print(request.url)
 	endpoint = request.args.get('request_type')
 
 	# Set parameters
@@ -1201,9 +1200,6 @@ def elysium_api():
 		url = 'https://amp.pharm.mssm.edu/cloudalignment/{endpoint}?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ, **locals())
 
 		# Get alignment UID
-		print(request.args)
-		print(request.args.keys())
-		print(str(request.args.keys()))
 		alignment_uid = request.args.get('alignment_uid')
 
 		# Check
@@ -1219,7 +1215,6 @@ def elysium_api():
 			data = json.dumps(jobs)
 
 		else:
-			print(alignment_uid)
 			raise ValueError('Unsupported alignment id.')
 
 	else:

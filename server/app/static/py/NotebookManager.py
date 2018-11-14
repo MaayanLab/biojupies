@@ -103,7 +103,7 @@ def upload_notebook(notebook, notebook_configuration, time, engine, user_id=None
 	dataset = notebook_configuration['data']['parameters'].get('gse') if notebook_configuration['data']['parameters'].get('gse') else notebook_configuration['data']['parameters'].get('uid')
 	if not dataset:
 		dataset = 'gtex'
-	notebook_dataframe = pd.Series({'notebook_uid': notebook_uid, 'notebook_title': notebook_configuration['notebook']['title'], 'notebook_configuration': json.dumps(notebook_configuration), 'version': notebook_configuration['notebook']['version'], 'time': time, 'dataset': dataset, 'user_fk': user_id}).to_frame().T
+	notebook_dataframe = pd.Series({'notebook_uid': notebook_uid, 'notebook_title': notebook_configuration['notebook']['title'], 'notebook_configuration': json.dumps(notebook_configuration), 'version': notebook_configuration['notebook']['version'], 'time': time, 'dataset': dataset, 'user_fk': user_id, 'private': True if user_id else False}).to_frame().T
 	notebook_dataframe.to_sql('notebook', engine, if_exists='append', index=False)
 
 	# Get tool IDs

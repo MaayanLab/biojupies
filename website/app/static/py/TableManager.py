@@ -139,7 +139,7 @@ def uploadToDatabase(data, dataset_uid, engine, user_id, dataset_title, alignmen
 	fastq_alignment_fk = None if not alignment else alignment.id
 
 	# Upload dataset and get FK
-	dataset_id = session.execute(tables['user_dataset'].insert({'dataset_uid': dataset_uid, 'dataset_title': dataset_title, 'user_fk': user_id, 'fastq_alignment_fk': fastq_alignment_fk})).lastrowid
+	dataset_id = session.execute(tables['user_dataset'].insert({'dataset_uid': dataset_uid, 'dataset_title': dataset_title, 'user_fk': user_id, 'fastq_alignment_fk': fastq_alignment_fk, 'private': True if user_id else False})).lastrowid
 	session.commit()
 	session.close()
 
