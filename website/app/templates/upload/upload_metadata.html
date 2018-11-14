@@ -102,7 +102,7 @@
 				<tbody>
 					{% for sample in sample_groups %}
 						<tr>
-							<td class="px-3 py-2 bold tiny">{{ sample['sample'] }}</td>
+							<td class="px-3 py-2 bold tiny" style="max-width: 350px; overflow-x: auto;">{{ sample['sample'] }}</td>
 							<td class="px-3 py-2"><input class="form-control nodecoration tiny" type="text" name="{{sample}}-group"></td>
 							<!-- <td class="px-3 py-2"><input class="form-control nodecoration tiny" type="text" name="{{sample}}-group" value="{{ sample['group'] }}" data-predicted-group="{{ sample['group'] }}"></td> -->
 						</tr>
