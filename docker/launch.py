@@ -12,8 +12,13 @@ import os, urllib.request, urllib.parse, json
 
 def download_notebook():
 
-	# Get notebook UID
-	notebook_uid = input("\nPlease provide the UID of the notebook you wish to download, then press enter:\n")
+	# Check if UID is in the environment
+	notebook_uid = os.environ.get('NOTEBOOK_UID')
+
+	if not notebook_uid:
+
+		# Get notebook UID
+		notebook_uid = input("\nPlease provide the UID of the notebook you wish to download, then press enter. If you do not wish to download any notebook, you may leave this blank.\n")
 
 	# If exists
 	if notebook_uid:
@@ -26,8 +31,10 @@ def download_notebook():
 			notebook_data = json.loads(response.read())
 			
 		# Get Notebook URL
-		notebook_url = urllib.parse.quote(notebook_data['notebook_url'], safe=':/')
-		print(notebook_url)
+		try:
+			notebook_url = urllib.parse.quote(notebook_data['notebook_url'], safe=':/')
+		except:
+			raise ValueError('Sorry, the selected notebook could not be found.')
 
 		# Get data
 		os.system('wget '+notebook_url)
