@@ -19,36 +19,39 @@
 
 <div class="px-6">
 
-	<!-- Title -->
-	<div class="row pt-4">
-		<div class="col-12 very-large text-center light px-5">Which analyses would you like to perform?</div>
-	</div>
+	<!-- Sticky -->
+	<div class="position-sticky sticky-top bg-white pb-2">
 
-	<!-- Introduction -->
-	<hr width="100%" class="my-4">
-	<div class="row">
-		<div class="light very-small my-1 col-lg-8 col-xl-9 text-justify">
-			Use the form below to <span class="bold">add or remove data analysis and visualization tools</span> to your notebook.
-			These tools will analyze the selected dataset and embed interactive results in your notebook.
-			Once you have selected the desired tools, click <b>Continue</b> to proceed.
+		<!-- Title -->
+		<div class="row pt-4">
+			<div class="col-12 very-large text-center light px-5">Which analyses would you like to perform?</div>
 		</div>
-		<div class="col-lg-4 col-xl-3 my-auto text-center pt-3 pt-lg-0">
-			<button class="btn black border-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
-			<button class="btn navigate white border-custom bg-blue nodecoration" form="add-tools-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">
-				Continue<i class="fa fa-angle-right ml-2"></i>
-			</button>
-		</div>
-	</div>
 
+		<!-- Introduction -->
+		<hr width="100%" class="my-4">
+		<div class="row">
+			<div class="light very-small my-1 col-lg-8 col-xl-9 text-justify">
+				Use the form below to <span class="bold">add or remove data analysis and visualization tools</span> to your notebook.
+				These tools will analyze the selected dataset and embed interactive results in your notebook.
+				Once you have selected the desired tools, click <b>Continue</b> to proceed.
+			</div>
+			<div class="col-lg-4 col-xl-3 my-auto text-center pt-3 pt-lg-0">
+				<button class="btn black border-custom bg-white nodecoration mr-2" onclick="goBack();"><i class="fa fa-angle-left mr-2"></i>Back</button>
+				<button class="btn navigate white border-custom bg-blue nodecoration" form="add-tools-form" type="submit" formaction="{{ url_for('configure_analysis') }}" formmethod="post">
+					Continue<i class="fa fa-angle-right ml-2"></i>
+				</button>
+			</div>
+		</div>
+		<hr width="100%" class="mt-4 mb-1">
+	</div>
 	 <!-- Add Tools Form -->
 	 <div class="row">
-		<hr width="100%" class="mt-4 mb-2">
 		<div id="add-tools-col" class="col-12 px-3 mb-5">
 			<form id="add-tools-form">
 
 				<!-- Add tool selection -->
 				{% for section in sections %}
-					<div class="medium {{ 'mt-3' if loop.index == 1 else 'mt-4' }} pt-2">{{ section.section_name }}</div>
+					<div class="medium {{ 'mt-1' if loop.index == 1 else 'mt-4' }} pt-2">{{ section.section_name }}</div>
 					<div class="very-small light mt-2">{{ section.section_description }}.</div>
 					{% for tool in section['tools'] %}
 						{{ macros.tool_checkbox(tool, version=version) }}
