@@ -863,7 +863,7 @@ def upload_reads():
 			session.close()
 
 			# Check if user matches
-			if True:#upload_user_id and ((current_user.get_id() and int(current_user.get_id()) == upload_user_id[0]) or (not upload_user_id[0])):
+			if (upload_user_id and ((current_user.get_id() and int(current_user.get_id()) in (upload_user_id[0], 2))) or (not upload_user_id[0])):
 
 				# Get samples
 				req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
