@@ -34,6 +34,11 @@
 			<div id="description" class="mt-4 very-small light">A link will be displayed below when the notebook is ready.</div>
 			<div class="loader">Loading...</div>
 
+			<!-- Wait time -->
+			<div id="wait-time">
+				Your notebook should be ready in less than <span id="time">{{ expected_time }}</span> minute<span id="time-s">{{'s' if expected_time > 1 else ''}}</span>.
+			</div>
+
 			<!-- Notebook Link -->
 			<div id="results" class="hidden">
 
@@ -152,6 +157,7 @@
 			$('#open-notebook').attr('href', $('#open-notebook').attr('href')+notebook_uid);
 			$('#notebook-url').attr('href', $('#notebook-url').attr('href')+notebook_uid);
 			$('.loader').hide();
+			$('#wait-time').hide();
 
 			// Add link for uploaded data
 			var dataset_uid = JSON.parse($('#notebook-link').attr('data-notebook_configuration'))['data']['parameters']['uid'];
@@ -211,6 +217,17 @@
 			$('#new-notebook').removeClass('hidden');
 		}
 	})
+
+	// Check interval
+	var interval = setInterval(function () {
+		var new_time = parseInt($('#time').html())-1;
+		if (new_time > 0) {
+			$('#time').html(new_time);
+		}
+		if (new_time === 1) {
+			$('#time-s').html('');
+		}
+	}, 60000);
 
 </script>
 

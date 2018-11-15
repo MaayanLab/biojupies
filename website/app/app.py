@@ -33,6 +33,7 @@ from werkzeug.contrib.fixers import ProxyFix
 # General
 import sys, os, json, requests, re, math, itertools, glob, urllib
 import pandas as pd
+import numpy as np
 from io import StringIO
 
 # Database
@@ -621,9 +622,13 @@ def generate_notebook():
 		# Get tools
 		tools = pd.read_sql_query('SELECT tool_string, tool_name FROM tool', engine).set_index('tool_string').to_dict()['tool_name']
 		selected_tools = [tools[x['tool_string']] for x in c['tools']]
+
+		# Estimated wait time
+		wait_times = pd.read_sql_query('SELECT time, count(tool_fk) AS tools FROM notebook n LEFT JOIN notebook_tool nt ON n.id=nt.notebook_fk GROUP BY n.id HAVING time > 0 AND tools =13 ', engine)['time']
+		expected_time = int(np.ceil(np.percentile(wait_times, 90)/60))
 		
 		# Return result
-		return render_template('analyze/results.html', notebook_configuration=json.dumps(c), notebook_configuration_dict=c, selected_tools=selected_tools, dev=dev)
+		return render_template('analyze/results.html', notebook_configuration=json.dumps(c), notebook_configuration_dict=c, selected_tools=selected_tools, dev=dev, expected_time=expected_time)
 		# return json.dumps(c)
 
 	# Redirect to analyze page
