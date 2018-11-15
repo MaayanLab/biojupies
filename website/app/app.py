@@ -64,7 +64,7 @@ if os.getenv('SENTRY_DSN'):
 with open('dev.txt') as openfile:
 	dev = openfile.read() == 'True'
 entry_point = '/biojupies-dev' if dev else '/biojupies'
-app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
+app = Flask(__name__, static_url_path='/app/static')
 
 # Database
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
@@ -624,7 +624,7 @@ def generate_notebook():
 		selected_tools = [tools[x['tool_string']] for x in c['tools']]
 
 		# Estimated wait time
-		wait_times = pd.read_sql_query('SELECT time, count(tool_fk) AS tools FROM notebook n LEFT JOIN notebook_tool nt ON n.id=nt.notebook_fk GROUP BY n.id HAVING time > 0 AND tools =13 ', engine)['time']
+		wait_times = pd.read_sql_query('SELECT time, count(tool_fk) AS tools FROM notebook n LEFT JOIN notebook_tool nt ON n.id=nt.notebook_fk GROUP BY n.id HAVING time > 0 AND tools ='+str(len(p)), engine)['time']
 		expected_time = int(np.ceil(np.percentile(wait_times, 90)/60))
 		
 		# Return result

@@ -143,7 +143,7 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body text-center mb-3">
+          <div class="modal-body text-center mb-2">
             <div class="px-4 small light">
               Sign in to BioJupies for access to unlimited private notebooks, datasets and alignment jobs.
             </div>
@@ -151,6 +151,9 @@
             <a href="{{ url_for('google.login') }}">
               <img src="{{ url_for('static', filename='img/btn_google_signin_light_normal_web@2x.png') }}" class="mx-3" style="max-width: 225px;">
             </a>
+            <div class="px-3 mt-3 very-small light text-muted">
+              <b>Note</b>: BioJupies uses Google for authentication purposes only. The application will <b>not</b> have access to your private data, will not send you any e-mails.
+            </div>
           </div>
           <!-- <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
