@@ -20,7 +20,7 @@
                     "<div class='mt-2'></div>",
                     "Generating a notebook requires the following three steps:",
                     "<img src='entrypoint/workflow.png' class='mb-1'>",
-                    "<ol><li><b>Select the data you wish to analyze</b>. You can upload your own RNA-seq data - either as raw FASTQ files or as a table containing gene counts - or search from over 8,000 publicly available datasets published in the <a href='https://www.ncbi.nlm.nih.gov/geo/' target='_blank'>Gene Expression Omnibus</a> (GEO) and processed by <a href='https://amp.pharm.mssm.edu/archs4/' target='_blank'>ARCHS4</a>.</li>",
+                    "<ol><li><b>Select the data you wish to analyze</b>. You can upload your own RNA-seq data - either as raw FASTQ files or as a table containing gene counts - or search from over 9,000 publicly available datasets published in the <a href='https://www.ncbi.nlm.nih.gov/geo/' target='_blank'>Gene Expression Omnibus</a> (GEO) and processed by <a href='https://amp.pharm.mssm.edu/archs4/' target='_blank'>ARCHS4</a>.</li>",
                     "<li><b>Select data analysis tools</b>. After selecting the data, you can choose from over 10 data visualization and analysis tools. These tools will be used to analyze the RNA-seq dataset you uploaded or selected, and embed interactive figures in the resulting notebook.</li>",
                     "<li><b>Generate the notebook</b>. Once you have selected the set tools you wish to apply do the data, you can generate the notebook directly from the BioJupies website. The notebook will be returned to you through a permanent and public URL.</li></ol>"
                 ]
@@ -31,7 +31,7 @@
                     "To start generating your notebook, please visit <a href='https://amp.pharm.mssm.edu/biojupies/analyze' target='_blank'>https://amp.pharm.mssm.edu/biojupies/analyze</a>.",
                     "<img src='entrypoint/get_started.png'>",
                     "First, you will be required to specify the <b>dataset you wish to analyze</b>. Three options are available:",
-                    "<ol><li><b>Search Published Datasets</b>. The BioJupies search engine can be used to rapidly find datasets to analyze from over 8,000 publicly available published studies from GEO. Only studies that were processed by ARCHS4 are available for analysis with BioJupies.</li>",
+                    "<ol><li><b>Search Published Datasets</b>. The BioJupies search engine can be used to rapidly find datasets to analyze from over 9,000 publicly available published studies from GEO. Only studies that were processed by ARCHS4 are available for analysis with BioJupies.</li>",
                     "<li><b>Upload Your Dataset</b>. BioJupies enables you to upload your own RNA-seq dataset, either as raw FASTQ sequencing files, or as processed gene expression count tables.</li>",
                     "<li><b>Use the Example Dataset</b>. To learn how to generate a notebook with BioJupies, we provide an example dataset.</li></ol>"
                 ]
@@ -53,7 +53,7 @@
             {
                 "title": "Searching Published Data",
                 "text": [
-                    "In addition to uploading your data, BioJupies users can also analyze datasets avilable from over 8,000 published studies currently available from GEO.",
+                    "In addition to uploading your data, BioJupies users can also analyze datasets avilable from over 9,000 published studies currently available from GEO.",
                     "<div class='mt-2'></div>",
                     "To search the pre-processed RNA-seq datasets indexed by BioJupies, visit <a href='https://amp.pharm.mssm.edu/biojupies/analyze/search' target='_blank'>https://amp.pharm.mssm.edu/biojupies/analyze/search</a>.",
                     "<img src='entrypoint/search.png'>",
@@ -241,7 +241,7 @@
                     "<img src='entrypoint/geo_search.png'>",
                     "By clicking on the button, users can proceed to <a href='#adding_analysis_plugins_'>Adding Analysis Plugins</a> in order to <b>generate a customized Jupyter Notebook</b> from the selected dataset entirely through a pop-up window user interface.",
                     "<div class='mt-3'></div>",
-                    "Note: <b>BioJupies currently supports ~8,000 RNA-seq datasets</b> processed by <a href='https://amp.pharm.mssm.edu/archs4/' target='_blank'>ARCHS4</a>. Since the Gene Expression Omnibus indexes a large number of datasets which have not been generated using RNA-sequencing, <b>many search results will not have a Generate Notebook button</b>.",
+                    "Note: <b>BioJupies currently supports ~9,000 RNA-seq datasets</b> processed by <a href='https://amp.pharm.mssm.edu/archs4/' target='_blank'>ARCHS4</a>. Since the Gene Expression Omnibus indexes a large number of datasets which have not been generated using RNA-sequencing, <b>many search results will not have a Generate Notebook button</b>.",
                     "<div class='mt-3'></div>",
                     "For a complete list of processed datasets see <a href='https://amp.pharm.mssm.edu/biojupies/analyze/search' target='_blank'>https://amp.pharm.mssm.edu/biojupies/analyze/search</a>."
                 ]
@@ -396,9 +396,7 @@
             {
                 "title": null,
                 "text": [
-                    "BioJupies is currently available as a pre-print on bioRxiv at <a href='https://doi.org/10.1101/352476' target='_blank'>https://doi.org/10.1101/352476</a>.",
-                    "<div class='mt-3'></div>",
-                    "<embed src='https://www.biorxiv.org/content/biorxiv/early/2018/06/20/352476.full.pdf#zoom=75' width='100%' height='785px'>"
+                    "BioJupies is currently available on Cell Systems at <a href='https://www.cell.com/cell-systems/fulltext/S2405-4712(18)30432-0' target='_blank'>https://www.cell.com/cell-systems/fulltext/S2405-4712(18)30432-0</a>."
                 ]
             }
         ]
