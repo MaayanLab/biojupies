@@ -303,7 +303,7 @@ def search_data():
 	# Get Search Parameters
 	q = request.args.get('q', 'cancer')
 	min_samples = request.args.get('min_samples', 6)
-	max_samples = request.args.get('max_samples', 50)
+	max_samples = request.args.get('max_samples', '70')
 	max_samples = 500 if max_samples == '70' else max_samples
 	sortby = request.args.get('sortby', 'new')
 	organism = request.args.get('organism', 'all')
@@ -865,10 +865,11 @@ def upload_reads():
 			# Find alignment
 			session = Session()
 			upload_user_id = session.query(tables['fastq_upload'].columns['user_fk']).filter(tables['fastq_upload'].columns['upload_uid'] == upload_uid).first()
+			upload_user_id = upload_user_id[0] if upload_user_id else None
 			session.close()
 
 			# Check if user matches
-			if (upload_user_id and ((current_user.get_id() and int(current_user.get_id()) in (upload_user_id[0], 2))) or (not upload_user_id[0])):
+			if (upload_user_id and ((current_user.get_id() and int(current_user.get_id()) in (upload_user_id, 3))) or (not upload_user_id)):
 
 				# Get samples
 				req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
@@ -893,10 +894,11 @@ def upload_reads():
 		# Find alignment
 		session = Session()
 		alignment_user_id = session.query(tables['fastq_upload'].columns['user_fk']).join(tables['fastq_alignment']).filter(tables['fastq_alignment'].columns['alignment_uid'] == alignment_uid).first()
+		alignment_user_id = alignment_user_id[0] if alignment_user_id else None
 		session.close()
 
 		# Check if user matches
-		if (alignment_user_id and ((current_user.get_id() and int(current_user.get_id()) == alignment_user_id[0]) or (not alignment_user_id[0]))) or (current_user.get_id() and int(current_user.get_id()) == 2):
+		if (alignment_user_id and ((current_user.get_id() and int(current_user.get_id()) in (alignment_user_id, 3))) or (not alignment_user_id)):
 
 			# Get jobs
 			print('performing request...')
@@ -1246,7 +1248,7 @@ def upload_reads_api():
 	session = Session()
 
 	# Insert upload UID
-	upload_id = session.execute(tables['fastq_upload'].insert().values([{'upload_uid': r['upload_uid'], 'user_fk': current_user.get_id()}]))
+	upload_id = session.execute(tables['fastq_upload'].insert().prefix_with('IGNORE').values([{'upload_uid': r['upload_uid'], 'user_fk': current_user.get_id()}]))
 
 	# Commit
 	session.commit()
