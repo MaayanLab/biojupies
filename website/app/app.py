@@ -1573,15 +1573,16 @@ def notebook_generation_error(error_id):
 	
 	# Query
 	session = Session()
-	db_query = session.query(tables['error_log']).filter(tables['error_log'].columns['id'] == error_id)
+	db_query = session.query(tables['error_log']).filter(tables['error_log'].columns['id'] == error_id).all()
 	session.close()
 	
 	# Get results
-	error = db_query.all()[0]._asdict()
-	error['notebook_configuration'] = json.loads(error['notebook_configuration'])
-	error['notebook_configuration_json'] = json.dumps(error['notebook_configuration'], indent=4)
+	if len(db_query):
+		error = db_query[0]._asdict()
+		error['notebook_configuration'] = json.loads(error['notebook_configuration'])
+		error['notebook_configuration_json'] = json.dumps(error['notebook_configuration'], indent=4)
 
-	return render_template('errors/notebook_generation_error.html', error=error)
+		return render_template('errors/notebook_generation_error.html', error=error)
 
 @app.route('/err')
 def err():
