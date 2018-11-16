@@ -307,37 +307,49 @@
             {
                 "title": "1. Introduction",
                 "text": [
-                    "<iframe class='mt-2 mb-3 d-block' width='560' height='315' src='https://www.youtube.com/embed/_fSLXH95ggY' frameborder='0' allow='autoplay; encrypted-media' allowfullscreen></iframe>Introduction to the BioJupies web server and video tutorial playlist."
+                    "<iframe class='mt-2 mb-3 d-block' width='560' height='315' src='https://www.youtube.com/embed/KMIrW3wb690' frameborder='0' allow='autoplay; encrypted-media' allowfullscreen></iframe>Introduction to the BioJupies web server and video tutorial playlist."
                 ]
             },
             {
-                "title": "2. Aligning FASTQ Files",
+                "title": "2. Analyzing Raw RNA-seq Data",
                 "text": [
-                    "<iframe class='mt-2 mb-3 d-block' width='560' height='315' src='https://www.youtube.com/embed/Pc9XGImptPo' frameborder='0' allow='autoplay; encrypted-media' allowfullscreen></iframe>Step-by-step demonstration on uploading raw FASTQ files and launching alignment jobs from the BioJupies web server."
+                    "<iframe class='mt-2 mb-3 d-block' width='560' height='315' src='https://www.youtube.com/embed/9M1ukouB7rE' frameborder='0' allow='autoplay; encrypted-media' allowfullscreen></iframe>Step-by-step demonstration on uploading raw FASTQ files and launching alignment jobs from BioJupies."
                 ]
             },
             {
-                "title": "3. Generating a Jupyter Notebook",
+                "title": "3. Analyzing Processed RNA-seq Data",
                 "text": [
-                    "<iframe class='mt-2 mb-3 d-block' width='560' height='315' src='https://www.youtube.com/embed/LYfdYnf8YdE' frameborder='0' allow='autoplay; encrypted-media' allowfullscreen></iframe>Instructions on generating a custom Jupyter Notebook from uploaded FASTQ files."
+                    "<iframe class='mt-2 mb-3 d-block' width='560' height='315' src='https://www.youtube.com/embed/AHWxtaJYdmM' frameborder='0' allow='autoplay; encrypted-media' allowfullscreen></iframe>Step-by-step demonstration on uploading processed RNA-seq data to BioJupies"
                 ]
             },
             {
-                "title": "4. Exploring a Jupyter Notebook",
+                "title": "4. Analyzing GEO Data",
                 "text": [
-                    "<iframe class='mt-2 mb-3 d-block' width='560' height='315' src='https://www.youtube.com/embed/rgJFn3Le0e8' frameborder='0' allow='autoplay; encrypted-media' allowfullscreen></iframe>Exploring the results contained within a Jupyter Notebook generated using BioJupies."
+                    "<iframe class='mt-2 mb-3 d-block' width='560' height='315' src='https://www.youtube.com/embed/09A-l4YoH-A' frameborder='0' allow='autoplay; encrypted-media' allowfullscreen></iframe>Step-by-step demonstration on searching and analyzing GEO data from BioJupies."
                 ]
             },
             {
-                "title": "5. Using the Chrome Extension",
+                "title": "5. Generating a Notebook",
                 "text": [
-                    "<iframe class='mt-2 mb-3 d-block' width='560' height='315' src='https://www.youtube.com/embed/hb4J7z57CtQ' frameborder='0' allow='autoplay; encrypted-media' allowfullscreen></iframe>Instructions on installing and using the BioJupies Google Chrome extension. For more information please refer to the <a href='#chrome_extension'>Chrome Extension</a> section."
+                    "<iframe class='mt-2 mb-3 d-block' width='560' height='315' src='https://www.youtube.com/embed/_vtjKuzQqUs' frameborder='0' allow='autoplay; encrypted-media' allowfullscreen></iframe>Instructions on generating a custom Jupyter Notebook using the BioJupies user interface."
                 ]
             },
             {
-                "title": "6. Reusing Notebooks",
+                "title": "6. Exploring the Notebook",
                 "text": [
-                    "<iframe class='mt-2 mb-3 d-block' width='560' height='315' src='https://www.youtube.com/embed/NZDV4z-ZCqc' frameborder='0' allow='autoplay; encrypted-media' allowfullscreen></iframe>Overview of how users can download, execute and customize BioJupies Notebooks on their local computer (Mac OS shown). For more information about this topic please refer to the <a href='#reusing_notebooks'>Reusing Notebooks</a> section."
+                    "<iframe class='mt-2 mb-3 d-block' width='560' height='315' src='https://www.youtube.com/embed/XsCBhBHrUxk' frameborder='0' allow='autoplay; encrypted-media' allowfullscreen></iframe>Exploring the results contained within a Jupyter Notebook generated using BioJupies."
+                ]
+            },
+            {
+                "title": "7. Reusing Notebooks",
+                "text": [
+                    "<iframe class='mt-2 mb-3 d-block' width='560' height='315' src='https://www.youtube.com/embed/7WFlqIlTud4' frameborder='0' allow='autoplay; encrypted-media' allowfullscreen></iframe>Overview of how users can download, execute and customize BioJupies Notebooks on their local computer (Mac OS shown). For more information about this topic please refer to the <a href='#reusing_notebooks'>Reusing Notebooks</a> section."
+                ]
+            },
+            {
+                "title": "8 . Using the Chrome Extension",
+                "text": [
+                    "<iframe class='mt-2 mb-3 d-block' width='560' height='315' src='https://www.youtube.com/embed/rS8t_E1e4Ms' frameborder='0' allow='autoplay; encrypted-media' allowfullscreen></iframe>Instructions on installing and using the BioJupies Google Chrome extension. For more information please refer to the <a href='#chrome_extension'>Chrome Extension</a> section."
                 ]
             }
         ]
