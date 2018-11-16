@@ -211,9 +211,11 @@
 		},
 		error: function(e) {
 			// $('#status').html('Sorry, there has been an error.');
+			console.log(e);
 			$('#status').html(e.responseText);
 			$('#description').hide();
 			$('.loader').hide();
+			$('#wait-time').hide();
 			$('#new-notebook').removeClass('hidden');
 		}
 	})
