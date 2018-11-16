@@ -268,8 +268,8 @@ $('#continue-button').click(function(evt) {
 		metadata = serializeTable($table);
 
 	// Remove tooltip
-	metadata[0][0] = metadata[0][0].split('<sup>')[0];
-	metadata[0][1] = metadata[0][1].split('<sup>')[0];
+	metadata[0][0] = metadata[0][0].split('<sup')[0];
+	metadata[0][1] = metadata[0][1].split('<sup')[0];
 
 	// Convert to object
 	var missing_samples = [];
