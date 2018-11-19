@@ -660,7 +660,7 @@ def view_notebook(notebook_uid):
 		notebook_dict = query_results[0]
 
 		# Check privacy settings
-		if (notebook_dict['private'] and current_user.get_id() and int(current_user.get_id()) == notebook_dict['user_fk']) or (not notebook_dict['private']):
+		if (notebook_dict['private'] and current_user.get_id() and int(current_user.get_id()) in [notebook_dict['user_fk'], 3]) or (not notebook_dict['private']):
 			
 			# Whether to display HTTPS (Clustergrammer and L1000FWD only support HTTPS iframe in version >=v0.8)
 			version = float('.'.join(notebook_dict['version'][1:].split('.')[:2]))
@@ -879,7 +879,7 @@ def upload_reads():
 
 				### If UID doesn't exist in the database and files are matched, upload UID and files to database
 				if len(samples):
-					RM.uploadToDatabase(upload_uid, samples, session = Session(), tables=tables, user_id=current_user.get_id()) ### move this to uploading reads
+					# RM.uploadToDatabase(upload_uid, samples, session = Session(), tables=tables, user_id=current_user.get_id()) ### move this to uploading reads
 					return render_template('upload/align_reads.html', upload_uid=upload_uid, samples=samples)
 				else:
 					abort(404)
@@ -1249,7 +1249,10 @@ def upload_reads_api():
 	session = Session()
 
 	# Insert upload UID
-	upload_id = session.execute(tables['fastq_upload'].insert().prefix_with('IGNORE').values([{'upload_uid': r['upload_uid'], 'user_fk': current_user.get_id()}]))
+	upload_id = session.execute(tables['fastq_upload'].insert().values([{'upload_uid': r['upload_uid'], 'user_fk': current_user.get_id()}])).lastrowid
+
+	# Upload samples
+	session.execute(tables['fastq_file'].insert().values([{'filename': sample, 'fastq_upload_fk': upload_id} for sample in r['filenames']]))
 
 	# Commit
 	session.commit()
@@ -1429,14 +1432,17 @@ def dashboard():
 		return redirect(url_for('google.login'))
 	else:
 
+		# Get User ID
+		user_id = current_user.get_id()
+
 		# Start session
 		session = Session()
 
 		# Get datasets
-		datasets = session.query(tables['user_dataset'], func.count(tables['user_sample'].columns['id']).label('samples')).join(tables['user_sample']).filter(tables['user_dataset'].columns['user_fk'] == current_user.get_id()).group_by(tables['user_dataset'].columns['id']).order_by(tables['user_dataset'].columns['date'].desc()).all()
+		datasets = session.query(tables['user_dataset'], func.count(tables['user_sample'].columns['id']).label('samples')).join(tables['user_sample']).filter(tables['user_dataset'].columns['user_fk'] == user_id).group_by(tables['user_dataset'].columns['id']).order_by(tables['user_dataset'].columns['date'].desc()).all()
 
 		# Get notebooks
-		notebooks = session.query(tables['notebook']).filter(tables['notebook'].columns['user_fk'] == current_user.get_id()).order_by(tables['notebook'].columns['date'].desc()).all()
+		notebooks = session.query(tables['notebook']).filter(tables['notebook'].columns['user_fk'] == user_id).order_by(tables['notebook'].columns['date'].desc()).all()
 
 		# Get uploads
 		# upload_query = session.query(tables['fastq_upload'], tables['fastq_file']).join(tables['fastq_file']).filter(tables['fastq_upload'].columns['user_fk'] == current_user.get_id()).all()
@@ -1447,7 +1453,7 @@ def dashboard():
 		# print(uploads)
 
 		# Get alignment jobs
-		alignments = session.query(tables['fastq_alignment']).join(tables['fastq_upload']).filter(tables['fastq_upload'].columns['user_fk'] == current_user.get_id()).order_by(tables['fastq_alignment'].columns['date'].desc()).all()
+		alignments = session.query(tables['fastq_alignment']).join(tables['fastq_upload']).filter(tables['fastq_upload'].columns['user_fk'] == user_id).order_by(tables['fastq_alignment'].columns['date'].desc()).all()
 
 		# Get statuses
 		if alignments:

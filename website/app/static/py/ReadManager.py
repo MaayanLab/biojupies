@@ -74,31 +74,21 @@ def mergeCounts(alignment_uid):
 ########## 1. Upload UID
 #############################################
 
-def uploadToDatabase(upload_uid, samples, session, tables, user_id=None):
+# def uploadToDatabase(upload_uid, samples, session, tables, user_id=None):
 
-	# Fetch ID
-	query = session.query(tables['fastq_upload'].columns['id']).filter(tables['fastq_upload'].columns['upload_uid'] == upload_uid).all()
+# 	# Fetch ID
+# 	query = session.query(tables['fastq_upload'].columns['id']).filter(tables['fastq_upload'].columns['upload_uid'] == upload_uid).all()
 		
-	# Try
-	try:
+# 		# If query is empty
+# 	if len(query):
 
-		# If query is empty
-		if len(query) == 0:
+# 		# Upload samples
+# 		session.execute(tables['fastq_file'].insert().prefix_with('IGNORE').values([{'filename': sample[12:], 'fastq_upload_fk': query[0][0]} for sample in samples]))
 
-			# Upload and get ID
-			upload_id = session.execute(tables['fastq_upload'].insert().values([{'upload_uid': upload_uid, 'user_fk': user_id}])).lastrowid
-			
-			# Upload samples
-			session.execute(tables['fastq_file'].insert().values([{'filename': sample[12:], 'fastq_upload_fk': upload_id} for sample in samples]))
+# 		# Close session
+# 		session.commit()
 
-		# Close session
-		session.commit()
-
-	except:
-
-		session.rollback()
-
-	session.close()
+# 	session.close()
 
 
 #############################################

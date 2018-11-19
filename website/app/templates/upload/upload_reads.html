@@ -67,6 +67,9 @@
 
 <script type="text/javascript">
 
+	// File names
+	var filenames = [];
+
 	function progress_bar(filename) {
 		$('#upload-wrapper').hide();
 		$('#status').append(
@@ -149,6 +152,7 @@
 						}
 						console.log("end")
 
+						filenames.push(filename);
 						// Call FASTQ Upload Status API
 					}
 					xhr.upload.addEventListener('progress', function (evt) {
@@ -174,19 +178,19 @@
 		$.ajax({
 			url: "{{ url_for('upload_reads_api') }}",
 			method: "POST",
-			data: JSON.stringify({ "upload_uid": "{{ upload_uid }}" }),
+			data: JSON.stringify({ "upload_uid": "{{ upload_uid }}", "filenames": filenames }),
 			contentType: "application/json; charset=utf-8",
 			dataType: 'json',
 			success: function (res) {
 				console.log(res);
+				// Redirect
+				window.location.href = '{{ url_for("upload_reads", upload=upload_uid) }}';
 			},
 			error: function (err) {
-				console.log(err);
+				alert('Sorry, there has been an error uploading your data. Please try again soon.')
 			}
 		})
 
-		// Redirect
-		window.location.href = '{{ url_for("upload_reads", upload=upload_uid) }}';
 	}
 
 </script>
