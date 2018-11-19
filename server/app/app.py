@@ -245,25 +245,31 @@ def samples():
 			.join(tables['platform_v6']) \
 			.filter(tables['dataset_v6'].columns['dataset_accession'].in_(gse_list)).all()
 		session.close()
-		sample_dataframe = pd.DataFrame(db_query).set_index('gse')
+		if not len(db_query):
+			result = {}
+		else:
+			sample_dataframe = pd.DataFrame(db_query).set_index('gse')
 
-		# Initialize result dict
-		result = {gse:{} for gse in gse_list}
+			# Initialize result dict
+			result = {gse:{} for gse in gse_list}
 
-		# Loop through series
-		for gse in sample_dataframe.index.unique():
+			# Loop through series
+			for gse in sample_dataframe.index.unique():
 
-			# Check if series has over 3 samples
-			if len(sample_dataframe.loc[gse].index) > 3:
-				platforms = sample_dataframe.loc[gse]['gpl'].unique()
+				# Check if series has over 3 samples
+				if len(sample_dataframe.loc[gse].index) > 3:
+					platforms = sample_dataframe.loc[gse]['gpl'].unique()
 
-				# Add platforms
-				for platform in platforms:
-					if len(sample_dataframe.loc[gse].set_index('gpl').loc[platform].index) > 3:
-						result[gse][platform] = sample_dataframe.loc[gse].set_index('gpl').loc[platform].sort_values('sample_title').to_dict(orient='records')
+					# Add platforms
+					for platform in platforms:
+						if len(sample_dataframe.loc[gse].set_index('gpl').loc[platform].index) > 3:
+							result[gse][platform] = sample_dataframe.loc[gse].set_index('gpl').loc[platform].sort_values('sample_title').to_dict(orient='records')
+	else:
+		# Result
+		result = {}
 
-		# Return
-		return json.dumps(result)
+	# Return
+	return json.dumps(result)
 
 #############################################
 ########## 3. Tools API
