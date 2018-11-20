@@ -172,4 +172,4 @@ def log_error(notebook_configuration, error, annotations, engine, app, mail):
                     body='https://amp.pharm.mssm.edu/biojupies/error/{error_id}'.format(**locals()))
 		mail.send(msg)
 
-	return error_response
+	return error_id, error_response

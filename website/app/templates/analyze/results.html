@@ -212,7 +212,13 @@
 		error: function(e) {
 			// $('#status').html('Sorry, there has been an error.');
 			console.log(e);
-			$('#status').html(e.responseText);
+			$('#status').html(e.responseJSON['error_response']);
+			$('#status').append($('<div>', {'class': 'mt-5 small px-6 mx-xl-5 regular'}).html('If you wish to receive more information on resolving the issue, please insert your name and e-mail below. We will get back to you shortly.'))
+				.append($('<form>', {'class': 'mx-5 px-5'})
+					.append($('<input>', {'type': 'text', 'class': 'form-control my-3', 'placeholder': 'Insert name...'}))
+					.append($('<input>', {'type': 'email', 'class': 'form-control', 'placeholder': 'Insert e-mail...'}))
+					.append($('<button>', {'type': 'submit', 'class': 'btn btn-primary mt-3 text-left'}).html('Submit'))
+				)
 			$('#description').hide();
 			$('.loader').hide();
 			$('#wait-time').hide();

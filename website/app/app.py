@@ -35,6 +35,7 @@ import sys, os, json, requests, re, math, itertools, glob, urllib
 import pandas as pd
 import numpy as np
 from io import StringIO
+from datetime import datetime
 
 # Database
 from sqlalchemy.orm import sessionmaker
@@ -1572,7 +1573,7 @@ def page_not_found(e):
 @app.errorhandler(500)
 def internal_server_error(e):
 	
-	return render_template('errors/500.html'), 500
+	return render_template('errors/500.html', now=datetime.utcnow()), 500
 
 #############################################
 ########## 3. Notebook Generation Error
@@ -1596,7 +1597,7 @@ def notebook_generation_error(error_id):
 
 @app.route('/err')
 def err():
-	return asd
+	return render_template('errors/500.html', now=datetime.utcnow())
 
 #######################################################
 #######################################################

@@ -17,7 +17,7 @@
 ########## 1. Load libraries
 #############################################
 ##### 1. Flask modules #####
-from flask import Flask, request, render_template, Response, redirect, url_for
+from flask import Flask, request, render_template, Response, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_mail import Mail
@@ -132,7 +132,7 @@ def generate():
 		### Production
 		else:
 			# Get Configuration
-			notebook_configuration = request.json
+			notebook_configuration = request.json.copy()
 
 			# Get user ID
 			user_id = notebook_configuration.pop('user_id', None)
@@ -178,9 +178,15 @@ def generate():
 			ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
 
 			# Get response
-			error_response = NM.log_error(notebook_configuration, ansi_escape.sub('', str(e)), annotations, engine, app, mail)
-
-			return error_response
+			error_id, error_response = NM.log_error(notebook_configuration, ansi_escape.sub('', str(e)), annotations, engine, app, mail)
+			
+			# Return
+			if notebook_configuration.get('user_id'):
+				result = jsonify({'error_id': error_id, 'error_response': error_response})
+				result.status_code = 500
+				return result
+			else:
+				return error_response
 
 #############################################
 ########## 3. Download
