@@ -45,6 +45,9 @@
             </div>
             <div id="preview" class="d-none">
             </div>
+            <div id="qc" class="d-none">
+
+            </div>
         </div>
     </div>
 
@@ -79,6 +82,9 @@ var addTable = function(dataset) {
 
             // Add QC
             $('[name="qc"]').val(JSON.stringify(response['qc']));
+
+            // Add stuff
+            $('#qc').html(JSON.stringify(response['qc']));
 
         }
     })

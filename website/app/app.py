@@ -1248,14 +1248,17 @@ def upload_reads_api():
 	# Open database session
 	session = Session()
 
-	# Insert upload UID
-	upload_id = session.execute(tables['fastq_upload'].insert().values([{'upload_uid': r['upload_uid'], 'user_fk': current_user.get_id()}])).lastrowid
+	try:
+		# Insert upload UID
+		upload_id = session.execute(tables['fastq_upload'].insert().values([{'upload_uid': r['upload_uid'], 'user_fk': current_user.get_id()}])).lastrowid
 
-	# Upload samples
-	session.execute(tables['fastq_file'].insert().values([{'filename': sample, 'fastq_upload_fk': upload_id} for sample in r['filenames']]))
+		# Upload samples
+		session.execute(tables['fastq_file'].insert().values([{'filename': sample, 'fastq_upload_fk': upload_id} for sample in r['filenames']]))
 
-	# Commit
-	session.commit()
+		# Commit
+		session.commit()
+	except:
+		pass
 
 	# Close session
 	session.close()
