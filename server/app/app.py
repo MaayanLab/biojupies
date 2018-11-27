@@ -20,7 +20,7 @@
 from flask import Flask, request, render_template, Response, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from flask_mail import Mail
+from flask_mail import Mail, Message
 
 ##### 2. Python modules #####
 # General
@@ -181,7 +181,7 @@ def generate():
 			error_id, error_response = NM.log_error(notebook_configuration, ansi_escape.sub('', str(e)), annotations, engine, app, mail)
 			
 			# Return
-			if notebook_configuration.get('user_id'):
+			if 'user_id' in notebook_configuration.keys():
 				result = jsonify({'error_id': error_id, 'error_response': error_response})
 				result.status_code = 500
 				return result
@@ -214,6 +214,49 @@ def download():
 	results_str = results.to_csv(sep='\t')
 
 	return Response(results_str, mimetype="txt", headers={"Content-disposition": "attachment; filename={}.txt".format(outfile)})
+
+#############################################
+########## 4. Help
+#############################################
+
+@app.route(entry_point+'/api/help', methods=['POST'])
+def help_api():
+
+	# Get request
+	request_dict = request.form.to_dict()
+
+	# Start session
+	session = Session()
+
+	try:
+		# Upload
+		request_id = session.execute(tables['help_request'].insert(request_dict)).lastrowid
+
+		# Commit
+		session.commit()
+
+		# Send message
+		msg = Message(subject='Help Request #{}'.format(request_id),
+			sender=os.environ['MAIL_USERNAME'],
+			recipients=[os.environ['MAIL_RECIPIENT']],
+			body='Name: {name}\nEmail: {email}\nError: https://amp.pharm.mssm.edu/biojupies/error/{error_fk}'.format(**request_dict))
+		mail.send(msg)
+
+		# Result
+		success = True
+
+	except:
+
+		# Rollback
+		session.rollback()
+
+		# Result
+		success = False
+
+	# Close session
+	session.close()
+
+	return json.dumps({'success': success})
 
 #######################################################
 #######################################################

@@ -31,6 +31,26 @@
 
 			<!-- Status and Loader -->
 			<div id="status" class="mt-5 medium">Generating your Jupyter Notebook...</div>
+			<div id="help" class="mt-5 very-small text-center px-6 mx-xl-5 regular d-none">
+				<div class="mt-5 mb-3 px-lg-5 mx-lg-5">
+					If you wish to receive more information on the issue, including suggestions on resolving it, please insert your name and e-mail below.
+				</div>
+				<form id="help-form" class='mx-lg-5 px-lg-5'>
+					<div class="form-row">
+						<input type="hidden" name="help_type" value="notebook_generation_error">
+						<input type="hidden" name="error_fk" required>
+						<div class="col-lg-5">
+							<input type='text' name="name" class='form-control' placeholder="Insert name..." required>
+						</div>
+						<div class="col-lg-5 py-3 py-lg-0">
+							<input type='email' name="email" class='form-control' placeholder="Insert email..." required>
+						</div>
+						<div class="col-lg-1">
+							<button type='submit' class='btn btn-primary'>Submit</button>
+						</div>
+					</div>
+				</form>
+			</div>
 			<div id="description" class="mt-4 very-small light">A link will be displayed below when the notebook is ready.</div>
 			<div class="loader">Loading...</div>
 
@@ -213,16 +233,30 @@
 			// $('#status').html('Sorry, there has been an error.');
 			console.log(e);
 			$('#status').html(e.responseJSON['error_response']);
-			$('#status').append($('<div>', {'class': 'mt-5 small px-6 mx-xl-5 regular'}).html('If you wish to receive more information on resolving the issue, please insert your name and e-mail below. We will get back to you shortly.'))
-				.append($('<form>', {'class': 'mx-5 px-5'})
-					.append($('<input>', {'type': 'text', 'class': 'form-control my-3', 'placeholder': 'Insert name...'}))
-					.append($('<input>', {'type': 'email', 'class': 'form-control', 'placeholder': 'Insert e-mail...'}))
-					.append($('<button>', {'type': 'submit', 'class': 'btn btn-primary mt-3 text-left'}).html('Submit'))
-				)
+			$('#help').removeClass('d-none');
 			$('#description').hide();
 			$('.loader').hide();
 			$('#wait-time').hide();
 			$('#new-notebook').removeClass('hidden');
+
+			// Help submission
+			$('#help-form').on('submit', function (evt) {
+
+				// Prevent default
+				evt.preventDefault();
+				$('#help-form [name="error_fk"]').val(e.responseJSON['error_id']);
+
+				// Ajax call
+				$.ajax({
+					url: "https://amp.pharm.mssm.edu/notebook-generator-server{{ '-dev' if dev else '' }}/api/help",
+					method: "POST",
+					data: $('#help-form').serialize(),
+					dataType: 'json',
+					success: function (response) {
+						$('#help').html('Thank you for the submission.')
+					}
+				})
+			})
 		}
 	})
 
@@ -236,6 +270,8 @@
 			$('#time-s').html('');
 		}
 	}, 60000);
+
+
 
 </script>
 
