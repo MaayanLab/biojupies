@@ -145,7 +145,7 @@ def log_error(notebook_configuration, error, annotations, engine, app, mail):
 		response = ' running {}.<br><br>Please try again by removing the selected tool.'.format(tool_name)
 		if tool_name == 'PCA':
 			response.replace('<br><br>', '<br><br>This is often caused by one or more samples having too many null values, or when the uploaded dataset is not quantified as raw gene counts.<br><br>')
-		elif 'L1000CDS2' in tool_name:
+		elif 'L1000' in tool_name:
 			response.replace('<br><br>', '<br><br>This is likely due to the fact that the tool was unable to identify gene symbols in the dataset.<br><br>')
 		error_response += response
 	else:
