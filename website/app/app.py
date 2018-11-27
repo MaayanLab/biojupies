@@ -876,7 +876,7 @@ def upload_reads():
 				# Get samples
 				req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
 				uploaded_files = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['filenames']
-				samples = [x for x in uploaded_files if x.startswith(upload_uid) and x.endswith('.fastq.gz')]
+				samples = [x for x in uploaded_files if x.startswith(upload_uid) and (x.endswith('.fastq.gz') or x.endswith('.fq.gz'))]
 
 				### If UID doesn't exist in the database and files are matched, upload UID and files to database
 				if len(samples):
@@ -1070,7 +1070,7 @@ def launch_alignment_api():
 	alignment_settings = request.form.to_dict()
 	# Get sample files
 	if alignment_settings['sequencing-type'] == 'single-end':
-		samples = [{'outname': value[:-len('.fastq.gz')], 'file1': value, 'file2': None} for key, value in alignment_settings.items() if key.startswith('file')]
+		samples = [{'outname': value.rsplit('.', 2)[0], 'file1': value, 'file2': None} for key, value in alignment_settings.items() if key.startswith('file')]
 	elif alignment_settings['sequencing-type'] == 'paired-end':
 		sample_dataframe = pd.Series({key: value for key, value in alignment_settings.items() if key.startswith('sample')}).rename('values').to_frame()
 		sample_dataframe['sample'] = [x.split('-')[0] for x in sample_dataframe.index]
