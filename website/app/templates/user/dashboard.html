@@ -145,6 +145,7 @@
                         <th>Samples</th>
                         <th>Private</th>
                         <th>Analyze</th>
+                        <th>Download</th>
                     </thead>
                     <tbody>
                         {% for dataset in datasets %}
@@ -159,6 +160,38 @@
                             <td>{{ dataset['samples'] }}</td>
                             <td><input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ dataset['dataset_uid'] }}" data-object_type="user_dataset" data-action="change_privacy" {% if dataset['private'] %}checked{% endif %}></td>
                             <td><a href="{{ url_for('add_tools', uid=dataset['dataset_uid']) }}" target="_blank"><i class="fa fa-external-link-alt black"></i></a></td>
+                            <td>
+                                <div class="dropdown">
+                                    <i class="fa fa-download black cursor-pointer" id="{{ dataset['dataset_uid'] }}-dropdown" data-toggle="dropdown"></i>
+                                    <div class="dropdown-menu" aria-labelledby="{{ dataset['dataset_uid'] }}-dropdown">
+                                        <form action="https://amp.pharm.mssm.edu/notebook-generator-server{{ '-dev' if dev else '' }}/download_data" method="post">
+                                            <input type="hidden" name="uid" value="{{ dataset['dataset_uid'] }}">
+                                            <input type="hidden" name="source" value="upload">
+
+                                            <a class="dropdown-item bg-white">
+                                                What do you wish to download?
+                                                <select name="content" class="form-control mt-2">
+                                                    <option value="expression">Expression Data</option>
+                                                    <option value="metadata">Sample Information</option>
+                                                </select>
+                                            </a>
+
+                                            <a class="dropdown-item pt-2 normalization_method bg-white">
+                                                What normalization do you wish to use?
+                                                <select name="normalization_method" class="form-control mt-2">
+                                                    <option value="rawdata">None (Raw Read Counts)</option>
+                                                    <option value="logCPM">logCPM</option>
+                                                    <option value="quantile">Quantile Normalization</option>
+                                                </select>
+                                            </a>
+                                            
+                                            <a class="dropdown-item pt-2 bg-white">
+                                                <button type="submit" class="btn btn-primary">Download</button>
+                                            </a>
+                                        </form>
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
                         {% endfor %}
 
@@ -302,7 +335,10 @@
             $('#'+$(this).attr('data-tab')+'-tab').click();
         })
 
-
+        // Dropdown event listener
+        $('[name="content"]').change(function(evt) {
+            $(this).parents('form').find('.normalization_method').toggleClass('d-none');
+        })
 
     })
 </script>

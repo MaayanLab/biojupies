@@ -39,9 +39,15 @@ import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 
 ##### 3. Custom modules #####
+# Notebook handling
 sys.path.append('app/static/py')
 import NotebookGenerator as NG
 import NotebookManager as NM
+
+# Library
+sys.path.append('app/static/library/{LIBRARY_VERSION}/core_scripts'.format(**os.environ) if os.environ.get('LIBRARY_VERSION') else 'app/static/library/core_scripts')
+import load.load as load
+import normalize.normalize as normalize
 
 #############################################
 ########## 2. App Setup
@@ -216,7 +222,59 @@ def download():
 	return Response(results_str, mimetype="txt", headers={"Content-disposition": "attachment; filename={}.txt".format(outfile)})
 
 #############################################
-########## 4. Help
+########## 4. Download
+#############################################
+
+@app.route(entry_point+'/download_data', methods=['GET', 'POST'])
+def download_data():
+
+	# Get request data
+	request_data = request.form
+	# request_data = {'uid': 'ETqy3GL2Vce', 'content': 'expression', 'normalization_method': 'logCPM', 'source': 'upload'}
+
+	# User data
+	if request_data['source'] == 'upload':
+		params = ['uid']
+		
+		# Get dataset data
+		session = Session()
+		dataset_title = session.query(tables['user_dataset']).filter(tables['user_dataset'].columns['dataset_uid'] == request_data['uid']).all()[0]._asdict()['dataset_title']
+		session.close()
+
+	# GEO Data
+	elif request_data['source'] == 'archs4':
+		params = ['gse', 'platform']
+		dataset_title = request_data['gse']
+
+	# Load dataset
+	dataset = getattr(load, request_data['source'])(**{key: value for key, value in request_data.items() if key in params})
+
+	# Expression
+	if request_data['content'] == 'expression':
+
+		# Normalize
+		normalization_method = request_data['normalization_method']
+		if normalization_method not in dataset.keys():
+			dataset[normalization_method] = getattr(normalize, normalization_method)(dataset)
+
+		# Results
+		results = dataset[normalization_method]
+
+	# Metadata
+	elif request_data['content'] == 'metadata':
+		results = dataset['sample_metadata']
+
+	# File label
+	file_label = 'metadata' if request_data['content'] == 'metadata' else normalization_method
+
+	# Convert to string
+	results_str = results.to_csv(sep='\t')
+
+	# Return
+	return Response(results_str, mimetype="txt", headers={"Content-disposition": "attachment; filename={dataset_title}-{file_label}.txt".format(**locals())})
+
+#############################################
+########## 5. Help
 #############################################
 
 @app.route(entry_point+'/api/help', methods=['POST'])
