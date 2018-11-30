@@ -1,0 +1,5 @@
+write("r <- getOption('repos'); r['CRAN'] <- 'http://cran.us.r-project.org'; options(repos = r);", "~/.Rprofile")
+source("https://bioconductor.org/biocLite.R")
+biocLite("limma")
+biocLite("edgeR")
+biocLite("preprocessCore")
