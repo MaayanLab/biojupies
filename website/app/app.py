@@ -1136,7 +1136,7 @@ def merge_counts_api():
 		sample_name = sample[(len(alignment_uid)+1)*2:-len('-hs_gene.tsv')]
 
 		# Get counts from S3
-		req =  urllib.request.Request('https://s3.amazonaws.com/biodos/c095573dc866f2db2cd39862ad89f074/'+sample)
+		req =  urllib.request.Request('https://s3.amazonaws.com/biodos/c095573dc866f2db2cd39862ad89f074/'+sample.replace(' ', '%20'))
 
 		# Build dataframe
 		counts = pd.read_table(StringIO(urllib.request.urlopen(req).read().decode('utf-8')), header=None, names=['gene_symbol', 'counts'])
@@ -1162,7 +1162,7 @@ def merge_counts_api():
 		sample_name = qc_info[(len(alignment_uid)+1)*2:-len('-hs_qc.tsv')]
 
 		# Get counts from S3
-		req =  urllib.request.Request('https://s3.amazonaws.com/biodos/c095573dc866f2db2cd39862ad89f074/'+qc_info)
+		req =  urllib.request.Request('https://s3.amazonaws.com/biodos/c095573dc866f2db2cd39862ad89f074/'+qc_info.replace(' ', '%20'))
 
 		# Build dataframe
 		qc = urllib.request.urlopen(req).read().decode('utf-8')
@@ -1477,7 +1477,7 @@ def dashboard():
 		# Close session
 		session.close()
 
-		return render_template('user/dashboard.html', datasets=datasets, notebooks=notebooks, alignments=alignments)
+		return render_template('user/dashboard.html', datasets=datasets, notebooks=notebooks, alignments=alignments, dev=dev)
 
 #############################################
 ########## 2. Private API
