@@ -141,7 +141,7 @@ def generate():
 			notebook_configuration = request.json.copy()
 
 			# Get user ID
-			user_id = notebook_configuration.pop('user_id', None)
+			user_id = notebook_configuration.get('user_id', None)
 			# notebook_configuration = {"notebook": {"title": "GSE88741 Analysis Notebook | BioJupies", "live": "False", "version": "v0.9.3"}, "tools": [{"tool_string": "pca", "parameters": {"nr_genes": "2500", "normalization": "logCPM", "z_score": "True", "plot_type": "interactive"}}, {"tool_string": "clustergrammer", "parameters": {"nr_genes": "2500", "normalization": "logCPM", "z_score": "True"}}, {"tool_string": "library_size_analysis", "parameters": {"plot_type": "interactive"}}], "data": {"source": "archs4", "parameters": {"gse": "GSE88741", "platform": "GPL16791"}}, "signature": {}, "terms": []}
 
 			# Check if notebook exists
