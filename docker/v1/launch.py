@@ -10,13 +10,15 @@ import os, urllib.request, urllib.parse, json
 ########## 1. Download Notebook
 ##################################################
 
-def download_notebook(notebook_uid = os.environ.get('NOTEBOOK_UID')):
+def download_notebook():
 
-	# Read UID
+	# Check if UID is in the environment
+	notebook_uid = os.environ.get('NOTEBOOK_UID')
+
 	if not notebook_uid:
 
 		# Get notebook UID
-		notebook_uid = input("\nPlease provide the UID of the notebook you wish to download, then press enter. If you wish to launch the Jupyter server without downloading a notebook, leave this blank.\n")
+		notebook_uid = input("\nPlease provide the UID of the notebook you wish to download, then press enter. If you do not wish to download any notebook, you may leave this blank.\n")
 
 	# If exists
 	if notebook_uid:
@@ -32,13 +34,12 @@ def download_notebook(notebook_uid = os.environ.get('NOTEBOOK_UID')):
 		try:
 			notebook_url = urllib.parse.quote('https://storage.googleapis.com/jupyter-notebook-generator/{notebook_uid}/{notebook_title}.ipynb'.format(**notebook_data), safe=':/')
 		except:
-			raise ValueError('Sorry, the notebook could not be found.')
+			raise ValueError('Sorry, the selected notebook could not be found.')
 
 		# Get data
 		os.system('wget '+notebook_url)
 
 		# Jupyter Trust
-		print('jupyter trust {}.ipynb'.format(notebook_data['notebook_title'].replace(' ', '\ ')))
 
 
 ##################################################

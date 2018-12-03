@@ -12,6 +12,9 @@ import requests, json, os
 
 def download_libraries():
 
+	# Change directory
+	os.chdir('/library')
+
 	# Get latest release
 	r = requests.get('https://api.github.com/repos/MaayanLab/biojupies-plugins/releases')
 
@@ -19,7 +22,7 @@ def download_libraries():
 	releases = json.loads(r.text)
 
 	# Get releases
-	tags = [x['tag_name'] for x in releases]
+	tags = [x['tag_name'] for x in releases if 'v1' in x['tag_name']]
 
 	# Loop through tags
 	for tag in tags:
