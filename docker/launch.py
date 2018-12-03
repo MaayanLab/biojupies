@@ -17,10 +17,17 @@ def download_notebook(notebook_uid = os.environ.get('NOTEBOOK_UID')):
 
 		# Print status
 		print("""
-		""")
-		
+##############################
+#### BioJupies Notebooks #####
+##############################
+You are running the BioJupies notebooks Docker image.
+
+To access the Jupyter server, map container port 8888 using the -p flag (e.g. -p 8888:8888).
+To download notebooks on your file system, mount a local volume to the /notebooks container path using the -v flag (e.g. -v /Users/user/Desktop:/notebooks).
+For more information, please visit https://amp.pharm.mssm.edu/biojupies/docker.""")
+
 		# Get notebook UID
-		notebook_uid = input("\nPlease provide the UID of the notebook you wish to download, then press enter. If you wish to launch the Jupyter server without downloading a notebook, leave this blank.\n")
+		notebook_uid = input("\nTo continue, please provide the UID of the notebook you wish to download, then press enter. If you wish to view an example notebook, leave this blank.\n")
 
 	# If exists
 	if notebook_uid:
@@ -43,6 +50,16 @@ def download_notebook(notebook_uid = os.environ.get('NOTEBOOK_UID')):
 
 		# Jupyter Trust
 		print('jupyter trust {}.ipynb'.format(notebook_data['notebook_title'].replace(' ', '\ ')))
+	
+	# If no notebook selected
+	else:
+
+		# Check if notebook exists and/or directory is mounted
+		try:
+			if 'BioJupies Example Notebook | Normal vs Metastatic Melanoma.ipynb' not in os.listdir('/notebooks'):
+				os.system('cd /notebooks; wget https://github.com/MaayanLab/biojupies/raw/master/docker/jupyter_notebooks/BioJupies%20Example%20Notebook%20%7C%20Normal%20vs%20Metastatic%20Melanoma.ipynb')
+		except:
+			pass
 
 
 ##################################################
