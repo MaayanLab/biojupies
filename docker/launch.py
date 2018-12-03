@@ -15,6 +15,10 @@ def download_notebook(notebook_uid = os.environ.get('NOTEBOOK_UID')):
 	# Read UID
 	if not notebook_uid:
 
+		# Print status
+		print("""
+		""")
+		
 		# Get notebook UID
 		notebook_uid = input("\nPlease provide the UID of the notebook you wish to download, then press enter. If you wish to launch the Jupyter server without downloading a notebook, leave this blank.\n")
 
