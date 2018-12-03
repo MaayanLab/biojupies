@@ -2,16 +2,8 @@ FROM ubuntu:17.10
 
 MAINTAINER Denis Torre <denis.torre@mssm.com>
 
-RUN apt-get update && apt-get install -y python3 \
-    python3-pip \
-    python3-dev \
-    libmysqlclient-dev \
-    virtualenv \
-    r-base \
-    wget \
-    python3-setuptools \
-    nginx uwsgi-core \
-    uwsgi-plugin-python3
+COPY pkglist.txt .
+RUN apt-get update && apt-get install -y $(cat pkglist.txt)
 
 RUN mkdir /notebook-generator-server; virtualenv -p /usr/bin/python3 /notebook-generator-server/venv/;
 

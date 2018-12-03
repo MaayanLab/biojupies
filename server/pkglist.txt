@@ -1,0 +1,11 @@
+python3
+python3-pip
+python3-dev
+libmysqlclient-dev
+virtualenv
+r-base
+wget
+python3-setuptools
+nginx
+uwsgi-core
+uwsgi-plugin-python3
