@@ -8,6 +8,7 @@ RUN Rscript requirements.R
 
 COPY requirements.txt /
 RUN pip3 install -r requirements.txt
+RUN pip3 install multiprocess
 
 RUN mkdir /notebooks /library /download;
 COPY download_libraries.py /
@@ -15,4 +16,5 @@ RUN python3 download_libraries.py;
 COPY launch.py /
 COPY jupyter_notebooks /notebooks
 
-ENTRYPOINT python3 launch.py; jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root --no-browser --notebook-dir='/notebooks' --NotebookApp.iopub_data_rate_limit=10000000000 --NotebookApp.token=;
+WORKDIR /notebooks
+ENTRYPOINT python3 /launch.py; jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root --no-browser --notebook-dir='/notebooks' --NotebookApp.iopub_data_rate_limit=10000000000 --NotebookApp.token=;

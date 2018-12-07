@@ -57,7 +57,7 @@ For more information, please visit https://amp.pharm.mssm.edu/biojupies/docker."
 		# Check if notebook exists and/or directory is mounted
 		try:
 			if 'BioJupies Example Notebook | Normal vs Metastatic Melanoma.ipynb' not in os.listdir('/notebooks'):
-				os.system('cd /notebooks; wget https://github.com/MaayanLab/biojupies/raw/master/docker/jupyter_notebooks/BioJupies%20Example%20Notebook%20%7C%20Normal%20vs%20Metastatic%20Melanoma.ipynb')
+				os.system('wget https://github.com/MaayanLab/biojupies/raw/master/docker/jupyter_notebooks/BioJupies%20Example%20Notebook%20%7C%20Normal%20vs%20Metastatic%20Melanoma.ipynb')
 		except:
 			pass
 
