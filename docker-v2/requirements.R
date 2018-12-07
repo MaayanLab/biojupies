@@ -1,0 +1,6 @@
+write("r <- getOption('repos'); r['CRAN'] <- 'http://cran.us.r-project.org'; options(repos = r);", "~/.Rprofile")
+install.packages("BiocManager")
+BiocManager::install("limma", version = "3.8")
+BiocManager::install("edgeR", version = "3.8")
+BiocManager::install("edgeR", version = "3.8")
+BiocManager::install("preprocessCore", version = "3.8")
