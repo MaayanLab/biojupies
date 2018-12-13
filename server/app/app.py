@@ -89,7 +89,7 @@ mail = Mail(app)
 
 ##### 2. Variables #####
 # Latest library version
-latest_library_version = os.environ['LIBRARY_VERSION']
+latest_library_version = os.environ.get('LIBRARY_VERSION', 'v1.0.0')
 
 #######################################################
 #######################################################
@@ -184,15 +184,15 @@ def generate():
 			ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
 
 			# Get response
-			error_id, error_response = NM.log_error(notebook_configuration, ansi_escape.sub('', str(e)), annotations, engine, app, mail)
+			error_dict = NM.log_error(notebook_configuration, ansi_escape.sub('', str(e)), annotations, engine, app, mail)
 			
 			# Return
 			if 'user_id' in notebook_configuration.keys():
-				result = jsonify({'error_id': error_id, 'error_response': error_response})
+				result = jsonify(error_dict)
 				result.status_code = 500
 				return result
 			else:
-				return error_response
+				return '{error_title}<br><br>{error_subtitle}'.format(**error_dict)
 
 #############################################
 ########## 3. Download

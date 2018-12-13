@@ -131,26 +131,109 @@ def upload_notebook(notebook, notebook_configuration, time, engine, user_id=None
 
 def log_error(notebook_configuration, error, annotations, engine, app, mail):
 
-	# Get error type
-	error_response = '<span> Sorry, there has been an error'
+	# Generate new configuration
+	new_configuration = notebook_configuration.copy()
+	to_remove = []
+
+	# Dataset loading
 	if 'load_dataset' in error:
-		error_type = 'load_dataset'
-		error_response += ' loading the dataset.<br><br>Please try again with another one.'
+		error_message = {
+			'error_type': 'load_dataset',
+			'error_title': 'Sorry, there has been an error loading the dataset.',
+			'error_subtitle': 'Please try again with another one.',
+			'recommend': 'create-new',
+			'options': ['create-new']
+		}
+
+	# Signature generation
 	elif 'generate_signature' in error:
-		error_type = 'generate_signature'
-		error_response += ' generating the signature.<br><br>This is often caused by one or more samples having too many null values, or when the uploaded dataset is not quantified as raw gene counts.<br><br>Please try again with different groups, or remove the tools which require a signature.'
+
+		# New configuration
+		new_configuration['signature'] = {}
+		new_configuration['tools'] = [x for x in notebook_configuration['tools'] if annotations['tools'][x['tool_string']]['input'] == 'dataset']
+
+		# Error message
+		error_message = {
+			'error_type': 'generate_signature',
+			'error_title': 'Sorry, there has been an error running differential gene expression.',
+			'error_subtitle': 'This is often caused when one or more samples have too many null or negative values, or when the uploaded dataset is not quantified as raw gene counts.',
+			'error_label': 'differential gene expression',
+			'new_configuration': new_configuration,
+			'recommend': 'retry-without',
+			'options': ['create-new', 'retry', 'retry-without']
+		}
+
+	# Plotly 
+	elif 'PlotlyRequestError' in error:
+
+		# Replace static with interactive in new configuration
+		for tool_dict in new_configuration['tools']:
+			if 'plot_type' in tool_dict.keys():
+				tool_dict['plot_type'] == 'interactive'
+
+		# Error message
+		error_message = {
+			'error_type': 'plotly_static',
+			'error_title': 'Sorry, there has been an error generating the static plots.',
+			'error_subtitle': 'This is usually caused when the static image generation server is experiencing heavy traffic, and is often resolved by trying again after a short time.',
+			'error_label': 'static plots',
+			'new_configuration': new_configuration,
+			'recommend': 'retry-without',
+			'options': ['create-new', 'retry', 'retry-without']
+		}
+
+	# Tool
 	elif 'run' in error:
-		tool_name = annotations['tools'][error.split("tool='")[-1].split("'")[0]]['tool_name']
-		error_type = tool_name
-		response = ' running {}.<br><br>Please try again by removing the selected tool.'.format(tool_name)
-		if tool_name == 'PCA':
-			response.replace('<br><br>', '<br><br>This is often caused by one or more samples having too many null values, or when the uploaded dataset is not quantified as raw gene counts.<br><br>')
-		elif 'L1000' in tool_name:
-			response.replace('<br><br>', '<br><br>This is likely due to the fact that the tool was unable to identify gene symbols in the dataset.<br><br>')
-		error_response += response
+
+		# Get tool metadata
+		tool_string = error.split("tool='")[-1].split("'")[0]
+		tool_name = annotations['tools'][tool_string]['tool_name']
+
+		# Error subtitle
+		if tool_string == 'pca':
+			subtitle = 'This is often caused when one or more samples have too many null or negative values, or when the uploaded dataset is not quantified as raw gene counts.'
+			recommend = 'retry-without'
+			to_remove.append(tool_string)
+		elif tool_string == 'clustergrammer':
+			subtitle = 'This usually takes place when the Clustergrammer server are experiencing heavy traffic, and is often resolved by trying again after a short time.'
+			recommend = 'retry'
+			to_remove.append(tool_string)
+		elif 'enrich' in tool_string:
+			tool_name = 'enrichment analysis'
+			subtitle = 'This usually takes place when the Enrichr server are experiencing heavy traffic, and is often resolved by trying again after a short time.'
+			recommend = 'retry'
+			to_remove = [tool_string for tool_string in annotations['tools'].keys() if 'enrich' in tool_string]
+		else:
+			subtitle = None
+			to_remove.append(tool_string)
+			recommend = 'retry-without'
+		
+		# Remove tool from configuration
+		new_configuration['tools'] = [x for x in new_configuration['tools'] if x['tool_string'] not in to_remove]
+		# if not new_configuration['tools']:
+			# new_configuration['tools'] = []
+
+		# Error message
+		error_message = {
+			'error_type': 'analysis_tool',
+			'error_title': 'Sorry, there has been an error running {}.'.format(tool_name),
+			'error_subtitle': subtitle,
+			'error_label': tool_name,
+			'tool_string': tool_string,
+			'tool_name': tool_name,
+			'recommend': recommend,
+			'new_configuration': new_configuration,
+			'options': ['create-new', 'retry', 'retry-without']
+		}
 	else:
-		error_type = 'unspecified'
-		# error_response = error_response.replace('error', 'unspecified error.')
+		error_message = {
+			'error_type': 'unspecified',
+			'error_title': 'Sorry, there has been an generating the notebook.',
+			'error_subtitle': None,
+			'error_label': None,
+			'recommend': 'create-new',
+			'options': ['create-new', 'retry']
+		}
 
 	# Prepare session
 	Session = sessionmaker(bind=engine)
@@ -160,7 +243,7 @@ def log_error(notebook_configuration, error, annotations, engine, app, mail):
 
 	# Upload
 	session = Session()
-	error_id = session.execute(tables['error_log'].insert({'notebook_configuration': json.dumps(notebook_configuration), 'error': error, 'version': notebook_configuration['notebook']['version'], 'error_type': error_type, 'gse': notebook_configuration['data']['parameters'].get('gse')})).lastrowid
+	error_id = session.execute(tables['error_log'].insert({'notebook_configuration': json.dumps(notebook_configuration), 'error': error, 'version': notebook_configuration['notebook']['version'], 'error_type': error_message['error_type'], 'gse': notebook_configuration['data']['parameters'].get('gse')})).lastrowid
 	session.commit()
 	session.close()
 
@@ -169,7 +252,7 @@ def log_error(notebook_configuration, error, annotations, engine, app, mail):
 		msg = Message(subject='Notebook Generation Error #{}'.format(error_id),
 						sender=os.environ['MAIL_USERNAME'],
 						recipients=[os.environ['MAIL_RECIPIENT']],
-                    body='https://amp.pharm.mssm.edu/biojupies/error/{error_id}'.format(**locals()))
+                    body='https://amp.pharm.mssm.edu/biojupies/error/{error_id}\n\n{error}\n\n{notebook_configuration}'.format(**locals()))
 		mail.send(msg)
 
-	return error_id, error_response
+	return error_message

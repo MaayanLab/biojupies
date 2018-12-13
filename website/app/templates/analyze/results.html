@@ -30,33 +30,64 @@
 		<div class="col-12 text-center pb-5" style="overflow: hidden;">
 
 			<!-- Status and Loader -->
-			<div id="status" class="mt-5 medium">Generating your Jupyter Notebook...</div>
-			<div id="help" class="mt-5 very-small text-center px-6 mx-xl-5 regular d-none">
-				<div class="mt-5 mb-3 px-lg-5 mx-lg-5">
-					If you wish to receive more information on the issue, including suggestions on resolving it, please insert your name and e-mail below.
+			<div class="notebook-status">
+				<div id="status" class="mt-5 medium">Generating your Jupyter Notebook...</div>
+				<div id="description" class="mt-4 very-small light">A link will be displayed below when the notebook is ready.</div>
+				<div class="loader">Loading...</div>
+				<div id="wait-time">
+					Your notebook should be ready in less than <span id="time">{{ expected_time }}</span> minute<span id="time-s">{{'s' if expected_time > 1 else ''}}</span>.
 				</div>
-				<form id="help-form" class='mx-lg-5 px-lg-5'>
-					<div class="form-row">
-						<input type="hidden" name="help_type" value="notebook_generation_error">
-						<input type="hidden" name="error_fk" required>
-						<div class="col-lg-5">
-							<input type='text' name="name" class='form-control' placeholder="Insert name..." required>
-						</div>
-						<div class="col-lg-5 py-3 py-lg-0">
-							<input type='email' name="email" class='form-control' placeholder="Insert email..." required>
-						</div>
-						<div class="col-lg-1">
-							<button type='submit' class='btn btn-primary'>Submit</button>
-						</div>
-					</div>
-				</form>
 			</div>
-			<div id="description" class="mt-4 very-small light">A link will be displayed below when the notebook is ready.</div>
-			<div class="loader">Loading...</div>
 
-			<!-- Wait time -->
-			<div id="wait-time">
-				Your notebook should be ready in less than <span id="time">{{ expected_time }}</span> minute<span id="time-s">{{'s' if expected_time > 1 else ''}}</span>.
+			<!-- Error -->
+			<div class="mt-5 very-small text-center px-6 mx-xl-5 notebook-status regular d-none">
+				
+				<!-- Error Text -->
+				<div class="error_title medium mb-4"></div>
+				<div class="error_subtitle small light mb-4 pb-2"></div>
+				<hr width="50%" class="my-4">
+
+				<!-- Options -->
+				<div class="small light pt-2 mb-3">To continue, please select one of the options below:</div>
+				<div class="text-center">
+					<form id="retry" class="mb-3 d-none">
+						<button class="btn black border-custom bg-white nodecoration m-auto" onclick="location.reload();">Retry with current settings</button>
+					</form>
+					<form id="retry-without" class="mb-3 d-none">
+						<input id="new_notebook_configuration" type="hidden" name="notebook_configuration">
+						<button class="btn black border-custom bg-white nodecoration m-auto" type="button" onclick="generate_with_new_configuration();">Retry without <span class="error_label"></span></button> 
+					</form>
+					<form id="create-new" action="{{ url_for('analyze') }}" class="mb-4 d-none">
+						<button class="btn black border-custom bg-white nodecoration m-auto" type="submit">Create a new notebook</button>
+					</form>
+				</div>
+				
+				<!-- Options -->
+				<!-- <a id="new-notebook" class="btn black border-custom bg-white nodecoration mr-2 d-inline-block hidden" href="{{url_for('analyze')}}">New Notebook</a> -->
+				
+				<!-- More Info -->
+				<hr width="50%" class="my-4">
+				<div id="help" class="mt-4 pt-3">
+					<div class="mb-4 px-lg-5 mx-lg-5">
+						If you wish to receive more information on the issue, including suggestions on resolving it, please insert your name
+						and e-mail below.
+					</div>
+					<form id="help-form" class='mx-lg-5 px-lg-5'>
+						<div class="form-row">
+							<input type="hidden" name="help_type" value="notebook_generation_error">
+							<input type="hidden" name="error_fk" required>
+							<div class="col-lg-5">
+								<input type='text' name="name" class='form-control' placeholder="Insert name..." required>
+							</div>
+							<div class="col-lg-5 py-3 py-lg-0">
+								<input type='email' name="email" class='form-control' placeholder="Insert email..." required>
+							</div>
+							<div class="col-lg-1">
+								<button type='submit' class='btn btn-primary'>Submit</button>
+							</div>
+						</div>
+					</form>
+				</div>
 			</div>
 
 			<!-- Notebook Link -->
@@ -154,111 +185,142 @@
 
 	console.log($('#notebook-link').attr('data-notebook_configuration'));
 
+	// Remove tooltip from copy link
 	$('#copy-link').tooltip('disable');
-	
-	$.ajax({	
-		url: "https://amp.pharm.mssm.edu/notebook-generator-server{{ '-dev' if dev else '' }}/api/generate",
-		method: "POST",
-		data: $('#notebook-link').attr('data-notebook_configuration'),
-		// data: $('#notebook-configuration').val(),
-		contentType: "application/json; charset=utf-8",
-		dataType: 'json',
-		success: function(res) {
 
-			// Add notebook link
-			$('#status').html('Your Jupyter Notebook is available below:');
-			$('#status').hide();
-			$('#description').hide();
-			$('#results').removeClass('hidden');
-			$('#new-notebook').removeClass('hidden');
-			$('#open-notebook').removeClass('hidden');
-			var notebook_uid = res['notebook_uid'];
-			$('#notebook-link').attr('href', $('#notebook-link').attr('href')+notebook_uid);
-			$('#open-notebook').attr('href', $('#open-notebook').attr('href')+notebook_uid);
-			$('#notebook-url').attr('href', $('#notebook-url').attr('href')+notebook_uid);
-			$('.loader').hide();
-			$('#wait-time').hide();
+	// Generate notebook
+	generate_notebook = function(notebook_configuration) {
 
-			// Add link for uploaded data
-			var dataset_uid = JSON.parse($('#notebook-link').attr('data-notebook_configuration'))['data']['parameters']['uid'];
-			if (dataset_uid) {
-				$('#reanalyze').attr('href', $('#reanalyze').attr('href')+dataset_uid);
-				$('#reanalyze').removeClass('hidden');
+		$.ajax({	
+			url: "https://amp.pharm.mssm.edu/notebook-generator-server{{ '-dev' if dev else '' }}/api/generate",
+			method: "POST",
+			data: notebook_configuration,
+			// data: $('#notebook-configuration').val(),
+			contentType: "application/json; charset=utf-8",
+			dataType: 'json',
+			success: function(res) {
+
+				// Add notebook link
+				$('#status').html('Your Jupyter Notebook is available below:');
+				$('#status').hide();
+				$('#description').hide();
+				$('#results').removeClass('hidden');
+				$('#new-notebook').removeClass('hidden');
+				$('#open-notebook').removeClass('hidden');
+				var notebook_uid = res['notebook_uid'];
+				$('#notebook-link').attr('href', $('#notebook-link').attr('href')+notebook_uid);
+				$('#open-notebook').attr('href', $('#open-notebook').attr('href')+notebook_uid);
+				$('#notebook-url').attr('href', $('#notebook-url').attr('href')+notebook_uid);
+				$('.loader').hide();
+				$('#wait-time').hide();
+
+				// Add link for uploaded data
+				var dataset_uid = JSON.parse($('#notebook-link').attr('data-notebook_configuration'))['data']['parameters']['uid'];
+				if (dataset_uid) {
+					$('#reanalyze').attr('href', $('#reanalyze').attr('href')+dataset_uid);
+					$('#reanalyze').removeClass('hidden');
+				}
+
+				// Add Email Sharing
+				$('#share-email a').attr('href', "mailto:?subject={{ notebook_configuration_dict['notebook']['title'] }}&body={{ notebook_configuration_dict['notebook']['title'] }} | {{ url_for('view_notebook', notebook_uid='', _external=True)}}"+notebook_uid)
+
+				// Add Twitter Button
+				$('#tweet').html(
+					$('<a>', {
+						'class': 'twitter-share-button',
+						'data-size': 'large',
+						'href': "https://twitter.com/intent/tweet?text={{ notebook_configuration_dict['notebook']['title'] }} {{ url_for('view_notebook', notebook_uid='', _external=True)}}" + notebook_uid +"&url=https://doi.org/10.1101/352476&hashtags=biojupies,jupyter,bioinformatics&via=MaayanLab"
+					})
+				)
+
+				// Activate Twitter Button
+				window.twttr = (function(d, s, id) {
+				var js, fjs = d.getElementsByTagName(s)[0],
+					t = window.twttr || {};
+				if (d.getElementById(id)) return t;
+				js = d.createElement(s);
+				js.id = id;
+				js.src = "https://platform.twitter.com/widgets.js";
+				fjs.parentNode.insertBefore(js, fjs);
+
+				t._e = [];
+				t.ready = function(f) {
+					t._e.push(f);
+				};
+
+				return t;
+				}(document, "script", "twitter-wjs"));
+
+				// Add Copy Listener
+				$('#copy-link').click(function(evt) {
+					var $temp = $("<input>");
+					$("body").append($temp);
+					$temp.val("{{ url_for('view_notebook', notebook_uid='', _external=True)}}"+notebook_uid).select();
+					document.execCommand("copy");
+					$temp.remove();
+					$('#copy-link').tooltip('enable');
+					$('#copy-link').tooltip('show');
+					$('#copy-link').tooltip('disable');
+				})
+
+			},
+			error: function(e) {
+
+				// Get response
+				var response = e.responseJSON;
+
+				// Display error messages
+				$('.notebook-status').toggleClass('d-none');
+				$.each(['error_title', 'error_subtitle', 'error_label'], function(index, elem) {
+					$('.'+elem).html(response[elem]);
+				})
+
+				// Recommended
+				$('#'+response['recommend']).append($('<div>', {'class': 'my-auto pt-2'}).html('(recommended)'));
+				$('#'+response['recommend']+' button').toggleClass('black bg-blue white bg-white');
+
+				// Add new configuration
+				if ('new_configuration' in response) {
+					$('[name="notebook_configuration"]').val(JSON.stringify(response['new_configuration']));
+				}
+
+				// Display buttons
+				$.each(response['options'], function(index, elem) {
+					$('#'+elem).removeClass('d-none');
+				})
+
+				// Help submission
+				$('#help-form').on('submit', function (evt) {
+
+					// Prevent default
+					evt.preventDefault();
+					$('#help-form [name="error_fk"]').val(e.responseJSON['error_id']);
+
+					// Ajax call
+					$.ajax({
+						url: "https://amp.pharm.mssm.edu/notebook-generator-server{{ '-dev' if dev else '' }}/api/help",
+						method: "POST",
+						data: $('#help-form').serialize(),
+						dataType: 'json',
+						success: function (response) {
+							$('#help').html('Thank you for the submission.')
+						}
+					})
+				})
 			}
+		})
+		
+	}
 
-			// Add Email Sharing
-			$('#share-email a').attr('href', "mailto:?subject={{ notebook_configuration_dict['notebook']['title'] }}&body={{ notebook_configuration_dict['notebook']['title'] }} | {{ url_for('view_notebook', notebook_uid='', _external=True)}}"+notebook_uid)
+	// Generate notebook with new configuration
+	generate_with_new_configuration = function() {
+		$('.notebook-status').toggleClass('d-none');
+		generate_notebook($('#new_notebook_configuration').val());
+		$('#time').html("{{ expected_time }}");
+	}
 
-			// Add Twitter Button
-			$('#tweet').html(
-				$('<a>', {
-					'class': 'twitter-share-button',
-					'data-size': 'large',
-					'href': "https://twitter.com/intent/tweet?text={{ notebook_configuration_dict['notebook']['title'] }} {{ url_for('view_notebook', notebook_uid='', _external=True)}}" + notebook_uid +"&url=https://doi.org/10.1101/352476&hashtags=biojupies,jupyter,bioinformatics&via=MaayanLab"
-				})
-			)
-
-			// Activate Twitter Button
-			window.twttr = (function(d, s, id) {
-			  var js, fjs = d.getElementsByTagName(s)[0],
-			    t = window.twttr || {};
-			  if (d.getElementById(id)) return t;
-			  js = d.createElement(s);
-			  js.id = id;
-			  js.src = "https://platform.twitter.com/widgets.js";
-			  fjs.parentNode.insertBefore(js, fjs);
-
-			  t._e = [];
-			  t.ready = function(f) {
-			    t._e.push(f);
-			  };
-
-			  return t;
-			}(document, "script", "twitter-wjs"));
-
-			// Add Copy Listener
-			$('#copy-link').click(function(evt) {
-				var $temp = $("<input>");
-				$("body").append($temp);
-				$temp.val("{{ url_for('view_notebook', notebook_uid='', _external=True)}}"+notebook_uid).select();
-				document.execCommand("copy");
-				$temp.remove();
-			    $('#copy-link').tooltip('enable');
-			    $('#copy-link').tooltip('show');
-			    $('#copy-link').tooltip('disable');
-			})
-
-		},
-		error: function(e) {
-			// $('#status').html('Sorry, there has been an error.');
-			console.log(e);
-			$('#status').html(e.responseJSON['error_response']);
-			$('#help').removeClass('d-none');
-			$('#description').hide();
-			$('.loader').hide();
-			$('#wait-time').hide();
-			$('#new-notebook').removeClass('hidden');
-
-			// Help submission
-			$('#help-form').on('submit', function (evt) {
-
-				// Prevent default
-				evt.preventDefault();
-				$('#help-form [name="error_fk"]').val(e.responseJSON['error_id']);
-
-				// Ajax call
-				$.ajax({
-					url: "https://amp.pharm.mssm.edu/notebook-generator-server{{ '-dev' if dev else '' }}/api/help",
-					method: "POST",
-					data: $('#help-form').serialize(),
-					dataType: 'json',
-					success: function (response) {
-						$('#help').html('Thank you for the submission.')
-					}
-				})
-			})
-		}
-	})
+	// Generate
+	generate_notebook($('#notebook-link').attr('data-notebook_configuration'));
 
 	// Check interval
 	var interval = setInterval(function () {
