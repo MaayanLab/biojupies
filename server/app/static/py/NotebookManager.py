@@ -142,7 +142,7 @@ def log_error(notebook_configuration, error, annotations, engine, app, mail):
 			'error_title': 'Sorry, there has been an error loading the dataset.',
 			'error_subtitle': 'Please try again with another one.',
 			'recommend': 'create-new',
-			'options': ['create-new']
+			'options': ['create-new', 'retry']
 		}
 
 	# Signature generation
