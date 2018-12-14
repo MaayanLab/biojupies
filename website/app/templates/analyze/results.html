@@ -136,12 +136,12 @@
 						{% endif %}
 
 						<!-- Tools -->
-						<div class="text-muted regular very-small mt-2">
+						<div id="analysis-tools" class="text-muted regular very-small mt-2">
 							<span class="mr-1">Analysis Tools:</span>
 							{% for tool in selected_tools %}
 								<span class="light bg-lightgrey px-2 py-0 mt-1 rounded border-grey d-inline-block tiny">{{tool|safe}}</span>
 							{% endfor %}
-						</span></div>
+						</div>
 
 						<!-- Share -->
 						<div class="row mt-4">
@@ -317,6 +317,7 @@
 		$('.notebook-status').toggleClass('d-none');
 		generate_notebook($('#new_notebook_configuration').val());
 		$('#time').html("{{ expected_time }}");
+		$('#analysis-tools').addClass('d-none');
 	}
 
 	// Generate
