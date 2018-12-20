@@ -55,7 +55,7 @@
 					</form>
 					<form id="retry-without" class="mb-3 d-none">
 						<input id="new_notebook_configuration" type="hidden" name="notebook_configuration">
-						<button class="btn black border-custom bg-white nodecoration m-auto" type="button" onclick="generate_with_new_configuration();">Retry <span id="retry_without_label"></span></button> 
+						<button class="btn black border-custom bg-white nodecoration m-auto" type="button" onclick="generate_with_new_configuration();"><span id="retry_without_label"></span></button> 
 					</form>
 					<form id="create-new" action="{{ url_for('analyze') }}" class="mb-4 d-none">
 						<button class="btn black border-custom bg-white nodecoration m-auto" type="submit">Create a new notebook</button>
