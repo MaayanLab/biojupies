@@ -17,36 +17,20 @@
 ########## 1. Load libraries
 #############################################
 ##### 1. Python modules #####
-from google.cloud import storage
 import random
-import requests
 import string
 import os
-import sys
 import json
 import time
-import urllib.parse
 import nbformat as nbf
 import pandas as pd
+from google.cloud import storage
 from flask_mail import Message
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import MetaData
-sys.path.append('app/static/py')
+
+##### 2. Jupyter #####
 from nbconvert.preprocessors import ExecutePreprocessor
-from nbconvert.preprocessors.execute import executenb
-
-#############################################
-########## 2. Variables
-#############################################
-##### 1. Notebook Execution #####
-# ep = ExecutePreprocessor(timeout=600)
-
-###
 from nbconvert import HTMLExporter
 from traitlets.config import Config
-c = Config()
-c.HTMLExporter.preprocessors = ['nbconvert.preprocessors.ExtractOutputPreprocessor']
-html_exporter_with_figs = HTMLExporter(config=c)
 
 #################################################################
 #################################################################
@@ -70,7 +54,11 @@ def execute_notebook(notebook, execute=True, to_html=False, kernel_name='venv'):
 	if execute:
 		ep.preprocess(notebook, {'metadata': {'path': 'app/static/library'}})
 
+	# Convert to HTML
 	if to_html:
+		c = Config()
+		c.HTMLExporter.preprocessors = ['nbconvert.preprocessors.ExtractOutputPreprocessor']
+		html_exporter_with_figs = HTMLExporter(config=c)
 		notebook = html_exporter_with_figs.from_notebook_node(notebook)[0]
 
 	# Return
