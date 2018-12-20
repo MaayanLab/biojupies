@@ -65,6 +65,7 @@ app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
 
 # Database
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']#+'-dev'
+# app.config['SQLALCHEMY_POOL_SIZE'] = 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 engine = db.engine
@@ -121,6 +122,7 @@ def generate():
 	
 	# Try
 	try:
+
 		# GET request
 		if request.method == 'GET':
 
@@ -142,12 +144,11 @@ def generate():
 
 			# Get user ID
 			user_id = notebook_configuration.get('user_id', None)
-			# notebook_configuration = {"notebook": {"title": "GSE88741 Analysis Notebook | BioJupies", "live": "False", "version": "v0.9.3"}, "tools": [{"tool_string": "pca", "parameters": {"nr_genes": "2500", "normalization": "logCPM", "z_score": "True", "plot_type": "interactive"}}, {"tool_string": "clustergrammer", "parameters": {"nr_genes": "2500", "normalization": "logCPM", "z_score": "True"}}, {"tool_string": "library_size_analysis", "parameters": {"plot_type": "interactive"}}], "data": {"source": "archs4", "parameters": {"gse": "GSE88741", "platform": "GPL16791"}}, "signature": {}, "terms": []}
 
 			# Check if notebook exists
 			session = Session()
 			matching_notebook = session.query(tables['notebook'].columns['notebook_uid']).filter(tables['notebook'].columns['notebook_configuration'] == json.dumps(notebook_configuration)).all()
-			
+			session.close()
 
 			# Return existing notebook
 			if len(matching_notebook):
@@ -165,7 +166,7 @@ def generate():
 				notebook, time = NM.execute_notebook(notebook)
 
 				# Get URL
-				notebook_uid = NM.upload_notebook(notebook, notebook_configuration, time, engine, user_id)
+				notebook_uid = NM.upload_notebook(notebook, notebook_configuration, time, engine, user_id) # update with session?
 
 			# Return
 			return json.dumps({'notebook_uid': notebook_uid, 'notebook_url': 'http://amp.pharm.mssm.edu/biojupies/notebook/'+notebook_uid})
@@ -184,7 +185,7 @@ def generate():
 			ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
 
 			# Get response
-			error_dict = NM.log_error(notebook_configuration, ansi_escape.sub('', str(e)), annotations, engine, app, mail)
+			error_dict = NM.log_error(notebook_configuration=notebook_configuration, error=ansi_escape.sub('', str(e)), annotations=annotations, session=Session(), tables=tables, app=app, mail=mail)
 			
 			# Return
 			if 'user_id' in notebook_configuration.keys():

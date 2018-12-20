@@ -92,19 +92,12 @@ def upload_notebook(notebook, notebook_configuration, time, engine, user_id=None
 	blob = bucket.blob('{notebook_uid}/{notebook_configuration[notebook][title]}.ipynb'.format(**locals()))
 	blob.upload_from_string(notebook_string, content_type='text/html')
 	blob.make_public()
-	# notebook_url = urllib.parse.unquote(blob.public_url)
 
-	# Upload to database
-	# notebook_dataframe = pd.Series({'notebook_uid': notebook_uid, 'notebook_url': notebook_url, 'notebook_configuration': json.dumps(notebook_configuration), 'version': notebook_configuration['notebook']['version'], 'gse': notebook_configuration['data']['parameters'].get('gse')}).to_frame().T
-	# notebook_dataframe.to_sql('notebooks', engine, if_exists='append', index=False)
-
-	### New Upload
 	# Upload dataset
 	dataset = notebook_configuration['data']['parameters'].get('gse') if notebook_configuration['data']['parameters'].get('gse') else notebook_configuration['data']['parameters'].get('uid')
 	if not dataset:
 		dataset = 'gtex'
 	notebook_dataframe = pd.Series({'notebook_uid': notebook_uid, 'notebook_title': notebook_configuration['notebook']['title'], 'notebook_configuration': json.dumps(notebook_configuration), 'version': notebook_configuration['notebook']['version'], 'time': time, 'dataset': dataset, 'user_fk': user_id, 'private': 1 if user_id else 0}).to_frame().T
-	print(notebook_dataframe)
 	notebook_dataframe.to_sql('notebook', engine, if_exists='append', index=False)
 
 	# Get tool IDs
@@ -129,7 +122,7 @@ def upload_notebook(notebook, notebook_configuration, time, engine, user_id=None
 ########## 3. Log Error
 #############################################
 
-def log_error(notebook_configuration, error, annotations, engine, app, mail):
+def log_error(notebook_configuration, error, annotations, session, tables, app, mail):
 
 	# Generate new configuration
 	new_configuration = notebook_configuration.copy()
@@ -228,21 +221,14 @@ def log_error(notebook_configuration, error, annotations, engine, app, mail):
 	else:
 		error_message = {
 			'error_type': 'unspecified',
-			'error_title': 'Sorry, there has been an generating the notebook.',
+			'error_title': 'Sorry, there has been an error generating the notebook.',
 			'error_subtitle': None,
 			'error_label': None,
 			'recommend': 'create-new',
 			'options': ['create-new', 'retry']
 		}
 
-	# Prepare session
-	Session = sessionmaker(bind=engine)
-	metadata = MetaData()
-	metadata.reflect(bind=engine)
-	tables = metadata.tables
-
 	# Upload
-	session = Session()
 	error_id = session.execute(tables['error_log'].insert({'notebook_configuration': json.dumps(notebook_configuration), 'error': error, 'version': notebook_configuration['notebook']['version'], 'error_type': error_message['error_type'], 'gse': notebook_configuration['data']['parameters'].get('gse')})).lastrowid
 	session.commit()
 	session.close()
