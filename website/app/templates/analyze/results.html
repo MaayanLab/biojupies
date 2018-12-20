@@ -43,8 +43,8 @@
 			<div class="mt-5 very-small text-center px-6 mx-xl-5 notebook-status regular d-none">
 				
 				<!-- Error Text -->
-				<div class="error_title medium mb-4"></div>
-				<div class="error_subtitle small light mb-4 pb-2"></div>
+				<div id="error_title" class="medium mb-4"></div>
+				<div id="error_subtitle" class="small light mb-4 pb-2"></div>
 				<hr width="50%" class="my-4">
 
 				<!-- Options -->
@@ -55,7 +55,7 @@
 					</form>
 					<form id="retry-without" class="mb-3 d-none">
 						<input id="new_notebook_configuration" type="hidden" name="notebook_configuration">
-						<button class="btn black border-custom bg-white nodecoration m-auto" type="button" onclick="generate_with_new_configuration();">Retry without <span class="error_label"></span></button> 
+						<button class="btn black border-custom bg-white nodecoration m-auto" type="button" onclick="generate_with_new_configuration();">Retry without <span id="error_label"></span></button> 
 					</form>
 					<form id="create-new" action="{{ url_for('analyze') }}" class="mb-4 d-none">
 						<button class="btn black border-custom bg-white nodecoration m-auto" type="submit">Create a new notebook</button>
@@ -272,7 +272,7 @@
 				// Display error messages
 				$('.notebook-status').toggleClass('d-none');
 				$.each(['error_title', 'error_subtitle', 'error_label'], function(index, elem) {
-					$('.'+elem).html(response[elem]);
+					$('#'+elem).html(response[elem]);
 				})
 
 				// Recommended
