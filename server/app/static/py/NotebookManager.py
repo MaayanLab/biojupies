@@ -191,8 +191,6 @@ def log_error(notebook_configuration, error, annotations, session, tables, app, 
 		
 		# Remove tool from configuration
 		new_configuration['tools'] = [x for x in new_configuration['tools'] if x['tool_string'] not in to_remove]
-		# if not new_configuration['tools']:
-			# new_configuration['tools'] = []
 
 		# Error message
 		error_message = {
@@ -204,8 +202,9 @@ def log_error(notebook_configuration, error, annotations, session, tables, app, 
 			'tool_name': tool_name,
 			'recommend': recommend,
 			'new_configuration': new_configuration,
-			'options': ['create-new', 'retry', 'retry-without']
+			'options': ['create-new', 'retry', 'retry-without'] if len(new_configuration['tools']) else ['create-new', 'retry']
 		}
+
 	else:
 		error_message = {
 			'error_type': 'unspecified',

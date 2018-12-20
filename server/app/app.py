@@ -64,8 +64,8 @@ entry_point = '/notebook-generator-server-dev' if dev else '/notebook-generator-
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
 
 # Database
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']#+'-dev'
-# app.config['SQLALCHEMY_POOL_SIZE'] = 
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
+# app.config['SQLALCHEMY_POOL_SIZE'] = 15
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 engine = db.engine
@@ -137,7 +137,7 @@ def generate():
 			# Return
 			return notebook
 
-		### Production
+		# Production
 		else:
 			# Get Configuration
 			notebook_configuration = request.json.copy()
