@@ -304,16 +304,17 @@ def help_api():
 		# Result
 		success = True
 
+		# Close session
+		session.close()
+
 	except:
 
-		# Rollback
+		# Rollback and close
 		session.rollback()
+		session.close()
 
-		# Result
-		success = False
-
-	# Close session
-	session.close()
+		# Raise
+		raise
 
 	return json.dumps({'success': success})
 

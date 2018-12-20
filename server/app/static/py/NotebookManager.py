@@ -220,7 +220,6 @@ def log_error(notebook_configuration, error, annotations, session, tables, app, 
 		'recommend': recommend,
 		'options': options
 	}
-	print(error_message)
 
     # Send mail
 	with app.app_context():

@@ -303,8 +303,10 @@
 						data: $('#help-form').serialize(),
 						dataType: 'json',
 						success: function (response) {
-							// console.log(response);
 							$('#help').html('Thank you for the submission.')
+						},
+						error: function(err) {
+							$('#help').html('Sorry, there has been an error submitting the help request. Please <a class="nodecoration" href="mailto:avi.maayan@mssm.edu,denis.torre@mssm.edu?Subject=BioJupies%20Error&amp;Body=">contact us</a> for more information.');
 						}
 					})
 				})
