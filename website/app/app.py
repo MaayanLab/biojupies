@@ -1530,6 +1530,18 @@ def edit_object():
 					response = {'title': data['title']}
 					print('set to {}'.format(data['title']))
 
+				elif data['action'] == 'delete':
+
+					# Find value
+					deleted = 0 if object_data['deleted'] else 1
+
+					# Set value
+					session.execute(tables[data['object_type']].update().where(tables[data['object_type']].columns['id'] == object_data['id']).values({'deleted': deleted}))
+
+					# Get response
+					response = {'deleted': deleted}
+					print('set to {}'.format(deleted))
+
 				# Commit
 				session.commit()
 

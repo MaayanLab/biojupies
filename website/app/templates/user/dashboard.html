@@ -31,7 +31,14 @@
             width: 75% !important;
         }
     }
-    
+    tr.shown + tr {
+        background-color: white !important;
+    }
+
+    tr.shown + tr td{
+        padding-left: 0px !important;
+        padding-right: 0px !important;
+    }
 
 </style>
 
@@ -106,13 +113,13 @@
                         <th>Notebook Name</th>
                         <th>Date</th>
                         <th>Private</th>
-                        <th></th>
+                        <th>Options</th>
                     </thead>
                     <tbody>
                         {% for notebook in notebooks %}
                         <tr>
                             <td>{{ notebook['notebook_uid'] }}</td>
-                            <td><a href="{{ url_for('view_notebook', notebook_uid=notebook['notebook_uid']) }}" target="_blank">{{ notebook['notebook_title'] }}</a></td>
+                            <td class="overflow-auto"><a href="{{ url_for('view_notebook', notebook_uid=notebook['notebook_uid']) }}" target="_blank">{{ notebook['notebook_title'] }}</a></td>
                             <td><span class="d-none">{{ notebook['date'].strftime('%Y%m%d') }}</span>{{ notebook['date'].strftime('%B %-d, %Y') }}</td>
                             <td><input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ notebook['notebook_uid'] }}" data-object_type="notebook" data-action="change_privacy" {% if notebook['private'] %}checked{% endif %}></td>
                             <td></td>
@@ -140,6 +147,9 @@
             <!-- Datasets -->
             {% if datasets|length %}
                 <div class="mb-3">The table below displays your uploaded datasets.</div>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#delete-modal">
+                    Launch demo modal
+                </button>
 
                   <!-- Dataset Table -->
                 <table id="dataset-table" class="table table-striped w-100 text-center">
@@ -149,15 +159,15 @@
                         <th>Date</th>
                         <th>Samples</th>
                         <th>Private</th>
-                        <th>Analyze</th>
-                        <th></th>
+                        <th>Options</th>
                     </thead>
                     <tbody>
                         {% for dataset in datasets %}
                         <tr>
                             <td>{{ dataset['dataset_uid'] }}</td>
                             <td class="dataset-title my-auto">
-                                <span data-uid="{{ dataset['dataset_uid'] }}" data-object_type="user_dataset" data-action="rename" class="rename-dataset d-block d-xl-inline-block">{{ dataset['dataset_title'] }}</span>
+                                <a href="{{ url_for('add_tools', uid=dataset['dataset_uid']) }}" target="_blank">{{ dataset['dataset_title'] }}</a>
+                                <!-- <span data-uid="{{ dataset['dataset_uid'] }}" data-object_type="user_dataset" data-action="rename" class="rename-dataset d-block d-xl-inline-block">{{ dataset['dataset_title'] }}</span> -->
                                 <!-- <a class="ml-1 ml-xl-4 micro nodecoration rename-link d-block float-xl-right mt-1" data-action="rename" href="#">Rename</a> -->
                                 <!-- <input type="text" class="form-control d-none" value="{{ dataset['dataset_title'] }}"> -->
                                 <!-- <a class="micro nodecoration rename-link d-none ml-2 mt-2" data-action="confirm" href="#">Confirm</a> -->
@@ -165,40 +175,7 @@
                             <td>{{ dataset['date'].strftime('%B %-d, %Y') }}</td>
                             <td>{{ dataset['samples'] }}</td>
                             <td><input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ dataset['dataset_uid'] }}" data-object_type="user_dataset" data-action="change_privacy" {% if dataset['private'] %}checked{% endif %}></td>
-                            <td><a href="{{ url_for('add_tools', uid=dataset['dataset_uid']) }}" target="_blank"><i class="fa fa-external-link-alt black"></i></a></td>
                             <td></td>
-                            <!-- <td>
-                                <div class="dropdown">
-                                    <i class="fa fa-download black cursor-pointer" id="{{ dataset['dataset_uid'] }}-dropdown" data-toggle="dropdown"></i>
-                                    <div class="dropdown-menu" aria-labelledby="{{ dataset['dataset_uid'] }}-dropdown">
-                                        <form action="https://amp.pharm.mssm.edu/notebook-generator-server{{ '-dev' if dev else '' }}/download_data" method="post">
-                                            <input type="hidden" name="uid" value="{{ dataset['dataset_uid'] }}">
-                                            <input type="hidden" name="source" value="upload">
-
-                                            <a class="dropdown-item bg-white">
-                                                What do you wish to download?
-                                                <select name="content" class="form-control mt-2">
-                                                    <option value="expression">Expression Data</option>
-                                                    <option value="metadata">Sample Information</option>
-                                                </select>
-                                            </a>
-
-                                            <a class="dropdown-item pt-2 normalization_method bg-white">
-                                                What normalization do you wish to use?
-                                                <select name="normalization_method" class="form-control mt-2">
-                                                    <option value="rawdata">None (Raw Read Counts)</option>
-                                                    <option value="logCPM">logCPM</option>
-                                                    <option value="quantile">Quantile Normalization</option>
-                                                </select>
-                                            </a>
-                                            
-                                            <a class="dropdown-item pt-2 bg-white">
-                                                <button type="submit" class="btn btn-primary">Download</button>
-                                            </a>
-                                        </form>
-                                    </div>
-                                </div>
-                            </td> -->
                         </tr>
                         {% endfor %}
 
@@ -290,6 +267,29 @@
     </div>
 </div>
 
+<!-- Modals -->
+<!-- Modal -->
+<div class="modal fade" id="delete-notebook-modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete the notebook</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Do you really wish to delete the notebook?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn border-grey w-50" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger w-50">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 {% endblock %}
 
 {% block footer %}
@@ -300,13 +300,21 @@
     $(document).ready(function () {
 
         // Dropdown toggle
-        var defaultContent = '<div class="bg-white border-custom rounded cursor-pointer d-inline-block px-2"><i class="fa fa-angle-down"></i></div>';
+        var defaultContent = '<div class="bg-white border-custom rounded cursor-pointer d-inline-block px-2"><i class="fa fa-angle-down"></i><i class="fa fa-angle-up d-none"></i></div>';
 
         ///// Notebook DataTable
         // Dropdown
         function notebook_dropdown(d) {
 
-            return '$notebook_dropdown';
+            $notebook_dropdown = $('<div>', { 'class': 'row border-grey mx-0 rounded-bottom border-top-0 py-3 bg-white' })
+                .css('margin-top', '-7px')
+                // .append($('<div>', { 'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0' }).html($('<button>', { 'class': 'btn border-grey nodecoration' }).html('<i class="fa fa-edit mr-2"></i>Rename')))
+                .append($('<div>', { 'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0 offset-1' }).html($('<a>', { 'class': 'btn border-grey nodecoration black', 'href': "notebook/" + d.notebook_uid, 'target': '_blank' }).html('<i class="fa fa-external-link-square-alt mr-2"></i>View')))
+                .append($('<div>', { 'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0' }).html($('<button>', { 'class': 'btn border-grey nodecoration' }).html('<i class="fa fa-download mr-2"></i>Download')))
+                .append($('<div>', { 'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0' }).html($('<button>', { 'class': 'btn border-grey nodecoration btn-danger' }).html('<i class="fa fa-trash-alt mr-2"></i>Delete')))
+                ;
+            
+            return $notebook_dropdown
         }
 
         // DataTable
@@ -334,7 +342,8 @@
                     "defaultContent": defaultContent
                 },
             ],
-            "order": [[2, 'desc']]
+            "order": [[2, 'desc']],
+            "autoWidth": true
         });
 
         // Listener
@@ -349,13 +358,24 @@
                 row.child( notebook_dropdown(row.data()) ).show();
                 tr.addClass('shown');
             }
+            tr.find('i').toggleClass('d-none');
         });
 
         ///// Dataset DataTable
         // Dropdown
         function dataset_dropdown(d) {
 
-            return '$dataset_dropdown';
+            $dataset_dropdown = $('<div>', {'class': 'row border-grey mx-0 rounded-bottom border-top-0 py-3 bg-white'})
+                .css('margin-top', '-7px')
+                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0'}).html($('<button>', {'class': 'btn border-grey nodecoration'}).html('<i class="fa fa-edit mr-2"></i>Rename')))
+                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0'}).html($('<a>', {'class': 'btn border-grey nodecoration black', 'href': "{{ url_for('add_tools') }}?uid="+d.dataset_uid, 'target': '_blank' }).html('<i class="fa fa-external-link-square-alt mr-2"></i>Analyze')))
+                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0'}).html($('<button>', {'class': 'btn border-grey nodecoration'}).html('<i class="fa fa-download mr-2"></i>Download')))
+                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0'}).html($('<button>', {'class': 'btn border-grey nodecoration btn-danger'}).html('<i class="fa fa-trash-alt mr-2"></i>Delete')))
+            ;
+
+            // <ul class="text-left"><li>Rename</li><li>Analyze</li><li>Delete</li><li>Download</li></ul>'
+
+            return $dataset_dropdown;
         }
 
         // DataTable
@@ -366,10 +386,12 @@
                     "visible": false
                 },
                 {
-                    "data": "dataset_name"
+                    "data": "dataset_name",
+                    "width": "auto"
                 },
                 {
-                    "data": "date"
+                    "data": "date",
+                    "width": "25%"
                 },
                 {
                     "data": "samples",
@@ -377,13 +399,12 @@
                 },
                 {
                     "data": "private",
-                    "orderable": false
-                },
-                {
-                    "visible": false
+                    "orderable": false,
+                    "width": "5%"
                 },
                 {
                     "className": 'details-control mx-auto',
+                    "width": "5%",
                     "visible": true,
                     "orderable": false,
                     "data": null,
@@ -405,6 +426,7 @@
                 row.child( dataset_dropdown(row.data()) ).show();
                 tr.addClass('shown');
             }
+            tr.find('i').toggleClass('d-none');
         });
 
         // Add
@@ -426,6 +448,9 @@
                     } else if ($elem.data('action') === 'rename') {
                         $elem.html(response['title']);
                         console.log('set '+$elem.data('object_type')+' '+$elem.data('uid')+' title to '+response['title']);
+                    } else if ($elem.data('action') === 'delete') {
+                        $elem.html(response['title']);
+                        console.log('deleted '+$elem.data('object_type')+' '+$elem.data('uid'));
                     }
                 },
                 error: function() {
