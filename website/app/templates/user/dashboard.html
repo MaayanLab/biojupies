@@ -102,22 +102,20 @@
                 <!-- Notebook Table -->
                 <table id="notebook-table" class="table table-striped w-100 text-center">
                     <thead>
-                        <th></th>
                         <th>UID</th>
                         <th>Notebook Name</th>
                         <th>Date</th>
                         <th>Private</th>
-                        <th>Link</th>
+                        <th></th>
                     </thead>
                     <tbody>
                         {% for notebook in notebooks %}
                         <tr>
-                            <td></td>
                             <td>{{ notebook['notebook_uid'] }}</td>
-                            <td>{{ notebook['notebook_title'] }}</td>
+                            <td><a href="{{ url_for('view_notebook', notebook_uid=notebook['notebook_uid']) }}" target="_blank">{{ notebook['notebook_title'] }}</a></td>
                             <td><span class="d-none">{{ notebook['date'].strftime('%Y%m%d') }}</span>{{ notebook['date'].strftime('%B %-d, %Y') }}</td>
-                            <td>{{ notebook['private'] }}</td>
-                            <td><a href="{{ url_for('view_notebook', notebook_uid=notebook['notebook_uid']) }}" target="_blank"><i class="fa fa-external-link-alt black"></i></a></td>
+                            <td><input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ notebook['notebook_uid'] }}" data-object_type="notebook" data-action="change_privacy" {% if notebook['private'] %}checked{% endif %}></td>
+                            <td></td>
                         </tr>
                         {% endfor %}
 
@@ -295,13 +293,9 @@
 
 <script type="text/javascript">
 
-    function notebook_actions(d) {
+    function notebook_dropdown(d) {
 
-        // var $privacy_checkbox = 
-        <td><input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ notebook['notebook_uid'] }}" data-object_type="notebook" data-action="change_privacy" {% if notebook['private'] %}checked{% endif %}></td> -->
-
-
-        return d.private+d.notebook_uid;
+        return '$notebook_dropdown';
     }
 
     $(document).ready(function () {
@@ -309,12 +303,6 @@
         // Notebook DataTable
         var notebook_table = $('#notebook-table').DataTable({
             "columns": [
-                {
-                    "className": 'details-control',
-                    "orderable": false,
-                    "data": null,
-                    "defaultContent": '<div class="bg-primary white rounded cursor-pointer bold" style="padding: 1px 5px;"><span><i class="fa fa-angle-down"></i></span></div>'
-                },
                 {
                     "data": "notebook_uid",
                     "visible": false
@@ -327,11 +315,14 @@
                 },
                 {
                     "data": "private",
-                    "visible": false
+                    "orderable": false
                 },
                 {
-                    "data": "link",
+                    "className": 'details-control',
+                    "visible": false,
                     "orderable": false,
+                    "data": null,
+                    "defaultContent": '<div class="bg-white border-custom rounded cursor-pointer my-auto" style="padding: 1px 5px;"><span><i class="fa fa-angle-down"></i></span></div>'
                 },
             ],
             "order": [[2, 'desc']]
@@ -340,14 +331,12 @@
         $('#notebook-table tbody').on('click', 'td.details-control', function () {
             var tr = $(this).closest('tr');
             var row = notebook_table.row( tr );
-            console.log(row);
-            console.log(row.data());
             if ( row.child.isShown() ) {
                 row.child.hide();
                 tr.removeClass('shown');
             }
             else {
-                row.child( notebook_actions(row.data()) ).show();
+                row.child( notebook_dropdown(row.data()) ).show();
                 tr.addClass('shown');
             }
         });
