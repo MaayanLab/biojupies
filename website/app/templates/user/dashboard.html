@@ -31,6 +31,8 @@
             width: 75% !important;
         }
     }
+    
+
 </style>
 
 <!-- Dashboard  -->
@@ -50,7 +52,7 @@
         <!--  -->
         <!-- Home tab -->
         <!--  -->
-        <div class="tab-pane fade show active w-100" id="home" role="tabpanel" aria-labelledby="home-tab"> <!-- show active -->
+        <div class="tab-pane fade w-100" id="home" role="tabpanel" aria-labelledby="home-tab"> <!-- show active -->
 
             <!-- Title -->
             <div class="very-large light">BioJupies Dashboard</div>
@@ -85,7 +87,7 @@
         <!--  -->
         <!-- Notebooks tab -->
         <!--  -->
-        <div class="tab-pane fade w-100" id="notebooks" role="tabpanel" aria-labelledby="notebooks-tab">
+        <div class="tab-pane fade w-100 show active" id="notebooks" role="tabpanel" aria-labelledby="notebooks-tab">
 
             <!-- Title -->
             <div class="very-large mb-3 light">Your Notebooks</div>
@@ -98,8 +100,10 @@
                 <div class="mb-4">The table below displays your generated notebooks.</div>
 
                 <!-- Notebook Table -->
-                <table class="table table-striped w-100 text-center">
+                <table id="notebook-table" class="table table-striped w-100 text-center">
                     <thead>
+                        <th></th>
+                        <th>UID</th>
                         <th>Notebook Name</th>
                         <th>Date</th>
                         <th>Private</th>
@@ -108,9 +112,11 @@
                     <tbody>
                         {% for notebook in notebooks %}
                         <tr>
+                            <td></td>
+                            <td>{{ notebook['notebook_uid'] }}</td>
                             <td>{{ notebook['notebook_title'] }}</td>
-                            <td>{{ notebook['date'].strftime('%B %-d, %Y') }}</td>
-                            <td><input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ notebook['notebook_uid'] }}" data-object_type="notebook" data-action="change_privacy" {% if notebook['private'] %}checked{% endif %}></td>
+                            <td><span class="d-none">{{ notebook['date'].strftime('%Y%m%d') }}</span>{{ notebook['date'].strftime('%B %-d, %Y') }}</td>
+                            <td>{{ notebook['private'] }}</td>
                             <td><a href="{{ url_for('view_notebook', notebook_uid=notebook['notebook_uid']) }}" target="_blank"><i class="fa fa-external-link-alt black"></i></a></td>
                         </tr>
                         {% endfor %}
@@ -138,29 +144,29 @@
                 <div class="mb-3">The table below displays your uploaded datasets.</div>
 
                   <!-- Dataset Table -->
-                <table class="table table-striped w-100 text-center">
+                <table id="dataset-table" class="table table-striped w-100 text-center">
                     <thead>
                         <th>Dataset Name</th>
                         <th>Date</th>
                         <th>Samples</th>
-                        <th>Private</th>
+                        <!-- <th>Private</th> -->
                         <th>Analyze</th>
-                        <th>Download</th>
+                        <!-- <th>Download</th> -->
                     </thead>
                     <tbody>
                         {% for dataset in datasets %}
                         <tr>
-                            <td class="dataset-title text-left my-auto">
+                            <td class="dataset-title my-auto">
                                 <span data-uid="{{ dataset['dataset_uid'] }}" data-object_type="user_dataset" data-action="rename" class="rename-dataset d-block d-xl-inline-block">{{ dataset['dataset_title'] }}</span>
-                                <a class="ml-1 ml-xl-4 micro nodecoration rename-link d-block float-xl-right mt-1" data-action="rename" href="#">Rename</a>
-                                <input type="text" class="form-control d-none" value="{{ dataset['dataset_title'] }}">
-                                <a class="micro nodecoration rename-link d-none ml-2 mt-2" data-action="confirm" href="#">Confirm</a>
+                                <!-- <a class="ml-1 ml-xl-4 micro nodecoration rename-link d-block float-xl-right mt-1" data-action="rename" href="#">Rename</a> -->
+                                <!-- <input type="text" class="form-control d-none" value="{{ dataset['dataset_title'] }}"> -->
+                                <!-- <a class="micro nodecoration rename-link d-none ml-2 mt-2" data-action="confirm" href="#">Confirm</a> -->
                             </td>
                             <td>{{ dataset['date'].strftime('%B %-d, %Y') }}</td>
                             <td>{{ dataset['samples'] }}</td>
-                            <td><input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ dataset['dataset_uid'] }}" data-object_type="user_dataset" data-action="change_privacy" {% if dataset['private'] %}checked{% endif %}></td>
+                            <!-- <td><input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ dataset['dataset_uid'] }}" data-object_type="user_dataset" data-action="change_privacy" {% if dataset['private'] %}checked{% endif %}></td> -->
                             <td><a href="{{ url_for('add_tools', uid=dataset['dataset_uid']) }}" target="_blank"><i class="fa fa-external-link-alt black"></i></a></td>
-                            <td>
+                            <!-- <td>
                                 <div class="dropdown">
                                     <i class="fa fa-download black cursor-pointer" id="{{ dataset['dataset_uid'] }}-dropdown" data-toggle="dropdown"></i>
                                     <div class="dropdown-menu" aria-labelledby="{{ dataset['dataset_uid'] }}-dropdown">
@@ -191,7 +197,7 @@
                                         </form>
                                     </div>
                                 </div>
-                            </td>
+                            </td> -->
                         </tr>
                         {% endfor %}
 
@@ -288,7 +294,71 @@
 {% block footer %}
 
 <script type="text/javascript">
+
+    function notebook_actions(d) {
+
+        // var $privacy_checkbox = 
+        <td><input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ notebook['notebook_uid'] }}" data-object_type="notebook" data-action="change_privacy" {% if notebook['private'] %}checked{% endif %}></td> -->
+
+
+        return d.private+d.notebook_uid;
+    }
+
     $(document).ready(function () {
+
+        // Notebook DataTable
+        var notebook_table = $('#notebook-table').DataTable({
+            "columns": [
+                {
+                    "className": 'details-control',
+                    "orderable": false,
+                    "data": null,
+                    "defaultContent": '<div class="bg-primary white rounded cursor-pointer bold" style="padding: 1px 5px;"><span><i class="fa fa-angle-down"></i></span></div>'
+                },
+                {
+                    "data": "notebook_uid",
+                    "visible": false
+                },
+                {
+                    "data": "notebook_name"
+                },
+                {
+                    "data": "date"
+                },
+                {
+                    "data": "private",
+                    "visible": false
+                },
+                {
+                    "data": "link",
+                    "orderable": false,
+                },
+            ],
+            "order": [[2, 'desc']]
+        });
+
+        $('#notebook-table tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = notebook_table.row( tr );
+            console.log(row);
+            console.log(row.data());
+            if ( row.child.isShown() ) {
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                row.child( notebook_actions(row.data()) ).show();
+                tr.addClass('shown');
+            }
+        });
+
+        // Dataset DataTable
+        $('#dataset-table').DataTable({
+            "order": [[1, 'desc']]
+        });
+
+        // Add
+        $('.dataTables_filter input').addClass('rounded border-custom px-2 py-1 light tiny nodecoration');
 
         // Edit object
         function edit_object($elem, title=null) {
