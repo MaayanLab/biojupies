@@ -602,7 +602,6 @@ def generate_notebook():
 		version = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['latest_library_version']
 
 		# Get source
-		print(d)
 		if 'gse' in d.keys() and 'gpl' in d.keys():
 			data_parameters = {'gse': d['gse'], 'platform': d['gpl']}
 		elif 'uid' in d.keys():
@@ -1100,7 +1099,7 @@ def launch_alignment_api():
 			req =  urllib.request.Request(urllib.parse.quote(url, safe=':/&.?='))
 			# req =  urllib.request.Request(url.replace(' ', '%20'))
 			resp = urllib.request.urlopen(req).read().decode('utf-8')
-			print(resp)
+			# print(resp)
 
 	# Upload to database
 	RM.uploadAlignmentJob(alignment_uid=alignment_uid, upload_uid=alignment_settings['upload_uid'], paired=alignment_settings.get('sequencing-type')=='paired-end', species=alignment_settings['organism'].replace('human', 'hs').replace('mouse', 'mm'), session=Session(), tables=tables)
