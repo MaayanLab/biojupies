@@ -323,7 +323,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn border-grey nodecoration w-50" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary nodecoration w-50">Confirm</button>
+        <button type="button" class="btn btn-primary nodecoration w-50 rename-button" data-object_type="user_dataset" data-action="rename">Confirm</button>
       </div>
     </div>
   </div>
@@ -529,10 +529,9 @@
                         $elem.prop('checked', response['private']);
                         console.log('set '+$elem.data('object_type')+' '+$elem.data('uid')+' privacy to '+response['private']);
                     } else if ($elem.data('action') === 'rename') {
-                        $elem.html(response['title']);
                         console.log('set '+$elem.data('object_type')+' '+$elem.data('uid')+' title to '+response['title']);
+                        location.reload();
                     } else if ($elem.data('action') === 'delete') {
-                        $elem.html(response['title']);
                         console.log('deleted '+$elem.data('object_type')+' '+$elem.data('uid'));
                         location.reload();
                     }
@@ -550,21 +549,16 @@
             edit_object($elem=$(this));
         })
 
-        // Rename
-        $('.rename-link').click(function (evt) {
-            var $wrapper = $(this).parents('.dataset-title');
-            if ($(this).data('action') == 'confirm') {
-                edit_object($elem=$wrapper.find('span'), title=$wrapper.find('input').val());
-            }
-            $wrapper.children().toggleClass('d-none').toggleClass('d-block');
-            $wrapper.find('.rename-dataset').toggleClass('d-xl-inline-block');
-        })
-
         // Delete
         $('.delete-button').click(function(evt) {
-            console.log($(this));
             edit_object($elem=$(this));
         })
+
+        // Rename
+        $('.rename-button').click(function (evt) {
+            edit_object($elem = $(this), title= $(this).parents('.modal').find('input').val());
+        })
+
 
         // Click listener
         $('.dashboard-link').click(function(evt) {
@@ -576,20 +570,26 @@
             $(this).parents('form').find('.normalization_method').toggleClass('d-none');
         })
 
-        // Download dataset UID
+        // Download dataset listener
         $(document).on('click', '[data-target="#download-dataset-modal"]', function(evt) {
             $('#download-dataset-modal input[name="uid"]').val($(evt.target).parents('tr').prev().attr('data-uid'));
         })
 
-        // Delete dataset UID
+        // Delete dataset listener
         $(document).on('click', '[data-target="#delete-dataset-modal"]', function(evt) {
             $('#delete-dataset-modal .delete-button').attr('data-uid', $(evt.target).parents('tr').prev().attr('data-uid'));
         })
 
-        // Delete notebook UID
+        // Delete notebook listener
         $(document).on('click', '[data-target="#delete-notebook-modal"]', function(evt) {
             $('#delete-notebook-modal .delete-button').attr('data-uid', $(evt.target).parents('tr').prev().attr('data-uid'));
         })
+
+        // Rename dataset listener
+        $(document).on('click', '[data-target="#rename-dataset-modal"]', function (evt) {
+            $('#rename-dataset-modal .rename-button').attr('data-uid', $(evt.target).parents('tr').prev().attr('data-uid'));
+            $('#rename-dataset-modal input').val($(evt.target).parents('tr').prev().find('.dataset-title a').html());
+        })  
 
         $('#dataset-table .details-control div').first().click();
 
