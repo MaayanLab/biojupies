@@ -386,7 +386,7 @@ def add_tools():
 			dataset = session.query(tables['user_dataset']).filter(tables['user_dataset'].columns['dataset_uid'] == selected_data['uid']).first()
 			session.close()
 			if current_user.get_id() != '3':
-				if not dataset or (dataset._asdict()['private'] and dataset._asdict()['user_fk'] != (int(current_user.get_id()) if current_user.get_id() else None)):
+				if not dataset or dataset._asdict()['deleted'] or (dataset._asdict()['private'] and dataset._asdict()['user_fk'] != (int(current_user.get_id()) if current_user.get_id() else None)):
 					return abort(404)
 		elif request.form.get('gse-gpl'):
 			selected_data = {'gse': request.form.get('gse-gpl').split('-')[0], 'gpl': request.form.get('gse-gpl').split('-')[1], 'source': 'archs4'}
@@ -648,7 +648,7 @@ def view_notebook(notebook_uid):
 
 	# Get notebook data
 	session = Session()
-	db_query = session.query(tables['notebook'].columns['notebook_title'], tables['notebook'].columns['version'], tables['notebook'].columns['user_fk'], tables['notebook'].columns['private']) \
+	db_query = session.query(tables['notebook'].columns['notebook_title'], tables['notebook'].columns['version'], tables['notebook'].columns['user_fk'], tables['notebook'].columns['private'], tables['notebook'].columns['deleted']) \
 						.filter(tables['notebook'].columns['notebook_uid'] == notebook_uid)
 	query_results = [x._asdict() for x in db_query.all()]
 	session.close()
@@ -660,7 +660,7 @@ def view_notebook(notebook_uid):
 		notebook_dict = query_results[0]
 
 		# Check privacy settings
-		if (notebook_dict['private'] and current_user.get_id() and int(current_user.get_id()) in [notebook_dict['user_fk'], 3]) or (not notebook_dict['private']):
+		if not notebook_dict['deleted'] and ((notebook_dict['private'] and current_user.get_id() and int(current_user.get_id()) in [notebook_dict['user_fk'], 3]) or (not notebook_dict['private'])):
 			
 			# Whether to display HTTPS (Clustergrammer and L1000FWD only support HTTPS iframe in version >=v0.8)
 			version = float('.'.join(notebook_dict['version'][1:].split('.')[:2]))
