@@ -147,9 +147,6 @@
             <!-- Datasets -->
             {% if datasets|length %}
                 <div class="mb-3">The table below displays your uploaded datasets.</div>
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#delete-modal">
-                    Launch demo modal
-                </button>
 
                   <!-- Dataset Table -->
                 <table id="dataset-table" class="table table-striped w-100 text-center">
@@ -163,14 +160,10 @@
                     </thead>
                     <tbody>
                         {% for dataset in datasets %}
-                        <tr>
+                        <tr data-uid="{{ dataset['dataset_uid'] }}">
                             <td>{{ dataset['dataset_uid'] }}</td>
                             <td class="dataset-title my-auto">
                                 <a href="{{ url_for('add_tools', uid=dataset['dataset_uid']) }}" target="_blank">{{ dataset['dataset_title'] }}</a>
-                                <!-- <span data-uid="{{ dataset['dataset_uid'] }}" data-object_type="user_dataset" data-action="rename" class="rename-dataset d-block d-xl-inline-block">{{ dataset['dataset_title'] }}</span> -->
-                                <!-- <a class="ml-1 ml-xl-4 micro nodecoration rename-link d-block float-xl-right mt-1" data-action="rename" href="#">Rename</a> -->
-                                <!-- <input type="text" class="form-control d-none" value="{{ dataset['dataset_title'] }}"> -->
-                                <!-- <a class="micro nodecoration rename-link d-none ml-2 mt-2" data-action="confirm" href="#">Confirm</a> -->
                             </td>
                             <td>{{ dataset['date'].strftime('%B %-d, %Y') }}</td>
                             <td>{{ dataset['samples'] }}</td>
@@ -268,7 +261,7 @@
 </div>
 
 <!-- Modals -->
-<!-- Modal -->
+<!-- Delete Notebook -->
 <div class="modal fade" id="delete-notebook-modal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -282,8 +275,97 @@
         Do you really wish to delete the notebook?
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn border-grey w-50" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger w-50">Delete</button>
+        <button type="button" class="btn border-grey nodecoration w-50" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger nodecoration w-50">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Dataset -->
+<div class="modal fade" id="delete-dataset-modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete the dataset</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Do you really wish to delete the dataset?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn border-grey nodecoration w-50" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger nodecoration w-50">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Rename Dataset -->
+<div class="modal fade" id="rename-dataset-modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Rename the dataset</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        How do you wish to rename the dataset?
+        <input type="text" class="form-control light tiny nodecoration mt-3 mb-1">
+        <!-- <span data-uid="" data-object_type="user_dataset" data-action="rename" class="rename-dataset d-block d-xl-inline-block"></span> -->
+        <!-- <a class="ml-1 ml-xl-4 micro nodecoration rename-link d-block float-xl-right mt-1" data-action="rename" href="#">Rename</a> -->
+        <!-- <input type="text" class="form-control d-none" value=""> -->
+        <!-- <a class="micro nodecoration rename-link d-none ml-2 mt-2" data-action="confirm" href="#">Confirm</a> -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn border-grey nodecoration w-50" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary nodecoration w-50">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Download Dataset -->
+<div class="modal fade" id="download-dataset-modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Download the dataset</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="download-dataset-form" action="https://amp.pharm.mssm.edu/notebook-generator-server{{ '-dev' if dev else '' }}/download_data" method="post">
+            <input type="hidden" name="uid" value="">
+            <input type="hidden" name="source" value="upload">
+
+            <a class="dropdown-item bg-white">
+                What do you wish to download?
+                <select name="content" class="form-control mt-2">
+                    <option value="expression">Expression Data</option>
+                    <option value="metadata">Sample Information</option>
+                </select>
+            </a>
+
+            <a class="dropdown-item pt-2 normalization_method bg-white">
+                What normalization do you wish to use?
+                <select name="normalization_method" class="form-control mt-2">
+                    <option value="rawdata">None (Raw Read Counts)</option>
+                    <option value="logCPM">logCPM</option>
+                    <option value="quantile">Quantile Normalization</option>
+                </select>
+            </a>
+            
+        </form>
+    </div>
+      <div class="modal-footer">
+        <button type="button" class="btn border-grey nodecoration w-50" data-dismiss="modal">Cancel</button>
+        <button type="submit" form="download-dataset-form" class="btn btn-primary nodecoration w-50">Download</button>
       </div>
     </div>
   </div>
@@ -311,7 +393,7 @@
                 // .append($('<div>', { 'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0' }).html($('<button>', { 'class': 'btn border-grey nodecoration' }).html('<i class="fa fa-edit mr-2"></i>Rename')))
                 .append($('<div>', { 'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0 offset-1' }).html($('<a>', { 'class': 'btn border-grey nodecoration black', 'href': "notebook/" + d.notebook_uid, 'target': '_blank' }).html('<i class="fa fa-external-link-square-alt mr-2"></i>View')))
                 .append($('<div>', { 'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0' }).html($('<button>', { 'class': 'btn border-grey nodecoration' }).html('<i class="fa fa-download mr-2"></i>Download')))
-                .append($('<div>', { 'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0' }).html($('<button>', { 'class': 'btn border-grey nodecoration btn-danger' }).html('<i class="fa fa-trash-alt mr-2"></i>Delete')))
+                .append($('<div>', { 'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0' }).html($('<button>', { 'class': 'btn border-grey nodecoration btn-danger', 'data-toggle': "modal", 'data-target': "#delete-notebook-modal" }).html('<i class="fa fa-trash-alt mr-2"></i>Delete')))
                 ;
             
             return $notebook_dropdown
@@ -367,10 +449,10 @@
 
             $dataset_dropdown = $('<div>', {'class': 'row border-grey mx-0 rounded-bottom border-top-0 py-3 bg-white'})
                 .css('margin-top', '-7px')
-                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0'}).html($('<button>', {'class': 'btn border-grey nodecoration'}).html('<i class="fa fa-edit mr-2"></i>Rename')))
                 .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0'}).html($('<a>', {'class': 'btn border-grey nodecoration black', 'href': "{{ url_for('add_tools') }}?uid="+d.dataset_uid, 'target': '_blank' }).html('<i class="fa fa-external-link-square-alt mr-2"></i>Analyze')))
-                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0'}).html($('<button>', {'class': 'btn border-grey nodecoration'}).html('<i class="fa fa-download mr-2"></i>Download')))
-                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0'}).html($('<button>', {'class': 'btn border-grey nodecoration btn-danger'}).html('<i class="fa fa-trash-alt mr-2"></i>Delete')))
+                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0'}).html($('<button>', {'class': 'btn border-grey nodecoration', 'data-toggle': "modal", 'data-target': "#download-dataset-modal"}).html('<i class="fa fa-download mr-2"></i>Download')))
+                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0'}).html($('<button>', {'class': 'btn border-grey nodecoration', 'data-toggle': "modal", 'data-target': "#rename-dataset-modal"}).html('<i class="fa fa-edit mr-2"></i>Rename')))
+                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0'}).html($('<button>', {'class': 'btn border-grey nodecoration btn-danger', 'data-toggle': "modal", 'data-target': "#delete-dataset-modal"}).html('<i class="fa fa-trash-alt mr-2"></i>Delete')))
             ;
 
             // <ul class="text-left"><li>Rename</li><li>Analyze</li><li>Delete</li><li>Download</li></ul>'
@@ -484,6 +566,13 @@
         $('[name="content"]').change(function(evt) {
             $(this).parents('form').find('.normalization_method').toggleClass('d-none');
         })
+
+        // Download dataset UID
+        $(document).on('click', '[data-target="#download-dataset-modal"]', function(evt) {
+            $('#download-dataset-modal input[name="uid"]').val($(evt.target).parents('tr').prev().attr('data-uid'));
+        })
+
+        $('#dataset-table .details-control div').first().click();
 
     })
 </script>
