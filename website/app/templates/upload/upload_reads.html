@@ -95,6 +95,7 @@
 		var files = $('#fileinput').prop('files'),
 			oversized_files = [],
 			files_with_space = [],
+			wrong_format_files = [],
 			gb_limit=5;
 
 		// Check file size
@@ -104,6 +105,9 @@
 			}
 			if (file.name.indexOf(' ') > -1) {
 				files_with_space.push(file.name)
+			}
+			if (!file.name.indexOf('.fastq.gz') > -1 && !file.name.indexOf('.fq.gz') > -1) {
+				wrong_format_files.push(file.name)
 			}
 		})
 		
@@ -117,6 +121,11 @@
 
 			// Alert oversized files
 			alert('The following file(s) contain one or more spaces in their file names. This is currently not supported by the BioJupies alignment pipeline. Please rename them to proceed.\n\n • '+ files_with_space.join('\n • '));
+
+		} else if (wrong_format_files.length) {
+
+			// Alert oversized files
+			alert('BioJupies currently only supports alignment of files in the .fastq.gz or .fq.gz formats. The following file(s) are stored in formats which are currently not supported. Please remove or reformat them to proceed.\n\n • '+ wrong_format_files.join('\n • '));
 
 		} else {
 			
