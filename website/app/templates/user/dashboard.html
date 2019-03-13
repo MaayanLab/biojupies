@@ -449,8 +449,8 @@
             $dataset_dropdown = $('<div>', {'class': 'row border-grey mx-0 rounded-bottom border-top-0 py-3 bg-white'})
                 .css('margin-top', '-7px')
                 .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0'}).html($('<a>', {'class': 'btn border-grey nodecoration black', 'href': "{{ url_for('add_tools') }}?uid="+d.dataset_uid, 'target': '_blank' }).html('<i class="fa fa-external-link-square-alt mr-2"></i>Analyze')))
-                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0'}).html($('<button>', {'class': 'btn border-grey nodecoration', 'data-toggle': "modal", 'data-target': "#download-dataset-modal"}).html('<i class="fa fa-download mr-2"></i>Download')))
-                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0'}).html($('<button>', {'class': 'btn border-grey nodecoration', 'data-toggle': "modal", 'data-target': "#rename-dataset-modal"}).html('<i class="fa fa-edit mr-2"></i>Rename')))
+                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0'}).html($('<button>', {'class': 'btn border-grey nodecoration', 'data-toggle': "modal", 'data-target': "#download-dataset-modal"}).html('<i class="fa fa-download mr-2"></i>Download')))
+                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0'}).html($('<button>', {'class': 'btn border-grey nodecoration', 'data-toggle': "modal", 'data-target': "#rename-dataset-modal"}).html('<i class="fa fa-edit mr-2"></i>Rename')))
                 .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0'}).html($('<button>', {'class': 'btn border-grey nodecoration btn-danger', 'data-toggle': "modal", 'data-target': "#delete-dataset-modal"}).html('<i class="fa fa-trash-alt mr-2"></i>Delete')))
             ;
 
