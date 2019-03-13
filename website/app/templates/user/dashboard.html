@@ -538,7 +538,7 @@
                     }
                 },
                 error: function() {
-                    alert('Sorry, there has been an error.');
+                    alert('Sorry, there has been an error. Please try again soon.');
                 }
             })
         }
@@ -584,6 +584,11 @@
         // Delete dataset UID
         $(document).on('click', '[data-target="#delete-dataset-modal"]', function(evt) {
             $('#delete-dataset-modal .delete-button').attr('data-uid', $(evt.target).parents('tr').prev().attr('data-uid'));
+        })
+
+        // Delete notebook UID
+        $(document).on('click', '[data-target="#delete-notebook-modal"]', function(evt) {
+            $('#delete-notebook-modal .delete-button').attr('data-uid', $(evt.target).parents('tr').prev().attr('data-uid'));
         })
 
         $('#dataset-table .details-control div').first().click();
