@@ -59,7 +59,7 @@
         <!--  -->
         <!-- Home tab -->
         <!--  -->
-        <div class="tab-pane fade w-100" id="home" role="tabpanel" aria-labelledby="home-tab"> <!-- show active -->
+        <div class="tab-pane show active fade w-100" id="home" role="tabpanel" aria-labelledby="home-tab"> <!-- show active -->
 
             <!-- Title -->
             <div class="very-large light">BioJupies Dashboard</div>
@@ -94,7 +94,7 @@
         <!--  -->
         <!-- Notebooks tab -->
         <!--  -->
-        <div class="tab-pane show active fade w-100" id="notebooks" role="tabpanel" aria-labelledby="notebooks-tab">
+        <div class="tab-pane fade w-100" id="notebooks" role="tabpanel" aria-labelledby="notebooks-tab">
 
             <!-- Title -->
             <div class="very-large mb-3 light">Your Notebooks</div>
@@ -165,7 +165,7 @@
                             <td class="dataset-title my-auto">
                                 <a href="{{ url_for('add_tools', uid=dataset['dataset_uid']) }}" target="_blank">{{ dataset['dataset_title'] }}</a>
                             </td>
-                            <td>{{ dataset['date'].strftime('%B %-d, %Y') }}</td>
+                            <td><span class="d-none">{{ dataset['date'].strftime('%Y%m%d') }}</span>{{ dataset['date'].strftime('%B %-d, %Y') }}</td>
                             <td>{{ dataset['samples'] }}</td>
                             <td><input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ dataset['dataset_uid'] }}" data-object_type="user_dataset" data-action="change_privacy" {% if dataset['private'] %}checked{% endif %}></td>
                             <td></td>
@@ -424,8 +424,7 @@
                     "defaultContent": defaultContent
                 },
             ],
-            "order": [[2, 'desc']],
-            "autoWidth": true
+            "order": [[2, 'desc']]
         });
 
         // Listener
@@ -589,8 +588,6 @@
             $('#rename-dataset-modal .rename-button').attr('data-uid', $(evt.target).parents('tr').prev().attr('data-uid'));
             $('#rename-dataset-modal input').val($(evt.target).parents('tr').prev().find('.dataset-title a').html());
         })  
-
-        $('#notebook-table .details-control div').first().click();
 
     })
 </script>
