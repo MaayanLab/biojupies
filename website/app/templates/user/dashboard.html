@@ -589,6 +589,11 @@
             $('#rename-dataset-modal input').val($(evt.target).parents('tr').prev().find('.dataset-title a').html());
         })  
 
+        // Close download modal after downloading
+        $('#download-dataset-form').submit(function(evt) {
+            $('#download-dataset-modal').modal('toggle');
+        })
+
     })
 </script>
 
