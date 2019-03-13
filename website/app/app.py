@@ -17,7 +17,7 @@
 ########## 1. Load libraries
 #############################################
 ##### 1. Flask modules #####
-from flask import Flask, request, render_template, Response, redirect, url_for, abort, flash
+from flask import Flask, request, render_template, Response, redirect, url_for, abort, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 # from flask_dance.contrib.github import make_github_blueprint, github
 from flask_dance.contrib.google import make_google_blueprint, google
@@ -124,7 +124,7 @@ if not os.environ.get('OAUTHLIB_INSECURE_TRANSPORT'):
 if os.environ.get('OAUTHLIB_INSECURE_TRANSPORT'):
 	os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
-app.secret_key = "supersekrit"
+app.secret_key = os.environ['SECRET_KEY']
 # blueprint = make_github_blueprint(
 # 	client_id=os.environ['GITHUB_CLIENT_ID'],
 # 	client_secret=os.environ['GITHUB_CLIENT_SECRET'],
@@ -1442,7 +1442,7 @@ def dashboard():
 		session = Session()
 
 		# Get datasets
-		datasets = session.query(tables['user_dataset'], func.count(tables['user_sample'].columns['id']).label('samples')).join(tables['user_sample']).filter(tables['user_dataset'].columns['user_fk'] == user_id).group_by(tables['user_dataset'].columns['id']).order_by(tables['user_dataset'].columns['date'].desc()).all()
+		datasets = session.query(tables['user_dataset'], func.count(tables['user_sample'].columns['id']).label('samples')).join(tables['user_sample']).filter(and_(tables['user_dataset'].columns['user_fk'] == user_id, tables['user_dataset'].columns['deleted'] == 0)).group_by(tables['user_dataset'].columns['id']).order_by(tables['user_dataset'].columns['date'].desc()).all()
 
 		# Get notebooks
 		notebooks = session.query(tables['notebook']).filter(tables['notebook'].columns['user_fk'] == user_id).order_by(tables['notebook'].columns['date'].desc()).all()
@@ -1487,6 +1487,7 @@ def edit_object():
 
 	# Get form data
 	data = request.json#()#{'table': 'user_dataset', 'uid': 'ETnw5p01YjN', 'action': 'rename', 'title': 'New Data'}  # request.json
+	print(data)
 
 	# Get column name
 	object_label = data['object_type'].replace('user_','')
@@ -1532,32 +1533,35 @@ def edit_object():
 
 				elif data['action'] == 'delete':
 
-					# Find value
-					deleted = 0 if object_data['deleted'] else 1
-
 					# Set value
-					session.execute(tables[data['object_type']].update().where(tables[data['object_type']].columns['id'] == object_data['id']).values({'deleted': deleted}))
+					session.execute(tables[data['object_type']].update().where(tables[data['object_type']].columns['id'] == object_data['id']).values({'deleted': 1}))
 
 					# Get response
-					response = {'deleted': deleted}
-					print('set to {}'.format(deleted))
+					response = {'deleted': True}
+					print('deleted {object_type} {uid}'.format(**data))
 
 				# Commit
 				session.commit()
+
+				# Response
+				response = json.dumps(response)
 
 	except:
 		# Rollback
 		session.close()
 
 		# Get response
-		response = []
-		# raise
+		response = jsonify({'result': 'error'})
+		response.status_code = 500
+
+		# Rollback
 		session.rollback()
+		raise
 
 	# Close session
 	session.close()
 
-	return json.dumps(response)
+	return response
 
 
 #######################################################

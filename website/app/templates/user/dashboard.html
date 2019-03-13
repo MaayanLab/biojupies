@@ -117,7 +117,7 @@
                     </thead>
                     <tbody>
                         {% for notebook in notebooks %}
-                        <tr>
+                        <tr data-uid="{{ notebook['notebook_uid'] }}">
                             <td>{{ notebook['notebook_uid'] }}</td>
                             <td class="overflow-auto"><a href="{{ url_for('view_notebook', notebook_uid=notebook['notebook_uid']) }}" target="_blank">{{ notebook['notebook_title'] }}</a></td>
                             <td><span class="d-none">{{ notebook['date'].strftime('%Y%m%d') }}</span>{{ notebook['date'].strftime('%B %-d, %Y') }}</td>
@@ -276,7 +276,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn border-grey nodecoration w-50" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger nodecoration w-50">Delete</button>
+        <button type="button" class="btn btn-danger nodecoration w-50 delete-button" data-object_type="notebook" data-action="delete">Delete</button>
       </div>
     </div>
   </div>
@@ -297,7 +297,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn border-grey nodecoration w-50" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger nodecoration w-50">Delete</button>
+        <button type="button" class="btn btn-danger nodecoration w-50 delete-button" data-object_type="user_dataset" data-action="delete">Delete</button>
       </div>
     </div>
   </div>
@@ -477,7 +477,8 @@
                 },
                 {
                     "data": "samples",
-                    "visible": false
+                    "visible": true,
+                    "width": "5%"
                 },
                 {
                     "data": "private",
@@ -533,6 +534,7 @@
                     } else if ($elem.data('action') === 'delete') {
                         $elem.html(response['title']);
                         console.log('deleted '+$elem.data('object_type')+' '+$elem.data('uid'));
+                        location.reload();
                     }
                 },
                 error: function() {
@@ -544,6 +546,7 @@
         // Private
         $('.private-checkbox').click(function(evt) {
             evt.preventDefault();
+            console.log($(this));
             edit_object($elem=$(this));
         })
 
@@ -555,6 +558,12 @@
             }
             $wrapper.children().toggleClass('d-none').toggleClass('d-block');
             $wrapper.find('.rename-dataset').toggleClass('d-xl-inline-block');
+        })
+
+        // Delete
+        $('.delete-button').click(function(evt) {
+            console.log($(this));
+            edit_object($elem=$(this));
         })
 
         // Click listener
@@ -570,6 +579,11 @@
         // Download dataset UID
         $(document).on('click', '[data-target="#download-dataset-modal"]', function(evt) {
             $('#download-dataset-modal input[name="uid"]').val($(evt.target).parents('tr').prev().attr('data-uid'));
+        })
+
+        // Delete dataset UID
+        $(document).on('click', '[data-target="#delete-dataset-modal"]', function(evt) {
+            $('#delete-dataset-modal .delete-button').attr('data-uid', $(evt.target).parents('tr').prev().attr('data-uid'));
         })
 
         $('#dataset-table .details-control div').first().click();
