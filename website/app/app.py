@@ -1548,8 +1548,13 @@ def edit_object():
 				# Commit
 				session.commit()
 
-				# Response
-				response = json.dumps(response)
+			else:
+				response = {}
+		else:
+			response = {}
+
+		# Response
+		response = json.dumps(response)
 
 	except:
 		# Rollback
