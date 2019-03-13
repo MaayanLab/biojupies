@@ -1337,8 +1337,13 @@ def notebook_api(notebook_uid):
 	if len(db_query_results):
 		notebook_data = db_query_results[0]._asdict()
 		notebook_data['date'] = notebook_data['date'].strftime('%b %d, %Y')
+		if not notebook_data['deleted']:
+			notebook_data['download_url'] = 'https://storage.googleapis.com/jupyter-notebook-generator/{notebook_uid}/{notebook_title}.ipynb'.format(**notebook_data)
 		del notebook_data['notebook_configuration']
 		del notebook_data['id']
+		del notebook_data['user_fk']
+		del notebook_data['deleted']
+		del notebook_data['private']
 	else:
 		notebook_data = {}
 

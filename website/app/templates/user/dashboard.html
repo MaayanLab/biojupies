@@ -94,7 +94,7 @@
         <!--  -->
         <!-- Notebooks tab -->
         <!--  -->
-        <div class="tab-pane fade w-100" id="notebooks" role="tabpanel" aria-labelledby="notebooks-tab">
+        <div class="tab-pane show active fade w-100" id="notebooks" role="tabpanel" aria-labelledby="notebooks-tab">
 
             <!-- Title -->
             <div class="very-large mb-3 light">Your Notebooks</div>
@@ -138,7 +138,7 @@
         <!--  -->
         <!-- Datasets tab -->
         <!--  -->
-        <div class="tab-pane show active fade w-100" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
+        <div class="tab-pane fade w-100" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
 
             <!-- Title -->
             <div class="very-large mb-3 light">Your Datasets</div>
@@ -391,8 +391,8 @@
             $notebook_dropdown = $('<div>', { 'class': 'row border-grey mx-0 rounded-bottom border-top-0 py-3 bg-white' })
                 .css('margin-top', '-7px')
                 // .append($('<div>', { 'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0' }).html($('<button>', { 'class': 'btn border-grey nodecoration' }).html('<i class="fa fa-edit mr-2"></i>Rename')))
-                .append($('<div>', { 'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0 offset-1' }).html($('<a>', { 'class': 'btn border-grey nodecoration black', 'href': "notebook/" + d.notebook_uid, 'target': '_blank' }).html('<i class="fa fa-external-link-square-alt mr-2"></i>View')))
-                .append($('<div>', { 'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0' }).html($('<button>', { 'class': 'btn border-grey nodecoration' }).html('<i class="fa fa-download mr-2"></i>Download')))
+                .append($('<div>', { 'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0' }).html($('<a>', { 'class': 'btn border-grey nodecoration black', 'href': "notebook/" + d.notebook_uid, 'target': '_blank' }).html('<i class="fa fa-external-link-square-alt mr-2"></i>View')))
+                .append($('<div>', { 'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0' }).html($('<a>', { 'class': 'btn border-grey nodecoration black download-notebook-button', 'href': 'https://storage.googleapis.com/jupyter-notebook-generator/'+d.notebook_uid+'/'+$(d.notebook_name).html()+'.ipynb', 'target': '_blank'}).html('<i class="fa fa-download mr-2"></i>Download')))
                 .append($('<div>', { 'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0' }).html($('<button>', { 'class': 'btn border-grey nodecoration btn-danger', 'data-toggle': "modal", 'data-target': "#delete-notebook-modal" }).html('<i class="fa fa-trash-alt mr-2"></i>Delete')))
                 ;
             
@@ -559,7 +559,6 @@
             edit_object($elem = $(this), title= $(this).parents('.modal').find('input').val());
         })
 
-
         // Click listener
         $('.dashboard-link').click(function(evt) {
             $('#'+$(this).attr('data-tab')+'-tab').click();
@@ -591,7 +590,7 @@
             $('#rename-dataset-modal input').val($(evt.target).parents('tr').prev().find('.dataset-title a').html());
         })  
 
-        $('#dataset-table .details-control div').first().click();
+        $('#notebook-table .details-control div').first().click();
 
     })
 </script>
