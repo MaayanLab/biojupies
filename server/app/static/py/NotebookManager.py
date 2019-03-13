@@ -193,7 +193,7 @@ def log_error(notebook_configuration, error, annotations, session, tables, app, 
 		error_subtitle = subtitle
 		retry_without_label = 'Retry without {}'.format(tool_name)
 		recommend = 'retry-without'
-		options: ['create-new', 'retry', 'retry-without'] if len(new_configuration['tools']) else ['create-new', 'retry']
+		options = ['create-new', 'retry', 'retry-without'] if len(new_configuration['tools']) else ['create-new', 'retry']
 
 	else:
 		error_type = 'unspecified'
