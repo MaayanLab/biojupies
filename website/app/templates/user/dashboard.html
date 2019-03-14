@@ -39,9 +39,9 @@
         padding-left: 0px !important;
         padding-right: 0px !important;
     }
-    .tab-content {
+    /* .tab-content {
         overflow-x: auto;
-    }
+    } */
 
 </style>
 
@@ -616,6 +616,21 @@
         $('#download-dataset-form').submit(function(evt) {
             $('#download-dataset-modal').modal('toggle');
         })
+
+        // Tab hash listener
+        $('[data-tab]').click(function(evt) {
+            evt.preventDefault();
+            window.location.hash = $(evt.target).parents('.d-flex').find('[data-tab]').attr('data-tab');
+        })
+        $('[data-toggle="pill"]').click(function(evt) {
+            evt.preventDefault();
+            window.location.hash = $(evt.target).attr('href');
+        })
+
+        // Hash
+        if (window.location.hash) {
+            $('[href="'+window.location.hash+'"]').tab('show');
+        }
 
         // $('#notebook-table .details-control div').first().click();
 
