@@ -59,7 +59,7 @@
         <!--  -->
         <!-- Home tab -->
         <!--  -->
-        <div class="tab-pane show active fade w-100" id="home" role="tabpanel" aria-labelledby="home-tab"> <!-- show active -->
+        <div class="tab-pane fade w-100" id="home" role="tabpanel" aria-labelledby="home-tab"> <!-- show active -->
 
             <!-- Title -->
             <div class="very-large light">BioJupies Dashboard</div>
@@ -94,7 +94,7 @@
         <!--  -->
         <!-- Notebooks tab -->
         <!--  -->
-        <div class="tab-pane fade w-100" id="notebooks" role="tabpanel" aria-labelledby="notebooks-tab">
+        <div class="tab-pane show active fade w-100" id="notebooks" role="tabpanel" aria-labelledby="notebooks-tab">
 
             <!-- Title -->
             <div class="very-large mb-3 light">Your Notebooks</div>
@@ -113,6 +113,7 @@
                         <th>Notebook Name</th>
                         <th>Date</th>
                         <th>Private</th>
+                        <th>Notes</th>
                         <th>Options</th>
                     </thead>
                     <tbody>
@@ -122,6 +123,7 @@
                             <td class="overflow-auto"><a href="{{ url_for('view_notebook', notebook_uid=notebook['notebook_uid']) }}" target="_blank">{{ notebook['notebook_title'] }}</a></td>
                             <td><span class="d-none">{{ notebook['date'].strftime('%Y%m%d') }}</span>{{ notebook['date'].strftime('%B %-d, %Y') }}</td>
                             <td><input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ notebook['notebook_uid'] }}" data-object_type="notebook" data-action="change_privacy" {% if notebook['private'] %}checked{% endif %}></td>
+                            <td>{{ notebook['notes'] if notebook['notes'] else '' }}</td>
                             <td></td>
                         </tr>
                         {% endfor %}
@@ -390,10 +392,13 @@
 
             $notebook_dropdown = $('<div>', { 'class': 'row border-grey mx-0 rounded-bottom border-top-0 py-3 bg-white' })
                 .css('margin-top', '-7px')
-                // .append($('<div>', { 'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0' }).html($('<button>', { 'class': 'btn border-grey nodecoration' }).html('<i class="fa fa-edit mr-2"></i>Rename')))
-                .append($('<div>', { 'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0' }).html($('<a>', { 'class': 'btn border-grey nodecoration black', 'href': "notebook/" + d.notebook_uid, 'target': '_blank' }).html('<i class="fa fa-external-link-square-alt mr-2"></i>View')))
-                .append($('<div>', { 'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0' }).html($('<a>', { 'class': 'btn border-grey nodecoration black download-notebook-button', 'href': 'https://storage.googleapis.com/jupyter-notebook-generator/'+d.notebook_uid+'/'+$(d.notebook_name).html()+'.ipynb', 'target': '_blank'}).html('<i class="fa fa-download mr-2"></i>Download')))
-                .append($('<div>', { 'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0' }).html($('<button>', { 'class': 'btn border-grey nodecoration btn-danger', 'data-toggle': "modal", 'data-target': "#delete-notebook-modal" }).html('<i class="fa fa-trash-alt mr-2"></i>Delete')))
+                .append($('<div>', { 'class': 'col-8' })
+                    .append($('<div>', { 'class': '' }).html('Notes'))
+                    .append($('<input>', { 'type': 'textarea' }).html(d.notes))
+                )
+                .append($('<div>', {'class': 'col-2'}).html($('<a>', { 'class': 'btn border-grey nodecoration black', 'href': "notebook/" + d.notebook_uid, 'target': '_blank' }).html('<i class="fa fa-external-link-square-alt mr-2"></i>View')))
+                .append($('<div>', { 'class': 'col-2' }).html($('<button>', { 'class': 'btn border-grey nodecoration btn-danger', 'data-toggle': "modal", 'data-target': "#delete-notebook-modal" }).html('<i class="fa fa-trash-alt mr-2"></i>Delete')))
+                // .append($('<div>', { 'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0' }).html($('<a>', { 'class': 'btn border-grey nodecoration black download-notebook-button', 'href': 'https://storage.googleapis.com/jupyter-notebook-generator/'+d.notebook_uid+'/'+$(d.notebook_name).html()+'.ipynb', 'target': '_blank'}).html('<i class="fa fa-download mr-2"></i>Download')))
                 ;
             
             return $notebook_dropdown
@@ -414,6 +419,11 @@
                 },
                 {
                     "data": "private",
+                    "orderable": false
+                },
+                {
+                    "data": "notes",
+                    "visible": false,
                     "orderable": false
                 },
                 {
@@ -593,6 +603,9 @@
         $('#download-dataset-form').submit(function(evt) {
             $('#download-dataset-modal').modal('toggle');
         })
+
+        $('#notebook-table .details-control div').first().click();
+
 
     })
 </script>
