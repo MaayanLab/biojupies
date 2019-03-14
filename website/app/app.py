@@ -1545,6 +1545,15 @@ def edit_object():
 					response = {'deleted': True}
 					print('deleted {object_type} {uid}'.format(**data))
 
+				elif data['action'] == 'save_notes':
+
+					# Set value
+					session.execute(tables[data['object_type']].update().where(tables[data['object_type']].columns['id'] == object_data['id']).values({'notes': data['title']}))
+
+					# Get response
+					response = {'saved': True}
+					print('saved notes for {object_type} {uid}'.format(**data))
+
 				# Commit
 				session.commit()
 
