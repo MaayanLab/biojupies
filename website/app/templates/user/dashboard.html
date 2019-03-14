@@ -39,6 +39,9 @@
         padding-left: 0px !important;
         padding-right: 0px !important;
     }
+    .tab-content {
+        overflow-x: auto;
+    }
 
 </style>
 
@@ -94,7 +97,7 @@
         <!--  -->
         <!-- Notebooks tab -->
         <!--  -->
-        <div class="tab-pane fade w-100" id="notebooks" role="tabpanel" aria-labelledby="notebooks-tab"> <!-- show active -->
+        <div class="tab-pane fade w-100 overflow-auto" id="notebooks" role="tabpanel" aria-labelledby="notebooks-tab"> <!-- show active -->
 
             <!-- Title -->
             <div class="very-large mb-3 light">Your Notebooks</div>
@@ -140,7 +143,7 @@
         <!--  -->
         <!-- Datasets tab -->
         <!--  -->
-        <div class="tab-pane fade w-100" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
+        <div class="tab-pane fade w-100 overflow-auto" id="datasets" role="tabpanel" aria-labelledby="datasets-tab">
 
             <!-- Title -->
             <div class="very-large mb-3 light">Your Datasets</div>
