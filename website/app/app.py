@@ -1452,16 +1452,8 @@ def dashboard():
 		# Get notebooks
 		notebooks = session.query(tables['notebook']).filter(and_(tables['notebook'].columns['user_fk'] == user_id, tables['notebook'].columns['deleted'] == 0)).order_by(tables['notebook'].columns['date'].desc()).all()
 
-		# Get uploads
-		# upload_query = session.query(tables['fastq_upload'], tables['fastq_file']).join(tables['fastq_file']).filter(tables['fastq_upload'].columns['user_fk'] == current_user.get_id()).all()
-		# if upload_query:
-		# 	uploads = pd.DataFrame(upload_query).fillna('').groupby(['upload_uid', 'upload_name', 'date'])['filename'].apply(tuple).rename('samples').to_frame().reset_index().sort_values('date').to_dict(orient='records')
-		# else:
-		# 	uploads = []
-		# print(uploads)
-
 		# Get alignment jobs
-		alignments = session.query(tables['fastq_alignment']).join(tables['fastq_upload']).filter(tables['fastq_upload'].columns['user_fk'] == user_id).order_by(tables['fastq_alignment'].columns['date'].desc()).all()
+		alignments = session.query(tables['fastq_alignment']).join(tables['fastq_upload']).filter(and_(tables['fastq_upload'].columns['user_fk'] == user_id, tables['fastq_alignment'].columns['deleted'] == 0)).order_by(tables['fastq_alignment'].columns['date'].asc()).all()
 
 		# Get statuses
 		if alignments:
@@ -1495,7 +1487,7 @@ def edit_object():
 	print(data)
 
 	# Get column name
-	object_label = data['object_type'].replace('user_','')
+	object_label = data['object_type'].replace('user_','').replace('fastq_','')
 
 	# Start database session
 	session = Session()
@@ -1504,7 +1496,7 @@ def edit_object():
 	try:
 
 		# Get object data
-		object_data = session.query(tables[data['object_type']]).filter(tables[data['object_type']].columns[object_label+'_uid'] == data['uid']).all()
+		object_data = session.query(tables['fastq_alignment'], tables['fastq_upload'].columns['user_fk']).join(tables['fastq_upload']).filter(tables['fastq_alignment'].columns['alignment_uid'] == data['uid']).all() if data['object_type'] == 'fastq_alignment' else session.query(tables[data['object_type']]).filter(tables[data['object_type']].columns[object_label+'_uid'] == data['uid']).all()
 
 		# Check length
 		if len(object_data):

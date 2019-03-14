@@ -153,13 +153,13 @@
             {% if datasets|length %}
                 <div class="mb-3">The table below displays your uploaded datasets.</div>
 
-                  <!-- Dataset Table -->
+                <!-- Dataset Table -->
                 <table id="dataset-table" class="table table-striped w-100 text-center">
                     <thead>
                         <th>Dataset UID</th>
                         <th>Dataset Name</th>
-                        <th>Date</th>
                         <th>Samples</th>
+                        <th>Date</th>
                         <th>Private</th>
                         <th>Options</th>
                     </thead>
@@ -167,11 +167,11 @@
                         {% for dataset in datasets %}
                         <tr data-uid="{{ dataset['dataset_uid'] }}">
                             <td>{{ dataset['dataset_uid'] }}</td>
-                            <td class="dataset-title my-auto">
+                            <td class="object-title my-auto">
                                 <a href="{{ url_for('add_tools', uid=dataset['dataset_uid']) }}" target="_blank">{{ dataset['dataset_title'] }}</a>
                             </td>
-                            <td><span class="d-none">{{ dataset['date'].strftime('%Y%m%d') }}</span>{{ dataset['date'].strftime('%B %-d, %Y') }}</td>
                             <td>{{ dataset['samples'] }}</td>
+                            <td><span class="d-none">{{ dataset['date'].strftime('%Y%m%d') }}</span>{{ dataset['date'].strftime('%B %-d, %Y') }}</td>
                             <td><input type="checkbox" class="ml-2 private-checkbox" data-uid="{{ dataset['dataset_uid'] }}" data-object_type="user_dataset" data-action="change_privacy" {% if dataset['private'] %}checked{% endif %}></td>
                             <td></td>
                         </tr>
@@ -199,60 +199,35 @@
             {% if alignments|length %}
                 <div class="mb-3">The list below displays your alignment jobs. Please refresh the page to check live alignment status.</div>
 
-                {% for alignment in alignments %}
 
-                    <!-- Alignment -->
-                    <div class="bg-lightgrey border-custom rounded mt-2 px-3 py-2 d-table w-100">
-                        <div class="d-table-cell align-middle pr-xl-3">
-                            <img src="{{ url_for('static', filename='img/alignment/'+alignment['species'].replace('mm', 'mouse').replace('hs', 'human')+'.png') }}">
-                        </div>
-                        <div class="d-table-cell align-middle">
-                            <div class="very-small regular mb-2">FASTQ Alignment #{{ loop.index }}</div>
-                            <div class="tiny light text-muted">
-                                <span class="d-block d-xl-inline-block"><span class="font-italic">{{ alignment['species'].replace('mm', 'Mus musculus').replace('hs', 'Homo sapiens') }}</span></span>
-                                <span class="ml-xl-5 d-block d-xl-inline-block">{{ alignment['progress']|length }} samples</span>
-                                <span class="ml-xl-5 d-block d-xl-inline-block">Launched <span class="font-italic">{{alignment['date'].strftime('%B %e, %Y')}}</span></span>
-                            </div>
-                        </div>
-                        <div class="d-table-cell align-middle card-options">
-                            <div class="d-block">
-                                <button class="btn text-center w-100 mb-1 bg-blue white border-grey light tiny mb-1 nodecoration">
-                                    <a href="{{ url_for('upload_reads', alignment=alignment['alignment_uid']) }}" class="white nodecoration">Analyze<i class="fa fa-angle-right ml-2"></i></a>
-                                </button>
-                                <button class="btn text-center w-100 border-grey bg-transparent light tiny nodecoration text-muted" data-toggle="collapse" data-target="#{{ alignment['alignment_uid'] }}" aria-expanded="false">
-                                    More Info<i class="fa fa-angle-down ml-1 fa-1x"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Alignment Table -->
+                    <table id="alignment-table" class="table table-striped w-100 text-center">
+                        <thead>
+                            <th>Alignment UID</th>
+                            <th>Alignment</th>
+                            <th>Samples</th>
+                            <th>Species</th>
+                            <th>Date</th>
+                            <th>Progress</th>
+                            <th>Info</th>
+                        </thead>
+                        <tbody>
+                            {% for alignment in alignments %}
+                                <tr data-uid="{{ alignment['alignment_uid'] }}">
+                                    <td>{{ alignment['alignment_uid'] }}</td>
+                                    <td class="object-title my-auto">
+                                        <a href="{{ url_for('upload_reads', alignment=alignment['alignment_uid']) }}" target="_blank">{{ alignment['alignment_title'] }}</a>
+                                    </td>
+                                    <td>{{ alignment['progress']|length }}</td>
+                                    <td>{{ alignment['species'].replace('hs', 'Human').replace('mm', 'Mouse') }}</td>
+                                    <td><span class="d-none">{{ alignment['date'].strftime('%Y%m%d') }}</span>{{ alignment['date'].strftime('%B %-d, %Y') }}</td>
+                                    <td>{{ alignment['progress'] }}</td>
+                                    <td></td>
+                                </tr>
+                            {% endfor %}
 
-                    <!-- Samples -->
-                    <div class="collapse border-grey border-top-0 mx-2 rounded-bottom" id="{{ alignment['alignment_uid'] }}">
-                        <div class="sample-table-wrapper">
-                            <table class="table table-striped w-100 text-center mb-0">
-                                <thead class="tiny">
-                                    <tr>
-                                        <th>Sample</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="tiny">
-                                    {% for status in alignment['progress'] %}
-                                        <tr>
-                                            <td class="font-italic align-middle">{{ status['sample_name'] }}</td>
-                                            <td class="align-middle">
-                                                <img src="https://amp.pharm.mssm.edu/cloudalignment/images/{{ status['status'].replace('waiting', 'pending') }}.png" width="35px" class="mr-2">
-                                                {{ status['status'].title() }}
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-
-                {% endfor %}
+                        </tbody>
+                    </table>
 
             {% else %}
                 <div class="mb-3">You haven't launched any alignment jobs yet.</div>
@@ -266,65 +241,44 @@
 </div>
 
 <!-- Modals -->
-<!-- Delete Notebook -->
-<div class="modal fade" id="delete-notebook-modal" tabindex="-1" role="dialog" aria-hidden="true">
+<!-- Delete Modal -->
+<div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Delete the notebook</h5>
+        <h5 class="modal-title">Delete the <span class="modal-object_type"></span></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        Do you really wish to delete the notebook?
+        Do you really wish to delete the <span class="modal-object_type"></span>?
       </div>
       <div class="modal-footer">
         <button type="button" class="btn border-grey nodecoration w-50" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger nodecoration w-50 delete-button" data-object_type="notebook" data-action="delete">Delete</button>
+        <button id="delete-modal-button" type="button" class="btn btn-danger nodecoration w-50" data-action="delete">Delete</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Delete Dataset -->
-<div class="modal fade" id="delete-dataset-modal" tabindex="-1" role="dialog" aria-hidden="true">
+<!-- Rename Modal -->
+<div class="modal fade" id="rename-modal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Delete the dataset</h5>
+        <h5 class="modal-title">Rename the <span class="modal-object_type"></span></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        Do you really wish to delete the dataset?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn border-grey nodecoration w-50" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger nodecoration w-50 delete-button" data-object_type="user_dataset" data-action="delete">Delete</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Rename Dataset -->
-<div class="modal fade" id="rename-dataset-modal" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Rename the dataset</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        How do you wish to rename the dataset?
+        How do you wish to rename the <span class="modal-object_type"></span>?
         <input type="text" class="form-control light tiny nodecoration mt-3 mb-1">
       </div>
       <div class="modal-footer">
         <button type="button" class="btn border-grey nodecoration w-50" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary nodecoration w-50 rename-button" data-object_type="user_dataset" data-action="rename">Confirm</button>
+        <button id="rename-modal-button" type="button" class="btn btn-primary nodecoration w-50" data-action="rename">Confirm</button>
       </div>
     </div>
   </div>
@@ -397,7 +351,7 @@
                 )
                 .append($('<div>', {'class': 'col-3 text-center pt-5'})
                     .append($('<a>', { 'class': 'btn border-grey nodecoration black mx-auto mt-2', 'href': "notebook/" + d.notebook_uid, 'target': '_blank' }).html('<i class="fa fa-external-link-square-alt mr-2"></i>View'))
-                    .append($('<button>', { 'class': 'btn border-grey nodecoration btn-danger d-block mx-auto mt-4', 'data-toggle': "modal", 'data-target': "#delete-notebook-modal" }).html('<i class="fa fa-trash-alt mr-2"></i>Delete'))
+                    .append($('<button>', { 'class': 'btn border-grey nodecoration btn-danger d-block mx-auto mt-4', 'data-toggle': "modal", 'data-target': "#delete-modal" }).html('<i class="fa fa-trash-alt mr-2"></i>Delete'))
                 )
                 ;
             
@@ -460,8 +414,8 @@
                 .css('margin-top', '-7px')
                 .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0'}).html($('<a>', {'class': 'btn border-grey nodecoration black', 'href': "{{ url_for('add_tools') }}?uid="+d.dataset_uid, 'target': '_blank' }).html('<i class="fa fa-external-link-square-alt mr-2"></i>Analyze')))
                 .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0'}).html($('<button>', {'class': 'btn border-grey nodecoration', 'data-toggle': "modal", 'data-target': "#download-dataset-modal"}).html('<i class="fa fa-download mr-2"></i>Download')))
-                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0'}).html($('<button>', {'class': 'btn border-grey nodecoration', 'data-toggle': "modal", 'data-target': "#rename-dataset-modal"}).html('<i class="fa fa-edit mr-2"></i>Rename')))
-                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0'}).html($('<button>', {'class': 'btn border-grey nodecoration btn-danger', 'data-toggle': "modal", 'data-target': "#delete-dataset-modal"}).html('<i class="fa fa-trash-alt mr-2"></i>Delete')))
+                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0'}).html($('<button>', {'class': 'btn border-grey nodecoration', 'data-toggle': "modal", 'data-target': "#rename-modal"}).html('<i class="fa fa-edit mr-2"></i>Rename')))
+                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0'}).html($('<button>', {'class': 'btn border-grey nodecoration btn-danger', 'data-toggle': "modal", 'data-target': "#delete-modal"}).html('<i class="fa fa-trash-alt mr-2"></i>Delete')))
             ;
 
             // <ul class="text-left"><li>Rename</li><li>Analyze</li><li>Delete</li><li>Download</li></ul>'
@@ -481,13 +435,13 @@
                     "width": "auto"
                 },
                 {
-                    "data": "date",
-                    "width": "25%"
-                },
-                {
                     "data": "samples",
                     "visible": true,
                     "width": "5%"
+                },
+                {
+                    "data": "date",
+                    "width": "25%"
                 },
                 {
                     "data": "private",
@@ -503,7 +457,7 @@
                     "defaultContent": defaultContent
                 },
             ],
-            "order": [[2, 'desc']]
+            "order": [[3, 'desc']]
         });
 
         // Listener
@@ -521,9 +475,78 @@
             tr.find('i').toggleClass('d-none');
         });
 
+        ///// Alignments DataTable
+        // Dropdown
+        function alignments_dropdown(d) {
+
+            $alignments_dropdown = $('<div>', {'class': 'row border-grey mx-0 rounded-bottom border-top-0 py-3 bg-white'})
+                .css('margin-top', '-7px')
+                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0'}).html($('<a>', {'class': 'btn border-grey nodecoration black', 'href': "{{ url_for('upload_reads') }}?alignment="+d.alignment_uid, 'target': '_blank' }).html('<i class="fa fa-external-link-square-alt mr-2"></i>Analyze')))
+                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0'}).html($('<button>', {'class': 'btn border-grey nodecoration', 'data-toggle': "modal", 'data-target': "#rename-modal"}).html('<i class="fa fa-edit mr-2"></i>Rename')))
+                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0'}).html($('<button>', {'class': 'btn border-grey nodecoration btn-danger', 'data-toggle': "modal", 'data-target': "#delete-modal"}).html('<i class="fa fa-trash-alt mr-2"></i>Delete')))
+            ;
+
+            return $alignments_dropdown;
+        }
+
+        // DataTable
+        var alignments_table = $('#alignment-table').DataTable({
+            "columns": [
+                {
+                    "data": "alignment_uid",
+                    "visible": false
+                },
+                {
+                    "data": "alignment_name",
+                    "width": "auto"
+                },
+                {
+                    "data": "samples",
+                    "width": "5%"
+                },
+                {
+                    "data": "date",
+                    "width": "20%"
+                },
+                {
+                    "data": "species",
+                    "width": "5%"
+                },
+                {
+                    "data": "progress",
+                    "visible": false
+                },
+                {
+                    "className": 'details-control mx-auto',
+                    "width": "5%",
+                    "visible": true,
+                    "orderable": false,
+                    "data": null,
+                    "defaultContent": defaultContent
+                },
+            ],
+            "order": [[4, 'desc']]
+        });
+
+        // Listener
+        $('#alignment-table tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = alignments_table.row(tr);
+            if (row.child.isShown()) {
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                row.child(alignments_dropdown(row.data())).show();
+                tr.addClass('shown');
+            }
+            tr.find('i').toggleClass('d-none');
+        });
+
         // Add
         $('.dataTables_filter input').addClass('rounded border-custom px-2 py-1 light tiny nodecoration');
 
+        //////// Object Editing
         // Edit object
         function edit_object($elem, title=null) {
             $.ajax({
@@ -567,25 +590,21 @@
         })
 
         // Delete
-        $('.delete-button').click(function(evt) {
+        $('#delete-modal-button').click(function(evt) {
             edit_object($elem=$(this));
         })
 
         // Rename
-        $('.rename-button').click(function (evt) {
+        $('#rename-modal-button').click(function (evt) {
             edit_object($elem = $(this), title= $(this).parents('.modal').find('input').val());
         })
 
-        // Changed listener
+        // Save notes
         $(document).on('change', '#notebook-table textarea', function(evt) {
             edit_object($elem = $(this), title = $(this).val());
         })
 
-        // Click listener
-        $('.dashboard-link').click(function(evt) {
-            $('#'+$(this).attr('data-tab')+'-tab').click();
-        })
-
+        //////// Edit Listeners
         // Dropdown event listener
         $('[name="content"]').change(function(evt) {
             $(this).parents('form').find('.normalization_method').toggleClass('d-none');
@@ -596,27 +615,29 @@
             $('#download-dataset-modal input[name="uid"]').val($(evt.target).parents('tr').prev().attr('data-uid'));
         })
 
-        // Delete dataset listener
-        $(document).on('click', '[data-target="#delete-dataset-modal"]', function(evt) {
-            $('#delete-dataset-modal .delete-button').attr('data-uid', $(evt.target).parents('tr').prev().attr('data-uid'));
-        })
-
-        // Delete notebook listener
-        $(document).on('click', '[data-target="#delete-notebook-modal"]', function(evt) {
-            $('#delete-notebook-modal .delete-button').attr('data-uid', $(evt.target).parents('tr').prev().attr('data-uid'));
-        })
-
-        // Rename dataset listener
-        $(document).on('click', '[data-target="#rename-dataset-modal"]', function (evt) {
-            $('#rename-dataset-modal .rename-button').attr('data-uid', $(evt.target).parents('tr').prev().attr('data-uid'));
-            $('#rename-dataset-modal input').val($(evt.target).parents('tr').prev().find('.dataset-title a').html());
-        })  
-
         // Close download modal after downloading
         $('#download-dataset-form').submit(function(evt) {
             $('#download-dataset-modal').modal('toggle');
         })
 
+        // Delete listener
+        $(document).on('click', '[data-target="#delete-modal"]', function(evt) {
+            var object_type = $(evt.target).parents('table').attr('id').split('-')[0];
+            $('#delete-modal-button').attr('data-uid', $(evt.target).parents('tr').prev().attr('data-uid'));
+            $('#delete-modal-button').attr('data-object_type', object_type.replace('dataset', 'user_dataset').replace('alignment', 'fastq_alignment'));
+            $('#delete-modal .modal-object_type').html(object_type);
+        })
+
+        // Rename listener
+        $(document).on('click', '[data-target="#rename-modal"]', function (evt) {
+            var object_type = $(evt.target).parents('table').attr('id').split('-')[0];
+            $('#rename-modal-button').attr('data-uid', $(evt.target).parents('tr').prev().attr('data-uid'));
+            $('#rename-modal-button').attr('data-object_type', object_type.replace('dataset', 'user_dataset').replace('alignment', 'fastq_alignment'));
+            $('#rename-modal input').val($(evt.target).parents('tr').prev().find('.object-title a').html());
+            $('#rename-modal .modal-object_type').html(object_type);
+        })  
+
+        ///// Tab handling
         // Tab hash listener
         $('[data-tab]').click(function(evt) {
             evt.preventDefault();
@@ -632,6 +653,10 @@
             $('[href="'+window.location.hash+'"]').tab('show');
         }
 
+        // Click listener
+        $('.dashboard-link').click(function(evt) {
+            $('#'+$(this).attr('data-tab')+'-tab').click();
+        })
         // $('#notebook-table .details-control div').first().click();
 
 
