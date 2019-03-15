@@ -106,7 +106,7 @@
 			if (file.name.indexOf(' ') > -1) {
 				files_with_space.push(file.name)
 			}
-			if (!file.name.indexOf('.fastq.gz') > -1 && !file.name.indexOf('.fq.gz') > -1) {
+			if (file.name.indexOf('.fastq.gz') === -1 && file.name.indexOf('.fq.gz') === -1) {
 				wrong_format_files.push(file.name)
 			}
 		})
@@ -125,7 +125,7 @@
 		} else if (wrong_format_files.length) {
 
 			// Alert wrong format files
-			alert('BioJupies currently only supports alignment of files in the .fastq.gz or .fq.gz formats. The following file(s) are stored in formats which are currently not supported. Please remove or reformat them to proceed.\n\n • '+ wrong_format_files.join('\n • '));
+			alert('BioJupies only supports alignment of files in the .fastq.gz or .fq.gz formats. The following file(s) are stored in formats which are currently not supported. Please remove or reformat them to proceed.\n\n • '+ wrong_format_files.join('\n • '));
 
 		} else {
 			
