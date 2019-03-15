@@ -39,6 +39,9 @@
         padding-left: 0px !important;
         padding-right: 0px !important;
     }
+    .dataTables_wrapper {
+        overflow-x: scroll;
+    }
     /* .tab-content {
         overflow-x: auto;
     } */
@@ -206,10 +209,10 @@
                             <th>Alignment UID</th>
                             <th>Alignment</th>
                             <th>Samples</th>
-                            <th>Species</th>
+                            <th>Organism</th>
                             <th>Date</th>
                             <th>Progress</th>
-                            <th>Info</th>
+                            <th>Options</th>
                         </thead>
                         <tbody>
                             {% for alignment in alignments %}
@@ -218,10 +221,15 @@
                                     <td class="object-title my-auto">
                                         <a href="{{ url_for('upload_reads', alignment=alignment['alignment_uid']) }}" target="_blank">{{ alignment['alignment_title'] }}</a>
                                     </td>
-                                    <td>{{ alignment['progress']|length }}</td>
+                                    <td>
+                                        <div class="d-table w-100" data-toggle="tooltip" data-placement="right" data-html="true" title="<div class='text-left light'><div>Alignment status:</div><ul class='pl-4 mb-1'>{% for status, samples in alignment['status_count'].items() %}<li>{{samples|length}}/{{alignment['progress']|length}} {{status}}</li>{% endfor %}</ul></div>">
+                                            <div class="d-table-cell align-middle pl-4">{{ alignment['progress']|length }}</div>
+                                            <img src="https://amp.pharm.mssm.edu/cloudalignment/images/{{ alignment['status'] }}.png" height="23px" class="d-table-cell align-middle ml-2">
+                                        </div>
+                                    </td>
                                     <td>{{ alignment['species'].replace('hs', 'Human').replace('mm', 'Mouse') }}</td>
-                                    <td><span class="d-none">{{ alignment['date'].strftime('%Y%m%d') }}</span>{{ alignment['date'].strftime('%B %-d, %Y') }}</td>
-                                    <td>{{ alignment['progress'] }}</td>
+                                    <td><span class="d-none">{{ alignment['date'].strftime('%Y%m%d%H%M') }}</span>{{ alignment['date'].strftime('%B %-d, %Y') }}</td>
+                                    <td>{{ alignment['progress_json'] }}</td>
                                     <td></td>
                                 </tr>
                             {% endfor %}
@@ -278,7 +286,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn border-grey nodecoration w-50" data-dismiss="modal">Cancel</button>
-        <button id="rename-modal-button" type="button" class="btn btn-primary nodecoration w-50" data-action="rename">Confirm</button>
+        <button id="rename-modal-button" type="button" class="btn bg-blue nodecoration w-50 white" data-action="rename">Confirm</button>
       </div>
     </div>
   </div>
@@ -320,7 +328,7 @@
     </div>
       <div class="modal-footer">
         <button type="button" class="btn border-grey nodecoration w-50" data-dismiss="modal">Cancel</button>
-        <button type="submit" form="download-dataset-form" class="btn btn-primary nodecoration w-50">Download</button>
+        <button type="submit" form="download-dataset-form" class="btn bg-blue white nodecoration w-50">Download</button>
       </div>
     </div>
   </div>
@@ -350,7 +358,7 @@
                     .append($('<textarea>', {'class': 'form-control micro px-2 py-2', 'rows': 7, 'data-action': 'save_notes', 'data-uid': d.notebook_uid, 'data-object_type': 'notebook'}).html(d.notes))
                 )
                 .append($('<div>', {'class': 'col-3 text-center pt-5'})
-                    .append($('<a>', { 'class': 'btn border-grey nodecoration black mx-auto mt-2', 'href': "notebook/" + d.notebook_uid, 'target': '_blank' }).html('<i class="fa fa-external-link-square-alt mr-2"></i>View'))
+                    .append($('<a>', { 'class': 'btn bg-blue nodecoration white mx-auto mt-2', 'href': "notebook/" + d.notebook_uid, 'target': '_blank' }).html('<i class="fa fa-external-link-square-alt mr-2"></i>View'))
                     .append($('<button>', { 'class': 'btn border-grey nodecoration btn-danger d-block mx-auto mt-4', 'data-toggle': "modal", 'data-target': "#delete-modal" }).html('<i class="fa fa-trash-alt mr-2"></i>Delete'))
                 )
                 ;
@@ -412,7 +420,7 @@
 
             $dataset_dropdown = $('<div>', {'class': 'row border-grey mx-0 rounded-bottom border-top-0 py-3 bg-white'})
                 .css('margin-top', '-7px')
-                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0'}).html($('<a>', {'class': 'btn border-grey nodecoration black', 'href': "{{ url_for('add_tools') }}?uid="+d.dataset_uid, 'target': '_blank' }).html('<i class="fa fa-external-link-square-alt mr-2"></i>Analyze')))
+                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0'}).html($('<a>', {'class': 'btn bg-blue nodecoration white', 'href': "{{ url_for('add_tools') }}?uid="+d.dataset_uid, 'target': '_blank' }).html('<i class="fa fa-external-link-square-alt mr-2"></i>Analyze')))
                 .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0'}).html($('<button>', {'class': 'btn border-grey nodecoration', 'data-toggle': "modal", 'data-target': "#download-dataset-modal"}).html('<i class="fa fa-download mr-2"></i>Download')))
                 .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0'}).html($('<button>', {'class': 'btn border-grey nodecoration', 'data-toggle': "modal", 'data-target': "#rename-modal"}).html('<i class="fa fa-edit mr-2"></i>Rename')))
                 .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0'}).html($('<button>', {'class': 'btn border-grey nodecoration btn-danger', 'data-toggle': "modal", 'data-target': "#delete-modal"}).html('<i class="fa fa-trash-alt mr-2"></i>Delete')))
@@ -479,11 +487,38 @@
         // Dropdown
         function alignments_dropdown(d) {
 
-            $alignments_dropdown = $('<div>', {'class': 'row border-grey mx-0 rounded-bottom border-top-0 py-3 bg-white'})
+            $alignment_table = $('<div>', {'class': 'mx-3 border-grey border-top-0 rounded-bottom mb-3'})
+                .css('max-height', '350px')
+                .css('overflow-y', 'scroll')
+                .html($('<table>', {'class': 'w-100 micro'})
+                .append($('<thead>')
+                    .html($('<tr>', {'class': 'bg-white'})
+                        .append($('<th>').html('Sample'))
+                        .append($('<th>').html('Status'))
+                    )
+                )
+                .append($('<tbody>')))
+
+            $.each(JSON.parse(d.progress_json), function(index, elem) {
+                $alignment_table.find('tbody')
+                .append($('<tr>')
+                    .append($('<td>').html(elem['sample_name']))
+                    .append($('<td>').html(
+                        $('<div>', {'class': 'd-table mx-auto'})
+                            .append($('<img>', {'src': 'https://amp.pharm.mssm.edu/cloudalignment/images/'+elem['status'].replace('waiting', 'pending')+'.png', 'class': 'd-table-cell align-middle mr-2', 'width': '20px'}))
+                            .append($('<div>', {'class': 'd-table-cell align-middle text-capitalize'}).html(elem['status']))
+                    ))
+                )
+            })
+
+            $alignments_dropdown = $('<div>', {'class': 'border-grey mx-0 rounded-bottom border-top-0 bg-white'})
                 .css('margin-top', '-7px')
-                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-sm-0'}).html($('<a>', {'class': 'btn border-grey nodecoration black', 'href': "{{ url_for('upload_reads') }}?alignment="+d.alignment_uid, 'target': '_blank' }).html('<i class="fa fa-external-link-square-alt mr-2"></i>Analyze')))
-                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0'}).html($('<button>', {'class': 'btn border-grey nodecoration', 'data-toggle': "modal", 'data-target': "#rename-modal"}).html('<i class="fa fa-edit mr-2"></i>Rename')))
-                .append($('<div>', {'class': 'col-sm-6 col-lg-3 mt-3 mt-lg-0'}).html($('<button>', {'class': 'btn border-grey nodecoration btn-danger', 'data-toggle': "modal", 'data-target': "#delete-modal"}).html('<i class="fa fa-trash-alt mr-2"></i>Delete')))
+                .append($('<div>', {'class': 'row py-3'})
+                    .append($('<div>', {'class': 'col-md-4 mt-3 mt-md-0'}).html($('<a>', {'class': 'btn bg-blue white nodecoration', 'href': "{{ url_for('upload_reads') }}?alignment="+d.alignment_uid, 'target': '_blank' }).html('<i class="fa fa-external-link-square-alt mr-2"></i>Analyze')))
+                    .append($('<div>', {'class': 'col-md-4 mt-3 mt-md-0'}).html($('<button>', {'class': 'btn border-grey nodecoration', 'data-toggle': "modal", 'data-target': "#rename-modal"}).html('<i class="fa fa-edit mr-2"></i>Rename')))
+                    .append($('<div>', {'class': 'col-md-4 mt-3 mt-md-0'}).html($('<button>', {'class': 'btn border-grey nodecoration btn-danger', 'data-toggle': "modal", 'data-target': "#delete-modal"}).html('<i class="fa fa-trash-alt mr-2"></i>Delete')))
+                )
+                .append($alignment_table)
             ;
 
             return $alignments_dropdown;
@@ -513,7 +548,7 @@
                     "width": "5%"
                 },
                 {
-                    "data": "progress",
+                    "data": "progress_json",
                     "visible": false
                 },
                 {
@@ -657,6 +692,9 @@
         $('.dashboard-link').click(function(evt) {
             $('#'+$(this).attr('data-tab')+'-tab').click();
         })
+
+        // Tooltip
+        $('[data-toggle="tooltip"]').tooltip()
         // $('#notebook-table .details-control div').first().click();
 
 

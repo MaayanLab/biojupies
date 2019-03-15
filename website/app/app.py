@@ -1469,6 +1469,18 @@ def dashboard():
 			alignments = [x._asdict() for x in alignments if progress.get(x.alignment_uid)]
 			for alignment in alignments:
 				alignment['progress'] = progress.get(alignment['alignment_uid'])
+				status_count = pd.DataFrame(alignment['progress']).groupby('status')['sample_name'].apply(list).to_dict()
+				if 'failed' in status_count.keys():
+					status = 'failed'
+				elif 'submitted' in status_count.keys():
+					status = 'submitted'
+				elif 'waiting' in status_count.keys():
+					status = 'pending'
+				else:
+					status = 'completed'
+				alignment['status_count'] = status_count
+				alignment['status'] = status
+				alignment['progress_json'] = json.dumps(alignment['progress'])
 
 		# Close session
 		session.close()
