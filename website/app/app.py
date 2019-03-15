@@ -894,12 +894,13 @@ def upload_reads():
 
 		# Find alignment
 		session = Session()
-		alignment_user_id = session.query(tables['fastq_upload'].columns['user_fk']).join(tables['fastq_alignment']).filter(tables['fastq_alignment'].columns['alignment_uid'] == alignment_uid).first()
-		alignment_user_id = alignment_user_id[0] if alignment_user_id else None
+		alignment_data = session.query(tables['fastq_upload'].columns['user_fk'], tables['fastq_alignment'].columns['deleted']).join(tables['fastq_alignment']).filter(tables['fastq_alignment'].columns['alignment_uid'] == alignment_uid).first()
+		# alignment_user_id = session.query(tables['fastq_upload'].columns['user_fk']).join(tables['fastq_alignment']).filter(tables['fastq_alignment'].columns['alignment_uid'] == alignment_uid).first()
+		alignment_user_id = alignment_data.user_fk if alignment_data else None
 		session.close()
 
 		# Check if user matches
-		if (alignment_user_id and ((current_user.get_id() and int(current_user.get_id()) in (alignment_user_id, 3))) or (not alignment_user_id)):
+		if (not alignment_data.deleted) and ((alignment_user_id and ((current_user.get_id() and int(current_user.get_id()) in (alignment_user_id, 3))) or (not alignment_user_id))):
 
 			# Get jobs
 			print('performing request...')
@@ -1102,7 +1103,7 @@ def launch_alignment_api():
 			# print(resp)
 
 	# Upload to database
-	RM.uploadAlignmentJob(alignment_uid=alignment_uid, upload_uid=alignment_settings['upload_uid'], paired=alignment_settings.get('sequencing-type')=='paired-end', species=alignment_settings['organism'].replace('human', 'hs').replace('mouse', 'mm'), session=Session(), tables=tables)
+	RM.uploadAlignmentJob(alignment_uid=alignment_uid, upload_uid=alignment_settings['upload_uid'], paired=alignment_settings.get('sequencing-type')=='paired-end', species=alignment_settings['organism'].replace('human', 'hs').replace('mouse', 'mm'), alignment_title=alignment_settings.get('alignment_title', 'FASTQ Alignment'), session=Session(), tables=tables)
 
 	return json.dumps({'alignment_uid': alignment_uid})
 
@@ -1463,7 +1464,7 @@ def dashboard():
 			progress_dataframe = pd.DataFrame(json.loads(urllib.request.urlopen(req).read().decode('utf-8'))).T[['outname', 'status']]
 			progress_dataframe['split'] = [x.split('-')[0] for x in progress_dataframe['outname']]
 			progress_dataframe['sample_name'] = [x.split('-', 2)[-1].split('-', -1)[0] if '-' in x else '' for x in progress_dataframe['outname']]
-			progress = progress_dataframe[progress_dataframe['split'].isin(alignment.alignment_uid for alignment in alignments)].groupby('split')[['sample_name', 'status']].apply(lambda x: x.to_dict(orient='records')).to_dict()
+			progress = progress_dataframe[progress_dataframe['split'].isin(alignment.alignment_uid for alignment in alignments)].groupby('split')[['sample_name', 'status']].apply(lambda x: x.sort_values('sample_name').to_dict(orient='records')).to_dict()
 
 			# Add to alignments
 			alignments = [x._asdict() for x in alignments if progress.get(x.alignment_uid)]

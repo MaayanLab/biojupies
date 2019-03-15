@@ -128,7 +128,7 @@ def uploadJob(jobs, session, tables):
 
 	session.close()
 
-def uploadAlignmentJob(alignment_uid, upload_uid, paired, species, session, tables):
+def uploadAlignmentJob(alignment_uid, upload_uid, paired, species, alignment_title, session, tables):
 
 	# Add new alignment job with UID, upload FK, and organism
 	query = session.query(tables['fastq_alignment'].columns['id']).filter(tables['fastq_alignment'].columns['alignment_uid'] == alignment_uid).all()
@@ -142,7 +142,7 @@ def uploadAlignmentJob(alignment_uid, upload_uid, paired, species, session, tabl
 			upload_id = session.query(tables['fastq_upload'].columns['id']).filter(tables['fastq_upload'].columns['upload_uid'] == upload_uid).all()[0][0]
 			
 			# Upload samples
-			session.execute(tables['fastq_alignment'].insert().values([{'alignment_uid': alignment_uid, 'fastq_upload_fk': upload_id, 'species': species, 'paired': paired}]))
+			session.execute(tables['fastq_alignment'].insert().values([{'alignment_uid': alignment_uid, 'fastq_upload_fk': upload_id, 'species': species, 'paired': paired, 'alignment_title': alignment_title}]))
 
 		# Close session
 		session.commit()

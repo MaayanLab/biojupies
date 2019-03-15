@@ -91,6 +91,21 @@
 					</div>
 				</div>
 				
+				<!-- Alignment Name -->
+			{% if current_user.is_authenticated %}
+				<div class="medium light mb-2 pt-2 mt-4">How would you like to name the alignment?</div>
+				<div class="light very-small text-justify">
+					<b>Optionally, insert a name</b> of your alignment job. The name will be displayed in your <a href="{{ url_for('dashboard') }}" target="_blank">user dashboard</a> and can be changed at any time.
+				</div>
+
+				<!-- Alignment Name Input -->
+				<div class="row mt-3 mb-4">
+					<div class="col-6">
+						<input type="text" class="form-control" name="alignment_title" value="FASTQ Alignment" maxlength="200">
+					</div>
+				</div>
+			{% endif %}
+				
 				<!-- Single-end -->
 				<div class="sample-selection mb-4">
 					<div class="medium light mb-2 pt-2 mt-3">Sample Overview</div>
@@ -140,18 +155,6 @@
 					{% endfor %}
 				</div>
 
-				<!-- Alignment Name -->
-				<!-- <div class="medium light mb-2">How do you wish to name the dataset?</div>
-				<div class="light very-small text-justify">
-					Optionally, <b>insert</b> the name of the dataset. This will be made available in the user dashboard.
-				</div> -->
-				
-				<!-- Alignment Name Input -->
-				<!-- <div class="row mt-3 mb-4">
-					<div class="col-12">
-						<input type="text" name="alignment_name" class="form-control" placeholder="Insert dataset name...">
-					</div>
-				</div> -->
 
             </form>
             
