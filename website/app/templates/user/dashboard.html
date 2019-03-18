@@ -594,11 +594,16 @@
                     // Set privacy
                     if ($elem.data('action') === 'change_privacy') {
                         var rowSelector = $('tr[data-uid="' + $elem.data('uid') + '"]'),
-                            row = notebook_table.row(rowSelector),
-                            rowData = row.data();
+                            table = $elem.attr('data-object_type') === 'notebook' ? notebook_table : dataset_table,
+                            row = table.row(rowSelector),
+                            rowData = row.data(),
+                            expanded = rowSelector.find('.fa-angle-down').hasClass('d-none');
                         rowData.private = $elem.attr('checked', response['private'] == 1 ? true : false)[0].outerHTML;
                         row.data(rowData).draw();
-                        $elem.prop('checked', response['private']);
+                        console.log(expanded);
+                        if (expanded) {
+                            rowSelector.find('.details-control i').toggleClass('d-none');
+                        }
                         console.log('set '+$elem.data('object_type')+' '+$elem.data('uid')+' privacy to '+response['private']);
                     } else if ($elem.data('action') === 'rename') {
                         console.log('set '+$elem.data('object_type')+' '+$elem.data('uid')+' title to '+response['title']);
