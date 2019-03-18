@@ -1443,7 +1443,7 @@ def dashboard():
 	else:
 
 		# Get User ID
-		user_id = 308  # current_user.get_id()
+		user_id = current_user.get_id()
 
 		# Start session
 		session = Session()
