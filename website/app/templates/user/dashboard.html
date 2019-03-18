@@ -623,7 +623,8 @@
         }
 
         // Private
-        $('.private-checkbox').click(function(evt) {
+        $(document).on('change', '.private-checkbox', function(evt) {
+        // $('.private-checkbox').click(function(evt) {
             evt.preventDefault();
             edit_object($elem=$(this));
         })
