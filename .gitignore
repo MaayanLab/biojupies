@@ -16,4 +16,4 @@ Untitled.ipynb
 biojupies-jshelf-docker
 biojupies-jshelf-docker.zip
 versions.txt
-jupyter_notebooks
+docker/jupyter_notebooks/*
