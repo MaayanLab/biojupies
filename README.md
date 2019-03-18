@@ -1,6 +1,6 @@
 # BioJupies
 ![Notebooks Generated](https://img.shields.io/badge/dynamic/json.svg?url=https://amp.pharm.mssm.edu/biojupies/api/stats?obj=notebook&label=notebooks%20generated&query=$.n&colorB=blue)
-![Datasets Available](https://img.shields.io/badge/RNA--seq%20datasets%20available-8439-green.svg)
+![Datasets Available](https://img.shields.io/badge/RNA--seq%20datasets%20available-9145-green.svg)
 ![Plugins](https://img.shields.io/badge/analysis%20plugins-14-yellow.svg)
 
 Automated generation of Jupyter Notebooks for RNA-seq data analysis via user interface (http://biojupies.cloud).
