@@ -200,7 +200,7 @@
 
             <!-- Datasets -->
             {% if alignments|length %}
-                <div class="mb-3">The list below displays your alignment jobs. Please refresh the page to check live alignment status.</div>
+                <div class="mb-3">The list below displays your alignment jobs. Please refresh the page to check the live alignment status. All alignment jobs are private by default.</div>
 
 
                     <!-- Alignment Table -->
@@ -593,6 +593,11 @@
                 success: function(response) {
                     // Set privacy
                     if ($elem.data('action') === 'change_privacy') {
+                        var rowSelector = $('tr[data-uid="' + $elem.data('uid') + '"]'),
+                            row = notebook_table.row(rowSelector),
+                            rowData = row.data();
+                        rowData.private = $elem.attr('checked', response['private'] == 1 ? true : false)[0].outerHTML;
+                        row.data(rowData).draw();
                         $elem.prop('checked', response['private']);
                         console.log('set '+$elem.data('object_type')+' '+$elem.data('uid')+' privacy to '+response['private']);
                     } else if ($elem.data('action') === 'rename') {
@@ -620,7 +625,6 @@
         // Private
         $('.private-checkbox').click(function(evt) {
             evt.preventDefault();
-            console.log($(this));
             edit_object($elem=$(this));
         })
 
