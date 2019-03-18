@@ -909,11 +909,12 @@ def upload_reads():
 			print('done!')
 			jobs = job_dataframe.loc[[index for index, rowData in job_dataframe.iterrows() if rowData['outname'].startswith(alignment_uid)]].to_dict(orient='records')
 			if len(jobs):
+				failed = any([x['status'] == 'failed' for x in jobs])
 
 				### Add job to database, adding foreign key for upload
 				# RM.uploadJob(jobs, session=Session(), tables=tables)
 
-				return render_template('upload/alignment_status.html', alignment_uid=alignment_uid, jobs=jobs, elysium_username=os.environ['ELYSIUM_USERNAME'], elysium_password=os.environ['ELYSIUM_PASSWORD'])
+				return render_template('upload/alignment_status.html', alignment_uid=alignment_uid, jobs=jobs, failed=failed)
 
 			else:
 				abort(404)
@@ -1442,7 +1443,7 @@ def dashboard():
 	else:
 
 		# Get User ID
-		user_id = current_user.get_id()
+		user_id = 308  # current_user.get_id()
 
 		# Start session
 		session = Session()

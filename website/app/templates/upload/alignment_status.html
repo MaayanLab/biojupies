@@ -33,12 +33,13 @@
 
 	<!-- Alignment Settings -->
     <hr width="100%" class="my-4">
-<!--     <div class="row">
-		<div class="col-12 px-4 pt-1">
-            <div class="medium light mb-2">Job Status</div>
-            <div class="light very-small text-justify mt-2 mb-2">The status of the alignment jobs can be seen below:</div>
+    {% if failed %}
+    <div class="row">
+        <div class="col-12 px-4 pt-1">
+            <div class="light very-small text-justify mb-3">For assistance in resolving failed alignment jobs, feel free to <a class="nodecoration" href="mailto:avi.maayan@mssm.edu,denis.torre@mssm.edu?Subject=BioJupies%20Alignment%20Error&Body=Hello,%0AI am writing to request assistance for a BioJupies alignment error (ID: {{ alignment_uid }}).%0AThank you,%0A ">contact us</a>.</div>
 		</div>
-    </div> -->
+    </div>
+    {% endif %}
 
 	<!-- Jobs -->
 	<div class="row px-3 mb-5 pt-2">
@@ -68,7 +69,6 @@
     function getStatus() {
         $.getJSON(
             "{{ url_for('elysium_api', alignment_uid=alignment_uid) }}&request_type=progress",
-            // "https://amp.pharm.mssm.edu/cloudalignment/progress?username={{ elysium_username }}&password={{ elysium_password }}",
             function (data) {
 
                 // Check status

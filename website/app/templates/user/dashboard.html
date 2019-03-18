@@ -600,7 +600,6 @@
                             expanded = rowSelector.find('.fa-angle-down').hasClass('d-none');
                         rowData.private = $elem.attr('checked', response['private'] == 1 ? true : false)[0].outerHTML;
                         row.data(rowData).draw();
-                        console.log(expanded);
                         if (expanded) {
                             rowSelector.find('.details-control i').toggleClass('d-none');
                         }
