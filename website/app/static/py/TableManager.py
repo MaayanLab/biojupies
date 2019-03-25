@@ -98,6 +98,8 @@ def buildH5(data, dataset_uid):
 		if data.get('qc'):
 			sequencing_grp = f.create_group('meta/sequencing')
 			sequencing_grp.create_dataset('qc', data=data['qc'], dtype=h5py.special_dtype(vlen=str))
+			sequencing_grp.create_dataset('reference_genome', data=data.get('reference_genome'), dtype=h5py.special_dtype(vlen=str))
+
 
 		# Close file
 		f.close()

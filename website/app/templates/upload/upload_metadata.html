@@ -156,6 +156,9 @@
 		{% if f.get('alignment_uid') %}
 			<input type="hidden" name="alignment_uid" value="{{ f['alignment_uid'] }}">
 		{% endif %}
+		{% if f.get('reference_genome') %}
+			<input type="hidden" name="reference_genome" value="{{ f['reference_genome'] }}">
+		{% endif %}
 		{% if f.get('qc') %}
 			<input type="hidden" name="qc" value="{{ f['qc'] }}">
 		{% endif %}

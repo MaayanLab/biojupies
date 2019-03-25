@@ -930,10 +930,10 @@ def upload_reads():
 	elif request.form.get('expression'):
 
 		# Get form
-		f = request.form
+		f = request.form.to_dict()
 
 		# Get samples for group table
-		samples = json.loads(f.to_dict()['expression'])['columns']
+		samples = json.loads(f['expression'])['columns']
 		samples.sort()
 
 		# Get groups
@@ -943,6 +943,15 @@ def upload_reads():
 		# Assign groups
 		matches = {sample: [group for group in groups if group in sample] for sample in samples}
 		sample_groups = [{'sample': sample, 'group': matches[sample][-1] if len(matches[sample]) else ''} for sample in samples]
+
+		# Get alignment species, if from FASTQ
+		if f.get('alignment_uid'):
+			# Find species
+			session = Session()
+			alignment_data = session.query(tables['fastq_alignment']).filter(tables['fastq_alignment'].columns['alignment_uid'] == f.get('alignment_uid')).first()
+			alignment_species = alignment_data.species if alignment_data else None
+			session.close()
+			f['reference_genome'] = alignment_species.replace('hs', 'GRCh38 human').replace('mm', 'GRCh38 mouse')
 			
 		# Return result
 		return render_template('upload/upload_metadata.html', sample_groups=sample_groups, f=f, uploadtype='table')
