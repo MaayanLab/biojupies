@@ -94,7 +94,7 @@ For more information about reusing notebooks, see https://amp.pharm.mssm.edu/bio
 
 ## References
 BioJupies is available as a pre-print on **BioRxiv**:
-[BioJupies: Automated Generation of Interactive Notebooks for RNA-seq Data Analysis in the Cloud](https://doi.org/10.1101/352476) Torre, D., Lachmann, A., and Ma’ayan, A. (2018)
+[BioJupies: Automated Generation of Interactive Notebooks for RNA-seq Data Analysis in the Cloud](http://dx.doi.org/10.1016/j.cels.2018.10.007) Torre, D., Lachmann, A., and Ma’ayan, A. (Cell Systems, 2018)
 
 ## License
 This project is licensed under the Apache-2.0 License - see the [LICENSE.md](LICENSE.md) file for details
