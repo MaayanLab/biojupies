@@ -80,7 +80,7 @@ parso==0.2.0
 pexpect==4.5.0
 pickleshare==0.7.4
 pkg-resources==0.0.0
-plotly==2.5.1
+plotly==3.7.1
 ply==3.8
 prompt-toolkit==1.0.15
 proto-google-cloud-datastore-v1==0.90.4

@@ -55,7 +55,7 @@ http {
     server {
         listen 80;
         charset utf-8;
-        client_max_body_size 20M;
+        client_max_body_size 30M;
         sendfile on;
         keepalive_timeout 0;
         large_client_header_buffers 8 32k;
