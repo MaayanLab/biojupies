@@ -21,7 +21,7 @@ from flask import Flask, request, render_template, Response, redirect, url_for, 
 from flask_sqlalchemy import SQLAlchemy
 # from flask_dance.contrib.github import make_github_blueprint, github
 from flask_dance.contrib.google import make_google_blueprint, google
-from flask_dance.consumer.backend.sqla import OAuthConsumerMixin, SQLAlchemyBackend
+from flask_dance.consumer.storage.sqla import OAuthConsumerMixin, SQLAlchemyStorage
 from flask_dance.consumer import oauth_authorized, oauth_error
 from flask_login import (
 	LoginManager, UserMixin, current_user,
@@ -165,7 +165,7 @@ def load_user(user_id):
 	return User.query.get(int(user_id))
 
 # Setup SQLAlchemy backend
-blueprint.backend = SQLAlchemyBackend(OAuth, db.session, user=current_user)
+blueprint.backend = SQLAlchemyStorage(OAuth, db.session, user=current_user)
 
 # create/login local user on successful OAuth login
 @oauth_authorized.connect_via(blueprint)
