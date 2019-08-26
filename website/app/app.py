@@ -1096,21 +1096,14 @@ def launch_alignment_api():
 		# Add species
 		sample['outname'] = alignment_uid+'-'+sample['outname']+'-'+alignment_settings['organism'].replace('human', 'hs').replace('mouse', 'mm')
 
-		# Get jobs
-		req =  urllib.request.Request('https://amp.pharm.mssm.edu/cloudalignment/progress?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
-		job_dataframe = pd.DataFrame(json.loads(urllib.request.urlopen(req).read().decode('utf-8'))).T[['outname', 'status']]
-
-		# Check if alignment hasn't been submitted yet (fix to add support for different organisms)
-		if sample['outname'] not in job_dataframe['outname'].tolist():
-
-			# Get URL parameters
-			params = '&'.join(['{key}={value}'.format(**locals()) for key, value in sample.items() if value])+'&organism='+alignment_settings['organism']
-			url = "https://amp.pharm.mssm.edu/cloudalignment/createjob?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&".format(**os.environ)+params
-			# Launch alignment jobs
-			req =  urllib.request.Request(urllib.parse.quote(url, safe=':/&.?='))
-			# req =  urllib.request.Request(url.replace(' ', '%20'))
-			resp = urllib.request.urlopen(req).read().decode('utf-8')
-			# print(resp)
+		# Get URL parameters
+		params = '&'.join(['{key}={value}'.format(**locals()) for key, value in sample.items() if value])+'&organism='+alignment_settings['organism']
+		url = "https://amp.pharm.mssm.edu/cloudalignment/createjob?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&".format(**os.environ)+params
+		# Launch alignment jobs
+		req =  urllib.request.Request(urllib.parse.quote(url, safe=':/&.?='))
+		# req =  urllib.request.Request(url.replace(' ', '%20'))
+		resp = urllib.request.urlopen(req).read().decode('utf-8')
+		# print(resp)
 
 	# Upload to database
 	RM.uploadAlignmentJob(alignment_uid=alignment_uid, upload_uid=alignment_settings['upload_uid'], paired=alignment_settings.get('sequencing-type')=='paired-end', species=alignment_settings['organism'].replace('human', 'hs').replace('mouse', 'mm'), alignment_title=alignment_settings.get('alignment_title', 'FASTQ Alignment'), session=Session(), tables=tables)
