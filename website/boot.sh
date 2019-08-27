@@ -2,6 +2,7 @@
 
 root=/biojupies
 user=r
+sslroot=/ssl
 
 echo "Booting..."
 
@@ -9,6 +10,17 @@ if [ ! -z "$APPLICATION_DEFAULT_CREDENTIALS" -a ! -z "$GOOGLE_APPLICATION_CREDEN
 echo "Initializing gcloud credentials..."
 mkdir -p .config/gcloud
 echo $APPLICATION_DEFAULT_CREDENTIALS > $GOOGLE_APPLICATION_CREDENTIALS
+fi
+
+
+if [ ! -z "${SSL_CERTIFICATE}" -a ! -z "${SSL_CERTIFICATE_KEY}" ]; then
+    echo "Writing SSL Keys..." >> $log
+    mkdir -p "${sslroot}"
+    echo "${SSL_CERTIFICATE}" | sed 's/;/\n/g' > "${sslroot}/cert.crt"
+    echo "${SSL_CERTIFICATE_KEY}" | sed 's/;/\n/g' > "${sslroot}/cert.key"
+    export SSL=1
+else
+    export SSL=
 fi
 
 echo "Creating user..."
