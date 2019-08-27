@@ -62,9 +62,14 @@ if os.getenv('SENTRY_DSN'):
 	sentry_sdk.init(dsn=os.environ['SENTRY_DSN'], integrations=[FlaskIntegration()])
 
 # General
-with open('dev.txt') as openfile:
-	dev = openfile.read() == 'True'
-entry_point = '/biojupies-dev' if dev else '/biojupies'
+dev = os.getenv('DEV')
+if dev is None:
+	with open('dev.txt') as openfile:
+		dev = openfile.read() == 'True'
+else:
+	dev = json.loads(dev)
+entry_point = os.getenv('ENTRY_POINT', '/biojupies-dev' if dev else '/biojupies')
+
 app = Flask(__name__, static_url_path='/app/static')
 
 # Database
@@ -106,7 +111,10 @@ class PrefixMiddleware(object):
 		else:
 			start_response('404', [('Content-Type', 'text/plain')])
 			return ["This url does not belong to the app.".encode()]
-app.wsgi_app = PrefixMiddleware(app.wsgi_app, prefix=entry_point)
+
+# only apply prefix middleware if we actually need it
+if entry_point.strip('/') != '':
+	app.wsgi_app = PrefixMiddleware(app.wsgi_app, prefix=entry_point)
 
 # HTTPS fix
 if not os.environ.get('OAUTHLIB_INSECURE_TRANSPORT'):
