@@ -457,8 +457,8 @@ def configure_analysis():
 						tables['sample_v6'].columns['sample_accession'].label('accession'),
 						tables['sample_metadata_v6'].columns['variable'], \
 						tables['sample_metadata_v6'].columns['value']) \
-					.join(tables['dataset_v6']) \
-					.join(tables['sample_metadata_v6']) \
+					.join(tables['dataset_v6'], tables['dataset_v6'].columns['id'] == tables['sample_v6'].columns['dataset_fk']) \
+					.join(tables['sample_metadata_v6'], tables['sample_metadata_v6'].columns['sample_fk'] == tables['sample_v6'].columns['id']) \
 					.filter(tables['dataset_v6'].columns['dataset_accession'] == request.form.get('gse')).all()
 				session.close()
 
@@ -477,8 +477,8 @@ def configure_analysis():
 						tables['user_sample'].columns['sample_name'].label('sample'),
 						tables['user_sample_metadata'].columns['variable'], \
 						tables['user_sample_metadata'].columns['value']) \
-					.join(tables['user_dataset']) \
-					.join(tables['user_sample_metadata']) \
+					.join(tables['user_dataset'], tables['user_dataset'].columns['id'] == tables['user_sample'].columns['user_dataset_fk']) \
+					.join(tables['user_sample_metadata'], tables['user_sample_metadata'].columns['user_sample_fk'] == tables['user_sample'].columns['id']) \
 					.filter(tables['user_dataset'].columns['dataset_uid'] == request.form.get('uid')).all()
 				session.close()
 
@@ -502,8 +502,8 @@ def configure_analysis():
 					tables['parameter'].columns['parameter_description'], \
 					tables['parameter_value'].columns['value'], \
 					tables['parameter_value'].columns['default']) \
-				.outerjoin(tables['parameter']) \
-				.outerjoin(tables['parameter_value']) \
+				.outerjoin(tables['parameter'], tables['parameter'].columns['tool_fk'] == tables['tool'].columns['id']) \
+				.outerjoin(tables['parameter_value'], tables['parameter_value'].columns['parameter_fk'] == tables['parameter'].columns['id']) \
 				.filter(tables['tool'].columns['tool_string'].in_(tools)).all()
 			session.close()
 			p = pd.DataFrame(db_query).set_index(['tool_string'])#pd.read_sql_query('SELECT tool_name, tool_string, tool_description, parameter_name, parameter_description, parameter_string, value, `default` FROM tool t LEFT JOIN parameter p ON t.id=p.tool_fk LEFT JOIN parameter_value pv ON p.id=pv.parameter_fk WHERE t.tool_string IN {}'.format(tool_query_string), engine).set_index(['tool_string'])#.set_index(['tool_name', 'parameter_name', 'parameter_description', 'parameter_string'])
@@ -725,7 +725,7 @@ def ontology_api():
 	# Initialize database query
 	session = Session()
 	db_query = session.query(tables['ontology_term']) \
-					.join(tables['ontology']) \
+					.join(tables['ontology'], tables['ontology'].columns['id'] == tables['ontology_term'].columns['ontology_fk']) \
 					.filter(tables['ontology'].columns['ontology_string'].in_(ontologies))#.limit(5)
 	# Finish query
 	query_dataframe = pd.DataFrame(db_query.all()).drop(['ontology_fk'], axis=1).fillna('')
@@ -894,8 +894,8 @@ def upload_reads():
 
 		# Find alignment
 		session = Session()
-		alignment_data = session.query(tables['fastq_upload'].columns['user_fk'], tables['fastq_alignment'].columns['deleted']).join(tables['fastq_alignment']).filter(tables['fastq_alignment'].columns['alignment_uid'] == alignment_uid).first()
-		# alignment_user_id = session.query(tables['fastq_upload'].columns['user_fk']).join(tables['fastq_alignment']).filter(tables['fastq_alignment'].columns['alignment_uid'] == alignment_uid).first()
+		alignment_data = session.query(tables['fastq_upload'].columns['user_fk'], tables['fastq_alignment'].columns['deleted']).join(tables['fastq_alignment'], tables['fastq_alignment'].columns['fastq_upload_fk'] == tables['fastq_upload'].columns['id']).filter(tables['fastq_alignment'].columns['alignment_uid'] == alignment_uid).first()
+		# alignment_user_id = session.query(tables['fastq_upload'].columns['user_fk']).join(tables['fastq_alignment'], tables['fastq_alignment'].columns['fastq_upload_fk'] == tables['fastq_upload'].columns['id']).filter(tables['fastq_alignment'].columns['alignment_uid'] == alignment_uid).first()
 		alignment_user_id = alignment_data.user_fk if alignment_data else None
 		session.close()
 
@@ -1451,13 +1451,13 @@ def dashboard():
 		session = Session()
 
 		# Get datasets
-		datasets = session.query(tables['user_dataset'], func.count(tables['user_sample'].columns['id']).label('samples')).join(tables['user_sample']).filter(and_(tables['user_dataset'].columns['user_fk'] == user_id, tables['user_dataset'].columns['deleted'] == 0)).group_by(tables['user_dataset'].columns['id']).order_by(tables['user_dataset'].columns['date'].desc()).all()
+		datasets = session.query(tables['user_dataset'], func.count(tables['user_sample'].columns['id']).label('samples')).join(tables['user_sample'], tables['user_sample'].columns['user_dataset_fk'] == tables['user_dataset'].columns['id']).filter(and_(tables['user_dataset'].columns['user_fk'] == user_id, tables['user_dataset'].columns['deleted'] == 0)).group_by(tables['user_dataset'].columns['id']).order_by(tables['user_dataset'].columns['date'].desc()).all()
 
 		# Get notebooks
 		notebooks = session.query(tables['notebook']).filter(and_(tables['notebook'].columns['user_fk'] == user_id, tables['notebook'].columns['deleted'] == 0)).order_by(tables['notebook'].columns['date'].desc()).all()
 
 		# Get alignment jobs
-		alignments = session.query(tables['fastq_alignment']).join(tables['fastq_upload']).filter(and_(tables['fastq_upload'].columns['user_fk'] == user_id, tables['fastq_alignment'].columns['deleted'] == 0)).order_by(tables['fastq_alignment'].columns['date'].asc()).all()
+		alignments = session.query(tables['fastq_alignment']).join(tables['fastq_upload'], tables['fastq_upload'].columns['id'] == tables['fastq_alignment'].columns['fastq_upload_fk']).filter(and_(tables['fastq_upload'].columns['user_fk'] == user_id, tables['fastq_alignment'].columns['deleted'] == 0)).order_by(tables['fastq_alignment'].columns['date'].asc()).all()
 
 		# Get statuses
 		if alignments:
