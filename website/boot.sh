@@ -90,6 +90,10 @@ http {
             proxy_set_header   X-Real-IP \$remote_addr;
             proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
             proxy_set_header   X-Forwarded-Host \$server_name;
+            proxy_connect_timeout 0;
+            proxy_send_timeout    0;
+            proxy_read_timeout    0;
+            send_timeout          0;
         }
     }
 EOF
@@ -127,6 +131,10 @@ cat << EOF | tee -a $root/nginx.conf
             proxy_set_header   X-Real-IP \$remote_addr;
             proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
             proxy_set_header   X-Forwarded-Host \$server_name;
+            proxy_connect_timeout 0;
+            proxy_send_timeout    0;
+            proxy_read_timeout    0;
+            send_timeout          0;
         }
     }
 EOF
