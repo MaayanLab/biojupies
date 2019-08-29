@@ -1215,7 +1215,7 @@ def elysium_api():
 		if isinstance(alignment_uid, str) and len(alignment_uid) == 11:
 
 			# Build url
-			url = 'https://amp.pharm.mssm.edu/cloudalignment/{endpoint}?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}?prefix={alignment_uid}'.format(**os.environ, **locals())
+			url = 'https://amp.pharm.mssm.edu/cloudalignment/{endpoint}?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&prefix={alignment_uid}'.format(**os.environ, **locals())
 
 			# Get job dataframe
 			job_dataframe = pd.DataFrame(json.loads(urllib.request.urlopen(urllib.request.Request(url)).read().decode('utf-8'))).T
