@@ -873,7 +873,7 @@ def upload_reads():
 			if (upload_user_id and ((current_user.get_id() and int(current_user.get_id()) in (upload_user_id, 3))) or (not upload_user_id)):
 
 				# Get samples
-				req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
+				req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&prefix={upload_uid}'.format(**os.environ, **locals()))
 				uploaded_files = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['filenames']
 				samples = [x for x in uploaded_files if x.startswith(upload_uid) and (x.endswith('.fastq.gz') or x.endswith('.fq.gz'))]
 
@@ -904,7 +904,7 @@ def upload_reads():
 
 			# Get jobs
 			print('performing request...')
-			req =  urllib.request.Request('https://amp.pharm.mssm.edu/cloudalignment/progress?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
+			req =  urllib.request.Request('https://amp.pharm.mssm.edu/cloudalignment/progress?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&prefix={alignment_uid}'.format(**os.environ, **locals()))
 			job_dataframe = pd.DataFrame(json.loads(urllib.request.urlopen(req).read().decode('utf-8'))).T
 			print('done!')
 			jobs = job_dataframe.loc[[index for index, rowData in job_dataframe.iterrows() if rowData['outname'].startswith(alignment_uid)]].to_dict(orient='records')
@@ -1125,7 +1125,7 @@ def merge_counts_api():
 	alignment_uid = request.args.get('alignment_uid')#'RTBO2Vk5xvV'
 
 	# Get samples
-	req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
+	req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&prefix={alignment_uid}'.format(**os.environ, **locals()))
 	uploaded_files = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['filenames']
 	samples = [x for x in uploaded_files if x.startswith(alignment_uid) and x.endswith('_gene.tsv')]
 
@@ -1208,14 +1208,14 @@ def elysium_api():
 
 	elif endpoint == 'progress':
 
-		# Build url
-		url = 'https://amp.pharm.mssm.edu/cloudalignment/{endpoint}?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ, **locals())
-
 		# Get alignment UID
 		alignment_uid = request.args.get('alignment_uid')
 
 		# Check
 		if isinstance(alignment_uid, str) and len(alignment_uid) == 11:
+
+			# Build url
+			url = 'https://amp.pharm.mssm.edu/cloudalignment/{endpoint}?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}?prefix={alignment_uid}'.format(**os.environ, **locals())
 
 			# Get job dataframe
 			job_dataframe = pd.DataFrame(json.loads(urllib.request.urlopen(urllib.request.Request(url)).read().decode('utf-8'))).T
