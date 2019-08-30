@@ -204,6 +204,8 @@ def download():
 
 	# Load HDF5 File
 	h5 = '/download/{gse}-{platform}.h5'.format(**request.args.to_dict())
+	os.makedirs(os.path.dirname(h5), exist_ok=True)
+
 	with open(h5, 'wb') as openfile:
 		openfile.write(urllib.request.urlopen('https://storage.googleapis.com/archs4-packages-{}/'.format(request.args.get('version'))+h5.split('/')[-1]).read())
 	f = h5py.File(h5, 'r')

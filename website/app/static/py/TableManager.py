@@ -72,6 +72,7 @@ def buildH5(data, dataset_uid):
 
 	# Get outfile
 	outfile = os.path.join('app/static/uploads/h5', dataset_uid+'.h5')
+	os.makedirs(os.path.dirname(outfile), exist_ok=True)
 
 	# Try
 	try:
