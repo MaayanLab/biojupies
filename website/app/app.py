@@ -82,6 +82,8 @@ metadata = MetaData()
 metadata.reflect(bind=engine)
 tables = metadata.tables
 
+app.jinja_env.globals['DEV'] = dev
+
 ##### 2. Functions #####
 # Longest common substring
 def common_start(sa, sb):

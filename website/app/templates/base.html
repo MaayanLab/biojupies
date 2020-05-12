@@ -220,8 +220,10 @@
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
     <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ac68efa480add22"></script>
 
+    {% if not DEV %}
     <!-- HTTPS -->
     <script type="text/javascript">if ((location.protocol != 'https:') && (location.hostname != 'localhost')){ location.href = 'https:' + window.location.href.substring(window.location.protocol.length);}</script>
+    {% endif %}
 
     <!-- Footer Block -->
     {% block footer %}{% endblock %}
