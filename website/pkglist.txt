@@ -1,10 +1,15 @@
+build-essential
 curl
 libcairo2-dev
 libffi-dev
+libgif-dev
 libgirepository1.0-dev
+libjpeg-dev
 libmysqlclient-dev
+libpango1.0-dev
 libpcre3
 libpcre3-dev
+librsvg2-dev
 libssl-dev
 nginx
 python3

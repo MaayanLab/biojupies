@@ -68,6 +68,7 @@ protobuf==3.9.1
 psutil==5.7.0
 pyasn1==0.4.6
 pyasn1-modules==0.2.6
+pycairo==1.19.1
 pycrypto==2.6.1
 PyGObject==3.36.1
 PyMySQL==0.9.3
