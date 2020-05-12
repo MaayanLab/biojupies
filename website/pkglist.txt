@@ -1,6 +1,7 @@
 curl
 libcairo2-dev
 libffi-dev
+libgirepository1.0-dev
 libmysqlclient-dev
 libpcre3
 libpcre3-dev
