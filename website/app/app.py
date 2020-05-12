@@ -1396,7 +1396,22 @@ def example():
 
 	# Select dataset
 	dataset_accession = 'GSE88741'
-	dataset = pd.read_sql_query('SELECT platform_accession, dataset_accession, dataset_title, summary, date, count(*) AS nr_samples, organism FROM dataset_v6 d LEFT JOIN sample_v6 s ON d.id=s.dataset_fk LEFT JOIN platform_v6 p ON p.id=s.platform_fk WHERE dataset_accession = "{}"'.format(dataset_accession), engine).drop_duplicates().T.to_dict()[0]
+	dataset = pd.read_sql_query('''
+	SELECT
+		platform_accession,
+		dataset_accession,
+		dataset_title,
+		summary,
+		date,
+		count(*) AS nr_samples,
+		organism
+	FROM
+		dataset_v6 d
+	LEFT JOIN sample_v6 s ON d.id = s.dataset_fk
+	LEFT JOIN platform_v6 p ON p.id = s.platform_fk
+	WHERE dataset_accession = "{}"
+	GROUP BY d.id, p.id
+	'''.format(dataset_accession), engine).drop_duplicates().T.to_dict()[0]
 	# dataset['date'] = dataset['date'].strftime('%b %d, %Y')
 	return render_template('analyze/example.html', dataset=dataset)
 
