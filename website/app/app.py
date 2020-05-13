@@ -1483,8 +1483,13 @@ def dashboard():
 		if alignments:
 
 			# Get progress
-			req =  urllib.request.Request('https://amp.pharm.mssm.edu/cloudalignment/progress?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
-			progress_dataframe = pd.DataFrame(json.loads(urllib.request.urlopen(req).read().decode('utf-8'))).T[['outname', 'status']]
+			resp = {}
+			for alignment in alignments:
+				alignment_uid = alignment.alignment_uid
+				req = urllib.request.Request('https://amp.pharm.mssm.edu/cloudalignment/progress?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&prefix={alignment_uid}'.format(**os.environ, **locals()))
+				resp = dict(**resp, **json.loads(urllib.request.urlopen(req).read().decode('utf-8')))
+
+			progress_dataframe = pd.DataFrame(resp).T[['outname', 'status']]
 			progress_dataframe['split'] = [x.split('-')[0] for x in progress_dataframe['outname']]
 			progress_dataframe['sample_name'] = [x.split('-', 2)[-1].split('-', -1)[0] if '-' in x else '' for x in progress_dataframe['outname']]
 			progress = progress_dataframe[progress_dataframe['split'].isin(alignment.alignment_uid for alignment in alignments)].groupby('split')[['sample_name', 'status']].apply(lambda x: x.sort_values('sample_name').to_dict(orient='records')).to_dict()
