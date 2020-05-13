@@ -192,7 +192,7 @@
 	generate_notebook = function(notebook_configuration) {
 
 		$.ajax({	
-			url: "https://amp.pharm.mssm.edu/notebook-generator-server{{ '-dev' if dev else '' }}/api/generate",
+			url: "{{ NOTEBOOK_GENERATOR }}/api/generate",
 			method: "POST",
 			data: notebook_configuration,
 			// data: $('#notebook-configuration').val(),
@@ -298,7 +298,7 @@
 
 					// Ajax call
 					$.ajax({
-						url: "https://amp.pharm.mssm.edu/notebook-generator-server{{ '-dev' if dev else '' }}/api/help",
+						url: "{{ NOTEBOOK_GENERATOR }}/api/help",
 						method: "POST",
 						data: $('#help-form').serialize(),
 						dataType: 'json',

@@ -71,9 +71,10 @@ def searchGEO(q):
 def searchDatasets(session, tables, min_samples, max_samples, organisms, sortby='asc', q=None):
 
     # Build database query
-    db_query = session.query(tables['dataset_v6'], tables['platform_v6'], func.count(tables['sample_v6'].columns['sample_accession']).label('nr_samples')) \
-                    .join(tables['sample_v6']) \
-                    .join(tables['platform_v6'])
+    nr_samples_label = func.count(tables['sample_v6'].columns['sample_accession']).label('nr_samples')
+    db_query = session.query(tables['dataset_v6'], tables['platform_v6'], nr_samples_label) \
+                    .join(tables['sample_v6'], tables['sample_v6'].columns['dataset_fk'] == tables['dataset_v6'].columns['id']) \
+                    .join(tables['platform_v6'], tables['platform_v6'].columns['id'] == tables['sample_v6'].columns['platform_fk'])
 
     # Add filters
     if q:
@@ -85,18 +86,18 @@ def searchDatasets(session, tables, min_samples, max_samples, organisms, sortby=
                     ))
 
     # Group query
-    db_query = db_query.group_by(tables['dataset_v6'].columns['dataset_accession']) \
+    db_query = db_query.group_by(tables['dataset_v6'].columns['id'], tables['platform_v6'].columns['id']) \
                 .having(and_( \
                     tables['platform_v6'].columns['organism'].in_(organisms), \
-                    func.count(tables['sample_v6'].columns['sample_accession']) >= min_samples,
-                    func.count(tables['sample_v6'].columns['sample_accession']) <= max_samples
+                    nr_samples_label >= min_samples,
+                    nr_samples_label <= max_samples
                 ))
 
     # Sort query results
     if sortby == 'asc':
-        db_query = db_query.order_by(func.count(tables['sample_v6'].columns['sample_accession']).asc())
+        db_query = db_query.order_by(nr_samples_label).asc()
     elif sortby == 'desc':
-        db_query = db_query.order_by(func.count(tables['sample_v6'].columns['sample_accession']).desc())
+        db_query = db_query.order_by(nr_samples_label).desc()
     elif sortby == 'new':
         db_query = db_query.order_by(tables['dataset_v6'].columns['date'].desc())
 

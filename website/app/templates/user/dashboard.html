@@ -303,7 +303,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <form id="download-dataset-form" action="https://amp.pharm.mssm.edu/notebook-generator-server{{ '-dev' if dev else '' }}/download_data" method="post">
+        <form id="download-dataset-form" action="{{ NOTEBOOK_GENERATOR }}/download_data" method="post">
             <input type="hidden" name="uid" value="">
             <input type="hidden" name="source" value="upload">
 

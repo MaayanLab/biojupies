@@ -21,7 +21,7 @@ from flask import Flask, request, render_template, Response, redirect, url_for, 
 from flask_sqlalchemy import SQLAlchemy
 # from flask_dance.contrib.github import make_github_blueprint, github
 from flask_dance.contrib.google import make_google_blueprint, google
-from flask_dance.consumer.backend.sqla import OAuthConsumerMixin, SQLAlchemyBackend
+from flask_dance.consumer.storage.sqla import OAuthConsumerMixin, SQLAlchemyStorage
 from flask_dance.consumer import oauth_authorized, oauth_error
 from flask_login import (
 	LoginManager, UserMixin, current_user,
@@ -62,9 +62,10 @@ if os.getenv('SENTRY_DSN'):
 	sentry_sdk.init(dsn=os.environ['SENTRY_DSN'], integrations=[FlaskIntegration()])
 
 # General
-with open('dev.txt') as openfile:
-	dev = openfile.read() == 'True'
-entry_point = '/biojupies-dev' if dev else '/biojupies'
+dev = json.loads(os.environ.get('DEV', 'false'))
+entry_point = os.environ.get('ENTRY_POINT', '/biojupies-dev' if dev else '/biojupies')
+notebook_generator = os.environ.get('NOTEBOOK_GENERATOR', 'http://amp.pharm.mssm.edu/notebook-generator-server{}'.format('-dev' if dev else ''))
+
 app = Flask(__name__, static_url_path='/app/static')
 
 # Database
@@ -76,6 +77,9 @@ Session = sessionmaker(bind=engine)
 metadata = MetaData()
 metadata.reflect(bind=engine)
 tables = metadata.tables
+
+app.jinja_env.globals['DEV'] = dev
+app.jinja_env.globals['NOTEBOOK_GENERATOR'] = notebook_generator
 
 ##### 2. Functions #####
 # Longest common substring
@@ -106,7 +110,10 @@ class PrefixMiddleware(object):
 		else:
 			start_response('404', [('Content-Type', 'text/plain')])
 			return ["This url does not belong to the app.".encode()]
-app.wsgi_app = PrefixMiddleware(app.wsgi_app, prefix=entry_point)
+
+# only apply prefix middleware if we actually need it
+if entry_point.strip('/') != '':
+	app.wsgi_app = PrefixMiddleware(app.wsgi_app, prefix=entry_point)
 
 # HTTPS fix
 if not os.environ.get('OAUTHLIB_INSECURE_TRANSPORT'):
@@ -165,7 +172,7 @@ def load_user(user_id):
 	return User.query.get(int(user_id))
 
 # Setup SQLAlchemy backend
-blueprint.backend = SQLAlchemyBackend(OAuth, db.session, user=current_user)
+blueprint.backend = SQLAlchemyStorage(OAuth, db.session, user=current_user)
 
 # create/login local user on successful OAuth login
 @oauth_authorized.connect_via(blueprint)
@@ -411,8 +418,7 @@ def add_tools():
 		nr_tools = len(tools)
 
 		# Version
-		dev_str = '-dev' if dev else ''
-		req =  urllib.request.Request('http://amp.pharm.mssm.edu/notebook-generator-server{}/api/version'.format(dev_str)) # this will make the method "POST"
+		req =  urllib.request.Request('{}/api/version'.format(notebook_generator)) # this will make the method "POST"
 		version = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['latest_library_version']
 		
 		# Return result
@@ -457,8 +463,8 @@ def configure_analysis():
 						tables['sample_v6'].columns['sample_accession'].label('accession'),
 						tables['sample_metadata_v6'].columns['variable'], \
 						tables['sample_metadata_v6'].columns['value']) \
-					.join(tables['dataset_v6']) \
-					.join(tables['sample_metadata_v6']) \
+					.join(tables['dataset_v6'], tables['dataset_v6'].columns['id'] == tables['sample_v6'].columns['dataset_fk']) \
+					.join(tables['sample_metadata_v6'], tables['sample_metadata_v6'].columns['sample_fk'] == tables['sample_v6'].columns['id']) \
 					.filter(tables['dataset_v6'].columns['dataset_accession'] == request.form.get('gse')).all()
 				session.close()
 
@@ -477,8 +483,8 @@ def configure_analysis():
 						tables['user_sample'].columns['sample_name'].label('sample'),
 						tables['user_sample_metadata'].columns['variable'], \
 						tables['user_sample_metadata'].columns['value']) \
-					.join(tables['user_dataset']) \
-					.join(tables['user_sample_metadata']) \
+					.join(tables['user_dataset'], tables['user_dataset'].columns['id'] == tables['user_sample'].columns['user_dataset_fk']) \
+					.join(tables['user_sample_metadata'], tables['user_sample_metadata'].columns['user_sample_fk'] == tables['user_sample'].columns['id']) \
 					.filter(tables['user_dataset'].columns['dataset_uid'] == request.form.get('uid')).all()
 				session.close()
 
@@ -502,8 +508,8 @@ def configure_analysis():
 					tables['parameter'].columns['parameter_description'], \
 					tables['parameter_value'].columns['value'], \
 					tables['parameter_value'].columns['default']) \
-				.outerjoin(tables['parameter']) \
-				.outerjoin(tables['parameter_value']) \
+				.outerjoin(tables['parameter'], tables['parameter'].columns['tool_fk'] == tables['tool'].columns['id']) \
+				.outerjoin(tables['parameter_value'], tables['parameter_value'].columns['parameter_fk'] == tables['parameter'].columns['id']) \
 				.filter(tables['tool'].columns['tool_string'].in_(tools)).all()
 			session.close()
 			p = pd.DataFrame(db_query).set_index(['tool_string'])#pd.read_sql_query('SELECT tool_name, tool_string, tool_description, parameter_name, parameter_description, parameter_string, value, `default` FROM tool t LEFT JOIN parameter p ON t.id=p.tool_fk LEFT JOIN parameter_value pv ON p.id=pv.parameter_fk WHERE t.tool_string IN {}'.format(tool_query_string), engine).set_index(['tool_string'])#.set_index(['tool_name', 'parameter_name', 'parameter_description', 'parameter_string'])
@@ -597,8 +603,7 @@ def generate_notebook():
 		tags = tags if isinstance(tags, list) else [tags]
 
 		# Version
-		dev_str = '-dev' if dev else ''
-		req =  urllib.request.Request('http://amp.pharm.mssm.edu/notebook-generator-server{}/api/version'.format(dev_str)) # this will make the method "POST"
+		req =  urllib.request.Request('{}/api/version'.format(notebook_generator)) # this will make the method "POST"
 		version = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['latest_library_version']
 
 		# Get source
@@ -629,7 +634,7 @@ def generate_notebook():
 		expected_time = int(np.ceil(np.percentile(wait_times, 90)/60))
 		
 		# Return result
-		return render_template('analyze/results.html', notebook_configuration=json.dumps(c), notebook_configuration_dict=c, selected_tools=selected_tools, dev=dev, expected_time=expected_time)
+		return render_template('analyze/results.html', notebook_configuration=json.dumps(c), notebook_configuration_dict=c, selected_tools=selected_tools, expected_time=expected_time)
 		# return json.dumps(c)
 
 	# Redirect to analyze page
@@ -725,7 +730,7 @@ def ontology_api():
 	# Initialize database query
 	session = Session()
 	db_query = session.query(tables['ontology_term']) \
-					.join(tables['ontology']) \
+					.join(tables['ontology'], tables['ontology'].columns['id'] == tables['ontology_term'].columns['ontology_fk']) \
 					.filter(tables['ontology'].columns['ontology_string'].in_(ontologies))#.limit(5)
 	# Finish query
 	query_dataframe = pd.DataFrame(db_query.all()).drop(['ontology_fk'], axis=1).fillna('')
@@ -873,7 +878,7 @@ def upload_reads():
 			if (upload_user_id and ((current_user.get_id() and int(current_user.get_id()) in (upload_user_id, 3))) or (not upload_user_id)):
 
 				# Get samples
-				req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
+				req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&prefix={upload_uid}'.format(**os.environ, **locals()))
 				uploaded_files = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['filenames']
 				samples = [x for x in uploaded_files if x.startswith(upload_uid) and (x.endswith('.fastq.gz') or x.endswith('.fq.gz'))]
 
@@ -894,8 +899,8 @@ def upload_reads():
 
 		# Find alignment
 		session = Session()
-		alignment_data = session.query(tables['fastq_upload'].columns['user_fk'], tables['fastq_alignment'].columns['deleted']).join(tables['fastq_alignment']).filter(tables['fastq_alignment'].columns['alignment_uid'] == alignment_uid).first()
-		# alignment_user_id = session.query(tables['fastq_upload'].columns['user_fk']).join(tables['fastq_alignment']).filter(tables['fastq_alignment'].columns['alignment_uid'] == alignment_uid).first()
+		alignment_data = session.query(tables['fastq_upload'].columns['user_fk'], tables['fastq_alignment'].columns['deleted']).join(tables['fastq_alignment'], tables['fastq_alignment'].columns['fastq_upload_fk'] == tables['fastq_upload'].columns['id']).filter(tables['fastq_alignment'].columns['alignment_uid'] == alignment_uid).first()
+		# alignment_user_id = session.query(tables['fastq_upload'].columns['user_fk']).join(tables['fastq_alignment'], tables['fastq_alignment'].columns['fastq_upload_fk'] == tables['fastq_upload'].columns['id']).filter(tables['fastq_alignment'].columns['alignment_uid'] == alignment_uid).first()
 		alignment_user_id = alignment_data.user_fk if alignment_data else None
 		session.close()
 
@@ -904,7 +909,7 @@ def upload_reads():
 
 			# Get jobs
 			print('performing request...')
-			req =  urllib.request.Request('https://amp.pharm.mssm.edu/cloudalignment/progress?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
+			req =  urllib.request.Request('https://amp.pharm.mssm.edu/cloudalignment/progress?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&prefix={alignment_uid}'.format(**os.environ, **locals()))
 			job_dataframe = pd.DataFrame(json.loads(urllib.request.urlopen(req).read().decode('utf-8'))).T
 			print('done!')
 			jobs = job_dataframe.loc[[index for index, rowData in job_dataframe.iterrows() if rowData['outname'].startswith(alignment_uid)]].to_dict(orient='records')
@@ -1096,21 +1101,14 @@ def launch_alignment_api():
 		# Add species
 		sample['outname'] = alignment_uid+'-'+sample['outname']+'-'+alignment_settings['organism'].replace('human', 'hs').replace('mouse', 'mm')
 
-		# Get jobs
-		req =  urllib.request.Request('https://amp.pharm.mssm.edu/cloudalignment/progress?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
-		job_dataframe = pd.DataFrame(json.loads(urllib.request.urlopen(req).read().decode('utf-8'))).T[['outname', 'status']]
-
-		# Check if alignment hasn't been submitted yet (fix to add support for different organisms)
-		if sample['outname'] not in job_dataframe['outname'].tolist():
-
-			# Get URL parameters
-			params = '&'.join(['{key}={value}'.format(**locals()) for key, value in sample.items() if value])+'&organism='+alignment_settings['organism']
-			url = "https://amp.pharm.mssm.edu/cloudalignment/createjob?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&".format(**os.environ)+params
-			# Launch alignment jobs
-			req =  urllib.request.Request(urllib.parse.quote(url, safe=':/&.?='))
-			# req =  urllib.request.Request(url.replace(' ', '%20'))
-			resp = urllib.request.urlopen(req).read().decode('utf-8')
-			# print(resp)
+		# Get URL parameters
+		params = '&'.join(['{key}={value}'.format(**locals()) for key, value in sample.items() if value])+'&organism='+alignment_settings['organism']
+		url = "https://amp.pharm.mssm.edu/cloudalignment/createjob?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&".format(**os.environ)+params
+		# Launch alignment jobs
+		req =  urllib.request.Request(urllib.parse.quote(url, safe=':/&.?='))
+		# req =  urllib.request.Request(url.replace(' ', '%20'))
+		resp = urllib.request.urlopen(req).read().decode('utf-8')
+		# print(resp)
 
 	# Upload to database
 	RM.uploadAlignmentJob(alignment_uid=alignment_uid, upload_uid=alignment_settings['upload_uid'], paired=alignment_settings.get('sequencing-type')=='paired-end', species=alignment_settings['organism'].replace('human', 'hs').replace('mouse', 'mm'), alignment_title=alignment_settings.get('alignment_title', 'FASTQ Alignment'), session=Session(), tables=tables)
@@ -1132,7 +1130,7 @@ def merge_counts_api():
 	alignment_uid = request.args.get('alignment_uid')#'RTBO2Vk5xvV'
 
 	# Get samples
-	req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
+	req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&prefix={alignment_uid}'.format(**os.environ, **locals()))
 	uploaded_files = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['filenames']
 	samples = [x for x in uploaded_files if x.startswith(alignment_uid) and x.endswith('_gene.tsv')]
 
@@ -1215,14 +1213,14 @@ def elysium_api():
 
 	elif endpoint == 'progress':
 
-		# Build url
-		url = 'https://amp.pharm.mssm.edu/cloudalignment/{endpoint}?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ, **locals())
-
 		# Get alignment UID
 		alignment_uid = request.args.get('alignment_uid')
 
 		# Check
 		if isinstance(alignment_uid, str) and len(alignment_uid) == 11:
+
+			# Build url
+			url = 'https://amp.pharm.mssm.edu/cloudalignment/{endpoint}?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&prefix={alignment_uid}'.format(**os.environ, **locals())
 
 			# Get job dataframe
 			job_dataframe = pd.DataFrame(json.loads(urllib.request.urlopen(urllib.request.Request(url)).read().decode('utf-8'))).T
@@ -1395,7 +1393,22 @@ def example():
 
 	# Select dataset
 	dataset_accession = 'GSE88741'
-	dataset = pd.read_sql_query('SELECT platform_accession, dataset_accession, dataset_title, summary, date, count(*) AS nr_samples, organism FROM dataset_v6 d LEFT JOIN sample_v6 s ON d.id=s.dataset_fk LEFT JOIN platform_v6 p ON p.id=s.platform_fk WHERE dataset_accession = "{}"'.format(dataset_accession), engine).drop_duplicates().T.to_dict()[0]
+	dataset = pd.read_sql_query('''
+	SELECT
+		platform_accession,
+		dataset_accession,
+		dataset_title,
+		summary,
+		date,
+		count(*) AS nr_samples,
+		organism
+	FROM
+		dataset_v6 d
+	LEFT JOIN sample_v6 s ON d.id = s.dataset_fk
+	LEFT JOIN platform_v6 p ON p.id = s.platform_fk
+	WHERE dataset_accession = "{}"
+	GROUP BY d.id, p.id
+	'''.format(dataset_accession), engine).drop_duplicates().T.to_dict()[0]
 	# dataset['date'] = dataset['date'].strftime('%b %d, %Y')
 	return render_template('analyze/example.html', dataset=dataset)
 
@@ -1458,20 +1471,25 @@ def dashboard():
 		session = Session()
 
 		# Get datasets
-		datasets = session.query(tables['user_dataset'], func.count(tables['user_sample'].columns['id']).label('samples')).join(tables['user_sample']).filter(and_(tables['user_dataset'].columns['user_fk'] == user_id, tables['user_dataset'].columns['deleted'] == 0)).group_by(tables['user_dataset'].columns['id']).order_by(tables['user_dataset'].columns['date'].desc()).all()
+		datasets = session.query(tables['user_dataset'], func.count(tables['user_sample'].columns['id']).label('samples')).join(tables['user_sample'], tables['user_sample'].columns['user_dataset_fk'] == tables['user_dataset'].columns['id']).filter(and_(tables['user_dataset'].columns['user_fk'] == user_id, tables['user_dataset'].columns['deleted'] == 0)).group_by(tables['user_dataset'].columns['id']).order_by(tables['user_dataset'].columns['date'].desc()).all()
 
 		# Get notebooks
 		notebooks = session.query(tables['notebook']).filter(and_(tables['notebook'].columns['user_fk'] == user_id, tables['notebook'].columns['deleted'] == 0)).order_by(tables['notebook'].columns['date'].desc()).all()
 
 		# Get alignment jobs
-		alignments = session.query(tables['fastq_alignment']).join(tables['fastq_upload']).filter(and_(tables['fastq_upload'].columns['user_fk'] == user_id, tables['fastq_alignment'].columns['deleted'] == 0)).order_by(tables['fastq_alignment'].columns['date'].asc()).all()
+		alignments = session.query(tables['fastq_alignment']).join(tables['fastq_upload'], tables['fastq_upload'].columns['id'] == tables['fastq_alignment'].columns['fastq_upload_fk']).filter(and_(tables['fastq_upload'].columns['user_fk'] == user_id, tables['fastq_alignment'].columns['deleted'] == 0)).order_by(tables['fastq_alignment'].columns['date'].asc()).all()
 
 		# Get statuses
 		if alignments:
 
 			# Get progress
-			req =  urllib.request.Request('https://amp.pharm.mssm.edu/cloudalignment/progress?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ))
-			progress_dataframe = pd.DataFrame(json.loads(urllib.request.urlopen(req).read().decode('utf-8'))).T[['outname', 'status']]
+			resp = {}
+			for alignment in alignments:
+				alignment_uid = alignment.alignment_uid
+				req = urllib.request.Request('https://amp.pharm.mssm.edu/cloudalignment/progress?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&prefix={alignment_uid}'.format(**os.environ, **locals()))
+				resp = dict(**resp, **json.loads(urllib.request.urlopen(req).read().decode('utf-8')))
+
+			progress_dataframe = pd.DataFrame(resp).T[['outname', 'status']]
 			progress_dataframe['split'] = [x.split('-')[0] for x in progress_dataframe['outname']]
 			progress_dataframe['sample_name'] = [x.split('-', 2)[-1].split('-', -1)[0] if '-' in x else '' for x in progress_dataframe['outname']]
 			progress = progress_dataframe[progress_dataframe['split'].isin(alignment.alignment_uid for alignment in alignments)].groupby('split')[['sample_name', 'status']].apply(lambda x: x.sort_values('sample_name').to_dict(orient='records')).to_dict()
@@ -1496,7 +1514,7 @@ def dashboard():
 		# Close session
 		session.close()
 
-		return render_template('user/dashboard.html', datasets=datasets, notebooks=notebooks, alignments=alignments, dev=dev)
+		return render_template('user/dashboard.html', datasets=datasets, notebooks=notebooks, alignments=alignments)
 
 #############################################
 ########## 2. Private API

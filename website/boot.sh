@@ -59,6 +59,41 @@ http {
         sendfile on;
         keepalive_timeout 0;
         large_client_header_buffers 8 32k;
+        location /static  {
+            alias $root/app/static;
+        }
+        location / {
+            include            /etc/nginx/uwsgi_params;
+            uwsgi_pass         127.0.0.1:8080;
+            proxy_redirect     off;
+            proxy_set_header   Host \$host;
+            proxy_set_header   X-Real-IP \$remote_addr;
+            proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
+            proxy_set_header   X-Forwarded-Host \$server_name;
+        }
+    }
+EOF
+
+if [ ! -z "${SSL}" ]; then
+
+cat << EOF | tee -a $root/nginx.conf >> $log
+
+    server {
+        listen 443 default ssl;
+
+        # ssl on;
+        ssl_certificate $sslroot/cert.crt;
+        ssl_certificate_key $sslroot/cert.key;
+        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+        ssl_prefer_server_ciphers on;
+        ssl_ciphers 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH';
+
+        include /etc/nginx/mime.types;
+        charset utf-8;
+        client_max_body_size 30M;
+        sendfile on;
+        keepalive_timeout 0;
+        large_client_header_buffers 8 32k;
 
         location /static  {
             alias $root/app/static;
@@ -74,6 +109,11 @@ http {
             proxy_set_header   X-Forwarded-Host \$server_name;
         }
     }
+EOF
+
+fi
+
+cat << EOF | tee -a $root/nginx.conf >> $log
 }
 EOF
 
