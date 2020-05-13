@@ -62,16 +62,9 @@ if os.getenv('SENTRY_DSN'):
 	sentry_sdk.init(dsn=os.environ['SENTRY_DSN'], integrations=[FlaskIntegration()])
 
 # General
-dev = os.getenv('DEV')
-if dev is None:
-	with open('dev.txt') as openfile:
-		dev = openfile.read() == 'True'
-else:
-	dev = json.loads(dev)
+dev = json.loads(os.environ.get('DEV', 'false'))
 entry_point = os.getenv('ENTRY_POINT', '/biojupies-dev' if dev else '/biojupies')
-
-dev_str = '-dev' if dev else ''
-NOTEBOOK_GENERATOR = os.environ.get('NOTEBOOK_GENERATOR', 'http://amp.pharm.mssm.edu/notebook-generator-server{}'.format(dev_str))
+notebook_generator = os.environ.get('NOTEBOOK_GENERATOR', 'http://amp.pharm.mssm.edu/notebook-generator-server{}'.format('-dev' if dev else ''))
 
 app = Flask(__name__, static_url_path='/app/static')
 
@@ -86,6 +79,7 @@ metadata.reflect(bind=engine)
 tables = metadata.tables
 
 app.jinja_env.globals['DEV'] = dev
+app.jinja_env.globals['NOTEBOOK_GENERATOR'] = notebook_generator
 
 ##### 2. Functions #####
 # Longest common substring
@@ -424,7 +418,7 @@ def add_tools():
 		nr_tools = len(tools)
 
 		# Version
-		req =  urllib.request.Request('{}/api/version'.format(NOTEBOOK_GENERATOR)) # this will make the method "POST"
+		req =  urllib.request.Request('{}/api/version'.format(notebook_generator)) # this will make the method "POST"
 		version = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['latest_library_version']
 		
 		# Return result
@@ -609,7 +603,7 @@ def generate_notebook():
 		tags = tags if isinstance(tags, list) else [tags]
 
 		# Version
-		req =  urllib.request.Request('{}/api/version'.format(NOTEBOOK_GENERATOR)) # this will make the method "POST"
+		req =  urllib.request.Request('{}/api/version'.format(notebook_generator)) # this will make the method "POST"
 		version = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['latest_library_version']
 
 		# Get source
