@@ -70,6 +70,9 @@ else:
 	dev = json.loads(dev)
 entry_point = os.getenv('ENTRY_POINT', '/biojupies-dev' if dev else '/biojupies')
 
+dev_str = '-dev' if dev else ''
+NOTEBOOK_GENERATOR = os.environ.get('NOTEBOOK_GENERATOR', 'http://amp.pharm.mssm.edu/notebook-generator-server{}'.format(dev_str))
+
 app = Flask(__name__, static_url_path='/app/static')
 
 # Database
@@ -421,8 +424,7 @@ def add_tools():
 		nr_tools = len(tools)
 
 		# Version
-		dev_str = '-dev' if dev else ''
-		req =  urllib.request.Request('http://amp.pharm.mssm.edu/notebook-generator-server{}/api/version'.format(dev_str)) # this will make the method "POST"
+		req =  urllib.request.Request('{}/api/version'.format(NOTEBOOK_GENERATOR)) # this will make the method "POST"
 		version = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['latest_library_version']
 		
 		# Return result
@@ -607,8 +609,7 @@ def generate_notebook():
 		tags = tags if isinstance(tags, list) else [tags]
 
 		# Version
-		dev_str = '-dev' if dev else ''
-		req =  urllib.request.Request('http://amp.pharm.mssm.edu/notebook-generator-server{}/api/version'.format(dev_str)) # this will make the method "POST"
+		req =  urllib.request.Request('{}/api/version'.format(NOTEBOOK_GENERATOR)) # this will make the method "POST"
 		version = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['latest_library_version']
 
 		# Get source
