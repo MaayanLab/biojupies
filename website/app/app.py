@@ -63,7 +63,7 @@ if os.getenv('SENTRY_DSN'):
 
 # General
 dev = json.loads(os.environ.get('DEV', 'false'))
-entry_point = os.getenv('ENTRY_POINT', '/biojupies-dev' if dev else '/biojupies')
+entry_point = os.environ.get('ENTRY_POINT', '/biojupies-dev' if dev else '/biojupies')
 notebook_generator = os.environ.get('NOTEBOOK_GENERATOR', 'http://amp.pharm.mssm.edu/notebook-generator-server{}'.format('-dev' if dev else ''))
 
 app = Flask(__name__, static_url_path='/app/static')
@@ -634,7 +634,7 @@ def generate_notebook():
 		expected_time = int(np.ceil(np.percentile(wait_times, 90)/60))
 		
 		# Return result
-		return render_template('analyze/results.html', notebook_configuration=json.dumps(c), notebook_configuration_dict=c, selected_tools=selected_tools, dev=dev, expected_time=expected_time)
+		return render_template('analyze/results.html', notebook_configuration=json.dumps(c), notebook_configuration_dict=c, selected_tools=selected_tools, expected_time=expected_time)
 		# return json.dumps(c)
 
 	# Redirect to analyze page
@@ -1509,7 +1509,7 @@ def dashboard():
 		# Close session
 		session.close()
 
-		return render_template('user/dashboard.html', datasets=datasets, notebooks=notebooks, alignments=alignments, dev=dev)
+		return render_template('user/dashboard.html', datasets=datasets, notebooks=notebooks, alignments=alignments)
 
 #############################################
 ########## 2. Private API
