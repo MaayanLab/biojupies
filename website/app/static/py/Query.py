@@ -71,24 +71,24 @@ def searchGEO(q):
 def searchDatasets(session, tables, min_samples, max_samples, organisms, sortby='asc', q=None):
 
     # Build database query
-    nr_samples_label = func.count(tables['sample_v6'].columns['sample_accession']).label('nr_samples')
-    db_query = session.query(tables['dataset_v6'], tables['platform_v6'], nr_samples_label) \
-                    .join(tables['sample_v6'], tables['sample_v6'].columns['dataset_fk'] == tables['dataset_v6'].columns['id']) \
-                    .join(tables['platform_v6'], tables['platform_v6'].columns['id'] == tables['sample_v6'].columns['platform_fk'])
+    nr_samples_label = func.count(tables['sample'].columns['sample_accession']).label('nr_samples')
+    db_query = session.query(tables['dataset'], tables['platform'], nr_samples_label) \
+                    .join(tables['sample'], tables['sample'].columns['dataset_fk'] == tables['dataset'].columns['id']) \
+                    .join(tables['platform'], tables['platform'].columns['id'] == tables['sample'].columns['platform_fk'])
 
     # Add filters
     if q:
         db_query = db_query.filter(or_( \
-                        tables['dataset_v6'].columns['dataset_title'].like('% '+q+' %'), \
-                        tables['dataset_v6'].columns['summary'].like('% '+q+' %'), \
-                        tables['dataset_v6'].columns['dataset_accession'].like(q), \
-                        tables['dataset_v6'].columns['dataset_accession'].in_(searchGEO(q))
+                        tables['dataset'].columns['dataset_title'].like('% '+q+' %'), \
+                        tables['dataset'].columns['summary'].like('% '+q+' %'), \
+                        tables['dataset'].columns['dataset_accession'].like(q), \
+                        tables['dataset'].columns['dataset_accession'].in_(searchGEO(q))
                     ))
 
     # Group query
-    db_query = db_query.group_by(tables['dataset_v6'].columns['id'], tables['platform_v6'].columns['id']) \
+    db_query = db_query.group_by(tables['dataset'].columns['id'], tables['platform'].columns['id']) \
                 .having(and_( \
-                    tables['platform_v6'].columns['organism'].in_(organisms), \
+                    tables['platform'].columns['organism'].in_(organisms), \
                     nr_samples_label >= min_samples,
                     nr_samples_label <= max_samples
                 ))
@@ -99,7 +99,7 @@ def searchDatasets(session, tables, min_samples, max_samples, organisms, sortby=
     elif sortby == 'desc':
         db_query = db_query.order_by(nr_samples_label.desc())
     elif sortby == 'new':
-        db_query = db_query.order_by(tables['dataset_v6'].columns['date'].desc())
+        db_query = db_query.order_by(tables['dataset'].columns['date'].desc())
 
     # Finish query
     query_dataframe = pd.DataFrame(db_query.all())

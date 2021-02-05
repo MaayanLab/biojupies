@@ -348,13 +348,13 @@ def samples():
 		# Get Sample Dataframe
 		session = Session()
 		db_query = session.query(
-				tables['dataset_v6'].columns['dataset_accession'].label('gse'),
-				tables['sample_v6'].columns['sample_title'],
-				tables['sample_v6'].columns['sample_accession'].label('gsm'),
-				tables['platform_v6'].columns['platform_accession'].label('gpl')) \
-			.join(tables['sample_v6'], tables['sample_v6'].columns['dataset_fk'] == tables['dataset_v6'].columns['id']) \
-			.join(tables['platform_v6'], tables['platform_v6'].columns['id'] == tables['sample_v6'].columns['platform_fk']) \
-			.filter(tables['dataset_v6'].columns['dataset_accession'].in_(gse_list)).all()
+				tables['dataset'].columns['dataset_accession'].label('gse'),
+				tables['sample'].columns['sample_title'],
+				tables['sample'].columns['sample_accession'].label('gsm'),
+				tables['platform'].columns['platform_accession'].label('gpl')) \
+			.join(tables['sample'], tables['sample'].columns['dataset_fk'] == tables['dataset'].columns['id']) \
+			.join(tables['platform'], tables['platform'].columns['id'] == tables['sample'].columns['platform_fk']) \
+			.filter(tables['dataset'].columns['dataset_accession'].in_(gse_list)).all()
 		session.close()
 		if not len(db_query):
 			result = {}

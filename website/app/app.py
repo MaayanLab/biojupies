@@ -320,8 +320,8 @@ def search_data():
 	page = int(request.args.get('page', '1'))
 
 	# Get counts
-	dataset_nr = pd.read_sql_query('SELECT COUNT(DISTINCT dataset_accession) FROM dataset_v6', engine).iloc[0,0]
-	sample_nr = pd.read_sql_query('SELECT COUNT(DISTINCT sample_accession) FROM sample_v6', engine).iloc[0,0]
+	dataset_nr = pd.read_sql_query('SELECT COUNT(DISTINCT dataset_accession) FROM dataset', engine).iloc[0,0]
+	sample_nr = pd.read_sql_query('SELECT COUNT(DISTINCT sample_accession) FROM sample', engine).iloc[0,0]
 
 	###
 	# Search database
@@ -461,12 +461,12 @@ def configure_analysis():
 				# Perform database query
 				session = Session()
 				db_query = session.query(
-						tables['sample_v6'].columns['sample_accession'].label('accession'),
-						tables['sample_metadata_v6'].columns['variable'], \
-						tables['sample_metadata_v6'].columns['value']) \
-					.join(tables['dataset_v6'], tables['dataset_v6'].columns['id'] == tables['sample_v6'].columns['dataset_fk']) \
-					.join(tables['sample_metadata_v6'], tables['sample_metadata_v6'].columns['sample_fk'] == tables['sample_v6'].columns['id']) \
-					.filter(tables['dataset_v6'].columns['dataset_accession'] == request.form.get('gse')).all()
+						tables['sample'].columns['sample_accession'].label('accession'),
+						tables['sample_metadata'].columns['variable'], \
+						tables['sample_metadata'].columns['value']) \
+					.join(tables['dataset'], tables['dataset'].columns['id'] == tables['sample'].columns['dataset_fk']) \
+					.join(tables['sample_metadata'], tables['sample_metadata'].columns['sample_fk'] == tables['sample'].columns['id']) \
+					.filter(tables['dataset'].columns['dataset_accession'] == request.form.get('gse')).all()
 				session.close()
 
 				# Read sample dataframe
@@ -1405,9 +1405,9 @@ def example():
 		count(*) AS nr_samples,
 		organism
 	FROM
-		dataset_v6 d
-	LEFT JOIN sample_v6 s ON d.id = s.dataset_fk
-	LEFT JOIN platform_v6 p ON p.id = s.platform_fk
+		dataset d
+	LEFT JOIN sample s ON d.id = s.dataset_fk
+	LEFT JOIN platform p ON p.id = s.platform_fk
 	WHERE dataset_accession = %s
 	GROUP BY d.id, p.id
 	''', engine, params=(dataset_accession,)).drop_duplicates().T.to_dict()[0]
@@ -1429,7 +1429,7 @@ def stats_api():
 	obj = request.args.get('obj')
 
 	# Check object
-	if obj in ['notebook', 'tool', 'dataset_v6', 'user_dataset', 'fastq_file', 'sample_v6']:
+	if obj in ['notebook', 'tool', 'dataset', 'user_dataset', 'fastq_file', 'sample']:
 
 		# Get notebook data
 		session = Session()
