@@ -2,15 +2,23 @@
 
 root=/biojupies
 user=r
-log=$root/error.log
 
-function setup {
+echo "Booting..."
 
-echo "Creating user..." >> $log
-adduser --disabled-password --gecos '' $user >> $log
+if [ ! -z "$APPLICATION_DEFAULT_CREDENTIALS" -a ! -z "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
+echo "Initializing gcloud credentials..."
+mkdir -p .config/gcloud
+echo $APPLICATION_DEFAULT_CREDENTIALS > $GOOGLE_APPLICATION_CREDENTIALS
+fi
 
-echo "Writing wsgi.ini..." >> $log
-cat << EOF | tee -a $root/wsgi.ini >> $log
+echo "Creating user..."
+adduser --disabled-password --gecos '' $user
+
+mkdir -p /tmp
+chmod 777 -R /tmp
+
+echo "Writing wsgi.ini..."
+cat << EOF | tee -a $root/wsgi.ini
 [uwsgi]
 uid = $user
 gid = $user
@@ -23,12 +31,12 @@ processes = 5
 chdir = $root
 wsgi-file = $root/wsgi.py
 
-socket = 127.0.0.1:8080
-daemonize = $log
+socket = /tmp/uwgsi.sock
+chmod-socket = 666
 EOF
 
-echo "Writing nginx.conf..." >> $log
-cat << EOF | tee -a $root/nginx.conf >> $log
+echo "Writing nginx.conf..."
+cat << EOF | tee -a $root/nginx.conf
 user $user $user;
 
 worker_processes 1;
@@ -38,8 +46,8 @@ events {
 }
 
 http {
-    access_log $log;
-	error_log $log;
+#	access_log /dev/stdout;
+	error_log /dev/stderr;
 
 	gzip              on;
 	gzip_http_version 1.0;
@@ -64,7 +72,7 @@ http {
         }
         location / {
             include            /etc/nginx/uwsgi_params;
-            uwsgi_pass         127.0.0.1:8080;
+            uwsgi_pass         unix:///tmp/uwgsi.sock;
             proxy_redirect     off;
             proxy_set_header   Host \$host;
             proxy_set_header   X-Real-IP \$remote_addr;
@@ -76,7 +84,7 @@ EOF
 
 if [ ! -z "${SSL}" ]; then
 
-cat << EOF | tee -a $root/nginx.conf >> $log
+cat << EOF | tee -a $root/nginx.conf
 
     server {
         listen 443 default ssl;
@@ -101,7 +109,7 @@ cat << EOF | tee -a $root/nginx.conf >> $log
 
         location / {
             include            /etc/nginx/uwsgi_params;
-            uwsgi_pass         127.0.0.1:8080;
+            uwsgi_pass         unix:///tmp/uwgsi.sock;
             proxy_redirect     off;
             proxy_set_header   Host \$host;
             proxy_set_header   X-Real-IP \$remote_addr;
@@ -113,23 +121,68 @@ EOF
 
 fi
 
-cat << EOF | tee -a $root/nginx.conf >> $log
+cat << EOF | tee -a $root/nginx.conf
 }
 EOF
 
-echo "Starting uwsgi..." >> $log
-uwsgi --ini $root/wsgi.ini >> $log
+echo "Writing supervisord.conf..."
+cat << EOF | tee -a $root/supervisord.conf
+[supervisord]
 
-echo "Starting nginx..." >> $log
-nginx -c $root/nginx.conf >> $log
+EOF
 
-}
+if [ ! -z "$SQL_INSTANCE_CONNECTION_NAME" ]; then
 
-if [ -f $log ]; then
-    rm $log;
+echo "Configuring google cloud proxy..."
+
+cat << EOF | tee -a $root/supervisord.conf
+[program:cloud_sql_proxy]
+process_name=%(program_name)s_%(process_num)d
+numprocs=1
+startsecs=0
+startretries=5
+autostart=true
+command=/usr/bin/cloud_sql_proxy -instances=$SQL_INSTANCE_CONNECTION_NAME=tcp:3306
+autorestart=true
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+EOF
+
 fi
 
-echo "Booting..." > $log
-setup &
+cat << EOF | tee -a $root/supervisord.conf
+[program:uwsgi]
+process_name=%(program_name)s_%(process_num)d
+numprocs=1
+startsecs=1
+startretries=5
+autostart=true
+command=uwsgi --ini $root/wsgi.ini
+autorestart=true
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
 
-tail -f $log
+[program:nginx]
+process_name=%(program_name)s_%(process_num)d
+numprocs=1
+startsecs=2
+startretries=5
+autostart=true
+command=nginx -c $root/nginx.conf -g "daemon off;"
+autorestart=true
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+
+[eventlistener:processes]
+command=bash -c "printf 'READY\n' && while read line; do kill -SIGQUIT \$PPID; done < /dev/stdin"
+events=PROCESS_STATE_STOPPED, PROCESS_STATE_EXITED, PROCESS_STATE_FATAL
+EOF
+
+echo "Starting supervisord..."
+supervisord -nc $root/supervisord.conf
