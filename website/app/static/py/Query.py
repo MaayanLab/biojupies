@@ -95,9 +95,9 @@ def searchDatasets(session, tables, min_samples, max_samples, organisms, sortby=
 
     # Sort query results
     if sortby == 'asc':
-        db_query = db_query.order_by(nr_samples_label).asc()
+        db_query = db_query.order_by(nr_samples_label.asc())
     elif sortby == 'desc':
-        db_query = db_query.order_by(nr_samples_label).desc()
+        db_query = db_query.order_by(nr_samples_label.desc())
     elif sortby == 'new':
         db_query = db_query.order_by(tables['dataset_v6'].columns['date'].desc())
 
