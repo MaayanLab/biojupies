@@ -64,7 +64,8 @@ if os.getenv('SENTRY_DSN'):
 # General
 dev = json.loads(os.environ.get('DEV', 'false'))
 entry_point = os.environ.get('ENTRY_POINT', '/biojupies-dev' if dev else '/biojupies')
-notebook_generator = os.environ.get('NOTEBOOK_GENERATOR', 'http://amp.pharm.mssm.edu/notebook-generator-server{}'.format('-dev' if dev else ''))
+origin = os.environ.get('ORIGIN', 'https://maayanlab.cloud/')
+notebook_generator = os.environ.get('NOTEBOOK_GENERATOR', '{origin}/notebook-generator-server{postfix}'.format(origin=origin, postfix='-dev' if dev else ''))
 
 app = Flask(__name__, static_url_path='/app/static')
 
@@ -878,7 +879,7 @@ def upload_reads():
 			if (upload_user_id and ((current_user.get_id() and int(current_user.get_id()) in (upload_user_id, 3))) or (not upload_user_id)):
 
 				# Get samples
-				req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&prefix={upload_uid}'.format(**os.environ, **locals()))
+				req =  urllib.request.Request('{origin}/charon/files?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&prefix={upload_uid}'.format(**os.environ, **locals()))
 				uploaded_files = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['filenames']
 				samples = [x for x in uploaded_files if x.startswith(upload_uid) and (x.endswith('.fastq.gz') or x.endswith('.fq.gz'))]
 
@@ -909,7 +910,7 @@ def upload_reads():
 
 			# Get jobs
 			print('performing request...')
-			req =  urllib.request.Request('https://amp.pharm.mssm.edu/cloudalignment/progress?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&prefix={alignment_uid}'.format(**os.environ, **locals()))
+			req =  urllib.request.Request('{origin}/cloudalignment/progress?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&prefix={alignment_uid}'.format(**os.environ, **locals()))
 			job_dataframe = pd.DataFrame(json.loads(urllib.request.urlopen(req).read().decode('utf-8'))).T
 			print('done!')
 			jobs = job_dataframe.loc[[index for index, rowData in job_dataframe.iterrows() if rowData['outname'].startswith(alignment_uid)]].to_dict(orient='records')
@@ -1103,7 +1104,7 @@ def launch_alignment_api():
 
 		# Get URL parameters
 		params = '&'.join(['{key}={value}'.format(**locals()) for key, value in sample.items() if value])+'&organism='+alignment_settings['organism']
-		url = "https://amp.pharm.mssm.edu/cloudalignment/createjob?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&".format(**os.environ)+params
+		url = "{origin}/cloudalignment/createjob?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&".format(**os.environ)+params
 		# Launch alignment jobs
 		req =  urllib.request.Request(urllib.parse.quote(url, safe=':/&.?='))
 		# req =  urllib.request.Request(url.replace(' ', '%20'))
@@ -1130,7 +1131,7 @@ def merge_counts_api():
 	alignment_uid = request.args.get('alignment_uid')#'RTBO2Vk5xvV'
 
 	# Get samples
-	req =  urllib.request.Request('https://amp.pharm.mssm.edu/charon/files?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&prefix={alignment_uid}'.format(**os.environ, **locals()))
+	req =  urllib.request.Request('{origin}/charon/files?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&prefix={alignment_uid}'.format(**os.environ, **locals()))
 	uploaded_files = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))['filenames']
 	samples = [x for x in uploaded_files if x.startswith(alignment_uid) and x.endswith('_gene.tsv')]
 
@@ -1206,7 +1207,7 @@ def elysium_api():
 	if endpoint == 'signpolicy':
 
 		# Build url
-		url = 'https://amp.pharm.mssm.edu/charon/{endpoint}?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ, **locals())
+		url = '{origin}/charon/{endpoint}?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}'.format(**os.environ, **locals())
 
 		# Read request
 		data = urllib.request.urlopen(urllib.request.Request(url)).read().decode('utf-8')
@@ -1220,7 +1221,7 @@ def elysium_api():
 		if isinstance(alignment_uid, str) and len(alignment_uid) == 11:
 
 			# Build url
-			url = 'https://amp.pharm.mssm.edu/cloudalignment/{endpoint}?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&prefix={alignment_uid}'.format(**os.environ, **locals())
+			url = '{origin}/cloudalignment/{endpoint}?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&prefix={alignment_uid}'.format(**os.environ, **locals())
 
 			# Get job dataframe
 			job_dataframe = pd.DataFrame(json.loads(urllib.request.urlopen(urllib.request.Request(url)).read().decode('utf-8'))).T
@@ -1486,7 +1487,7 @@ def dashboard():
 			resp = {}
 			for alignment in alignments:
 				alignment_uid = alignment.alignment_uid
-				req = urllib.request.Request('https://amp.pharm.mssm.edu/cloudalignment/progress?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&prefix={alignment_uid}'.format(**os.environ, **locals()))
+				req = urllib.request.Request('{origin}/cloudalignment/progress?username={ELYSIUM_USERNAME}&password={ELYSIUM_PASSWORD}&prefix={alignment_uid}'.format(**os.environ, **locals()))
 				resp = dict(**resp, **json.loads(urllib.request.urlopen(req).read().decode('utf-8')))
 
 			progress_dataframe = pd.DataFrame(resp).T[['outname', 'status']]
