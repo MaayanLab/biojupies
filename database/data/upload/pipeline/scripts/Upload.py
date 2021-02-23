@@ -49,7 +49,9 @@ def upload_data(data, keys, table, reset_counter=True):
 #############################################
 
 def exists(accession, version):
-    return len(pd.read_sql_query('SELECT * FROM dataset_{version} WHERE dataset_accession = "{accession}"'.format(**locals()), engine).index)
+    table = 'dataset_{version}'.format(version=version)
+    assert table in tables, 'Invalid table'
+    return len(pd.read_sql_query('SELECT * FROM {table} WHERE dataset_accession = %s'.format(table=table), engine, params=(accession,)).index)
 
 #############################################
 ########## 2. Upload dataset

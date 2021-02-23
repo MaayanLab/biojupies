@@ -631,7 +631,7 @@ def generate_notebook():
 		selected_tools = [tools[x['tool_string']] for x in c['tools']]
 
 		# Estimated wait time
-		wait_times = pd.read_sql_query('SELECT time, count(tool_fk) AS tools FROM notebook n LEFT JOIN notebook_tool nt ON n.id=nt.notebook_fk GROUP BY n.id HAVING time > 0 AND tools ='+str(len(p)), engine)['time']
+		wait_times = pd.read_sql_query('SELECT time, count(tool_fk) AS tools FROM notebook n LEFT JOIN notebook_tool nt ON n.id=nt.notebook_fk GROUP BY n.id HAVING time > 0 AND tools = %s', engine, params=(str(len(p)),))['time']
 		expected_time = int(np.ceil(np.percentile(wait_times, 90)/60))
 		
 		# Return result
@@ -1408,9 +1408,9 @@ def example():
 		dataset_v6 d
 	LEFT JOIN sample_v6 s ON d.id = s.dataset_fk
 	LEFT JOIN platform_v6 p ON p.id = s.platform_fk
-	WHERE dataset_accession = "{}"
+	WHERE dataset_accession = %s
 	GROUP BY d.id, p.id
-	'''.format(dataset_accession), engine).drop_duplicates().T.to_dict()[0]
+	''', engine, params=(dataset_accession,)).drop_duplicates().T.to_dict()[0]
 	# dataset['date'] = dataset['date'].strftime('%b %d, %Y')
 	return render_template('analyze/example.html', dataset=dataset)
 

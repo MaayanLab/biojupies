@@ -59,7 +59,7 @@ def getUID(engine, idtype='table'):
 			uid = 'AJ'+uid
 
 		# Check if exists
-		duplicate = len(pd.read_sql_query('SELECT * FROM user_dataset WHERE dataset_uid = "{}"'.format(uid), engine).index)
+		duplicate = len(pd.read_sql_query('SELECT * FROM user_dataset WHERE dataset_uid = %s', engine, params=(uid,)).index)
 
 	# Return
 	return uid
@@ -157,8 +157,8 @@ def uploadToDatabase(data, dataset_uid, engine, user_id, dataset_title, alignmen
 	sample_dataframe.to_sql('user_sample', engine, if_exists='append', index=False)
 
 	# Get sample FK
-	sample_names = '", "'.join(sample_dataframe['sample_name'])
-	sample_fk_dataframe = pd.read_sql_query('SELECT sample_name, id AS user_sample_fk FROM user_sample WHERE user_dataset_fk = {dataset_id} AND sample_name IN ("{sample_names}")'.format(**locals()), engine)
+	sample_names = sample_dataframe['sample_name']
+	sample_fk_dataframe = pd.read_sql_query('SELECT sample_name, id AS user_sample_fk FROM user_sample WHERE user_dataset_fk = %s AND sample_name IN ({})'.format(','.join('%s' for _ in sample_names)), engine, params=(dataset_id, *sample_names))
 
 	# Upload sample metadata
 	sample_metadata_dataframe = pd.melt(metadata_dataframe.reset_index(), id_vars='sample_name').merge(sample_fk_dataframe, on='sample_name').drop('sample_name', axis=1)

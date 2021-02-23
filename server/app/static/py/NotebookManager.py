@@ -92,7 +92,7 @@ def upload_notebook(notebook, notebook_configuration, time, engine, user_id=None
 	tool_dict = pd.read_sql_table('tool', engine).set_index('tool_string')['id'].to_dict()
 
 	# Get notebook ID
-	notebook_id = pd.read_sql_query('SELECT id FROM notebook WHERE notebook_uid = "{}"'.format(notebook_uid), engine)['id'][0]
+	notebook_id = pd.read_sql_query('SELECT id FROM notebook WHERE notebook_uid = %s', engine, params=(notebook_uid,))['id'][0]
 
 	# Notebook-tool dataframe
 	notebook_tool_dataframe = pd.DataFrame({'tool_fk': [tool_dict[x['tool_string']] for x in notebook_configuration['tools']], 'notebook_fk': notebook_id})
