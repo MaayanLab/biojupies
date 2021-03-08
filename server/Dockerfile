@@ -14,7 +14,7 @@ COPY requirements.txt .
 RUN . /notebook-generator-server/venv/bin/activate && pip3 install -r requirements.txt
 RUN . /notebook-generator-server/venv/bin/activate && python -m ipykernel install --user --name venv --display-name "python3-venv"
 
-ENV LIBRARY_VERSION=v1.1.4
+ENV LIBRARY_VERSION=v1.1.6
 
 COPY . /notebook-generator-server  
 WORKDIR /notebook-generator-server
