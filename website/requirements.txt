@@ -50,7 +50,7 @@ h5py==2.10.0
 httplib2==0.13.1
 idna==2.6
 itsdangerous==1.1.0
-Jinja2==2.10.1
+Jinja2==2.11.3
 keyring==21.2.1
 keyrings.alt==3.4.0
 lazy==1.4
