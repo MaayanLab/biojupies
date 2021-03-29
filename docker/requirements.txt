@@ -91,7 +91,7 @@ ptyprocess==0.5.2
 pyasn1==0.4.2
 pyasn1-modules==0.2.1
 pycrypto==2.6.1
-Pygments==2.2.0
+Pygments==2.7.4
 pygobject==3.24.1
 PyMySQL==0.8.0
 pyparsing==2.2.0
