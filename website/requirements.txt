@@ -54,7 +54,7 @@ Jinja2==2.10.1
 keyring==21.2.1
 keyrings.alt==3.4.0
 lazy==1.4
-lxml==4.5.0
+lxml==4.6.3
 MarkupSafe==1.1.1
 numpy==1.18.4
 oauth2client==4.1.3
