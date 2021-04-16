@@ -58,9 +58,7 @@ if os.getenv('SENTRY_DSN'):
 	sentry_sdk.init(dsn=os.environ['SENTRY_DSN'], integrations=[FlaskIntegration()])
 
 # General
-with open('dev.txt') as openfile:
-	dev = openfile.read() == 'True'
-entry_point = '/notebook-generator-server-dev' if dev else '/notebook-generator-server'
+entry_point = os.environ.get('ENTRY_POINT', '/notebook-generator-server')
 app = Flask(__name__, static_url_path=os.path.join(entry_point, 'app/static'))
 
 # Database
