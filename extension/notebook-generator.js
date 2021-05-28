@@ -4,10 +4,13 @@
 ////////// Author: Denis Torre
 ////////// Affiliation: Ma'ayan Laboratory, Icahn School of Medicine at Mount Sinai
 
+var BIOJUPIES_NOTEBOOK_GENERATOR_ORIGIN = 'https://maayanlab.cloud/notebook-generator-server'
+var BIOJUPIES_ORIGIN = 'https://maayanlab.cloud/biojupies'
+
 function main() {
 
 	 $.ajax({	
-		url: "http://amp.pharm.mssm.edu/notebook-generator-server/api/version",
+		url: `${BIOJUPIES_NOTEBOOK_GENERATOR_ORIGIN}/api/version`,
 		method: "POST",
 		dataType: 'json',
 		success: function(res) {
@@ -78,7 +81,7 @@ var modal = {
 					.append($('<input>', {'type': 'checkbox', 'class': 'modal-tool-checkbox', 'id': tool['tool_string']+'-checkbox', 'value': tool['tool_string'], 'name': 'input-tools', 'required': 'true', 'checked': tool['default_selected'] > 0}).data(tool))
 					.append($('<label>', {'class': 'modal-tool-label', 'for': tool['tool_string']+'-checkbox'})
 						.append($('<div>', {'class': 'modal-tool-icon-wrapper'})
-							.html($('<img>', {'class': 'modal-tool-icon', 'src': 'http://amp.pharm.mssm.edu/biojupies/app/static/img/tool/'+tool['tool_string']+'/'+tool['tool_string']+'.png'})))
+							.html($('<img>', {'class': 'modal-tool-icon', 'src': `${BIOJUPIES_ORIGIN}/app/static/img/tool/${tool['tool_string']}/${tool['tool_string']}.png`})))
 						.append($('<div>', {'class': 'modal-tool-text'})
 							.append($('<div>', {'class': 'modal-tool-title'}).html(tool['tool_name']))
 							.append($('<div>', {'class': 'modal-tool-description'}).html(tool['tool_description'])))
@@ -137,7 +140,7 @@ function addButtons() {
 
 	// Get Samples
 	$.ajax({	
-		url: "http://amp.pharm.mssm.edu/notebook-generator-server/api/samples",
+		url: `${BIOJUPIES_NOTEBOOK_GENERATOR_ORIGIN}/api/samples`,
 		method: "POST",
 		data: JSON.stringify({'gse': Object.keys(entries)}),
 		dataType: 'json',
@@ -199,7 +202,7 @@ function addModal() {
 	// Add Tools
 	signature_tools = [];
 	$.ajax({
-		url: "http://amp.pharm.mssm.edu/notebook-generator-server/api/tools",
+		url: `${BIOJUPIES_NOTEBOOK_GENERATOR_ORIGIN}/api/tools`,
 		method: "POST",
 		dataType: 'json',
 		success: function(res) {
@@ -334,7 +337,7 @@ function addConfiguration(selected_tools, groups) {
 	$.each(selected_tools['tools'], function(index, tool) {
 		// if (tool['parameters'].length > 0) {
 		display = tool['parameters'].length > 0 ? 'block' : 'none'
-		$('#configuration-form').append(modal.Section(tool['tool_name'], tool['tool_string'], display, {'url': 'https://github.com/denis-torre/notebook-generator/tree/master/library/'+'library_version'+'/analysis_tools/'+tool['tool_string'], 'text': 'Documentation'}, true));
+		$('#configuration-form').append(modal.Section(tool['tool_name'], tool['tool_string'], display, {'url': `https://github.com/MaayanLab/biojupies-plugins/tree/master/library/analysis_tools/${tool['tool_string']}`, 'text': 'Documentation'}, true));
 		$.each(tool['parameters'], function(parameter_id, parameter) {
 			var value, options = [];
 			$.each(parameter['values'], function(index, option) { options.push(option["value"]); if (option["default"]){value = option["value"]}; });
@@ -397,7 +400,7 @@ function getConfiguration() {
 
 function addNotebookLink(configuration) {
 	$.ajax({	
-		url: "http://amp.pharm.mssm.edu/notebook-generator-server/api/generate",
+		url: `${BIOJUPIES_NOTEBOOK_GENERATOR_ORIGIN}/api/generate`,
 		method: "POST",
 		data: JSON.stringify(configuration),
 		contentType: "application/json; charset=utf-8",

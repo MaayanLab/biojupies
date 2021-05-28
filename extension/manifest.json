@@ -1,7 +1,7 @@
 {
 	"name": "BioJupies Generator",
 	"short_name": "BioJupies",
-	"version": "1.2.3",
+	"version": "1.2.4",
 	"description": "Ma'ayan Lab",
 	
 	"icons":{
@@ -17,7 +17,7 @@
 			"matches": [
 				"https://www.ncbi.nlm.nih.gov/*",
 				"http://lincsportal.ccs.miami.edu/*",
-				"http://amp.pharm.mssm.edu/datasets2tools/*"
+				"http://maayanlab.cloud/datasets2tools/*"
 			],
 
 			"css": [
