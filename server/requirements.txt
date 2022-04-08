@@ -101,7 +101,7 @@ qgrid==1.0.2
 qtconsole==4.3.1
 requests==2.18.4
 rpy2==2.9.3
-rsa==3.4.2
+rsa==4.7
 scikit-learn==0.19.1
 scipy==1.0.1
 seaborn==0.8.1
