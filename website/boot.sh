@@ -29,24 +29,6 @@ adduser --disabled-password --gecos '' $user
 mkdir -p /tmp
 chmod 777 -R /tmp
 
-echo "Writing wsgi.ini..."
-cat << EOF | tee -a $root/wsgi.ini
-[uwsgi]
-uid = $user
-gid = $user
-
-enable-threads = true
-
-master = true
-processes = 5
-
-chdir = $root
-wsgi-file = $root/wsgi.py
-
-socket = /tmp/uwgsi.sock
-chmod-socket = 666
-EOF
-
 echo "Writing nginx.conf..."
 cat << EOF | tee -a $root/nginx.conf
 user $user $user;
@@ -72,6 +54,10 @@ http {
 					  application/x-javascript
 					  application/atom+xml;
 
+    upstream app {
+        server 127.0.0.1:8000 fail_timeout=0;
+    }
+
     server {
         listen 80;
         charset utf-8;
@@ -84,16 +70,16 @@ http {
         }
         location / {
             include            /etc/nginx/uwsgi_params;
-            uwsgi_pass         unix:///tmp/uwgsi.sock;
+            proxy_pass         http://app;
             proxy_redirect     off;
             proxy_set_header   Host \$host;
             proxy_set_header   X-Real-IP \$remote_addr;
             proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
             proxy_set_header   X-Forwarded-Host \$server_name;
-            proxy_connect_timeout 0;
-            proxy_send_timeout    0;
-            proxy_read_timeout    0;
-            send_timeout          0;
+            proxy_connect_timeout 300;
+            proxy_send_timeout    300;
+            proxy_read_timeout    300;
+            send_timeout          300;
         }
     }
 EOF
@@ -125,16 +111,16 @@ cat << EOF | tee -a $root/nginx.conf
 
         location / {
             include            /etc/nginx/uwsgi_params;
-            uwsgi_pass         unix:///tmp/uwgsi.sock;
+            proxy_pass         http://app;
             proxy_redirect     off;
             proxy_set_header   Host \$host;
             proxy_set_header   X-Real-IP \$remote_addr;
             proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
             proxy_set_header   X-Forwarded-Host \$server_name;
-            proxy_connect_timeout 0;
-            proxy_send_timeout    0;
-            proxy_read_timeout    0;
-            send_timeout          0;
+            proxy_connect_timeout 300;
+            proxy_send_timeout    300;
+            proxy_read_timeout    300;
+            send_timeout          300;
         }
     }
 EOF
@@ -173,13 +159,14 @@ EOF
 fi
 
 cat << EOF | tee -a $root/supervisord.conf
-[program:uwsgi]
+[program:gunicorn]
 process_name=%(program_name)s_%(process_num)d
 numprocs=1
 startsecs=1
 startretries=5
 autostart=true
-command=uwsgi --ini $root/wsgi.ini
+directory=/biojupies
+command=gunicorn -w4 app.app:app
 autorestart=true
 stderr_logfile=/dev/stderr
 stderr_logfile_maxbytes=0
