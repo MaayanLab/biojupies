@@ -85,7 +85,7 @@ prompt-toolkit==1.0.15
 proto-google-cloud-datastore-v1==0.90.4
 proto-google-cloud-error-reporting-v1beta1==0.15.3
 proto-google-cloud-logging-v2==0.91.3
-protobuf==3.5.2.post1
+protobuf==3.18.3
 psutil==5.4.3
 ptyprocess==0.5.2
 pyasn1==0.4.2
