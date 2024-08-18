@@ -37,6 +37,8 @@ import numpy as np
 from io import StringIO
 from datetime import datetime
 
+import urllib.parse
+
 # Database
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import MetaData, or_, and_, func
@@ -673,8 +675,14 @@ def view_notebook(notebook_uid):
 			https = version > 0.7 or version < 0.2
 
 			# Get Nbviewer URL and Title
-			nbviewer_url = 'https://nbviewer.jupyter.org/urls/storage.googleapis.com/jupyter-notebook-generator/{notebook_uid}/{notebook_dict[notebook_title]}.ipynb'.format(**locals())
+			
+			# this old version causes issues when containing special characters (alex)
+			#nbviewer_url = 'https://nbviewer.jupyter.org/urls/storage.googleapis.com/jupyter-notebook-generator/{notebook_uid}/{notebook_dict[notebook_title]}.ipynb'.format(**locals())
 
+			nbviewer_url = 'https://nbviewer.org/urls/storage.googleapis.com/jupyter-notebook-generator/{notebook_uid}/{encoded_title}.ipynb'.format(
+							notebook_uid=notebook_uid,
+							encoded_title=urllib.parse.quote(notebook_dict['notebook_title'])
+						)
 			# Replace HTTPS
 			if not https:
 				nbviewer_url = nbviewer_url.replace('https://', 'http://')
