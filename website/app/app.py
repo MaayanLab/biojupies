@@ -68,6 +68,7 @@ dev = json.loads(os.environ.get('DEV', 'false'))
 entry_point = os.environ.get('ENTRY_POINT', '/biojupies-dev' if dev else '/biojupies')
 origin = os.environ.get('ORIGIN', 'https://maayanlab.cloud')
 notebook_generator = os.environ.get('NOTEBOOK_GENERATOR', '{origin}/notebook-generator-server{postfix}'.format(origin=origin, postfix='-dev' if dev else ''))
+nbviewer_origin = os.environ.get('NBVIEWER_ORIGIN', 'https://nbviewer.org')
 
 app = Flask(__name__, static_url_path='/app/static')
 
@@ -679,7 +680,8 @@ def view_notebook(notebook_uid):
 			# this old version causes issues when containing special characters (alex)
 			#nbviewer_url = 'https://nbviewer.jupyter.org/urls/storage.googleapis.com/jupyter-notebook-generator/{notebook_uid}/{notebook_dict[notebook_title]}.ipynb'.format(**locals())
 
-			nbviewer_url = 'https://nbviewer.org/urls/storage.googleapis.com/jupyter-notebook-generator/{notebook_uid}/{encoded_title}.ipynb'.format(
+			nbviewer_url = '{nbviewer_origin}/urls/storage.googleapis.com/jupyter-notebook-generator/{notebook_uid}/{encoded_title}.ipynb'.format(
+							nbviewer_origin=nbviewer_origin,
 							notebook_uid=notebook_uid,
 							encoded_title=urllib.parse.quote(notebook_dict['notebook_title'])
 						)
