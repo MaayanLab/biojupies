@@ -91,7 +91,7 @@ psutil==5.4.5
 ptyprocess==0.5.2
 pyasn1==0.4.2
 pyasn1-modules==0.2.1
-Pygments==2.2.0
+Pygments==2.7.4
 PyMySQL==0.8.0
 pyparsing==2.2.0
 python-dateutil==2.7.2
