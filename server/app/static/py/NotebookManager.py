@@ -222,11 +222,19 @@ def log_error(notebook_configuration, error, annotations, session, tables, app, 
 	}
 
     # Send mail
-	with app.app_context():
-		msg = Message(subject='Notebook Generation Error #{}'.format(error_id),
-						sender=os.environ['MAIL_USERNAME'],
-						recipients=[os.environ['MAIL_RECIPIENT']],
-                    body='https://amp.pharm.mssm.edu/biojupies/error/{error_id}\n\n{error}\n\n{notebook_configuration}\n\n{error_message}'.format(**locals()))
-		mail.send(msg)
+	try:
+		with app.app_context():
+			msg = Message(subject='Notebook Generation Error #{}'.format(error_id),
+							sender=os.environ['MAIL_USERNAME'],
+							recipients=[os.environ['MAIL_RECIPIENT']],
+							body='https://amp.pharm.mssm.edu/biojupies/error/{error_id}\n\n{error}\n\n{notebook_configuration}\n\n{error_message}'.format(**locals()))
+			mail.send(msg)
+	except KeyboardInterrupt: raise
+	except:
+		import sys
+		print('Subject: Notebook Generation Error #{}'.format(error_id),
+					'Body: https://amp.pharm.mssm.edu/biojupies/error/{error_id}\n\n{error}\n\n{notebook_configuration}\n\n{error_message}'.format(**locals()),
+					sep='\n',
+					file=sys.stderr)
 
 	return error_message
